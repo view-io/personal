@@ -1,0 +1,134 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="View.Personal.MainWindow"
+        Width="1200" Height="800"
+        Background="White"
+        Title="View Personal Edition"
+        Icon="/Assets/glyph.png">
+	
+	<DockPanel>
+		
+		<!-- Top Bar -->
+		<Grid DockPanel.Dock="Top" Height="50">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Logo and Text -->
+			<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
+				<Image Source="/Assets/logo.png" Height="30"/>
+				<TextBlock Text="Personal Edition"
+                         VerticalAlignment="Center"
+                         Margin="10,0"
+                         Foreground="Black"/>
+			</StackPanel>
+
+			<!-- Copyright Text -->
+			<TextBlock Grid.Column="2"
+                      Text="©2025 View Systems Inc"
+                      VerticalAlignment="Center"
+                      Margin="20,0"
+                      Foreground="Black"/>
+
+			<!-- Bottom Border -->
+			<Border Grid.ColumnSpan="3"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="#DDDDDD"
+                    VerticalAlignment="Bottom"/>
+		</Grid>
+
+		<!-- Left Navigation Panel -->
+		<Border DockPanel.Dock="Left"
+				BorderThickness="0,0,1,0"
+				BorderBrush="#DDDDDD"
+				Width="200">
+			<ListBox Background="Transparent"
+					BorderThickness="0"
+					x:Name="NavList"
+					SelectionChanged="NavList_SelectionChanged">
+				<ListBox.Styles>
+					<Style Selector="ListBoxItem">
+						<Setter Property="Padding" Value="20,10"/>
+						<Setter Property="Margin" Value="0"/>
+						<Setter Property="Foreground" Value="Black"/>
+					</Style>
+					<Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+						<Setter Property="Background" Value="#f0f0f0"/>
+						<Setter Property="Foreground" Value="Black"/>
+					</Style>
+					<Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+						<Setter Property="Background" Value="#007BFF"/>
+						<Setter Property="Foreground" Value="White"/>
+					</Style>
+				</ListBox.Styles>
+
+				<ListBoxItem Content="Dashboard" IsSelected="True"/>
+				<ListBoxItem Content="Settings"/>
+				<ListBoxItem Content="My Files"/>
+				<ListBoxItem Content="Chat"/>
+			</ListBox>
+		</Border>
+
+		<!-- Main Content Area -->
+		<Grid Name="MainContentArea">
+			
+			<!-- Dashboard View -->
+			<StackPanel Name="DashboardPanel"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="20"
+            IsVisible="True">
+				<TextBlock Text="Welcome to View Personal Edition."
+						  FontSize="24"
+						  Foreground="Black"
+						  Margin="0,0,0,20"/>
+
+				<StackPanel Spacing="10">
+					<TextBlock Foreground="Black">
+						<Run Text="Use the "/>
+						<TextBlock>
+							<Button Classes="link" Click="NavigateToSettings_Click">
+								<TextBlock Text="Settings"/>
+							</Button>
+						</TextBlock>
+						<Run Text=" tab to provide the necessary credentials to access services for vectorization and chat completions."/>
+					</TextBlock>
+
+					<TextBlock Foreground="Black">
+						<Run Text="Use the "/>
+						<TextBlock>
+							<Button Classes="link" Click="NavigateToMyFiles_Click">
+								<TextBlock Text="My Files"/>
+							</Button>
+						</TextBlock>
+						<Run Text=" tab to manage files stored in your personal store."/>
+					</TextBlock>
+
+					<TextBlock Foreground="Black">
+						<Run Text="Use the "/>
+						<TextBlock>
+							<Button Classes="link" Click="NavigateToChat_Click">
+								<TextBlock Text="Chat"/>
+							</Button>
+						</TextBlock>
+						<Run Text=" tab to chat with your data."/>
+					</TextBlock>
+				</StackPanel>
+			</StackPanel>
+
+			<!-- Settings View -->
+
+			<!-- My Files View -->
+
+			<!--Chat View -->
+			
+			<!-- Default View -->
+			<TextBlock Name="WorkspaceText"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   Foreground="#666666"/>
+		</Grid>
+	</DockPanel>
+</Window>
