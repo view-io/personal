@@ -7,7 +7,6 @@
         Icon="/Assets/glyph.png">
 	
 	<DockPanel>
-		
 		<!-- Top Bar -->
 		<Grid DockPanel.Dock="Top" Height="50">
 			<Grid.ColumnDefinitions>
@@ -15,39 +14,17 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
-
-			<!-- Logo and Text -->
 			<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
 				<Image Source="/Assets/logo.png" Height="30"/>
-				<TextBlock Text="Personal Edition"
-                         VerticalAlignment="Center"
-                         Margin="10,0"
-                         Foreground="Black"/>
+				<TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
 			</StackPanel>
-
-			<!-- Copyright Text -->
-			<TextBlock Grid.Column="2"
-                      Text="©2025 View Systems Inc"
-                      VerticalAlignment="Center"
-                      Margin="20,0"
-                      Foreground="Black"/>
-
-			<!-- Bottom Border -->
-			<Border Grid.ColumnSpan="3"
-                    BorderThickness="0,0,0,1"
-                    BorderBrush="#DDDDDD"
-                    VerticalAlignment="Bottom"/>
+			<TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0" Foreground="Black"/>
+			<Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD" VerticalAlignment="Bottom"/>
 		</Grid>
 
 		<!-- Left Navigation Panel -->
-		<Border DockPanel.Dock="Left"
-				BorderThickness="0,0,1,0"
-				BorderBrush="#DDDDDD"
-				Width="200">
-			<ListBox Background="Transparent"
-					BorderThickness="0"
-					x:Name="NavList"
-					SelectionChanged="NavList_SelectionChanged">
+		<Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
+			<ListBox Background="Transparent" BorderThickness="0" x:Name="NavList" SelectionChanged="NavList_SelectionChanged">
 				<ListBox.Styles>
 					<Style Selector="ListBoxItem">
 						<Setter Property="Padding" Value="20,10"/>
@@ -63,7 +40,6 @@
 						<Setter Property="Foreground" Value="White"/>
 					</Style>
 				</ListBox.Styles>
-
 				<ListBoxItem Content="Dashboard" IsSelected="True"/>
 				<ListBoxItem Content="Settings"/>
 				<ListBoxItem Content="My Files"/>
@@ -73,62 +49,104 @@
 
 		<!-- Main Content Area -->
 		<Grid Name="MainContentArea">
-			
 			<!-- Dashboard View -->
-			<StackPanel Name="DashboardPanel"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Spacing="20"
-            IsVisible="True">
-				<TextBlock Text="Welcome to View Personal Edition."
-						  FontSize="24"
-						  Foreground="Black"
-						  Margin="0,0,0,20"/>
-
+			<StackPanel Name="DashboardPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" IsVisible="True">
+				<TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
 				<StackPanel Spacing="10">
 					<TextBlock Foreground="Black">
 						<Run Text="Use the "/>
-						<TextBlock>
-							<Button Classes="link" Click="NavigateToSettings_Click">
-								<TextBlock Text="Settings"/>
-							</Button>
-						</TextBlock>
+						<TextBlock><Button Classes="link" Click="NavigateToSettings_Click"><TextBlock Text="Settings"/></Button></TextBlock>
 						<Run Text=" tab to provide the necessary credentials to access services for vectorization and chat completions."/>
 					</TextBlock>
-
 					<TextBlock Foreground="Black">
 						<Run Text="Use the "/>
-						<TextBlock>
-							<Button Classes="link" Click="NavigateToMyFiles_Click">
-								<TextBlock Text="My Files"/>
-							</Button>
-						</TextBlock>
+						<TextBlock><Button Classes="link" Click="NavigateToMyFiles_Click"><TextBlock Text="My Files"/></Button></TextBlock>
 						<Run Text=" tab to manage files stored in your personal store."/>
 					</TextBlock>
-
 					<TextBlock Foreground="Black">
 						<Run Text="Use the "/>
-						<TextBlock>
-							<Button Classes="link" Click="NavigateToChat_Click">
-								<TextBlock Text="Chat"/>
-							</Button>
-						</TextBlock>
+						<TextBlock><Button Classes="link" Click="NavigateToChat_Click"><TextBlock Text="Chat"/></Button></TextBlock>
 						<Run Text=" tab to chat with your data."/>
 					</TextBlock>
 				</StackPanel>
 			</StackPanel>
 
 			<!-- Settings View -->
+<StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+    <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
+    
+    <!-- Model Provider Selection -->
+    <StackPanel Orientation="Vertical" Spacing="5">
+        <TextBlock Text="Model Provider" Foreground="Black"/>
+        <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0" SelectionChanged="ModelProvider_SelectionChanged">
+            <ComboBoxItem Content="OpenAI"/>
+            <ComboBoxItem Content="Anthropic"/>
+            <ComboBoxItem Content="View"/>
+        </ComboBox>
+    </StackPanel>
 
-			<!-- My Files View -->
+    <!-- OpenAI Settings -->
+    <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
+        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey"/>
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Embedding Model" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAIEmbeddingModel"/>
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Completion Model" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="OpenAICompletionModel"/>
+        </Grid>
+    </StackPanel>
 
-			<!--Chat View -->
-			
+    <!-- Anthropic Settings -->
+    <StackPanel x:Name="AnthropicSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage AI API Key" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageAIKey"/>
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Voyage AI Embedding Model" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageAIEmbeddingModel"/>
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Anthropic API Key" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="AnthropicKey"/>
+            
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Anthropic Completion Model" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="AnthropicCompletionModel"/>
+        </Grid>
+    </StackPanel>
+
+    <!-- View Settings -->
+    <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Server URL" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsServerUrl"/>
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Embeddings API Key" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmbeddingsApiKey"/>
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Generator Type" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="EmbeddingsGeneratorType"/>
+            
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Chat URL" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="ChatUrl"/>
+            
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Chat API Key" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="ChatApiKey"/>
+            
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Preset GUID" Foreground="Black" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="5" Grid.Column="1" x:Name="PresetGuid"/>
+        </Grid>
+    </StackPanel>
+    
+    <Button Content="Save Settings" 
+            Click="SaveSettings_Click"
+            Margin="0,20,0,0"
+            HorizontalAlignment="Left"/>
+</StackPanel>
+
 			<!-- Default View -->
-			<TextBlock Name="WorkspaceText"
-					   HorizontalAlignment="Center"
-					   VerticalAlignment="Center"
-					   Foreground="#666666"/>
+			<TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#666666"/>
 		</Grid>
 	</DockPanel>
 </Window>
