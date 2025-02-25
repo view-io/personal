@@ -20,6 +20,11 @@ namespace View.Personal
 
     public partial class MainWindow : Window
     {
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+
         #region Internal-Members
 
         #endregion
@@ -27,7 +32,6 @@ namespace View.Personal
         #region Private-Members
 
         private static readonly HttpClient _httpClient = new();
-
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
@@ -378,5 +382,10 @@ namespace View.Personal
         }
 
         #endregion
+
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CA1822 // Mark members as static
     }
 }
