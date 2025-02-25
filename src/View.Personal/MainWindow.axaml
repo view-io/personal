@@ -144,6 +144,22 @@
             Margin="0,20,0,0"
             HorizontalAlignment="Left"/>
 </StackPanel>
+			<!-- My Files View -->
+			<StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+				<TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
+				<StackPanel Orientation="Vertical" Spacing="10">
+					<TextBlock Text="Ingest a File" Foreground="Black"/>
+					<Grid ColumnDefinitions="*,Auto">
+						<TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..." />
+						<Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Margin="10,0,0,0"/>
+					</Grid>
+					<TextBlock Text="Enter the path to a file to ingest it into LiteGraph." Foreground="Black" FontSize="12"/>
+					<TextBox x:Name="ExportFilePathTextBox" Width="200" Text="exported_graph.gexf" />
+					<Button Content="Export to GEXF" Click="ExportGraph_Click" />
+				</StackPanel>
+				
+
+			</StackPanel>
 
 			<!-- Default View -->
 			<TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#666666"/>
