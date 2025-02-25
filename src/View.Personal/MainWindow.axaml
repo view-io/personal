@@ -5,164 +5,206 @@
         Background="White"
         Title="View Personal Edition"
         Icon="/Assets/glyph.png">
-	
-	<DockPanel>
-		<!-- Top Bar -->
-		<Grid DockPanel.Dock="Top" Height="50">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
-			<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
-				<Image Source="/Assets/logo.png" Height="30"/>
-				<TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
-			</StackPanel>
-			<TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0" Foreground="Black"/>
-			<Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD" VerticalAlignment="Bottom"/>
-		</Grid>
 
-		<!-- Left Navigation Panel -->
-		<Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
-			<ListBox Background="Transparent" BorderThickness="0" x:Name="NavList" SelectionChanged="NavList_SelectionChanged">
-				<ListBox.Styles>
-					<Style Selector="ListBoxItem">
-						<Setter Property="Padding" Value="20,10"/>
-						<Setter Property="Margin" Value="0"/>
-						<Setter Property="Foreground" Value="Black"/>
-					</Style>
-					<Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-						<Setter Property="Background" Value="#f0f0f0"/>
-						<Setter Property="Foreground" Value="Black"/>
-					</Style>
-					<Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-						<Setter Property="Background" Value="#007BFF"/>
-						<Setter Property="Foreground" Value="White"/>
-					</Style>
-				</ListBox.Styles>
-				<ListBoxItem Content="Dashboard" IsSelected="True"/>
-				<ListBoxItem Content="Settings"/>
-				<ListBoxItem Content="My Files"/>
-				<ListBoxItem Content="Chat"/>
-			</ListBox>
-		</Border>
-
-		<!-- Main Content Area -->
-		<Grid Name="MainContentArea">
-			<!-- Dashboard View -->
-			<StackPanel Name="DashboardPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" IsVisible="True">
-				<TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
-				<StackPanel Spacing="10">
-					<TextBlock Foreground="Black">
-						<Run Text="Use the "/>
-						<TextBlock><Button Classes="link" Click="NavigateToSettings_Click"><TextBlock Text="Settings"/></Button></TextBlock>
-						<Run Text=" tab to provide the necessary credentials to access services for vectorization and chat completions."/>
-					</TextBlock>
-					<TextBlock Foreground="Black">
-						<Run Text="Use the "/>
-						<TextBlock><Button Classes="link" Click="NavigateToMyFiles_Click"><TextBlock Text="My Files"/></Button></TextBlock>
-						<Run Text=" tab to manage files stored in your personal store."/>
-					</TextBlock>
-					<TextBlock Foreground="Black">
-						<Run Text="Use the "/>
-						<TextBlock><Button Classes="link" Click="NavigateToChat_Click"><TextBlock Text="Chat"/></Button></TextBlock>
-						<Run Text=" tab to chat with your data."/>
-					</TextBlock>
-				</StackPanel>
-			</StackPanel>
-
-			<!-- Settings View -->
-<StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-    <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
-    
-    <!-- Model Provider Selection -->
-    <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="Model Provider" Foreground="Black"/>
-        <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0" SelectionChanged="ModelProvider_SelectionChanged">
-            <ComboBoxItem Content="OpenAI"/>
-            <ComboBoxItem Content="Anthropic"/>
-            <ComboBoxItem Content="View"/>
-        </ComboBox>
-    </StackPanel>
-
-    <!-- OpenAI Settings -->
-    <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey"/>
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Embedding Model" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAIEmbeddingModel"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Completion Model" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="OpenAICompletionModel"/>
+    <DockPanel>
+        <!-- Top Bar -->
+        <Grid DockPanel.Dock="Top" Height="50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
+                <Image Source="/Assets/logo.png" Height="30" />
+                <TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" Foreground="Black" />
+            </StackPanel>
+            <TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0"
+                       Foreground="Black" />
+            <Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD" VerticalAlignment="Bottom" />
         </Grid>
-    </StackPanel>
 
-    <!-- Anthropic Settings -->
-    <StackPanel x:Name="AnthropicSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage AI API Key" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageAIKey"/>
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Voyage AI Embedding Model" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageAIEmbeddingModel"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Anthropic API Key" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="AnthropicKey"/>
-            
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Anthropic Completion Model" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="3" Grid.Column="1" x:Name="AnthropicCompletionModel"/>
+        <!-- Left Navigation Panel -->
+        <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
+            <ListBox Background="Transparent" BorderThickness="0" x:Name="NavList"
+                     SelectionChanged="NavList_SelectionChanged">
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="Padding" Value="20,10" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Foreground" Value="Black" />
+                    </Style>
+                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#f0f0f0" />
+                        <Setter Property="Foreground" Value="Black" />
+                    </Style>
+                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#007BFF" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </ListBox.Styles>
+                <ListBoxItem Content="Dashboard" IsSelected="True" />
+                <ListBoxItem Content="Settings" />
+                <ListBoxItem Content="My Files" />
+                <ListBoxItem Content="Chat" />
+            </ListBox>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Name="MainContentArea">
+            <!-- Dashboard View -->
+            <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20"
+                        IsVisible="True">
+                <TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,0,0,20" />
+                <StackPanel Spacing="10">
+                    <TextBlock Foreground="Black">
+                        <Run Text="Use the " />
+                        <TextBlock>
+                            <Button Classes="link" Click="NavigateToSettings_Click">
+                                <TextBlock Text="Settings" />
+                            </Button>
+                        </TextBlock>
+                        <Run
+                            Text=" tab to provide the necessary credentials to access services for vectorization and chat completions." />
+                    </TextBlock>
+                    <TextBlock Foreground="Black">
+                        <Run Text="Use the " />
+                        <TextBlock>
+                            <Button Classes="link" Click="NavigateToMyFiles_Click">
+                                <TextBlock Text="My Files" />
+                            </Button>
+                        </TextBlock>
+                        <Run Text=" tab to manage files stored in your personal store." />
+                    </TextBlock>
+                    <TextBlock Foreground="Black">
+                        <Run Text="Use the " />
+                        <TextBlock>
+                            <Button Classes="link" Click="NavigateToChat_Click">
+                                <TextBlock Text="Chat" />
+                            </Button>
+                        </TextBlock>
+                        <Run Text=" tab to chat with your data." />
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Settings View -->
+            <StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20" />
+
+                <!-- Model Provider Selection -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <TextBlock Text="Model Provider" Foreground="Black" />
+                    <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0"
+                              SelectionChanged="ModelProvider_SelectionChanged">
+                        <ComboBoxItem Content="OpenAI" />
+                        <ComboBoxItem Content="Anthropic" />
+                        <ComboBoxItem Content="View" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- OpenAI Settings -->
+                <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Embedding Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAIEmbeddingModel" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Completion Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="OpenAICompletionModel" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Anthropic Settings -->
+                <StackPanel x:Name="AnthropicSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage AI API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageAIKey" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Voyage AI Embedding Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageAIEmbeddingModel" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Anthropic API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="AnthropicKey" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Anthropic Completion Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="AnthropicCompletionModel" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- View Settings -->
+                <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Server URL" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsServerUrl" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Embeddings API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmbeddingsApiKey" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Generator Type" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="EmbeddingsGeneratorType" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Chat URL" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ChatUrl" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Chat API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="ChatApiKey" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Preset GUID" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="PresetGuid" />
+                    </Grid>
+                </StackPanel>
+
+                <Button Content="Save Settings"
+                        Click="SaveSettings_Click"
+                        Margin="0,20,0,0"
+                        HorizontalAlignment="Left" />
+            </StackPanel>
+            <!-- My Files View -->
+            <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                <TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,10" />
+
+                <!-- Ingest a File Section -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <TextBlock Text="Ingest a File" Foreground="Black" Margin="0,0,0,0" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0">
+                        <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
+                                 Margin="0,0,10,0" />
+                        <Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Width="120"
+                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Export to GEXF Section -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <TextBlock Text="Export to GEXF" Foreground="Black" Margin="0,0,0,0" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0">
+                        <TextBox Grid.Column="0" x:Name="ExportFilePathTextBox" Watermark="Enter file path..."
+                                 Margin="0,0,10,0" />
+                        <Button Grid.Column="1" Content="Export" Click="ExportGraph_Click" Width="120"
+                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+
+
+            <!-- Default View -->
+            <TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="#666666" />
         </Grid>
-    </StackPanel>
-
-    <!-- View Settings -->
-    <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Server URL" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsServerUrl"/>
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Embeddings API Key" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmbeddingsApiKey"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Generator Type" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="EmbeddingsGeneratorType"/>
-            
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Chat URL" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="3" Grid.Column="1" x:Name="ChatUrl"/>
-            
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Chat API Key" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="4" Grid.Column="1" x:Name="ChatApiKey"/>
-            
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Preset GUID" Foreground="Black" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="5" Grid.Column="1" x:Name="PresetGuid"/>
-        </Grid>
-    </StackPanel>
-    
-    <Button Content="Save Settings" 
-            Click="SaveSettings_Click"
-            Margin="0,20,0,0"
-            HorizontalAlignment="Left"/>
-</StackPanel>
-			<!-- My Files View -->
-			<StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-				<TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,20"/>
-				<StackPanel Orientation="Vertical" Spacing="10">
-					<TextBlock Text="Ingest a File" Foreground="Black"/>
-					<Grid ColumnDefinitions="*,Auto">
-						<TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..." />
-						<Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Margin="10,0,0,0"/>
-					</Grid>
-					<TextBlock Text="Enter the path to a file to ingest it into LiteGraph." Foreground="Black" FontSize="12"/>
-					<TextBox x:Name="ExportFilePathTextBox" Width="200" Text="exported_graph.gexf" />
-					<Button Content="Export to GEXF" Click="ExportGraph_Click" />
-				</StackPanel>
-				
-
-			</StackPanel>
-
-			<!-- Default View -->
-			<TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#666666"/>
-		</Grid>
-	</DockPanel>
+    </DockPanel>
 </Window>
