@@ -27,6 +27,7 @@ namespace View.Personal
         #region Private-Members
 
         private static readonly HttpClient _httpClient = new();
+
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
@@ -92,7 +93,7 @@ namespace View.Personal
                 ViewSettings.IsVisible = selectedProvider == "View";
         }
 
-        private void SaveSettings_Click(object sender, RoutedEventArgs e)
+        private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             var selectedProvider = (this.FindControl<ComboBox>("ModelProviderComboBox").SelectedItem as ComboBoxItem)
                 ?.Content.ToString();
@@ -103,8 +104,27 @@ namespace View.Personal
                     var openAIKey = this.FindControl<TextBox>("OpenAIKey").Text;
                     var embeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
                     var completionModel = this.FindControl<TextBox>("OpenAICompletionModel").Text;
+
+                    var app = (App)Application.Current;
+                    app.OpenAIKey = openAIKey;
+                    app.OpenAIEmbeddingModel = embeddingModel;
+
                     Console.WriteLine(
                         $"Saving OpenAI: Key={openAIKey}, Embedding={embeddingModel}, Completion={completionModel}");
+
+                    // Show a message box
+                    var msgBox = MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Settings Saved",
+                            "Your OpenAI settings were successfully saved!",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Success);
+                    await msgBox.ShowAsync();
+
+                    // Clear the fields
+                    this.FindControl<TextBox>("OpenAIKey").Text = string.Empty;
+                    this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = string.Empty;
+                    this.FindControl<TextBox>("OpenAICompletionModel").Text = string.Empty;
+
                     break;
                 case "Anthropic":
                     var voyageKey = this.FindControl<TextBox>("VoyageAIKey").Text;
@@ -156,12 +176,9 @@ namespace View.Personal
                 return;
             }
 
-            // ToDo: Remove hard coded api key and model name
-            // Here I'll add values from settings
-            // e.g. var openAIKey = this.FindControl<TextBox>("OpenAIKey").Text;
-            // e.g. var openAIEmbeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
-            var openAIKey = "openai-api-key";
-            var openAIEmbeddingModel = "openai-embedding-model";
+            var app = (App)Application.Current;
+            var openAIKey = app.OpenAIKey;
+            var openAIEmbeddingModel = app.OpenAIEmbeddingModel;
 
             try
             {
@@ -183,7 +200,8 @@ namespace View.Personal
                         }
                     };
 
-                    var pdfProcessor = new PdfProcessor(processorSettings); // No OCR for simplicity
+                    // ToDo: Add OCR
+                    var pdfProcessor = new PdfProcessor(processorSettings);
                     var atoms = pdfProcessor.Extract(filePath).ToList();
 
                     // Create a parent node for the file
@@ -203,12 +221,11 @@ namespace View.Personal
                             { "MimeType", typeResult.MimeType },
                             { "FileName", Path.GetFileName(filePath) },
                             { "FilePath", filePath }
-                            // { "ContentLength", typeResult..Length.ToString() }
+                            // ToDo: Add length
                         },
                         Data = atoms
                     };
-                    // string jsonData = new LiteGraph.Serialization.SerializationHelper().SerializeJson(fileNode.Data, true);
-                    // Console.WriteLine($"Serialized Data: {jsonData}");
+
                     _LiteGraph.CreateNode(fileNode);
                     Console.WriteLine($"Created file node: {fileNodeGuid} for {filePath}");
                     if (!_LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, fileNodeGuid))
@@ -228,7 +245,8 @@ namespace View.Personal
                             continue;
                         }
 
-                        // 1. Fetch embeddings from OpenAI
+                        // ToDo: This needs to be based on the settings
+                        // Fetch embeddings from OpenAI
                         var vectors = await GetOpenAIEmbeddingsAsync(atom.Text, openAIKey, openAIEmbeddingModel);
 
                         var atomNodeGuid = Guid.NewGuid();

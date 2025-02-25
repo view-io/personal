@@ -23,20 +23,23 @@ namespace View.Personal
 
         #region Internal-Members
 
+        internal string? OpenAIKey { get; set; }
+        internal string? OpenAIEmbeddingModel { get; set; }
+
         #endregion
 
         #region Private-Members
 
         internal string _Header = "[ViewPersonal] ";
-        internal Serializer _Serializer = new Serializer();
+        internal Serializer _Serializer = new();
 
         internal LiteGraphClient _LiteGraph = null;
         internal GraphRepositoryBase _GraphDriver = null;
         internal LiteGraph.LoggingSettings _LoggingSettings = null;
-        internal Guid _TenantGuid = default(Guid);
-        internal Guid _GraphGuid = default(Guid);
-        internal Guid _UserGuid = default(Guid);
-        internal Guid _CredentialGuid = default(Guid);
+        internal Guid _TenantGuid = default;
+        internal Guid _GraphGuid = default;
+        internal Guid _UserGuid = default;
+        internal Guid _CredentialGuid = default;
 
         internal LoggingModule _Logging = null;
 
@@ -62,16 +65,15 @@ namespace View.Personal
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
                 desktop.MainWindow = new MainWindow();
-            }
 
             try
             {
                 _Logging = new LoggingModule("127.0.0.1", 514, false);
-                _Logging.Debug(_Header + "initializing View Personal at " + DateTime.UtcNow.ToString(Constants.TimestampFormat));
+                _Logging.Debug(_Header + "initializing View Personal at " +
+                               DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
-                using (Timestamp ts = new Timestamp())
+                using (var ts = new Timestamp())
                 {
                     ts.Start = DateTime.UtcNow;
 
@@ -84,12 +86,13 @@ namespace View.Personal
                         LogFilename = "view-personal.log",
                         Servers = new List<LiteGraph.SyslogServer>
                         {
-                            new LiteGraph.SyslogServer { Hostname = "127.0.0.1", Port = 514 },
+                            new() { Hostname = "127.0.0.1", Port = 514 }
                         }
                     };
 
                     _GraphDriver = new SqliteGraphRepository(Constants.LiteGraphDatabaseFilename);
-                    _Logging.Debug(_Header + "initialized graph driver using sqlite file " + Constants.LiteGraphDatabaseFilename);
+                    _Logging.Debug(_Header + "initialized graph driver using sqlite file " +
+                                   Constants.LiteGraphDatabaseFilename);
 
                     _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings);
                     _LiteGraph.InitializeRepository();
@@ -115,7 +118,7 @@ namespace View.Personal
 
                     if (!_LiteGraph.ExistsUser(_TenantGuid, _UserGuid))
                     {
-                        UserMaster user = _LiteGraph.CreateUser(new UserMaster
+                        var user = _LiteGraph.CreateUser(new UserMaster
                         {
                             GUID = _UserGuid,
                             TenantGUID = _TenantGuid,
@@ -126,12 +129,13 @@ namespace View.Personal
                             Active = true
                         });
 
-                        _Logging.Debug(_Header + "created user " + _UserGuid + " with email " + user.Email + " and password " + user.Password);
+                        _Logging.Debug(_Header + "created user " + _UserGuid + " with email " + user.Email +
+                                       " and password " + user.Password);
                     }
 
                     if (!_LiteGraph.ExistsCredential(_TenantGuid, _CredentialGuid))
                     {
-                        Credential cred = _LiteGraph.CreateCredential(new Credential
+                        var cred = _LiteGraph.CreateCredential(new Credential
                         {
                             GUID = _CredentialGuid,
                             TenantGUID = _TenantGuid,
@@ -141,23 +145,27 @@ namespace View.Personal
                             Active = true
                         });
 
-                        _Logging.Debug(_Header + "created credential " + _CredentialGuid + " with bearer token " + cred.BearerToken);
+                        _Logging.Debug(_Header + "created credential " + _CredentialGuid + " with bearer token " +
+                                       cred.BearerToken);
                     }
 
                     ts.End = DateTime.UtcNow;
-                    _Logging.Debug(_Header + "finished initialization at " + DateTime.UtcNow.ToString(Constants.TimestampFormat) + " after " + ts.TotalMs.Value.ToString("0.##") + "ms");
+                    _Logging.Debug(_Header + "finished initialization at " +
+                                   DateTime.UtcNow.ToString(Constants.TimestampFormat) + " after " +
+                                   ts.TotalMs.Value.ToString("0.##") + "ms");
                 }
             }
             catch (Exception e)
             {
                 var messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(
                     "Unable to start View Personal",
-                    "View Personal was unable to start due to the following exception:" + Environment.NewLine + Environment.NewLine + e.Message,
+                    "View Personal was unable to start due to the following exception:" + Environment.NewLine +
+                    Environment.NewLine + e.Message,
                     ButtonEnum.Ok,
                     Icon.Error);
 
-                    messageBoxStandardWindow.ShowAsync().Wait(); // wait for acknowledgement
-                    Environment.Exit(1);
+                messageBoxStandardWindow.ShowAsync().Wait(); // wait for acknowledgement
+                Environment.Exit(1);
             }
 
             // call to complete initialization
