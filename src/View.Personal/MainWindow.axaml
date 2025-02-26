@@ -20,7 +20,8 @@
             </StackPanel>
             <TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0"
                        Foreground="Black" />
-            <Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD" VerticalAlignment="Bottom" />
+            <Border Grid.ColumnSpan="3" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD"
+                    VerticalAlignment="Bottom" />
         </Grid>
 
         <!-- Left Navigation Panel -->
@@ -97,6 +98,7 @@
                     <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0"
                               SelectionChanged="ModelProvider_SelectionChanged">
                         <ComboBoxItem Content="OpenAI" />
+                        <ComboBoxItem Content="Voyage" />
                         <ComboBoxItem Content="Anthropic" />
                         <ComboBoxItem Content="View" />
                     </ComboBox>
@@ -119,53 +121,58 @@
                     </Grid>
                 </StackPanel>
 
+                <!-- Voyage Settings -->
+                <StackPanel x:Name="VoyageSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage Embedding Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageAIEmbeddingModel" />
+                    </Grid>
+                </StackPanel>
+
                 <!-- Anthropic Settings -->
                 <StackPanel x:Name="AnthropicSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage AI API Key" Foreground="Black"
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Anthropic Completion Model" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageAIKey" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Voyage AI Embedding Model" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageAIEmbeddingModel" />
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Anthropic API Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="AnthropicKey" />
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Anthropic Completion Model" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="AnthropicCompletionModel" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="AnthropicCompletionModel" />
                     </Grid>
                 </StackPanel>
 
                 <!-- View Settings -->
                 <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Server URL" Foreground="Black"
+                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsServerUrl" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsModel" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Embeddings API Key" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmbeddingsApiKey" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ViewEmbeddingsApiKey" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Generator Type" Foreground="Black"
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Server Endpoint" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="EmbeddingsGeneratorType" />
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEmbeddingsServerEndpoint" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Chat URL" Foreground="Black"
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Embeddings Server API Key" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ChatUrl" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ViewEmbeddingsServerApiKey" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Chat API Key" Foreground="Black"
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Completion Endpoint" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="ChatApiKey" />
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="ViewCompletionEndpoint" />
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Preset GUID" Foreground="Black"
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Completion Model" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="PresetGuid" />
+                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="ViewCompletionModel" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="6" Grid.Column="1" x:Name="ViewCompletionApiKey" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Preset GUID" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="7" Grid.Column="1" x:Name="ViewPresetGuid" />
                     </Grid>
                 </StackPanel>
 

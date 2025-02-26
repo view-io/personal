@@ -3,9 +3,6 @@
     using LiteGraph;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Settings.
@@ -44,7 +41,7 @@
 
         public List<CompletionProviderSettings> ProviderSettings { get; set; } = new();
 
-        public CompletionProviderSettings CompletionSettings { get; set; }
+        public CompletionProviderSettings CompletionSettings { get; set; } = null!;
 
         #endregion
 

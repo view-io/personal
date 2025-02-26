@@ -1,3 +1,4 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 namespace View.Personal
 {
     using Avalonia;
@@ -32,18 +33,6 @@ namespace View.Personal
 
         internal string? OpenAICompletionModel { get; set; }
 
-        public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
-        {
-            var settings = _appSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == providerType);
-            if (settings == null)
-            {
-                settings = new CompletionProviderSettings(providerType);
-                _appSettings.ProviderSettings.Add(settings);
-            }
-
-            return settings;
-        }
-
         #endregion
 
         #region Private-Members
@@ -60,7 +49,7 @@ namespace View.Personal
         internal Guid _CredentialGuid = default;
         internal LoggingModule _Logging = null;
         private const string SettingsFilePath = "appsettings.json";
-        private Settings _appSettings;
+        private Settings _AppSettings;
 
         #endregion
 
@@ -201,6 +190,9 @@ namespace View.Personal
             base.OnFrameworkInitializationCompleted();
         }
 
+        /// <summary>
+        /// Saves the current application settings to a JSON file.
+        /// </summary>
         public void SaveSettings()
         {
             try
@@ -210,7 +202,7 @@ namespace View.Personal
                     WriteIndented = true,
                     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
                 };
-                var json = JsonSerializer.Serialize(_appSettings, options);
+                var json = JsonSerializer.Serialize(_AppSettings, options);
                 File.WriteAllText(SettingsFilePath, json);
                 _Logging?.Debug(_Header + $"Settings saved to {SettingsFilePath}");
             }
@@ -220,10 +212,42 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Retrieves the settings for a specified provider type, creating new defaults if none exist.
+        /// </summary>
+        /// <param name="providerType">The type of completion provider to get settings for.</param>
+        /// <returns>The settings for the specified provider.</returns>
+        public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
+        {
+            var settings = _AppSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == providerType);
+            if (settings == null)
+            {
+                settings = new CompletionProviderSettings(providerType);
+                _AppSettings.ProviderSettings.Add(settings);
+            }
+
+            return settings;
+        }
+
+        /// <summary>
+        /// Updates the settings for a specific provider and saves the changes.
+        /// </summary>
+        /// <param name="settings">The updated provider settings to save.</param>
+        public void UpdateProviderSettings(CompletionProviderSettings settings)
+        {
+            var existing = _AppSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == settings.ProviderType);
+            if (existing != null) _AppSettings.ProviderSettings.Remove(existing);
+            _AppSettings.ProviderSettings.Add(settings);
+            SaveSettings();
+        }
+
         #endregion
 
         #region Private-Methods
 
+        /// <summary>
+        /// Loads application settings from a JSON file or initializes defaults if the file doesn't exist.
+        /// </summary>
         private void LoadSettings()
         {
             try
@@ -231,38 +255,29 @@ namespace View.Personal
                 if (File.Exists(SettingsFilePath))
                 {
                     var json = File.ReadAllText(SettingsFilePath);
-                    _appSettings = JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
+                    _AppSettings = JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
 
-                    if (_appSettings.Logging != null) _LoggingSettings = _appSettings.Logging;
+                    if (_AppSettings.Logging != null) _LoggingSettings = _AppSettings.Logging;
                     _Logging?.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
                 }
                 else
                 {
                     _Logging?.Debug(_Header + "No settings file found, using defaults");
-                    _appSettings = new Settings();
+                    _AppSettings = new Settings();
                     SaveSettings(); // Create initial settings file
                 }
             }
             catch (Exception ex)
             {
                 _Logging?.Error(_Header + $"Failed to load settings: {ex.Message}");
-                _appSettings = new Settings();
+                _AppSettings = new Settings();
                 SaveSettings();
             }
         }
 
-
-        // Add a method to update settings when they change
-        public void UpdateProviderSettings(CompletionProviderSettings settings)
-        {
-            var existing = _appSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == settings.ProviderType);
-            if (existing != null) _appSettings.ProviderSettings.Remove(existing);
-            _appSettings.ProviderSettings.Add(settings);
-            SaveSettings();
-        }
+        #endregion
     }
 
-    #endregion
 
 #pragma warning restore CS8629 // Nullable value type may be null.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.

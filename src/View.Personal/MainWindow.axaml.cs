@@ -1,3 +1,4 @@
+#pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 namespace View.Personal
 {
     using System;
@@ -84,12 +85,16 @@ namespace View.Personal
 
             // View
             var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("EmbeddingsServerUrl").Text = view.ViewEmbeddingsServerEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsApiKey").Text = view.ViewEmbeddingsApiKey ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsGeneratorType").Text = view.ViewEmbeddingsModel ?? string.Empty;
-            this.FindControl<TextBox>("ChatUrl").Text = view.ViewCompletionEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("ChatApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("PresetGuid").Text = view.ViewCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("ViewEmbeddingsModel").Text = view.ViewEmbeddingsModel ?? string.Empty;
+            this.FindControl<TextBox>("ViewEmbeddingsApiKey").Text = view.ViewEmbeddingsApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewEmbeddingsServerEndpoint").Text =
+                view.ViewEmbeddingsServerEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("ViewEmbeddingsServerApiKey").Text =
+                view.ViewEmbeddingsServerApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionEndpoint").Text = view.ViewCompletionEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
         }
 
         private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -102,7 +107,8 @@ namespace View.Personal
                 DashboardPanel.IsVisible = selectedContent == "Dashboard";
                 SettingsPanel.IsVisible = selectedContent == "Settings";
                 MyFilesPanel.IsVisible = selectedContent == "My Files";
-                WorkspaceText.IsVisible = !(DashboardPanel.IsVisible || SettingsPanel.IsVisible);
+                // WorkspaceText.IsVisible = !(DashboardPanel.IsVisible || SettingsPanel.IsVisible);
+                WorkspaceText.IsVisible = selectedContent == "Chat";
             }
         }
 
@@ -119,6 +125,8 @@ namespace View.Personal
         {
             if (OpenAISettings != null)
                 OpenAISettings.IsVisible = selectedProvider == "OpenAI";
+            if (VoyageSettings != null)
+                VoyageSettings.IsVisible = selectedProvider == "Voyage";
             if (AnthropicSettings != null)
                 AnthropicSettings.IsVisible = selectedProvider == "Anthropic";
             if (ViewSettings != null)
@@ -162,13 +170,17 @@ namespace View.Personal
                 case "View":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                     {
-                        ViewEmbeddingsServerEndpoint =
-                            this.FindControl<TextBox>("EmbeddingsServerUrl").Text ?? string.Empty,
-                        ViewEmbeddingsApiKey = this.FindControl<TextBox>("EmbeddingsApiKey").Text ?? string.Empty,
-                        ViewEmbeddingsModel = this.FindControl<TextBox>("EmbeddingsGeneratorType").Text ?? string.Empty,
-                        ViewCompletionEndpoint = this.FindControl<TextBox>("ChatUrl").Text ?? string.Empty,
-                        ViewCompletionApiKey = this.FindControl<TextBox>("ChatApiKey").Text ?? string.Empty,
-                        ViewCompletionModel = this.FindControl<TextBox>("PresetGuid").Text ?? string.Empty
+                        ViewEmbeddingsModel = this.FindControl<TextBox>("ViewEmbeddingsModel").Text ?? string.Empty,
+                        ViewEmbeddingsApiKey = this.FindControl<TextBox>("ViewEmbeddingsApiKey").Text ?? string.Empty,
+                        ViewEmbeddingsServerEndpoint = this.FindControl<TextBox>("ViewEmbeddingsServerEndpoint").Text ??
+                                                       string.Empty,
+                        ViewEmbeddingsServerApiKey =
+                            this.FindControl<TextBox>("ViewEmbeddingsServerApiKey").Text ?? string.Empty,
+                        ViewCompletionEndpoint =
+                            this.FindControl<TextBox>("ViewCompletionEndpoint").Text ?? string.Empty,
+                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
+                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty
                     };
                     break;
             }
@@ -180,7 +192,7 @@ namespace View.Personal
                     .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
                         ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
                     .ShowAsync();
-                LoadSavedSettings(); // Refresh UI with saved settings
+                LoadSavedSettings();
             }
         }
 

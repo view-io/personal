@@ -25,8 +25,7 @@
         public string ViewCompletionEndpoint { get; set; } = string.Empty;
         public string ViewCompletionModel { get; set; } = string.Empty;
         public string ViewCompletionApiKey { get; set; } = string.Empty;
-
-        public Guid? TenantGuid { get; set; }
+        public string ViewPresetGuid { get; set; } = string.Empty;
 
         public CompletionProviderSettings()
         {
