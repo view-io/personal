@@ -1,123 +1,58 @@
 ﻿namespace View.Personal.Classes
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
-    /// <summary>
-    /// Completion provider settings.
-    /// </summary>
     public class CompletionProviderSettings
     {
-        #region Public-Members
+        public CompletionProviderTypeEnum ProviderType { get; set; }
 
-        public CompletionProviderTypeEnum Provider { get; set; } = CompletionProviderTypeEnum.OpenAI;
+        // OpenAI Settings
+        public string OpenAICompletionApiKey { get; set; } = string.Empty;
+        public string OpenAIEmbeddingModel { get; set; } = string.Empty;
+        public string OpenAICompletionModel { get; set; } = string.Empty;
 
-        public string CompletionBaseUrl
-        {
-            get => _CompletionBaseUrl;
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionBaseUrl));
-                var uri = new Uri(value);
-                if (!value.EndsWith("/")) value += "/";
-                _CompletionBaseUrl = value;
-            }
-        }
+        // Voyage Settings
+        public string VoyageEmbeddingModel { get; set; } = string.Empty;
 
-        public string CompletionApiKey
-        {
-            get => _CompletionApiKey;
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionApiKey));
-                _CompletionApiKey = value;
-            }
-        }
+        // Anthropic Settings
+        public string AnthropicCompletionModel { get; set; } = string.Empty;
 
-        public Guid? TenantGuid
-        {
-            get => _TenantGuid;
-            set => _TenantGuid = value;
-        }
+        // View Settings
+        public string ViewEmbeddingsModel { get; set; } = string.Empty;
+        public string ViewEmbeddingsApiKey { get; set; } = string.Empty;
+        public string ViewEmbeddingsServerEndpoint { get; set; } = string.Empty;
+        public string ViewEmbeddingsServerApiKey { get; set; } = string.Empty;
+        public string ViewCompletionEndpoint { get; set; } = string.Empty;
+        public string ViewCompletionModel { get; set; } = string.Empty;
+        public string ViewCompletionApiKey { get; set; } = string.Empty;
 
-        public string CompletionModel
-        {
-            get => _CompletionModel;
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionModel));
-                _CompletionModel = value;
-            }
-        }
-
-        public string EmbeddingModel
-        {
-            get => _EmbeddingModel;
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(EmbeddingModel));
-                _EmbeddingModel = value;
-            }
-        }
-
-        #endregion
-
-        #region Private-Members
-
-        private string _CompletionBaseUrl = null;
-        private string _CompletionApiKey = null;
-        private Guid? _TenantGuid = null;
-        private string _CompletionModel = null;
-        private string _EmbeddingModel = null;
-
-        #endregion
-
-        #region Constructors-and-Factories
-
-        public CompletionProviderSettings(CompletionProviderTypeEnum provider, string apiKey, string completionModel,
-            string embeddingModel, Guid? tenantGuid = null, string baseUrl = null)
-        {
-            if (string.IsNullOrEmpty(completionModel)) throw new ArgumentNullException(nameof(completionModel));
-            if (string.IsNullOrEmpty(embeddingModel)) throw new ArgumentNullException(nameof(embeddingModel));
-
-            Provider = provider;
-            CompletionApiKey = apiKey;
-            CompletionModel = completionModel;
-            EmbeddingModel = embeddingModel;
-            TenantGuid = tenantGuid;
-
-            switch (provider)
-            {
-                case CompletionProviderTypeEnum.OpenAI:
-                    CompletionBaseUrl = baseUrl ?? "https://api.openai.com/";
-                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
-                    break;
-                case CompletionProviderTypeEnum.Anthropic:
-                    CompletionBaseUrl = baseUrl ?? "https://api.anthropic.com/";
-                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
-                    break;
-                case CompletionProviderTypeEnum.ViewAI:
-                    if (tenantGuid == null) throw new ArgumentNullException(nameof(tenantGuid));
-                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
-                    if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(nameof(baseUrl));
-                    CompletionBaseUrl = baseUrl;
-                    break;
-                case CompletionProviderTypeEnum.Ollama:
-                    if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(nameof(baseUrl));
-                    CompletionBaseUrl = baseUrl;
-                    break;
-                default:
-                    throw new ArgumentException("Unknown completion provider " + provider.ToString());
-            }
-        }
+        public Guid? TenantGuid { get; set; }
 
         public CompletionProviderSettings()
         {
         }
 
-        #endregion
+        public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
+        {
+            ProviderType = providerType;
+            // Set default values
+            switch (providerType)
+            {
+                case CompletionProviderTypeEnum.OpenAI:
+                    OpenAIEmbeddingModel = "text-embedding-ada-002";
+                    OpenAICompletionModel = "gpt-3.5-turbo";
+                    break;
+                case CompletionProviderTypeEnum.Voyage:
+                    VoyageEmbeddingModel = "voyage-01";
+                    break;
+                case CompletionProviderTypeEnum.Anthropic:
+                    AnthropicCompletionModel = "claude-2";
+                    break;
+                case CompletionProviderTypeEnum.View:
+                    ViewEmbeddingsModel = "default";
+                    ViewCompletionModel = "default";
+                    break;
+            }
+        }
     }
 }

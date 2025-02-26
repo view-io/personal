@@ -42,6 +42,8 @@
             }
         }
 
+        public List<CompletionProviderSettings> ProviderSettings { get; set; } = new();
+
         public CompletionProviderSettings CompletionSettings { get; set; }
 
         #endregion
@@ -62,13 +64,10 @@
         {
             DatabaseFilename = Constants.LiteGraphDatabaseFilename;
             Logging = new LoggingSettings();
-            CompletionSettings = new CompletionProviderSettings(
-                CompletionProviderTypeEnum.OpenAI,
-                "my-secret-key",
-                "gpt-3.5-turbo",
-                "text-embedding-ada-002",
-                Guid.Empty
-            );
+            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI));
+            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage));
+            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic));
+            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.View));
         }
 
         #endregion

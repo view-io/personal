@@ -14,6 +14,7 @@ namespace View.Personal
     using System.Collections.Generic;
     using Timestamps;
     using System.IO;
+    using System.Linq;
     using System.Text.Json;
 
     /// <summary>
@@ -30,6 +31,18 @@ namespace View.Personal
         internal string? OpenAIEmbeddingModel { get; set; }
 
         internal string? OpenAICompletionModel { get; set; }
+
+        public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
+        {
+            var settings = _appSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == providerType);
+            if (settings == null)
+            {
+                settings = new CompletionProviderSettings(providerType);
+                _appSettings.ProviderSettings.Add(settings);
+            }
+
+            return settings;
+        }
 
         #endregion
 
@@ -192,27 +205,13 @@ namespace View.Personal
         {
             try
             {
-                Console.WriteLine("Saving settings");
+                var options = new JsonSerializerOptions
                 {
-                    var settings = new Settings
-                    {
-                        DatabaseFilename = Constants.LiteGraphDatabaseFilename,
-                        Logging = _LoggingSettings,
-                        CompletionSettings = new CompletionProviderSettings(
-                            CompletionProviderTypeEnum.OpenAI,
-                            OpenAIKey ?? "",
-                            OpenAICompletionModel ?? "gpt-3.5-turbo",
-                            OpenAIEmbeddingModel ?? "text-embedding-ada-002",
-                            _TenantGuid,
-                            "https://api.openai.com/"
-                        )
-                    };
-
-                    var json = _Serializer.SerializeJson(settings);
-                    File.WriteAllText(SettingsFilePath, json);
-                    Console.WriteLine($"json: {json}");
-                }
-
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
+                };
+                var json = JsonSerializer.Serialize(_appSettings, options);
+                File.WriteAllText(SettingsFilePath, json);
                 _Logging?.Debug(_Header + $"Settings saved to {SettingsFilePath}");
             }
             catch (Exception ex)
@@ -232,44 +231,34 @@ namespace View.Personal
                 if (File.Exists(SettingsFilePath))
                 {
                     var json = File.ReadAllText(SettingsFilePath);
-                    _appSettings = JsonSerializer.Deserialize<Settings>(json);
+                    _appSettings = JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
 
-                    // Apply loaded settings
                     if (_appSettings.Logging != null) _LoggingSettings = _appSettings.Logging;
-
-                    if (_appSettings.CompletionSettings != null)
-                    {
-                        OpenAIKey = _appSettings.CompletionSettings.CompletionApiKey;
-                        OpenAIEmbeddingModel = _appSettings.CompletionSettings.EmbeddingModel;
-                        OpenAICompletionModel = _appSettings.CompletionSettings.CompletionModel;
-                        _TenantGuid = _appSettings.CompletionSettings.TenantGuid ?? _TenantGuid;
-                    }
-
                     _Logging?.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
                 }
                 else
                 {
                     _Logging?.Debug(_Header + "No settings file found, using defaults");
                     _appSettings = new Settings();
+                    SaveSettings(); // Create initial settings file
                 }
             }
             catch (Exception ex)
             {
                 _Logging?.Error(_Header + $"Failed to load settings: {ex.Message}");
                 _appSettings = new Settings();
+                SaveSettings();
             }
         }
 
 
         // Add a method to update settings when they change
-        public void UpdateSettings(CompletionProviderSettings completionSettings)
+        public void UpdateProviderSettings(CompletionProviderSettings settings)
         {
-            if (completionSettings != null)
-            {
-                OpenAIKey = completionSettings.CompletionApiKey;
-                OpenAIEmbeddingModel = completionSettings.CompletionModel;
-                SaveSettings();
-            }
+            var existing = _appSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == settings.ProviderType);
+            if (existing != null) _appSettings.ProviderSettings.Remove(existing);
+            _appSettings.ProviderSettings.Add(settings);
+            SaveSettings();
         }
     }
 

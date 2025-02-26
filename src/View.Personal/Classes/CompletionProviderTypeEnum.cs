@@ -15,17 +15,24 @@
         /// OpenAI.
         /// </summary>
         OpenAI,
+
         /// <summary>
         /// Anthropic.
         /// </summary>
         Anthropic,
+
         /// <summary>
         /// View AI.
         /// </summary>
         ViewAI,
+
         /// <summary>
         /// Ollama.
         /// </summary>
-        Ollama
+        Ollama,
+
+        Voyage,
+
+        View
     }
 }

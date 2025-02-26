@@ -181,12 +181,20 @@
                 <!-- Ingest a File Section -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <TextBlock Text="Ingest a File" Foreground="Black" Margin="0,0,0,0" />
-                    <Grid ColumnDefinitions="*,Auto" Margin="0">
-                        <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
-                                 Margin="0,0,10,0" />
-                        <Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Width="120"
-                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
-                    </Grid>
+                    <StackPanel Orientation="Vertical" Spacing="5">
+                        <ComboBox x:Name="ProviderSelectionComboBox" SelectedIndex="0">
+                            <ComboBoxItem Content="OpenAI" />
+                            <ComboBoxItem Content="Voyage" />
+                            <ComboBoxItem Content="Anthropic" />
+                            <ComboBoxItem Content="View" />
+                        </ComboBox>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0">
+                            <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
+                                     Margin="0,0,10,0" />
+                            <Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Width="120"
+                                    HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- Export to GEXF Section -->
