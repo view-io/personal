@@ -21,13 +21,10 @@
         /// </summary>
         public string DatabaseFilename
         {
-            get
-            {
-                return _DatabaseFilename;
-            }
+            get => _DatabaseFilename;
             set
             {
-                if (String.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(DatabaseFilename));
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(DatabaseFilename));
                 _DatabaseFilename = value;
             }
         }
@@ -37,16 +34,15 @@
         /// </summary>
         public LoggingSettings Logging
         {
-            get
-            {
-                return _Logging;
-            }
+            get => _Logging;
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(Logging));
                 _Logging = value;
             }
         }
+
+        public CompletionProviderSettings CompletionSettings { get; set; }
 
         #endregion
 
@@ -64,7 +60,15 @@
         /// </summary>
         public Settings()
         {
-
+            DatabaseFilename = Constants.LiteGraphDatabaseFilename;
+            Logging = new LoggingSettings();
+            CompletionSettings = new CompletionProviderSettings(
+                CompletionProviderTypeEnum.OpenAI,
+                "my-secret-key",
+                "gpt-3.5-turbo",
+                "text-embedding-ada-002",
+                Guid.Empty
+            );
         }
 
         #endregion
