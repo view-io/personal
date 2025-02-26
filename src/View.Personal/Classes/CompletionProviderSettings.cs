@@ -11,77 +11,55 @@
     /// </summary>
     public class CompletionProviderSettings
     {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-
         #region Public-Members
 
-        /// <summary>
-        /// Completion provider.
-        /// </summary>
         public CompletionProviderTypeEnum Provider { get; set; } = CompletionProviderTypeEnum.OpenAI;
 
-        /// <summary>
-        /// Completion base URL.
-        /// </summary>
         public string CompletionBaseUrl
         {
-            get
-            {
-                return _CompletionBaseUrl;
-            }
+            get => _CompletionBaseUrl;
             set
             {
-                if (String.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionBaseUrl));
-                Uri uri = new Uri(value);
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionBaseUrl));
+                var uri = new Uri(value);
                 if (!value.EndsWith("/")) value += "/";
                 _CompletionBaseUrl = value;
             }
         }
 
-        /// <summary>
-        /// Completion API key.
-        /// </summary>
         public string CompletionApiKey
         {
-            get
-            {
-                return _CompletionApiKey;
-            }
+            get => _CompletionApiKey;
             set
             {
-                if (String.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionApiKey));
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionApiKey));
                 _CompletionApiKey = value;
             }
         }
 
-        /// <summary>
-        /// Tenant GUID.
-        /// </summary>
         public Guid? TenantGuid
         {
-            get
-            {
-                return _TenantGuid;
-            }
+            get => _TenantGuid;
+            set => _TenantGuid = value;
+        }
+
+        public string CompletionModel
+        {
+            get => _CompletionModel;
             set
             {
-                _TenantGuid = value;
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionModel));
+                _CompletionModel = value;
             }
         }
 
-        /// <summary>
-        /// Completion model.
-        /// </summary>
-        public string CompletionModel
+        public string EmbeddingModel
         {
-            get
-            {
-                return _CompletionModel;
-            }
+            get => _EmbeddingModel;
             set
             {
-                if (String.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(CompletionModel));
-                _CompletionModel = value;
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(EmbeddingModel));
+                _EmbeddingModel = value;
             }
         }
 
@@ -93,60 +71,53 @@
         private string _CompletionApiKey = null;
         private Guid? _TenantGuid = null;
         private string _CompletionModel = null;
+        private string _EmbeddingModel = null;
 
         #endregion
 
         #region Constructors-and-Factories
 
-        /// <summary>
-        /// Completion provider settings.
-        /// </summary>
-        public CompletionProviderSettings(CompletionProviderTypeEnum provider, string apiKey, string model, Guid? tenantGuid = null, string baseUrl = null)
+        public CompletionProviderSettings(CompletionProviderTypeEnum provider, string apiKey, string completionModel,
+            string embeddingModel, Guid? tenantGuid = null, string baseUrl = null)
         {
-            if (String.IsNullOrEmpty(model)) throw new ArgumentNullException(nameof(model));
+            if (string.IsNullOrEmpty(completionModel)) throw new ArgumentNullException(nameof(completionModel));
+            if (string.IsNullOrEmpty(embeddingModel)) throw new ArgumentNullException(nameof(embeddingModel));
 
-            Uri uri; // only to test and throw on invalid URL format
+            Provider = provider;
+            CompletionApiKey = apiKey;
+            CompletionModel = completionModel;
+            EmbeddingModel = embeddingModel;
+            TenantGuid = tenantGuid;
 
             switch (provider)
             {
                 case CompletionProviderTypeEnum.OpenAI:
-                    if (String.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(apiKey);
-                    _CompletionBaseUrl = "https://api.openai.com/";
+                    CompletionBaseUrl = baseUrl ?? "https://api.openai.com/";
+                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
                     break;
                 case CompletionProviderTypeEnum.Anthropic:
-                    if (String.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(apiKey);
-                    _CompletionBaseUrl = "https://api.anthropic.com/";
+                    CompletionBaseUrl = baseUrl ?? "https://api.anthropic.com/";
+                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
                     break;
                 case CompletionProviderTypeEnum.ViewAI:
                     if (tenantGuid == null) throw new ArgumentNullException(nameof(tenantGuid));
-                    if (String.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(apiKey);
-                    if (String.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(baseUrl);
-                    uri = new Uri(baseUrl);
-                    if (!baseUrl.EndsWith("/")) baseUrl += "/";
-                    _CompletionApiKey = baseUrl;
-                    _TenantGuid = tenantGuid;
+                    if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
+                    if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(nameof(baseUrl));
+                    CompletionBaseUrl = baseUrl;
                     break;
                 case CompletionProviderTypeEnum.Ollama:
-                    if (String.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(baseUrl);
-                    uri = new Uri(baseUrl);
-                    if (!baseUrl.EndsWith("/")) baseUrl += "/";
-                    _CompletionApiKey = baseUrl;
+                    if (string.IsNullOrEmpty(baseUrl)) throw new ArgumentNullException(nameof(baseUrl));
+                    CompletionBaseUrl = baseUrl;
                     break;
                 default:
                     throw new ArgumentException("Unknown completion provider " + provider.ToString());
             }
         }
 
-        #endregion
-
-        #region Public-Methods
-
-        #endregion
-
-        #region Private-Methods
+        public CompletionProviderSettings()
+        {
+        }
 
         #endregion
-
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 }

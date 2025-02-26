@@ -14,6 +14,7 @@ namespace View.Personal
     using Avalonia.Controls;
     using Avalonia.Interactivity;
     using DocumentAtom.Core;
+    using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
     using DocumentAtom.TypeDetection;
     using LiteGraph;
@@ -108,6 +109,9 @@ namespace View.Personal
                     var app = (App)Application.Current;
                     app.OpenAIKey = openAIKey;
                     app.OpenAIEmbeddingModel = embeddingModel;
+                    app.OpenAICompletionModel = completionModel;
+
+                    app.SaveSettings();
 
                     Console.WriteLine(
                         $"Saving OpenAI: Key={openAIKey}, Embedding={embeddingModel}, Completion={completionModel}");
@@ -119,11 +123,6 @@ namespace View.Personal
                             MsBox.Avalonia.Enums.ButtonEnum.Ok,
                             MsBox.Avalonia.Enums.Icon.Success);
                     await msgBox.ShowAsync();
-
-                    // Clear the fields
-                    this.FindControl<TextBox>("OpenAIKey").Text = string.Empty;
-                    this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = string.Empty;
-                    this.FindControl<TextBox>("OpenAICompletionModel").Text = string.Empty;
 
                     break;
                 case "Anthropic":
@@ -167,6 +166,145 @@ namespace View.Personal
                 chatItem) NavList.SelectedItem = chatItem;
         }
 
+        // private async void IngestFile_Click(object sender, RoutedEventArgs e)
+        // {
+        //     var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
+        //     if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+        //     {
+        //         Console.WriteLine($"Invalid file path: {filePath}");
+        //         return;
+        //     }
+        //
+        //     var app = (App)Application.Current;
+        //     var openAIKey = app.OpenAIKey;
+        //     var openAIEmbeddingModel = app.OpenAIEmbeddingModel;
+        //
+        //     try
+        //     {
+        //         // Detect file type
+        //         string contentType = null;
+        //         var typeResult = _TypeDetector.Process(filePath, contentType);
+        //         Console.WriteLine($"Detected Type: {typeResult.Type}");
+        //
+        //         // Process file into atoms and store in LiteGraph
+        //         if (typeResult.Type == DocumentTypeEnum.Pdf)
+        //         {
+        //             var processorSettings = new PdfProcessorSettings
+        //             {
+        //                 Chunking = new ChunkingSettings
+        //                 {
+        //                     Enable = true,
+        //                     MaximumLength = 512,
+        //                     ShiftSize = 384
+        //                 }
+        //             };
+        //
+        //             // ToDo: Add OCR
+        //             var pdfProcessor = new PdfProcessor(processorSettings);
+        //             var atoms = pdfProcessor.Extract(filePath).ToList();
+        //
+        //             // Create a parent node for the file
+        //             var fileNodeGuid = Guid.NewGuid();
+        //             var fileNode = new Node
+        //             {
+        //                 GUID = fileNodeGuid,
+        //                 TenantGUID = _TenantGuid,
+        //                 GraphGUID = _GraphGuid,
+        //                 Name = Path.GetFileName(filePath),
+        //                 Labels = new List<string> { "file" },
+        //                 Tags = new NameValueCollection
+        //                 {
+        //                     { "DocumentType", typeResult.Type.ToString() },
+        //                     { "Extension", typeResult.Extension },
+        //                     { "NodeType", "Document" },
+        //                     { "MimeType", typeResult.MimeType },
+        //                     { "FileName", Path.GetFileName(filePath) },
+        //                     { "FilePath", filePath }
+        //                     // ToDo: Add length
+        //                 },
+        //                 Data = atoms
+        //             };
+        //
+        //             _LiteGraph.CreateNode(fileNode);
+        //             Console.WriteLine($"Created file node: {fileNodeGuid} for {filePath}");
+        //             if (!_LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, fileNodeGuid))
+        //                 Console.WriteLine($"Failed to create file node: {fileNodeGuid}");
+        //             else
+        //                 Console.WriteLine($"File node successfully created: {fileNodeGuid}");
+        //
+        //             // Store each atom as a child node
+        //             var chunkIndex = 0;
+        //             foreach (var atom in atoms)
+        //             {
+        //                 Console.WriteLine($"Processing atom {chunkIndex}");
+        //                 if (atom == null || string.IsNullOrEmpty(atom.Text))
+        //                 {
+        //                     Console.WriteLine($"Skipping null or empty atom at index {chunkIndex}");
+        //                     chunkIndex++;
+        //                     continue;
+        //                 }
+        //
+        //                 // ToDo: This needs to be based on the settings
+        //                 // Fetch embeddings from OpenAI
+        //                 var vectors = await GetOpenAIEmbeddingsAsync(atom.Text, openAIKey, openAIEmbeddingModel);
+        //
+        //                 var atomNodeGuid = Guid.NewGuid();
+        //                 var atomNode = new Node
+        //                 {
+        //                     GUID = atomNodeGuid,
+        //                     TenantGUID = _TenantGuid,
+        //                     GraphGUID = _GraphGuid,
+        //                     Name = $"Chunk_{chunkIndex++}",
+        //                     Labels = new List<string> { "chunk" },
+        //                     Tags = new NameValueCollection { { "type", "text" } },
+        //                     Data = new
+        //                     {
+        //                         atom.Text,
+        //                     },
+        //                     // Vectors = vectors
+        //                 };
+        //                 _LiteGraph.CreateNode(atomNode);
+        //                 var nodeExists = _LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, atomNodeGuid);
+        //                 Console.WriteLine($"Node exists in memory: {nodeExists}");
+        //
+        //
+        //                 if (!_LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, atomNodeGuid))
+        //                     Console.WriteLine($"Failed to create atom node: {atomNodeGuid}");
+        //                 else
+        //                     Console.WriteLine($"Atom node successfully created: {atomNodeGuid}");
+        //
+        //                 // Create an edge from the file node to the atom node
+        //                 _LiteGraph.CreateEdge(
+        //                     _TenantGuid,
+        //                     _GraphGuid,
+        //                     fileNode,
+        //                     atomNode,
+        //                     "contains",
+        //                     1,
+        //                     new List<string> { "relationship" },
+        //                     new NameValueCollection { { "type", "contains" } }
+        //                 );
+        //
+        //                 Console.WriteLine(
+        //                     $"Stored atom: {atomNodeGuid} with text: {atom.Text.Substring(0, Math.Min(50, atom.Text.Length))}...");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             Console.WriteLine(
+        //                 $"Unsupported file type: {typeResult.Type}. Only PDF is supported for proof of concept.");
+        //             return;
+        //         }
+        //
+        //         Console.WriteLine($"File {filePath} ingested and stored in LiteGraph successfully.");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
+        //         Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+        //     }
+        // }
+
         private async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
             var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
@@ -176,128 +314,155 @@ namespace View.Personal
                 return;
             }
 
-            var app = (App)Application.Current;
-            var openAIKey = app.OpenAIKey;
-            var openAIEmbeddingModel = app.OpenAIEmbeddingModel;
-
             try
             {
-                // Detect file type
-                string contentType = null;
+                // 1. Detect file type (only proceed if PDF)
+                var contentType = (string)null;
                 var typeResult = _TypeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
 
-                // Process file into atoms and store in LiteGraph
-                if (typeResult.Type == DocumentTypeEnum.Pdf)
+                if (typeResult.Type != DocumentTypeEnum.Pdf)
                 {
-                    var processorSettings = new PdfProcessorSettings
-                    {
-                        Chunking = new ChunkingSettings
-                        {
-                            Enable = true,
-                            MaximumLength = 512,
-                            ShiftSize = 384
-                        }
-                    };
-
-                    // ToDo: Add OCR
-                    var pdfProcessor = new PdfProcessor(processorSettings);
-                    var atoms = pdfProcessor.Extract(filePath).ToList();
-
-                    // Create a parent node for the file
-                    var fileNodeGuid = Guid.NewGuid();
-                    var fileNode = new Node
-                    {
-                        GUID = fileNodeGuid,
-                        TenantGUID = _TenantGuid,
-                        GraphGUID = _GraphGuid,
-                        Name = Path.GetFileName(filePath),
-                        Labels = new List<string> { "file" },
-                        Tags = new NameValueCollection
-                        {
-                            { "DocumentType", typeResult.Type.ToString() },
-                            { "Extension", typeResult.Extension },
-                            { "NodeType", "Document" },
-                            { "MimeType", typeResult.MimeType },
-                            { "FileName", Path.GetFileName(filePath) },
-                            { "FilePath", filePath }
-                            // ToDo: Add length
-                        },
-                        Data = atoms
-                    };
-
-                    _LiteGraph.CreateNode(fileNode);
-                    Console.WriteLine($"Created file node: {fileNodeGuid} for {filePath}");
-                    if (!_LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, fileNodeGuid))
-                        Console.WriteLine($"Failed to create file node: {fileNodeGuid}");
-                    else
-                        Console.WriteLine($"File node successfully created: {fileNodeGuid}");
-
-                    // Store each atom as a child node
-                    var chunkIndex = 0;
-                    foreach (var atom in atoms)
-                    {
-                        Console.WriteLine($"Processing atom {chunkIndex}");
-                        if (atom == null || string.IsNullOrEmpty(atom.Text))
-                        {
-                            Console.WriteLine($"Skipping null or empty atom at index {chunkIndex}");
-                            chunkIndex++;
-                            continue;
-                        }
-
-                        // ToDo: This needs to be based on the settings
-                        // Fetch embeddings from OpenAI
-                        var vectors = await GetOpenAIEmbeddingsAsync(atom.Text, openAIKey, openAIEmbeddingModel);
-
-                        var atomNodeGuid = Guid.NewGuid();
-                        var atomNode = new Node
-                        {
-                            GUID = atomNodeGuid,
-                            TenantGUID = _TenantGuid,
-                            GraphGUID = _GraphGuid,
-                            Name = $"Chunk_{chunkIndex++}",
-                            Labels = new List<string> { "chunk" },
-                            Tags = new NameValueCollection { { "type", "text" } },
-                            Data = new
-                            {
-                                atom.Text,
-                                Vector = vectors
-                            }
-                        };
-                        _LiteGraph.CreateNode(atomNode);
-                        var nodeExists = _LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, atomNodeGuid);
-                        Console.WriteLine($"Node exists in memory: {nodeExists}");
-
-
-                        if (!_LiteGraph.ExistsNode(_TenantGuid, _GraphGuid, atomNodeGuid))
-                            Console.WriteLine($"Failed to create atom node: {atomNodeGuid}");
-                        else
-                            Console.WriteLine($"Atom node successfully created: {atomNodeGuid}");
-
-                        // Create an edge from the file node to the atom node
-                        _LiteGraph.CreateEdge(
-                            _TenantGuid,
-                            _GraphGuid,
-                            fileNode,
-                            atomNode,
-                            "contains",
-                            1,
-                            new List<string> { "relationship" },
-                            new NameValueCollection { { "type", "contains" } }
-                        );
-
-                        Console.WriteLine(
-                            $"Stored atom: {atomNodeGuid} with text: {atom.Text.Substring(0, Math.Min(50, atom.Text.Length))}...");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine(
-                        $"Unsupported file type: {typeResult.Type}. Only PDF is supported for proof of concept.");
+                    Console.WriteLine($"Unsupported file type: {typeResult.Type} (only PDF is supported).");
                     return;
                 }
 
-                Console.WriteLine($"File {filePath} ingested and stored in LiteGraph successfully.");
+                // 2. Process PDF into DocumentAtom atoms
+                var processorSettings = new PdfProcessorSettings
+                {
+                    Chunking = new ChunkingSettings
+                    {
+                        Enable = true,
+                        MaximumLength = 512,
+                        ShiftSize = 512
+                    }
+                    // enable OCR here if needed
+                };
+                var pdfProcessor = new PdfProcessor(processorSettings);
+                var atoms = pdfProcessor.Extract(filePath).ToList();
+                Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
+
+                // 3. Create a Document node
+                var fileNodeGuid = Guid.NewGuid();
+                var fileNode = new Node
+                {
+                    GUID = fileNodeGuid,
+                    TenantGUID = _TenantGuid,
+                    GraphGUID = _GraphGuid,
+                    Name = Path.GetFileName(filePath),
+                    Labels = new List<string> { "document" },
+                    Tags = new NameValueCollection
+                    {
+                        { "DocumentType", typeResult.Type.ToString() },
+                        { "Extension", typeResult.Extension },
+                        { "NodeType", "Document" },
+                        { "MimeType", typeResult.MimeType },
+                        { "FileName", Path.GetFileName(filePath) },
+                        { "FilePath", filePath },
+                        { "ContentLength", new FileInfo(filePath).Length.ToString() }
+                    },
+                    Data = null
+                };
+
+                _LiteGraph.CreateNode(fileNode);
+                Console.WriteLine($"Created file document node {fileNodeGuid}");
+
+                // 4. Create chunk nodes (one node per atom)
+                var chunkNodes = new List<Node>();
+                var i = 0;
+                foreach (var atom in atoms)
+                {
+                    if (atom == null || string.IsNullOrWhiteSpace(atom.Text))
+                    {
+                        Console.WriteLine($"Skipping empty atom at index {i}");
+                        i++;
+                        continue;
+                    }
+
+                    var chunkNodeGuid = Guid.NewGuid();
+                    var chunkNode = new Node
+                    {
+                        GUID = chunkNodeGuid,
+                        TenantGUID = _TenantGuid,
+                        GraphGUID = _GraphGuid,
+                        Name = $"Chunk {i}",
+                        Labels = new List<string> { "semantic-chunk" },
+                        Tags = new NameValueCollection
+                        {
+                            { "NodeType", "SemanticChunk" },
+                            { "ChunkIndex", i.ToString() },
+                            { "ContentLength", atom.Text.Length.ToString() }
+                        },
+                        Data = atom
+                    };
+                    chunkNodes.Add(chunkNode);
+                    i++;
+                }
+
+                // ToDo: Add bulk node creation to LiteGraphClient
+                _LiteGraph.CreateNodes(_TenantGuid, _GraphGuid, chunkNodes);
+                Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
+
+                // 5. Create edges from the Document node to each chunk node
+                var edges = chunkNodes.Select(chunkNode => new Edge
+                {
+                    GUID = Guid.NewGuid(),
+                    TenantGUID = _TenantGuid,
+                    GraphGUID = _GraphGuid,
+                    From = fileNodeGuid,
+                    To = chunkNode.GUID,
+                    Name = "Doc->Chunk",
+                    Labels = new List<string> { "edge", "document-chunk" },
+                    Tags = new NameValueCollection
+                    {
+                        { "Relationship", "ContainsChunk" }
+                    }
+                }).ToList();
+
+                _LiteGraph.CreateEdges(_TenantGuid, _GraphGuid, edges);
+                Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
+
+                // 6. Generate embeddings for each chunk using OpenAI
+                var app = (App)Application.Current;
+                var openAIKey = app.OpenAIKey; // stored from user settings
+                var openAIEmbeddingModel = app.OpenAIEmbeddingModel;
+
+                // We'll store all chunk texts in a list
+                var chunkTexts = chunkNodes
+                    .Select(n => (n.Data as Atom)?.Text)
+                    .Where(txt => !string.IsNullOrWhiteSpace(txt))
+                    .ToList();
+
+                foreach (var chunkNode in chunkNodes)
+                {
+                    var atom = chunkNode.Data as Atom;
+                    if (atom == null || string.IsNullOrWhiteSpace(atom.Text)) continue;
+
+                    // fetch embeddings
+                    var vectorArray = await GetOpenAIEmbeddingsAsync(atom.Text, openAIKey, openAIEmbeddingModel);
+
+                    // store them in chunkNode.Vectors
+                    chunkNode.Vectors = new List<VectorMetadata>
+                    {
+                        new()
+                        {
+                            TenantGUID = _TenantGuid,
+                            GraphGUID = _GraphGuid,
+                            NodeGUID = chunkNode.GUID,
+                            Model = openAIEmbeddingModel,
+                            Dimensionality = vectorArray.Length,
+                            Vectors = vectorArray.ToList(),
+                            Content = atom.Text
+                        }
+                    };
+
+                    // update the node in LiteGraph
+                    _LiteGraph.UpdateNode(chunkNode);
+                }
+
+                Console.WriteLine("All chunk nodes updated with embeddings.");
+
+                Console.WriteLine($"File {filePath} ingested successfully!");
             }
             catch (Exception ex)
             {
@@ -305,6 +470,7 @@ namespace View.Personal
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
             }
         }
+
 
         private void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
