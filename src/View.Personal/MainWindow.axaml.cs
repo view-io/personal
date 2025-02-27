@@ -21,6 +21,10 @@ namespace View.Personal
     using DocumentAtom.TypeDetection;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
+    using Sdk;
+    using Sdk.Embeddings;
+    using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
+    using Node = LiteGraph.Node;
 
     public partial class MainWindow : Window
     {
@@ -40,6 +44,8 @@ namespace View.Personal
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
+
+        private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk;
 
         #endregion
 
@@ -85,14 +91,14 @@ namespace View.Personal
 
             // View
             var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("ViewEmbeddingsModel").Text = view.ViewEmbeddingsModel ?? string.Empty;
-            this.FindControl<TextBox>("ViewEmbeddingsApiKey").Text = view.ViewEmbeddingsApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewEmbeddingsServerEndpoint").Text =
-                view.ViewEmbeddingsServerEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("ViewEmbeddingsServerApiKey").Text =
-                view.ViewEmbeddingsServerApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionEndpoint").Text = view.ViewCompletionEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
+            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewEndpoint").Text =
+                view.ViewEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("AccessKey").Text =
+                view.AccessKey ?? string.Empty;
+            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
+            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
             this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
         }
@@ -170,15 +176,15 @@ namespace View.Personal
                 case "View":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                     {
-                        ViewEmbeddingsModel = this.FindControl<TextBox>("ViewEmbeddingsModel").Text ?? string.Empty,
-                        ViewEmbeddingsApiKey = this.FindControl<TextBox>("ViewEmbeddingsApiKey").Text ?? string.Empty,
-                        ViewEmbeddingsServerEndpoint = this.FindControl<TextBox>("ViewEmbeddingsServerEndpoint").Text ??
-                                                       string.Empty,
-                        ViewEmbeddingsServerApiKey =
-                            this.FindControl<TextBox>("ViewEmbeddingsServerApiKey").Text ?? string.Empty,
-                        ViewCompletionEndpoint =
-                            this.FindControl<TextBox>("ViewCompletionEndpoint").Text ?? string.Empty,
-                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        Generator = this.FindControl<TextBox>("Generator").Text ?? string.Empty,
+                        ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
+                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ??
+                                       string.Empty,
+                        AccessKey =
+                            this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
+                        EmbeddingsGeneratorUrl =
+                            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
+                        Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
                         ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty
                     };
@@ -383,6 +389,35 @@ namespace View.Personal
                         break;
 
                     case "View":
+                        _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
+                            providerSettings.ViewEndpoint, providerSettings.AccessKey);
+
+                        var req = new EmbeddingsRequest
+                        {
+                            EmbeddingsRule = new EmbeddingsRule
+                            {
+                                // EmbeddingsGenerator = providerSettings.Generator,
+                                // ToDo: Add GetBaseUrl logic
+                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey
+                                // BatchSize = _BatchSize,
+                                // MaxGeneratorTasks = _MaxParallelTasks,
+                                // MaxRetries = _MaxRetries,
+                                // MaxFailures = _MaxFailures
+                            },
+                            Model = providerSettings.Model
+                            // Contents = chunkContents
+                        };
+                        // private static string GetBaseUrl(EmbeddingsGeneratorEnum generator)
+                        // {
+                        //     string url = "";
+                        //     if (generator == EmbeddingsGeneratorEnum.LCProxy) url = "http://nginx-lcproxy:8000/";
+                        //     else if (generator == EmbeddingsGeneratorEnum.OpenAI) url = "https://api.openai.com/";
+                        //     else if (generator == EmbeddingsGeneratorEnum.VoyageAI) url = "https://api.voyageai.com/";
+                        //     else if (generator == EmbeddingsGeneratorEnum.Ollama) url = "http://localhost:11434/";
+                        //     return Inputty.GetString("URL:", url, false);
+                        // }
+
                         // Implement View embedding logic using endpoint and API key
                         break;
                 }

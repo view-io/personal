@@ -18,12 +18,12 @@
         public string AnthropicCompletionModel { get; set; } = string.Empty;
 
         // View Settings
-        public string ViewEmbeddingsModel { get; set; } = string.Empty;
-        public string ViewEmbeddingsApiKey { get; set; } = string.Empty;
-        public string ViewEmbeddingsServerEndpoint { get; set; } = string.Empty;
-        public string ViewEmbeddingsServerApiKey { get; set; } = string.Empty;
-        public string ViewCompletionEndpoint { get; set; } = string.Empty;
-        public string ViewCompletionModel { get; set; } = string.Empty;
+        public string Generator { get; set; } = string.Empty;
+        public string ApiKey { get; set; } = string.Empty;
+        public string ViewEndpoint { get; set; } = string.Empty;
+        public string AccessKey { get; set; } = string.Empty;
+        public string EmbeddingsGeneratorUrl { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
         public string ViewCompletionApiKey { get; set; } = string.Empty;
         public string ViewPresetGuid { get; set; } = string.Empty;
 
@@ -48,8 +48,8 @@
                     AnthropicCompletionModel = "claude-2";
                     break;
                 case CompletionProviderTypeEnum.View:
-                    ViewEmbeddingsModel = "default";
-                    ViewCompletionModel = "default";
+                    Generator = "default";
+                    Model = "default";
                     break;
             }
         }

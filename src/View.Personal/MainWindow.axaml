@@ -142,29 +142,29 @@
                 <!-- View Settings -->
                 <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
                     <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Generator" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsModel" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="Generator" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Embeddings API Key" Foreground="Black"
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ViewEmbeddingsApiKey" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ApiKey" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Embeddings Server Endpoint" Foreground="Black"
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="View Endpoint" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEmbeddingsServerEndpoint" />
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEndpoint" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Embeddings Server API Key" Foreground="Black"
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Access Key" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ViewEmbeddingsServerApiKey" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="AccessKey" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Completion Endpoint" Foreground="Black"
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Embeddings Url" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="ViewCompletionEndpoint" />
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="EmbeddingsGeneratorUrl" />
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Completion Model" Foreground="Black"
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Model" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="ViewCompletionModel" />
+                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="Model" />
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" Foreground="Black"
                                    VerticalAlignment="Center" />
