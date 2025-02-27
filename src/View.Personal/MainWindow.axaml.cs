@@ -1,3 +1,4 @@
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 namespace View.Personal
 {
@@ -23,6 +24,7 @@ namespace View.Personal
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
+    using SerializationHelper;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Node = LiteGraph.Node;
 
@@ -45,7 +47,9 @@ namespace View.Personal
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
 
-        private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk;
+        private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
+
+        private static Serializer _Serializer = new();
 
         #endregion
 
@@ -113,7 +117,6 @@ namespace View.Personal
                 DashboardPanel.IsVisible = selectedContent == "Dashboard";
                 SettingsPanel.IsVisible = selectedContent == "Settings";
                 MyFilesPanel.IsVisible = selectedContent == "My Files";
-                // WorkspaceText.IsVisible = !(DashboardPanel.IsVisible || SettingsPanel.IsVisible);
                 WorkspaceText.IsVisible = selectedContent == "Chat";
             }
         }
@@ -224,8 +227,9 @@ namespace View.Personal
 
         private async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
+            // Get the file path and provider selection
             var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
-            var providerCombo = this.FindControl<ComboBox>("ProviderSelectionComboBox"); // Add this to XAML
+            var providerCombo = this.FindControl<ComboBox>("ProviderSelectionComboBox");
             var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
 
             if (string.IsNullOrEmpty(selectedProvider))
@@ -237,6 +241,7 @@ namespace View.Personal
                 return;
             }
 
+            // Get the provider settings
             var app = (App)Application.Current;
             var providerSettings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
@@ -287,7 +292,7 @@ namespace View.Personal
                         { "FilePath", filePath },
                         { "ContentLength", new FileInfo(filePath).Length.ToString() }
                     },
-                    Data = null
+                    Data = atoms
                 };
 
                 _LiteGraph.CreateNode(fileNode);
@@ -311,12 +316,12 @@ namespace View.Personal
                         GUID = chunkNodeGuid,
                         TenantGUID = _TenantGuid,
                         GraphGUID = _GraphGuid,
-                        Name = $"Chunk {i}",
-                        Labels = new List<string> { "semantic-chunk" },
+                        Name = $"Atom {i}",
+                        Labels = new List<string> { "atom" },
                         Tags = new NameValueCollection
                         {
-                            { "NodeType", "SemanticChunk" },
-                            { "ChunkIndex", i.ToString() },
+                            { "NodeType", "Atom" },
+                            { "AtomIndex", i.ToString() },
                             { "ContentLength", atom.Text.Length.ToString() }
                         },
                         Data = atom
@@ -348,7 +353,7 @@ namespace View.Personal
                 _LiteGraph.CreateEdges(_TenantGuid, _GraphGuid, edges);
                 Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
 
-                // 6. Generate embeddings for each chunk using OpenAI
+                // 6. Generate embeddings for each chunk
                 switch (selectedProvider)
                 {
                     case "OpenAI":
@@ -381,44 +386,96 @@ namespace View.Personal
                         break;
 
                     case "Voyage":
-                        // Implement Voyage embedding logic
                         break;
 
                     case "Anthropic":
-                        // Implement Anthropic embedding logic
                         break;
 
                     case "View":
                         _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
-                            providerSettings.ViewEndpoint, providerSettings.AccessKey);
+                            providerSettings.ViewEndpoint,
+                            providerSettings.AccessKey); //ViewEndpoint-> http://192.168.197.128/ AccessKey-> default
+
+                        var chunkContents = chunkNodes
+                            .Select(x => x.Data as Atom)
+                            .Where(atom => atom != null && !string.IsNullOrWhiteSpace(atom.Text))
+                            .Select(atom => atom.Text)
+                            .ToList();
+
+                        if (!chunkContents.Any())
+                        {
+                            Console.WriteLine("No valid text content found in atoms for embedding.");
+                            break;
+                        }
 
                         var req = new EmbeddingsRequest
                         {
                             EmbeddingsRule = new EmbeddingsRule
                             {
-                                // EmbeddingsGenerator = providerSettings.Generator,
-                                // ToDo: Add GetBaseUrl logic
+                                EmbeddingsGenerator =
+                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator), // LCProxy
                                 EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
-                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey
-                                // BatchSize = _BatchSize,
-                                // MaxGeneratorTasks = _MaxParallelTasks,
-                                // MaxRetries = _MaxRetries,
-                                // MaxFailures = _MaxFailures
+                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey, // ""
+                                BatchSize = 2,
+                                MaxGeneratorTasks = 4,
+                                MaxRetries = 3,
+                                MaxFailures = 3
                             },
-                            Model = providerSettings.Model
-                            // Contents = chunkContents
+                            Model = providerSettings.Model, // all-MiniLM-L6-v2
+                            Contents = chunkContents
                         };
-                        // private static string GetBaseUrl(EmbeddingsGeneratorEnum generator)
-                        // {
-                        //     string url = "";
-                        //     if (generator == EmbeddingsGeneratorEnum.LCProxy) url = "http://nginx-lcproxy:8000/";
-                        //     else if (generator == EmbeddingsGeneratorEnum.OpenAI) url = "https://api.openai.com/";
-                        //     else if (generator == EmbeddingsGeneratorEnum.VoyageAI) url = "https://api.voyageai.com/";
-                        //     else if (generator == EmbeddingsGeneratorEnum.Ollama) url = "http://localhost:11434/";
-                        //     return Inputty.GetString("URL:", url, false);
-                        // }
 
-                        // Implement View embedding logic using endpoint and API key
+                        // Generate embeddings
+                        var embeddingsResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(req);
+                        if (!embeddingsResult.Success)
+                        {
+                            Console.WriteLine($"Embeddings generation failed: {embeddingsResult.StatusCode}");
+                            if (embeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                            break;
+                        }
+
+                        Console.WriteLine($"Embeddings Success: {embeddingsResult.Success}");
+
+                        // Update chunk nodes with embeddings
+                        if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
+                        {
+                            var validChunkNodes = chunkNodes
+                                .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                .ToList();
+
+                            var updateTasks = embeddingsResult.ContentEmbeddings
+                                .Zip(validChunkNodes,
+                                    (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
+                                .Select(item =>
+                                {
+                                    var atom = item.ChunkNode.Data as Atom;
+                                    item.ChunkNode.Vectors = new List<VectorMetadata>
+                                    {
+                                        new()
+                                        {
+                                            TenantGUID = _TenantGuid,
+                                            GraphGUID = _GraphGuid,
+                                            NodeGUID = item.ChunkNode.GUID,
+                                            Model = providerSettings.Model,
+                                            Dimensionality = item.Embedding.Embeddings?.Count ?? 0,
+                                            Vectors = item.Embedding.Embeddings,
+                                            Content = atom.Text
+                                        }
+                                    };
+                                    _LiteGraph.UpdateNode(item.ChunkNode);
+                                    return Task.CompletedTask;
+                                });
+
+                            await Task.WhenAll(updateTasks);
+                            Console.WriteLine(
+                                $"Updated {embeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No embeddings returned from View service.");
+                        }
+
                         break;
                 }
 
@@ -432,21 +489,15 @@ namespace View.Personal
             }
         }
 
-
         private void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // read an output file path from a TextBox with x:Name="ExportFilePathTextBox"
-                // You can name your control anything you like in the XAML, 
-                // or just hardcode a filename path here for simplicity.
-
                 var exportFilePath = this.FindControl<TextBox>("ExportFilePathTextBox")?.Text;
                 if (string.IsNullOrWhiteSpace(exportFilePath))
-                    // If the user didn't provide one, default to something
+
                     exportFilePath = "exported_graph.gexf";
 
-                // If you want to include node/edge Data in the GEXF, set 'includeData = true'
                 _LiteGraph.ExportGraphToGexfFile(_TenantGuid, _GraphGuid, exportFilePath, true);
 
                 Console.WriteLine($"Graph {_GraphGuid} exported to {exportFilePath} successfully!");
@@ -459,11 +510,7 @@ namespace View.Personal
 
         private async Task<float[]> GetOpenAIEmbeddingsAsync(string text, string openAIKey, string openAIEmbeddingModel)
         {
-            // Example endpoint: https://api.openai.com/v1/embeddings
-            // The request body shape is: { "model": "text-embedding-ada-002", "input": "your text" }
-
             var requestUri = "https://api.openai.com/v1/embeddings";
-            // Set up the request
             using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", openAIKey);
 
@@ -479,26 +526,18 @@ namespace View.Personal
                 "application/json"
             );
 
-            // Send request
             using var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
 
-            // Parse out the embedding array
-            // OpenAI returns something like: 
-            // {
-            //   "data": [
-            //     { "embedding": [0.0123, 0.0456, ...], "index": 0 }
-            //   ],
-            //   ...
-            // }
+
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
             var embeddingArray = root
-                .GetProperty("data")[0] // the first object in "data"
+                .GetProperty("data")[0]
                 .GetProperty("embedding")
                 .EnumerateArray()
-                .Select(x => x.GetSingle()) // or GetDouble() if you prefer double precision
+                .Select(x => x.GetSingle())
                 .ToArray();
 
             return embeddingArray;
