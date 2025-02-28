@@ -47,10 +47,9 @@ namespace View.Personal
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
-
         private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
-
         private static Serializer _Serializer = new();
+        private List<string> _ChatMessages = new();
 
         #endregion
 
@@ -115,15 +114,36 @@ namespace View.Personal
 
         private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            Console.WriteLine("NavList_SelectionChanged triggered");
+
             if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
             {
                 var selectedContent = selectedItem.Content?.ToString();
-                WorkspaceText.Text = selectedContent;
 
-                DashboardPanel.IsVisible = selectedContent == "Dashboard";
-                SettingsPanel.IsVisible = selectedContent == "Settings";
-                MyFilesPanel.IsVisible = selectedContent == "My Files";
-                WorkspaceText.IsVisible = selectedContent == "Chat";
+                DashboardPanel.IsVisible = false;
+                SettingsPanel.IsVisible = false;
+                MyFilesPanel.IsVisible = false;
+                ChatPanel.IsVisible = false;
+                WorkspaceText.IsVisible = false;
+
+                switch (selectedContent)
+                {
+                    case "Dashboard":
+                        DashboardPanel.IsVisible = true;
+                        break;
+                    case "Settings":
+                        SettingsPanel.IsVisible = true;
+                        break;
+                    case "My Files":
+                        MyFilesPanel.IsVisible = true;
+                        break;
+                    case "Chat":
+                        ChatPanel.IsVisible = true;
+                        break;
+                    default:
+                        WorkspaceText.IsVisible = true;
+                        break;
+                }
             }
         }
 
@@ -615,6 +635,124 @@ namespace View.Personal
             else
             {
                 Console.WriteLine("No file selected.");
+            }
+        }
+
+        private async void SendMessage_Click(object sender, RoutedEventArgs e)
+        {
+            var inputBox = this.FindControl<TextBox>("ChatInputBox");
+            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
+
+            if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
+            {
+                // Add user's message to conversation
+                var userMessage = $"You: {inputBox.Text}";
+                _ChatMessages.Add(userMessage);
+
+                // Get AI response and add it to conversation
+                var aiResponse = await GetAIResponse(inputBox.Text);
+                if (!string.IsNullOrEmpty(aiResponse)) _ChatMessages.Add($"AI: {aiResponse}");
+
+                // Update the single conversation window
+                UpdateConversationWindow(conversationWindow);
+
+                inputBox.Text = string.Empty; // Clear input
+            }
+        }
+
+        private void ClearChat_Click(object sender, RoutedEventArgs e)
+        {
+            _ChatMessages.Clear();
+            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
+            if (conversationWindow != null)
+                conversationWindow.Text = string.Empty;
+        }
+
+        private async void DownloadChat_Click(object sender, RoutedEventArgs e)
+        {
+            var topLevel = GetTopLevel(this);
+            if (topLevel == null) return;
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Chat History",
+                DefaultExtension = "txt",
+                SuggestedFileName = $"chat_history_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
+                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+                }
+            });
+
+            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
+                try
+                {
+                    await File.WriteAllLinesAsync(file.Path.LocalPath, _ChatMessages);
+                    Console.WriteLine($"Chat history saved to {file.Path.LocalPath}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving chat history: {ex.Message}");
+                }
+        }
+
+        private void UpdateConversationWindow(TextBlock conversationWindow)
+        {
+            if (conversationWindow != null)
+                conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, _ChatMessages);
+            // Adding extra newline for spacing between messages like Grok
+        }
+
+        private async Task<string> GetAIResponse(string userInput)
+        {
+            try
+            {
+                var app = (App)Application.Current;
+                var providerSettings =
+                    app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI); // Using OpenAI as example
+
+                if (string.IsNullOrEmpty(providerSettings.OpenAICompletionApiKey))
+                    return "Error: OpenAI API key not configured. Please set it in Settings.";
+
+                var requestUri = "https://api.openai.com/v1/chat/completions";
+                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+                request.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", providerSettings.OpenAICompletionApiKey);
+
+                var requestBody = new
+                {
+                    model = providerSettings.OpenAICompletionModel ?? "gpt-3.5-turbo",
+                    messages = new[]
+                    {
+                        new { role = "user", content = userInput }
+                    },
+                    max_tokens = 150
+                };
+
+                request.Content = new StringContent(
+                    JsonSerializer.Serialize(requestBody),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseJson = await response.Content.ReadAsStringAsync();
+
+                using var doc = JsonDocument.Parse(responseJson);
+                var root = doc.RootElement; // Define 'root' here
+                var aiText = root.GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                return aiText ?? "No response from AI.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting AI response: {ex.Message}");
+                return $"Error: {ex.Message}";
             }
         }
 

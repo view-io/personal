@@ -257,6 +257,37 @@
                     </Grid>
                 </StackPanel>
             </StackPanel>
+            <!-- Chat Section -->
+            <StackPanel x:Name="ChatPanel" IsVisible="False">
+                <TextBlock Text="Chat" FontSize="24" Foreground="Black" Margin="20,0,0,10" />
+                <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto" Margin="20,0">
+                    <TextBlock x:Name="ConversationWindow"
+                               Width="600"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Top"
+                               Background="#F5F5F5"
+                               Padding="10"
+                               FontSize="14" />
+                </ScrollViewer>
+                <StackPanel Orientation="Horizontal" Margin="20,10">
+                    <TextBox x:Name="ChatInputBox"
+                             Width="400"
+                             Watermark="Type your message here..."
+                             AcceptsReturn="False" />
+                    <Button x:Name="SendButton"
+                            Content="Send"
+                            Margin="5,0,0,0"
+                            Click="SendMessage_Click" />
+                    <Button x:Name="ClearButton"
+                            Content="Clear"
+                            Margin="5,0,0,0"
+                            Click="ClearChat_Click" />
+                    <Button x:Name="DownloadButton"
+                            Content="Download"
+                            Margin="5,0,0,0"
+                            Click="DownloadChat_Click" />
+                </StackPanel>
+            </StackPanel>
 
             <!-- Default View -->
             <TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center"
