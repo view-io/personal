@@ -186,6 +186,7 @@
                 <TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,10" />
 
                 <!-- Ingest a File Section -->
+                <!-- Ingest a File Section -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <TextBlock Text="Ingest a File" Foreground="Black" Margin="0,0,0,0" />
                     <StackPanel Orientation="Vertical" Spacing="5">
@@ -195,22 +196,25 @@
                             <ComboBoxItem Content="Voyage" />
                             <ComboBoxItem Content="Anthropic" />
                         </ComboBox>
-                        <Grid ColumnDefinitions="*,Auto" Margin="0">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
                             <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
                                      Margin="0,0,10,0" />
-                            <Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Width="120"
+                            <Button Grid.Column="1" Content="Browse" Click="IngestBrowseButton_Click" Width="80"
+                                    Margin="0,0,10,0" />
+                            <Button Grid.Column="2" Content="Ingest" Click="IngestFile_Click" Width="120"
                                     HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
                         </Grid>
                     </StackPanel>
                 </StackPanel>
-
                 <!-- Export to GEXF Section -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <TextBlock Text="Export to GEXF" Foreground="Black" Margin="0,0,0,0" />
-                    <Grid ColumnDefinitions="*,Auto" Margin="0">
+                    <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
                         <TextBox Grid.Column="0" x:Name="ExportFilePathTextBox" Watermark="Enter file path..."
                                  Margin="0,0,10,0" />
-                        <Button Grid.Column="1" Content="Export" Click="ExportGraph_Click" Width="120"
+                        <Button Grid.Column="1" Content="Browse" Click="BrowseButton_Click" Width="80"
+                                Margin="0,0,10,0" />
+                        <Button Grid.Column="2" Content="Export" Click="ExportGraph_Click" Width="120"
                                 HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
                     </Grid>
                 </StackPanel>

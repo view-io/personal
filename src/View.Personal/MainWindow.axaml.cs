@@ -14,6 +14,7 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Platform.Storage;
     using Avalonia.Interactivity;
     using Classes;
     using DocumentAtom.Core;
@@ -500,7 +501,7 @@ namespace View.Personal
             {
                 var exportFilePath = this.FindControl<TextBox>("ExportFilePathTextBox")?.Text;
                 if (string.IsNullOrWhiteSpace(exportFilePath))
-
+                    // If no path is provided, use a default one
                     exportFilePath = "exported_graph.gexf";
 
                 _LiteGraph.ExportGraphToGexfFile(_TenantGuid, _GraphGuid, exportFilePath, true);
@@ -546,6 +547,75 @@ namespace View.Personal
                 .ToArray();
 
             return embeddingArray;
+        }
+
+        private async void BrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
+            if (textBox == null) return;
+
+            var topLevel = GetTopLevel(this);
+            if (topLevel == null)
+            {
+                Console.WriteLine("Failed to get TopLevel.");
+                return;
+            }
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Select Export Location",
+                DefaultExtension = "gexf",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("GEXF Files") { Patterns = new[] { "*.gexf" } },
+                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+                },
+                SuggestedFileName = "exported_graph.gexf"
+            });
+
+            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
+            {
+                textBox.Text = file.Path.LocalPath;
+                Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
+            }
+            else
+            {
+                Console.WriteLine("No file selected.");
+            }
+        }
+
+        private async void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var textBox = this.FindControl<TextBox>("FilePathTextBox");
+            if (textBox == null) return;
+
+            var topLevel = GetTopLevel(this);
+            if (topLevel == null)
+            {
+                Console.WriteLine("Failed to get TopLevel.");
+                return;
+            }
+
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Select File to Ingest",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("PDF Files") { Patterns = new[] { "*.pdf" } },
+                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+                }
+            });
+
+            if (files != null && files.Count > 0 && !string.IsNullOrEmpty(files[0].Path?.LocalPath))
+            {
+                textBox.Text = files[0].Path.LocalPath;
+                Console.WriteLine($"Selected file path: {files[0].Path.LocalPath}");
+            }
+            else
+            {
+                Console.WriteLine("No file selected.");
+            }
         }
 
         #endregion
