@@ -5,7 +5,6 @@
         Background="White"
         Title="View Personal Edition"
         Icon="/Assets/glyph.png">
-
     <DockPanel>
         <!-- Top Bar -->
         <Grid DockPanel.Dock="Top" Height="50">
@@ -182,12 +181,13 @@
                         HorizontalAlignment="Left" />
             </StackPanel>
             <!-- My Files View -->
+            <!-- Ingest a File Section -->
             <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,10" />
 
                 <!-- Ingest a File Section -->
                 <StackPanel Orientation="Vertical" Spacing="5">
-                    <TextBlock Text="Ingest a File" Foreground="Black" Margin="0,0,0,0" />
+                    <TextBlock Text="Ingest a File" Foreground="rgba(106, 107, 111, 1)" Margin="0,0,0,0" />
                     <StackPanel Orientation="Vertical" Spacing="5">
                         <ComboBox x:Name="ProviderSelectionComboBox" SelectedIndex="0">
                             <ComboBoxItem Content="View" />
@@ -195,27 +195,68 @@
                             <ComboBoxItem Content="Voyage" />
                             <ComboBoxItem Content="Anthropic" />
                         </ComboBox>
-                        <Grid ColumnDefinitions="*,Auto" Margin="0">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
                             <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
                                      Margin="0,0,10,0" />
-                            <Button Grid.Column="1" Content="Ingest" Click="IngestFile_Click" Width="120"
-                                    HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
+                            <Button Grid.Column="1" Content="Browse" Click="IngestBrowseButton_Click" Width="80"
+                                    Margin="0,0,10,0" Background="White" Foreground="rgba(117, 188, 255, 1)"
+                                    BorderBrush="rgba(117, 188, 255, 1)" x:Name="IngestBrowseButton">
+                                <Button.Styles>
+                                    <Style Selector="Button#IngestBrowseButton">
+                                        <Setter Property="Background" Value="White" />
+                                    </Style>
+                                    <Style Selector="Button#IngestBrowseButton:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="rgba(246, 251, 254, 1)" />
+                                        <Setter Property="Foreground" Value="rgba(4, 114, 239, 1)" />
+                                        <Setter Property="BorderBrush" Value="rgba(4, 114, 239, 1)" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                            <Button Grid.Column="2" Content="Ingest" Click="IngestFile_Click" Width="120"
+                                    HorizontalAlignment="Right" HorizontalContentAlignment="Center"
+                                    Background="#007BFF" Foreground="White">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="rgba(5, 94, 222, 1)" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Export to GEXF Section -->
                 <StackPanel Orientation="Vertical" Spacing="5">
-                    <TextBlock Text="Export to GEXF" Foreground="Black" Margin="0,0,0,0" />
-                    <Grid ColumnDefinitions="*,Auto" Margin="0">
+                    <TextBlock Text="Export to GEXF" Foreground="rgba(106, 107, 111, 1)" Margin="0,0,0,0" />
+                    <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
                         <TextBox Grid.Column="0" x:Name="ExportFilePathTextBox" Watermark="Enter file path..."
                                  Margin="0,0,10,0" />
-                        <Button Grid.Column="1" Content="Export" Click="ExportGraph_Click" Width="120"
-                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" />
+                        <Button Grid.Column="1" Content="Browse" Click="BrowseButton_Click" Width="80"
+                                Margin="0,0,10,0" Background="White" Foreground="rgba(117, 188, 255, 1)"
+                                BorderBrush="rgba(117, 188, 255, 1)" x:Name="ExportBrowseButton">
+                            <Button.Styles>
+                                <Style Selector="Button#ExportBrowseButton">
+                                    <Setter Property="Background" Value="White" />
+                                </Style>
+                                <Style Selector="Button#ExportBrowseButton:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="rgba(246, 251, 254, 1)" />
+                                    <Setter Property="Foreground" Value="rgba(4, 114, 239, 1)" />
+                                    <Setter Property="BorderBrush" Value="rgba(4, 114, 239, 1)" />
+                                </Style>
+                            </Button.Styles>
+                        </Button>
+                        <Button Grid.Column="2" Content="Export" Click="ExportGraph_Click" Width="120"
+                                HorizontalAlignment="Right" HorizontalContentAlignment="Center"
+                                Background="#007BFF" Foreground="White">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="rgba(5, 94, 222, 1)" />
+                                </Style>
+                            </Button.Styles>
+                        </Button>
                     </Grid>
                 </StackPanel>
             </StackPanel>
-
 
             <!-- Default View -->
             <TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center"
