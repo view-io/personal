@@ -97,10 +97,10 @@
                     <TextBlock Text="Model Provider" Foreground="Black" />
                     <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0"
                               SelectionChanged="ModelProvider_SelectionChanged">
+                        <ComboBoxItem Content="View" />
                         <ComboBoxItem Content="OpenAI" />
                         <ComboBoxItem Content="Voyage" />
                         <ComboBoxItem Content="Anthropic" />
-                        <ComboBoxItem Content="View" />
                     </ComboBox>
                 </StackPanel>
 
@@ -190,10 +190,10 @@
                     <TextBlock Text="Ingest a File" Foreground="Black" Margin="0,0,0,0" />
                     <StackPanel Orientation="Vertical" Spacing="5">
                         <ComboBox x:Name="ProviderSelectionComboBox" SelectedIndex="0">
+                            <ComboBoxItem Content="View" />
                             <ComboBoxItem Content="OpenAI" />
                             <ComboBoxItem Content="Voyage" />
                             <ComboBoxItem Content="Anthropic" />
-                            <ComboBoxItem Content="View" />
                         </ComboBox>
                         <Grid ColumnDefinitions="*,Auto" Margin="0">
                             <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."

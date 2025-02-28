@@ -72,11 +72,25 @@ namespace View.Personal
         private void MainWindow_Opened(object sender, EventArgs e)
         {
             LoadSavedSettings();
+            UpdateSettingsVisibility("View");
         }
 
         private void LoadSavedSettings()
         {
             var app = (App)Application.Current;
+
+            // View
+            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
+            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewEndpoint").Text =
+                view.ViewEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("AccessKey").Text =
+                view.AccessKey ?? string.Empty;
+            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
+            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
 
             // OpenAI
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
@@ -93,18 +107,9 @@ namespace View.Personal
             this.FindControl<TextBox>("AnthropicCompletionModel").Text =
                 anthropic.AnthropicCompletionModel ?? string.Empty;
 
-            // View
-            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
-            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewEndpoint").Text =
-                view.ViewEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("AccessKey").Text =
-                view.AccessKey ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
-            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
+            UpdateSettingsVisibility("View");
+            this.FindControl<ComboBox>("ModelProviderComboBox").SelectedIndex = 0;
+            this.FindControl<ComboBox>("ProviderSelectionComboBox").SelectedIndex = 0;
         }
 
         private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
