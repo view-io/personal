@@ -746,215 +746,30 @@ namespace View.Personal
             // Adding extra newline for spacing between messages like Grok
         }
 
-        // private async Task<string> GetAIResponse(string userInput)
-        // {
-        //     try
-        //     {
-        //         var app = (App)Application.Current;
-        //         var providerSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-        //
-        //         _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
-        //             providerSettings.ViewEndpoint,
-        //             providerSettings.AccessKey);
-        //
-        //         if (_ViewEmbeddingsSdk == null)
-        //         {
-        //             if (string.IsNullOrEmpty(providerSettings.ViewEndpoint) ||
-        //                 string.IsNullOrEmpty(providerSettings.AccessKey))
-        //                 return "Error: View endpoint or access key not configured. Please set them in Settings.";
-        //             _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid, providerSettings.ViewEndpoint,
-        //                 providerSettings.AccessKey);
-        //         }
-        //
-        //         // Generate embeddings for the user's prompt
-        //         var embeddingsRequest = new EmbeddingsRequest
-        //         {
-        //             EmbeddingsRule = new EmbeddingsRule
-        //             {
-        //                 EmbeddingsGenerator =
-        //                     Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator ?? "LCProxy"),
-        //                 EmbeddingsGeneratorUrl =
-        //                     providerSettings.EmbeddingsGeneratorUrl ?? "http://nginx-lcproxy:8000/",
-        //                 EmbeddingsGeneratorApiKey = providerSettings.ApiKey ?? "",
-        //                 BatchSize = 1,
-        //                 MaxGeneratorTasks = 4,
-        //                 MaxRetries = 3,
-        //                 MaxFailures = 3
-        //             },
-        //             Model = providerSettings.Model ?? "all-MiniLM-L6-v2",
-        //             Contents = new List<string> { userInput }
-        //         };
-        //
-        //         var embeddingResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(embeddingsRequest);
-        //         if (!embeddingResult.Success || embeddingResult.ContentEmbeddings == null ||
-        //             embeddingResult.ContentEmbeddings.Count == 0 ||
-        //             embeddingResult.ContentEmbeddings[0].Embeddings == null)
-        //             return "Error: Failed to generate embeddings for the prompt.";
-        //
-        //         var promptEmbeddings = embeddingResult.ContentEmbeddings[0].Embeddings;
-        //
-        //         // Execute vector search in LiteGraph
-        //         var searchRequest = new VectorSearchRequest
-        //         {
-        //             TenantGUID = _TenantGuid,
-        //             GraphGUID = _GraphGuid,
-        //             Domain = VectorSearchDomainEnum.Node,
-        //             SearchType = VectorSearchTypeEnum.CosineSimilarity,
-        //             Embeddings = promptEmbeddings
-        //         };
-        //
-        //         var searchResults = _LiteGraph.SearchVectors(searchRequest);
-        //         if (searchResults == null || !searchResults.Any())
-        //             return "No relevant documents found to answer your question.";
-        //
-        //         // Extract content from matching nodes (top 5 results)
-        //         var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
-        //         var nodeContents = sortedResults
-        //             .Select(r => r.Node.Data is Atom atom ? atom.Text : r.Node.Tags["Content"] ?? "[No Content]")
-        //             .Where(c => !string.IsNullOrEmpty(c))
-        //             .ToList();
-        //
-        //         // Construct RAG query
-        //         var ragQuery = $@"
-        //             You are a helpful AI assistant.
-        //             Answer the question that follows, using the context that appears before the question as hints to answer the question.
-        //             Do not make up an answer; if you do not know the answer, say that you do not know the answer.
-        //             The context is as follows: {string.Join("\n\n", nodeContents)}
-        //             The question asked by the user is: {userInput}";
-        //
-        //         if (selectedProvider == "OpenAI")
-        //         {
-        //             var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-        //             var requestUri = "https://api.openai.com/v1/chat/completions";
-        //             using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-        //             request.Headers.Authorization =
-        //                 new AuthenticationHeaderValue("Bearer", openAISettings.OpenAICompletionApiKey);
-        //
-        //             var requestBody = new
-        //             {
-        //                 model = openAISettings.OpenAICompletionModel ?? "gpt-3.5-turbo", // Or another chat model
-        //                 messages = new[]
-        //                 {
-        //                     new { role = "user", content = ragQuery }
-        //                 },
-        //                 max_tokens = 300
-        //             };
-        //
-        //             request.Content = new StringContent(
-        //                 JsonSerializer.Serialize(requestBody),
-        //                 Encoding.UTF8,
-        //                 "application/json"
-        //             );
-        //
-        //             using var response = await _httpClient.SendAsync(request);
-        //             response.EnsureSuccessStatusCode();
-        //             var responseJson = await response.Content.ReadAsStringAsync();
-        //
-        //             using var doc = JsonDocument.Parse(responseJson);
-        //             var aiText = doc.RootElement
-        //                 .GetProperty("choices")[0]
-        //                 .GetProperty("message")
-        //                 .GetProperty("content")
-        //                 .GetString();
-        //
-        //             return aiText ?? "No response from AI.";
-        //         }
-        //         // // Step 5: Send RAG query to View LLM endpoint 
-        //         // var llmEndpoint = providerSettings.ViewCompletionApiKey != null
-        //         //     ? $"{providerSettings.ViewEndpoint}" 
-        //         //     : "http://default-view-llm-endpoint/completions";
-        //         //
-        //         // using var request = new HttpRequestMessage(HttpMethod.Post, llmEndpoint);
-        //         // request.Headers.Authorization =
-        //         //     new AuthenticationHeaderValue("Bearer", providerSettings.ViewCompletionApiKey ?? "default");
-        //         // var requestBody = new
-        //         // {
-        //         //     prompt = ragQuery,
-        //         //     model = providerSettings.Model ?? "all-MiniLM-L6-v2",
-        //         //     max_tokens = 300
-        //         // };
-        //         //
-        //         // request.Content = new StringContent(
-        //         //     JsonSerializer.Serialize(requestBody),
-        //         //     Encoding.UTF8,
-        //         //     "application/json"
-        //         // );
-        //         //
-        //         // using var response = await _httpClient.SendAsync(request);
-        //         // response.EnsureSuccessStatusCode();
-        //         // var responseJson = await response.Content.ReadAsStringAsync();
-        //         //
-        //         // using var doc = JsonDocument.Parse(responseJson);
-        //         // var root = doc.RootElement;
-        //         // var aiText = root.GetProperty("choices")[0]
-        //         //     .GetProperty("text")
-        //         //     .GetString();
-        //         //
-        //         // return aiText ?? "No response from AI.";
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine($"Error in GetAIResponse: {ex.Message}");
-        //         return $"Error: {ex.Message}";
-        //     }
-        // }
-
         private async Task<string> GetAIResponse(string userInput)
         {
             try
             {
                 var app = (App)Application.Current;
-                var selectedProvider =
-                    (this.FindControl<ComboBox>("ProviderSelectionComboBox").SelectedItem as ComboBoxItem)?.Content
-                    .ToString();
-                List<float> promptEmbeddings;
+                var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
 
-                if (selectedProvider == "OpenAI")
-                {
-                    var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-                    var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                        new List<string> { userInput },
-                        openAISettings.OpenAICompletionApiKey,
-                        openAISettings.OpenAIEmbeddingModel);
-                    if (embeddings == null || embeddings.Length == 0)
-                        return "Error: Failed to generate embeddings for the prompt.";
-                    promptEmbeddings = embeddings[0].ToList();
-                }
-                else
-                {
-                    // Existing View provider logic
-                    var providerSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-                    _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
-                        providerSettings.ViewEndpoint,
-                        providerSettings.AccessKey);
+                if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
+                    return "Error: OpenAI API key not configured in settings.";
 
-                    var embeddingsRequest = new EmbeddingsRequest
-                    {
-                        EmbeddingsRule = new EmbeddingsRule
-                        {
-                            EmbeddingsGenerator =
-                                Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator ?? "LCProxy"),
-                            EmbeddingsGeneratorUrl =
-                                providerSettings.EmbeddingsGeneratorUrl ?? "http://nginx-lcproxy:8000/",
-                            EmbeddingsGeneratorApiKey = providerSettings.ApiKey ?? "",
-                            BatchSize = 1,
-                            MaxGeneratorTasks = 4,
-                            MaxRetries = 3,
-                            MaxFailures = 3
-                        },
-                        Model = providerSettings.Model ?? "all-MiniLM-L6-v2",
-                        Contents = new List<string> { userInput }
-                    };
+                // Generate embeddings
+                var embeddings = await GetOpenAIEmbeddingsBatchAsync(
+                    new List<string> { userInput },
+                    openAISettings.OpenAICompletionApiKey,
+                    openAISettings.OpenAIEmbeddingModel);
+                if (embeddings == null || embeddings.Length == 0)
+                    return "Error: Failed to generate embeddings for the prompt.";
 
-                    var embeddingResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(embeddingsRequest);
-                    if (!embeddingResult.Success || embeddingResult.ContentEmbeddings == null ||
-                        embeddingResult.ContentEmbeddings.Count == 0 ||
-                        embeddingResult.ContentEmbeddings[0].Embeddings == null)
-                        return "Error: Failed to generate embeddings for the prompt.";
-                    promptEmbeddings = embeddingResult.ContentEmbeddings[0].Embeddings;
-                }
+                var promptEmbeddings = embeddings[0].ToList();
+                Console.WriteLine(
+                    $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
 
-                // Vector search in LiteGraph
+                // Log search parameters
+                Console.WriteLine($"Searching with TenantGUID={_TenantGuid}, GraphGUID={_GraphGuid}");
                 var searchRequest = new VectorSearchRequest
                 {
                     TenantGUID = _TenantGuid,
@@ -965,26 +780,81 @@ namespace View.Personal
                 };
 
                 var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
                 if (searchResults == null || !searchResults.Any())
+                {
+                    Console.WriteLine("Search failed: No matching nodes found.");
                     return "No relevant documents found to answer your question.";
+                }
 
-                // Extract top 5 results
+                // Extract top 5 results with fallback logic
                 var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
                 var nodeContents = sortedResults
-                    .Select(r => r.Node.Data is Atom atom ? atom.Text : r.Node.Tags["Content"] ?? "[No Content]")
-                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Select(r =>
+                    {
+                        // Try casting Data to Atom
+                        if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                            return atom.Text;
+
+                        // Fallback to Vectors[0].Content if available
+                        if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                            !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                            return r.Node.Vectors[0].Content;
+
+                        // Fallback to Tags["Content"]
+                        return r.Node.Tags["Content"] ?? "[No Content]";
+                    })
+                    .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
                     .ToList();
 
-                // Construct RAG query
-                var ragQuery = $@"
-            You are a helpful AI assistant.
-            Answer the question that follows, using the context that appears before the question as hints to answer the question.
-            Do not make up an answer; if you do not know the answer, say that you do not know the answer.
-            The context is as follows: {string.Join("\n\n", nodeContents)}
-            The question asked by the user is: {userInput}";
+                Console.WriteLine(
+                    $"Extracted {nodeContents.Count} valid content items: {string.Join(", ", nodeContents)}");
 
-                // For now, return the context as a placeholder (replace with LLM call)
-                return $"Retrieved Context:\n{string.Join("\n\n", nodeContents)}";
+                // Construct RAG query
+                var context = string.Join("\n\n", nodeContents);
+                if (string.IsNullOrEmpty(context))
+                    Console.WriteLine("Warning: Context is empty after filtering.");
+                if (context.Length > 4000)
+                    context = context.Substring(0, 4000) + "... [truncated]";
+                var ragQuery = $@"
+You are a helpful AI assistant.
+Answer the question that follows, using the context that appears before the question as hints to answer the question.
+Do not make up an answer; if you do not know the answer, say that you do not know the answer.
+The context is as follows: {context}
+The question asked by the user is: {userInput}";
+
+                // OpenAI completion with gpt-4o-mini
+                var requestUri = "https://api.openai.com/v1/chat/completions";
+                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+                request.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", openAISettings.OpenAICompletionApiKey);
+
+                var requestBody = new
+                {
+                    model = openAISettings.OpenAICompletionModel, // "gpt-4o-mini"
+                    messages = new[] { new { role = "user", content = ragQuery } },
+                    max_tokens = 300,
+                    temperature = 0.7
+                };
+
+                request.Content = new StringContent(
+                    _Serializer.SerializeJson(requestBody),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseJson = await response.Content.ReadAsStringAsync();
+
+                using var doc = JsonDocument.Parse(responseJson);
+                var aiText = doc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                return aiText ?? "No response from AI.";
             }
             catch (Exception ex)
             {
