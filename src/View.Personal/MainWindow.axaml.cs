@@ -108,8 +108,7 @@ namespace View.Personal
                 anthropic.AnthropicCompletionModel ?? string.Empty;
 
             UpdateSettingsVisibility("View");
-            this.FindControl<ComboBox>("ModelProviderComboBox").SelectedIndex = 0;
-            this.FindControl<ComboBox>("ProviderSelectionComboBox").SelectedIndex = 0;
+            this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedIndex = 0;
         }
 
         private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -171,7 +170,7 @@ namespace View.Personal
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
-            var selectedProvider = (this.FindControl<ComboBox>("ModelProviderComboBox").SelectedItem as ComboBoxItem)
+            var selectedProvider = (this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
                 ?.Content.ToString();
 
             CompletionProviderSettings settings = null;
@@ -255,7 +254,7 @@ namespace View.Personal
         {
             // Get the file path and provider selection
             var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
-            var providerCombo = this.FindControl<ComboBox>("ProviderSelectionComboBox");
+            var providerCombo = this.FindControl<ComboBox>("NavModelProviderComboBox");
             var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
 
             if (string.IsNullOrEmpty(selectedProvider))
@@ -743,7 +742,6 @@ namespace View.Personal
         {
             if (conversationWindow != null)
                 conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, _ChatMessages);
-            // Adding extra newline for spacing between messages like Grok
         }
 
         private async Task<string> GetAIResponse(string userInput)
