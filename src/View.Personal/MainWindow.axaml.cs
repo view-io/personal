@@ -538,10 +538,27 @@ namespace View.Personal
 
                 Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
                 Console.WriteLine($"File {filePath} ingested successfully!");
+
+                await MsBox.Avalonia.MessageBoxManager
+                    .GetMessageBoxStandard(
+                        "File Ingested",
+                        "File was ingested successfully!",
+                        ButtonEnum.Ok,
+                        MsBox.Avalonia.Enums.Icon.Success
+                    )
+                    .ShowAsync();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
+                await MsBox.Avalonia.MessageBoxManager
+                    .GetMessageBoxStandard(
+                        "Ingestion Error",
+                        $"Something went wrong: {ex.Message}",
+                        ButtonEnum.Ok,
+                        MsBox.Avalonia.Enums.Icon.Error
+                    )
+                    .ShowAsync();
             }
         }
 
