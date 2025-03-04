@@ -28,6 +28,7 @@ namespace View.Personal
     using SerializationHelper;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Node = LiteGraph.Node;
+    using Services;
 
     public partial class MainWindow : Window
     {
@@ -50,6 +51,7 @@ namespace View.Personal
         private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
         private List<string> _ChatMessages = new();
+        private readonly FileBrowserService _fileBrowserService = new();
 
         #endregion
 
@@ -631,34 +633,8 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
             if (textBox == null) return;
 
-            var topLevel = GetTopLevel(this);
-            if (topLevel == null)
-            {
-                Console.WriteLine("Failed to get TopLevel.");
-                return;
-            }
-
-            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Select Export Location",
-                DefaultExtension = "gexf",
-                FileTypeChoices = new[]
-                {
-                    new FilePickerFileType("GEXF Files") { Patterns = new[] { "*.gexf" } },
-                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
-                },
-                SuggestedFileName = "exported_graph.gexf"
-            });
-
-            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
-            {
-                textBox.Text = file.Path.LocalPath;
-                Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
-            }
-            else
-            {
-                Console.WriteLine("No file selected.");
-            }
+            var filePath = await _fileBrowserService.BrowseForExportLocation(this);
+            if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
         }
 
         private async void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -666,33 +642,8 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("FilePathTextBox");
             if (textBox == null) return;
 
-            var topLevel = GetTopLevel(this);
-            if (topLevel == null)
-            {
-                Console.WriteLine("Failed to get TopLevel.");
-                return;
-            }
-
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                Title = "Select File to Ingest",
-                AllowMultiple = false,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType("PDF Files") { Patterns = new[] { "*.pdf" } },
-                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
-                }
-            });
-
-            if (files != null && files.Count > 0 && !string.IsNullOrEmpty(files[0].Path?.LocalPath))
-            {
-                textBox.Text = files[0].Path.LocalPath;
-                Console.WriteLine($"Selected file path: {files[0].Path.LocalPath}");
-            }
-            else
-            {
-                Console.WriteLine("No file selected.");
-            }
+            var filePath = await _fileBrowserService.BrowseForFileToIngest(this);
+            if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
         }
 
         private async void SendMessage_Click(object sender, RoutedEventArgs e)
@@ -728,26 +679,13 @@ namespace View.Personal
 
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
         {
-            var topLevel = GetTopLevel(this);
-            if (topLevel == null) return;
+            var filePath = await _fileBrowserService.BrowseForChatHistorySaveLocation(this);
 
-            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Save Chat History",
-                DefaultExtension = "txt",
-                SuggestedFileName = $"chat_history_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
-                FileTypeChoices = new[]
-                {
-                    new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
-                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
-                }
-            });
-
-            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
+            if (!string.IsNullOrEmpty(filePath))
                 try
                 {
-                    await File.WriteAllLinesAsync(file.Path.LocalPath, _ChatMessages);
-                    Console.WriteLine($"Chat history saved to {file.Path.LocalPath}");
+                    await File.WriteAllLinesAsync(filePath, _ChatMessages);
+                    Console.WriteLine($"Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
                 {
