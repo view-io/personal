@@ -1,3 +1,4 @@
+#pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 namespace View.Personal
@@ -30,7 +31,6 @@ namespace View.Personal
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Node = LiteGraph.Node;
     using Services;
-    using Classes;
 
     public partial class MainWindow : Window
     {
@@ -153,8 +153,8 @@ namespace View.Personal
                             {
                                 var filePath = node.Tags?["FilePath"] ?? "Unknown";
 
-                                // Skip if FilePath has already been seen (i.e., it's a duplicate)
-                                if (!seenFilePaths.Add(filePath)) continue; // Skip duplicates
+                                // Skip if FilePath has already been seen
+                                if (!seenFilePaths.Add(filePath)) continue;
 
                                 // Extract required fields
                                 var name = node.Name ?? "Unnamed";
