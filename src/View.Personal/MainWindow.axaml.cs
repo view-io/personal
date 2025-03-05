@@ -17,6 +17,7 @@ namespace View.Personal
     using Avalonia.Controls;
     using Avalonia.Platform.Storage;
     using Avalonia.Interactivity;
+    using Avalonia.Media;
     using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core;
@@ -694,7 +695,8 @@ namespace View.Personal
         private async void SendMessage_Click(object sender, RoutedEventArgs e)
         {
             var inputBox = this.FindControl<TextBox>("ChatInputBox");
-            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            var scrollViewer = this.FindControl<ScrollViewer>("ChatScrollViewer");
 
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
@@ -706,7 +708,8 @@ namespace View.Personal
                 });
 
                 // Update UI
-                UpdateConversationWindow(conversationWindow);
+                UpdateConversationWindow(conversationContainer);
+                scrollViewer?.ScrollToEnd(); // Scroll to bottom after user message
 
                 // Get AI response
                 var aiResponse = await GetAIResponse(inputBox.Text);
@@ -719,7 +722,8 @@ namespace View.Personal
                     });
 
                     // Refresh the UI display again
-                    UpdateConversationWindow(conversationWindow);
+                    UpdateConversationWindow(conversationContainer);
+                    scrollViewer?.ScrollToEnd(); // Scroll to bottom after AI response
                 }
 
                 // Clear the input
@@ -730,9 +734,8 @@ namespace View.Personal
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
             _ConversationHistory.Clear();
-            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
-            if (conversationWindow != null)
-                conversationWindow.Text = string.Empty;
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            conversationContainer?.Children.Clear();
         }
 
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
@@ -752,14 +755,38 @@ namespace View.Personal
                 }
         }
 
-        private void UpdateConversationWindow(TextBlock conversationWindow)
+        private void UpdateConversationWindow(StackPanel conversationContainer)
         {
-            if (conversationWindow != null)
+            if (conversationContainer != null)
             {
-                // Just join the Role + Content in any style you like
-                var displayLines = _ConversationHistory
-                    .Select(msg => $"{msg.Role.ToUpper()}: {msg.Content}");
-                conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, displayLines);
+                // Clear existing messages
+                conversationContainer.Children.Clear();
+
+                // Add each message with appropriate background color
+                foreach (var msg in _ConversationHistory)
+                {
+                    var messageBlock = new TextBlock
+                    {
+                        Text = msg.Content,
+                        TextWrapping = TextWrapping.Wrap,
+                        // Remove Width to let it auto-size
+                        Padding = new Thickness(10),
+                        FontSize = 14,
+                        Foreground = new SolidColorBrush(Colors.Black) // Black text for both
+                    };
+
+                    var messageBorder = new Border
+                    {
+                        Background = msg.Role == "user"
+                            ? new SolidColorBrush(Color.FromArgb(100, 173, 216, 230)) // Light blue for user
+                            : new SolidColorBrush(Color.FromArgb(100, 144, 238, 144)), // Light green for assistant
+                        CornerRadius = new CornerRadius(5),
+                        Padding = new Thickness(5, 2, 5, 2), // Horizontal padding to hug text, vertical for spacing
+                        Child = messageBlock
+                    };
+
+                    conversationContainer.Children.Add(messageBorder);
+                }
             }
         }
 
