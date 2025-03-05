@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:classes="clr-namespace:View.Personal.Classes"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Background="White"
@@ -23,30 +24,45 @@
                     VerticalAlignment="Bottom" />
         </Grid>
 
-        <!-- Left Navigation Panel -->
+        <!-- Left Navigation Panel with Model Provider Dropdown -->
         <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
-            <ListBox Background="Transparent" BorderThickness="0" x:Name="NavList"
-                     SelectionChanged="NavList_SelectionChanged">
-                <ListBox.Styles>
-                    <Style Selector="ListBoxItem">
-                        <Setter Property="Padding" Value="20,10" />
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="Foreground" Value="Black" />
-                    </Style>
-                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#f0f0f0" />
-                        <Setter Property="Foreground" Value="Black" />
-                    </Style>
-                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#007BFF" />
-                        <Setter Property="Foreground" Value="White" />
-                    </Style>
-                </ListBox.Styles>
-                <ListBoxItem Content="Dashboard" IsSelected="True" />
-                <ListBoxItem Content="Settings" />
-                <ListBoxItem Content="My Files" />
-                <ListBoxItem Content="Chat" />
-            </ListBox>
+            <StackPanel>
+                <!-- Navigation List -->
+                <ListBox Background="Transparent" BorderThickness="0" x:Name="NavList"
+                         SelectionChanged="NavList_SelectionChanged" Margin="0,0,0,10">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Padding" Value="20,10" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#f0f0f0" />
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#007BFF" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBoxItem Content="Dashboard" IsSelected="True" />
+                    <ListBoxItem Content="Settings" />
+                    <ListBoxItem Content="My Files" />
+                    <ListBoxItem Content="Chat" />
+                </ListBox>
+
+                <!-- Model Provider Dropdown -->
+                <StackPanel Margin="20,10,20,0">
+                    <TextBlock Text="Model Provider" Foreground="Black" Margin="0,0,0,5" />
+                    <ComboBox x:Name="NavModelProviderComboBox" Width="160" SelectedIndex="0"
+                              SelectionChanged="ModelProvider_SelectionChanged">
+                        <ComboBoxItem Content="View" />
+                        <ComboBoxItem Content="OpenAI" />
+                        <ComboBoxItem Content="Voyage" />
+                        <ComboBoxItem Content="Anthropic" />
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
         </Border>
 
         <!-- Main Content Area -->
@@ -90,20 +106,6 @@
             <!-- Settings View -->
             <StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20" />
-
-                <!-- Model Provider Selection -->
-                <StackPanel Orientation="Vertical" Spacing="5">
-                    <TextBlock Text="Model Provider" Foreground="Black" />
-                    <ComboBox x:Name="ModelProviderComboBox" SelectedIndex="0"
-                              SelectionChanged="ModelProvider_SelectionChanged">
-                        <ComboBoxItem Content="View" />
-                        <ComboBoxItem Content="OpenAI" />
-                        <ComboBoxItem Content="Voyage" />
-                        <ComboBoxItem Content="Anthropic" />
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- OpenAI Settings -->
                 <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
                     <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black"
@@ -181,7 +183,6 @@
                         HorizontalAlignment="Left" />
             </StackPanel>
             <!-- My Files View -->
-            <!-- Ingest a File Section -->
             <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Text="My Files" FontSize="24" Foreground="Black" Margin="0,0,0,10" />
 
@@ -189,12 +190,6 @@
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <TextBlock Text="Ingest a File" Foreground="rgba(106, 107, 111, 1)" Margin="0,0,0,0" />
                     <StackPanel Orientation="Vertical" Spacing="5">
-                        <ComboBox x:Name="ProviderSelectionComboBox" SelectedIndex="0">
-                            <ComboBoxItem Content="View" />
-                            <ComboBoxItem Content="OpenAI" />
-                            <ComboBoxItem Content="Voyage" />
-                            <ComboBoxItem Content="Anthropic" />
-                        </ComboBox>
                         <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
                             <TextBox Grid.Column="0" x:Name="FilePathTextBox" Watermark="Enter file path..."
                                      Margin="0,0,10,0" />
@@ -246,8 +241,8 @@
                             </Button.Styles>
                         </Button>
                         <Button Grid.Column="2" Content="Export" Click="ExportGraph_Click" Width="120"
-                                HorizontalAlignment="Right" HorizontalContentAlignment="Center"
-                                Background="#007BFF" Foreground="White">
+                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" Background="#007BFF"
+                                Foreground="White">
                             <Button.Styles>
                                 <Style Selector="Button:pointerover /template/ ContentPresenter">
                                     <Setter Property="Background" Value="rgba(5, 94, 222, 1)" />
@@ -255,6 +250,60 @@
                             </Button.Styles>
                         </Button>
                     </Grid>
+                </StackPanel>
+
+                <!-- Files Table -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <TextBlock Text="Your Files" Foreground="rgba(106, 107, 111, 1)" Margin="0,0,0,5" />
+                    <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto">
+                        <DataGrid x:Name="FilesDataGrid"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="True"
+                                  Foreground="black"
+                                  x:DataType="classes:FileViewModel">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+                                <DataGridTextColumn Header="Created (UTC)" Binding="{Binding CreatedUtc}" Width="150" />
+                                <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="300" />
+                                <DataGridTextColumn Header="Document Type" Binding="{Binding DocumentType}" Width="150" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </ScrollViewer>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
+                <TextBlock Text="Chat" FontSize="24" Foreground="Black" Margin="20,0,0,10" />
+                <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto" Margin="20,0">
+                    <TextBlock x:Name="ConversationWindow"
+                               Width="600"
+                               Height="400"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Top"
+                               Background="#F5F5F5"
+                               Foreground="#000000"
+                               FontWeight="Normal"
+                               Padding="10"
+                               FontSize="14" />
+                </ScrollViewer>
+                <StackPanel Orientation="Horizontal" Margin="20,10">
+                    <TextBox x:Name="ChatInputBox"
+                             Width="400"
+                             Watermark="Type your message here..."
+                             AcceptsReturn="False" />
+                    <Button x:Name="SendButton"
+                            Content="Send"
+                            Margin="5,0,0,0"
+                            Click="SendMessage_Click" />
+                    <Button x:Name="ClearButton"
+                            Content="Clear"
+                            Margin="5,0,0,0"
+                            Click="ClearChat_Click" />
+                    <Button x:Name="DownloadButton"
+                            Content="Download"
+                            Margin="5,0,0,0"
+                            Click="DownloadChat_Click" />
                 </StackPanel>
             </StackPanel>
 
