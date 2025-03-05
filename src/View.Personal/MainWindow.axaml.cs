@@ -52,7 +52,7 @@ namespace View.Personal
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
-        private List<string> _ChatMessages = new();
+        private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _fileBrowserService = new();
 
         #endregion
@@ -698,25 +698,38 @@ namespace View.Personal
 
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
-                var userMessage = $"You: {inputBox.Text}";
-                _ChatMessages.Add(userMessage);
+                // Add the user's new message to conversation history
+                _ConversationHistory.Add(new ChatMessage
+                {
+                    Role = "user",
+                    Content = inputBox.Text
+                });
+
+                // Update UI
                 UpdateConversationWindow(conversationWindow);
 
-                // Get AI response and append it
+                // Get AI response
                 var aiResponse = await GetAIResponse(inputBox.Text);
                 if (!string.IsNullOrEmpty(aiResponse))
                 {
-                    _ChatMessages.Add($"AI: {aiResponse}");
+                    _ConversationHistory.Add(new ChatMessage
+                    {
+                        Role = "assistant",
+                        Content = aiResponse
+                    });
+
+                    // Refresh the UI display again
                     UpdateConversationWindow(conversationWindow);
                 }
 
-                inputBox.Text = string.Empty; // Clear input
+                // Clear the input
+                inputBox.Text = string.Empty;
             }
         }
 
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
-            _ChatMessages.Clear();
+            _ConversationHistory.Clear();
             var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
             if (conversationWindow != null)
                 conversationWindow.Text = string.Empty;
@@ -729,7 +742,8 @@ namespace View.Personal
             if (!string.IsNullOrEmpty(filePath))
                 try
                 {
-                    await File.WriteAllLinesAsync(filePath, _ChatMessages);
+                    await File.WriteAllLinesAsync(filePath,
+                        _ConversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
                     Console.WriteLine($"Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
@@ -741,8 +755,48 @@ namespace View.Personal
         private void UpdateConversationWindow(TextBlock conversationWindow)
         {
             if (conversationWindow != null)
-                conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, _ChatMessages);
+            {
+                // Just join the Role + Content in any style you like
+                var displayLines = _ConversationHistory
+                    .Select(msg => $"{msg.Role.ToUpper()}: {msg.Content}");
+                conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, displayLines);
+            }
         }
+
+        private List<ChatMessage> BuildPromptMessages()
+        {
+            // If conversation is short, just return everything
+            if (_ConversationHistory.Count <= 8)
+                return _ConversationHistory;
+
+            // Separate older messages from more recent ones
+            var olderMessages = _ConversationHistory
+                .Take(_ConversationHistory.Count - 6)
+                .ToList();
+            var recentMessages = _ConversationHistory
+                .Skip(_ConversationHistory.Count - 6)
+                .ToList();
+
+            // For a proper summary, you'd actually do a second call to GPT to summarize `olderMessages`.
+            // For now, we do a “naïve summary”:
+            var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
+            var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
+
+            // Make one message with this summary
+            var summaryMessage = new ChatMessage
+            {
+                Role = "system",
+                Content = summaryContent
+            };
+
+            // Return the summary plus the recent messages
+            var finalList = new List<ChatMessage>();
+            finalList.Add(summaryMessage);
+            finalList.AddRange(recentMessages);
+
+            return finalList;
+        }
+
 
         private async Task<string> GetAIResponse(string userInput)
         {
@@ -814,26 +868,51 @@ namespace View.Personal
                     Console.WriteLine("Warning: Context is empty after filtering.");
                 if (context.Length > 4000)
                     context = context.Substring(0, 4000) + "... [truncated]";
-                var ragQuery = $@"
-You are a helpful AI assistant.
-Answer the question that follows, using the context that appears before the question as hints to answer the question.
-Do not make up an answer; if you do not know the answer, say that you do not know the answer.
-The context is as follows: {context}
-The question asked by the user is: {userInput}";
+                var conversationSoFar = BuildPromptMessages(); // returns List<ChatMessage>
 
-                // OpenAI completion with gpt-4o-mini
+                // Then create a brand-new message for the context
+                // (You can make this a “system” role or an “assistant” role, your choice.)
+                var contextMessage = new ChatMessage
+                {
+                    Role = "system", // Use "system" to set instructions
+                    Content =
+                        "You are an assistant answering based solely on the provided document context. Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                        context
+                };
+
+                // Then the new user question
+                var questionMessage = new ChatMessage
+                {
+                    Role = "user",
+                    Content = userInput
+                };
+
+                // We'll combine them:
+                var finalMessages = new List<ChatMessage>();
+                finalMessages.AddRange(conversationSoFar); // older chat + summary
+                finalMessages.Add(contextMessage); // your RAG context
+                finalMessages.Add(questionMessage); // the user's question
+
+                // 5) Convert to OpenAI Chat Completion format
+                var messagesForOpenAI = finalMessages.Select(msg => new
+                {
+                    role = msg.Role,
+                    content = msg.Content
+                }).ToList();
+
+                // 6) Call OpenAI
+                var requestBody = new
+                {
+                    model = openAISettings.OpenAICompletionModel,
+                    messages = messagesForOpenAI,
+                    max_tokens = 300,
+                    temperature = 0.7
+                };
+
                 var requestUri = "https://api.openai.com/v1/chat/completions";
                 using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
                 request.Headers.Authorization =
                     new AuthenticationHeaderValue("Bearer", openAISettings.OpenAICompletionApiKey);
-
-                var requestBody = new
-                {
-                    model = openAISettings.OpenAICompletionModel, // "gpt-4o-mini"
-                    messages = new[] { new { role = "user", content = ragQuery } },
-                    max_tokens = 300,
-                    temperature = 0.7
-                };
 
                 request.Content = new StringContent(
                     _Serializer.SerializeJson(requestBody),
