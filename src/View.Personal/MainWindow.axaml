@@ -278,7 +278,6 @@
                 <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto" Margin="20,0">
                     <TextBlock x:Name="ConversationWindow"
                                Width="600"
-                               Height="400"
                                TextWrapping="Wrap"
                                VerticalAlignment="Top"
                                Background="#F5F5F5"
