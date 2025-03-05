@@ -16,6 +16,7 @@ namespace View.Personal
     using Avalonia.Controls;
     using Avalonia.Platform.Storage;
     using Avalonia.Interactivity;
+    using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
@@ -29,6 +30,7 @@ namespace View.Personal
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Node = LiteGraph.Node;
     using Services;
+    using Classes;
 
     public partial class MainWindow : Window
     {
@@ -137,6 +139,49 @@ namespace View.Personal
                         break;
                     case "My Files":
                         MyFilesPanel.IsVisible = true;
+
+                        // Query nodes with "document" label
+                        var documentNodes =
+                            _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
+                        if (documentNodes != null && documentNodes.Any())
+                        {
+                            // Use a HashSet to track unique FilePaths
+                            var seenFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                            var uniqueFiles = new List<FileViewModel>();
+
+                            foreach (var node in documentNodes)
+                            {
+                                var filePath = node.Tags?["FilePath"] ?? "Unknown";
+
+                                // Skip if FilePath has already been seen (i.e., it's a duplicate)
+                                if (!seenFilePaths.Add(filePath)) continue; // Skip duplicates
+
+                                // Extract required fields
+                                var name = node.Name ?? "Unnamed";
+                                var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
+                                var documentType = node.Tags?["DocumentType"] ?? "Unknown";
+
+                                // Add to the list
+                                uniqueFiles.Add(new FileViewModel
+                                {
+                                    Name = name,
+                                    CreatedUtc = createdUtc,
+                                    FilePath = filePath,
+                                    DocumentType = documentType
+                                });
+                            }
+
+                            // Bind the list to the DataGrid
+                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                            if (filesDataGrid != null) filesDataGrid.ItemsSource = uniqueFiles;
+                        }
+                        else
+                        {
+                            // Clear the DataGrid if no files are found
+                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                            if (filesDataGrid != null) filesDataGrid.ItemsSource = null;
+                        }
+
                         break;
                     case "Chat":
                         ChatPanel.IsVisible = true;
