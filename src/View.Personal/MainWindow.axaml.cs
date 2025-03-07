@@ -77,108 +77,6 @@ namespace View.Personal
             UpdateSettingsVisibility("View");
         }
 
-        private void LoadSavedSettings()
-        {
-            var app = (App)Application.Current;
-
-            // View
-            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
-            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewEndpoint").Text =
-                view.ViewEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("AccessKey").Text =
-                view.AccessKey ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
-            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
-
-            // OpenAI
-            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-            this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
-            this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
-
-            // Voyage
-            var voyage = app.GetProviderSettings(CompletionProviderTypeEnum.Voyage);
-            this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text = voyage.VoyageEmbeddingModel ?? string.Empty;
-
-            // Anthropic
-            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
-            this.FindControl<TextBox>("AnthropicCompletionModel").Text =
-                anthropic.AnthropicCompletionModel ?? string.Empty;
-
-            UpdateSettingsVisibility("View");
-            this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedIndex = 0;
-        }
-
-        private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            Console.WriteLine("NavList_SelectionChanged triggered");
-
-            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
-            {
-                var selectedContent = selectedItem.Content?.ToString();
-
-                DashboardPanel.IsVisible = false;
-                SettingsPanel.IsVisible = false;
-                MyFilesPanel.IsVisible = false;
-                ChatPanel.IsVisible = false;
-                WorkspaceText.IsVisible = false;
-
-                switch (selectedContent)
-                {
-                    case "Dashboard":
-                        DashboardPanel.IsVisible = true;
-                        break;
-                    case "Settings":
-                        SettingsPanel.IsVisible = true;
-                        break;
-                    case "My Files":
-                        MyFilesPanel.IsVisible = true;
-                        var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid != null)
-                        {
-                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _GraphGuid);
-                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
-                        }
-
-                        break;
-                    case "Chat":
-                        ChatPanel.IsVisible = true;
-                        break;
-                    default:
-                        WorkspaceText.IsVisible = true;
-                        break;
-                }
-            }
-        }
-
-        public async void DeleteFile_Click(object sender, RoutedEventArgs e)
-        {
-            await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
-        }
-
-        private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
-            {
-                var selectedProvider = selectedItem.Content.ToString();
-                UpdateSettingsVisibility(selectedProvider);
-            }
-        }
-
-        private void UpdateSettingsVisibility(string selectedProvider)
-        {
-            MainWindowHelpers.UpdateSettingsVisibility(
-                OpenAISettings,
-                VoyageSettings,
-                AnthropicSettings,
-                ViewSettings,
-                selectedProvider);
-        }
-
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
@@ -234,6 +132,7 @@ namespace View.Personal
             if (settings != null)
             {
                 app.UpdateProviderSettings(settings);
+                app.SaveSelectedProvider(selectedProvider);
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
                         ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
@@ -241,6 +140,117 @@ namespace View.Personal
                 LoadSavedSettings();
             }
         }
+
+        private void LoadSavedSettings()
+        {
+            var app = (App)Application.Current;
+
+            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
+            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("AccessKey").Text = view.AccessKey ?? string.Empty;
+            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
+            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
+
+            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+            this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
+            this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
+
+            var voyage = app.GetProviderSettings(CompletionProviderTypeEnum.Voyage);
+            this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text = voyage.VoyageEmbeddingModel ?? string.Empty;
+
+            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
+            this.FindControl<TextBox>("AnthropicCompletionModel").Text =
+                anthropic.AnthropicCompletionModel ?? string.Empty;
+
+            var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
+            if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
+            {
+                var selectedItem = comboBox.Items
+                    .OfType<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
+                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0]; // Fallback to first item
+            }
+            else
+            {
+                comboBox.SelectedIndex = 0; // Default to first provider
+            }
+
+            UpdateSettingsVisibility(app.AppSettings.SelectedProvider ?? "View");
+        }
+
+        private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
+            {
+                var selectedContent = selectedItem.Content?.ToString();
+
+                DashboardPanel.IsVisible = false;
+                SettingsPanel.IsVisible = false;
+                MyFilesPanel.IsVisible = false;
+                ChatPanel.IsVisible = false;
+                WorkspaceText.IsVisible = false;
+
+                switch (selectedContent)
+                {
+                    case "Dashboard":
+                        DashboardPanel.IsVisible = true;
+                        break;
+                    case "Settings":
+                        SettingsPanel.IsVisible = true;
+                        var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
+                        var currentProvider = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                        if (!string.IsNullOrEmpty(currentProvider))
+                            UpdateSettingsVisibility(currentProvider);
+                        break;
+                    case "My Files":
+                        MyFilesPanel.IsVisible = true;
+                        var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                        if (filesDataGrid != null)
+                        {
+                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _GraphGuid);
+                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
+                        }
+
+                        break;
+                    case "Chat":
+                        ChatPanel.IsVisible = true;
+                        break;
+                    default:
+                        WorkspaceText.IsVisible = true;
+                        break;
+                }
+            }
+        }
+
+        public async void DeleteFile_Click(object sender, RoutedEventArgs e)
+        {
+            await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+        }
+
+        private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                var selectedProvider = selectedItem.Content.ToString();
+                UpdateSettingsVisibility(selectedProvider);
+            }
+        }
+
+        private void UpdateSettingsVisibility(string selectedProvider)
+        {
+            MainWindowHelpers.UpdateSettingsVisibility(
+                OpenAISettings,
+                VoyageSettings,
+                AnthropicSettings,
+                ViewSettings,
+                selectedProvider);
+        }
+
 
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
