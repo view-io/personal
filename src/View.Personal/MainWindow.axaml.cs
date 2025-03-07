@@ -5,7 +5,6 @@ namespace View.Personal
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Specialized;
     using System.IO;
     using System.Linq;
     using System.Net.Http;
@@ -29,7 +28,6 @@ namespace View.Personal
     using Sdk.Embeddings;
     using SerializationHelper;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
-    using Node = LiteGraph.Node;
     using Services;
 
     public partial class MainWindow : Window
@@ -157,73 +155,9 @@ namespace View.Personal
             }
         }
 
-        private async void DeleteFile_Click(object sender, RoutedEventArgs e)
+        public async void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is FileViewModel file)
-                try
-                {
-                    // Confirm deletion with the user
-                    var result = await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Confirm Deletion",
-                            $"Are you sure you want to delete '{file.Name}'?",
-                            ButtonEnum.YesNo,
-                            MsBox.Avalonia.Enums.Icon.Warning)
-                        .ShowAsync();
-
-                    if (result != ButtonResult.Yes)
-                        return;
-
-                    // Delete the node using LiteGraph
-                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, file.NodeGuid);
-                    Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
-
-                    // Refresh the file list
-                    var documentNodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
-                    var ingestedFiles = new List<FileViewModel>();
-
-                    if (documentNodes != null && documentNodes.Any())
-                        foreach (var node in documentNodes)
-                        {
-                            var filePath = node.Tags?["FilePath"] ?? "Unknown";
-                            var name = node.Name ?? "Unnamed";
-                            var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
-                            var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-                            var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
-
-                            ingestedFiles.Add(new FileViewModel
-                            {
-                                Name = name,
-                                CreatedUtc = createdUtc,
-                                FilePath = filePath,
-                                DocumentType = documentType,
-                                ContentLength = contentLength,
-                                NodeGuid = node.GUID
-                            });
-                        }
-
-                    var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                    if (filesDataGrid != null)
-                        filesDataGrid.ItemsSource = ingestedFiles;
-
-                    RefreshFileList();
-
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Success",
-                            $"File '{file.Name}' deleted successfully!",
-                            ButtonEnum.Ok,
-                            MsBox.Avalonia.Enums.Icon.Success)
-                        .ShowAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error deleting file '{file.Name}': {ex.Message}");
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Error",
-                            $"Failed to delete file: {ex.Message}",
-                            ButtonEnum.Ok,
-                            MsBox.Avalonia.Enums.Icon.Error)
-                        .ShowAsync();
-                }
+            await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
         private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -308,35 +242,6 @@ namespace View.Personal
             }
         }
 
-        private void RefreshFileList()
-        {
-            var documentNodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
-            var ingestedFiles = new List<FileViewModel>();
-
-            if (documentNodes != null && documentNodes.Any())
-                foreach (var node in documentNodes)
-                {
-                    var filePath = node.Tags?["FilePath"] ?? "Unknown";
-                    var name = node.Name ?? "Unnamed";
-                    var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
-                    var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-                    var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
-
-                    ingestedFiles.Add(new FileViewModel
-                    {
-                        Name = name,
-                        CreatedUtc = createdUtc,
-                        FilePath = filePath,
-                        DocumentType = documentType,
-                        ContentLength = contentLength,
-                        NodeGuid = node.GUID
-                    });
-                }
-
-            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-            if (filesDataGrid != null) filesDataGrid.ItemsSource = ingestedFiles;
-        }
-
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
@@ -357,255 +262,15 @@ namespace View.Personal
                 chatItem) NavList.SelectedItem = chatItem;
         }
 
-        private async void IngestFile_Click(object sender, RoutedEventArgs e)
+        public async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
-            var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
-            var providerCombo = this.FindControl<ComboBox>("NavModelProviderComboBox");
-            var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            if (string.IsNullOrEmpty(selectedProvider))
-            {
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Error", "Please select a provider", ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Error)
-                    .ShowAsync();
-                return;
-            }
-
-            var app = (App)Application.Current;
-            var providerSettings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
-
-            try
-            {
-                // 1. Detect file type
-                string contentType = null;
-                var typeResult = _TypeDetector.Process(filePath, contentType);
-                Console.WriteLine($"Detected Type: {typeResult.Type}");
-
-                if (typeResult.Type != DocumentTypeEnum.Pdf)
-                {
-                    Console.WriteLine($"Unsupported file type: {typeResult.Type} (only PDF is supported).");
-                    return;
-                }
-
-                // 2. Process PDF into atoms
-                var processorSettings = new PdfProcessorSettings
-                {
-                    Chunking = new ChunkingSettings
-                    {
-                        Enable = true,
-                        MaximumLength = 512,
-                        ShiftSize = 512
-                    }
-                };
-                var pdfProcessor = new PdfProcessor(processorSettings);
-                var atoms = pdfProcessor.Extract(filePath).ToList();
-                Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
-
-                // 3. Create and store document node
-                var fileNode =
-                    MainWindowHelpers.CreateDocumentNode(_TenantGuid, _GraphGuid, filePath, atoms, typeResult);
-                _LiteGraph.CreateNode(fileNode);
-                Console.WriteLine($"Created file document node {fileNode.GUID}");
-
-                // 4. Create and store chunk nodes
-                var chunkNodes = MainWindowHelpers.CreateChunkNodes(_TenantGuid, _GraphGuid, atoms);
-                _LiteGraph.CreateNodes(_TenantGuid, _GraphGuid, chunkNodes);
-                Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
-
-                // 5. Create and store edges
-                var edges = MainWindowHelpers.CreateDocumentChunkEdges(_TenantGuid, _GraphGuid, fileNode.GUID,
-                    chunkNodes);
-                _LiteGraph.CreateEdges(_TenantGuid, _GraphGuid, edges);
-                Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
-
-                // 6. Generate embeddings
-                switch (selectedProvider)
-                {
-                    case "OpenAI":
-                        if (string.IsNullOrEmpty(providerSettings.OpenAICompletionApiKey) ||
-                            string.IsNullOrEmpty(providerSettings.OpenAIEmbeddingModel))
-                        {
-                            Console.WriteLine("OpenAI API key or embedding model not configured.");
-                            break;
-                        }
-
-                        var validChunkNodes = chunkNodes
-                            .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                            .ToList();
-
-                        var chunkTexts = validChunkNodes
-                            .Select(x => (x.Data as Atom).Text)
-                            .ToList();
-
-                        if (!chunkTexts.Any())
-                        {
-                            Console.WriteLine("No valid text content found in atoms for embedding.");
-                            break;
-                        }
-
-                        var embeddings = await MainWindowHelpers.GetOpenAIEmbeddingsBatchAsync(
-                            chunkTexts,
-                            providerSettings.OpenAICompletionApiKey,
-                            providerSettings.OpenAIEmbeddingModel);
-
-                        if (embeddings == null || embeddings.Length != validChunkNodes.Count)
-                        {
-                            Console.WriteLine("Failed to generate embeddings or mismatch in count.");
-                            break;
-                        }
-
-                        for (var j = 0; j < validChunkNodes.Count; j++)
-                        {
-                            var chunkNode = validChunkNodes[j];
-                            var vectorArray = embeddings[j];
-
-                            chunkNode.Vectors = new List<VectorMetadata>
-                            {
-                                new()
-                                {
-                                    TenantGUID = _TenantGuid,
-                                    GraphGUID = _GraphGuid,
-                                    NodeGUID = chunkNode.GUID,
-                                    Model = providerSettings.OpenAIEmbeddingModel,
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
-                                    Content = (chunkNode.Data as Atom).Text
-                                }
-                            };
-                            _LiteGraph.UpdateNode(chunkNode);
-                        }
-
-                        Console.WriteLine($"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
-                        break;
-
-                    case "View":
-                        _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
-                            providerSettings.ViewEndpoint,
-                            providerSettings.AccessKey);
-
-                        var chunkContents = chunkNodes
-                            .Select(x => x.Data as Atom)
-                            .Where(atom => atom != null && !string.IsNullOrWhiteSpace(atom.Text))
-                            .Select(atom => atom.Text)
-                            .ToList();
-
-                        if (!chunkContents.Any())
-                        {
-                            Console.WriteLine("No valid text content found in atoms for embedding.");
-                            break;
-                        }
-
-                        var req = new EmbeddingsRequest
-                        {
-                            EmbeddingsRule = new EmbeddingsRule
-                            {
-                                EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator),
-                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
-                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
-                                BatchSize = 2,
-                                MaxGeneratorTasks = 4,
-                                MaxRetries = 3,
-                                MaxFailures = 3
-                            },
-                            Model = providerSettings.Model,
-                            Contents = chunkContents
-                        };
-
-                        var embeddingsResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!embeddingsResult.Success)
-                        {
-                            Console.WriteLine($"Embeddings generation failed: {embeddingsResult.StatusCode}");
-                            if (embeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
-                            break;
-                        }
-
-                        if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
-                        {
-                            var validChunkNodesView = chunkNodes
-                                .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                                .ToList();
-
-                            var updateTasks = embeddingsResult.ContentEmbeddings
-                                .Zip(validChunkNodesView,
-                                    (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
-                                .Select(item =>
-                                {
-                                    var atom = item.ChunkNode.Data as Atom;
-                                    item.ChunkNode.Vectors = new List<VectorMetadata>
-                                    {
-                                        new()
-                                        {
-                                            TenantGUID = _TenantGuid,
-                                            GraphGUID = _GraphGuid,
-                                            NodeGUID = item.ChunkNode.GUID,
-                                            Model = providerSettings.Model,
-                                            Dimensionality = item.Embedding.Embeddings?.Count ?? 0,
-                                            Vectors = item.Embedding.Embeddings,
-                                            Content = atom.Text
-                                        }
-                                    };
-                                    _LiteGraph.UpdateNode(item.ChunkNode);
-                                    return Task.CompletedTask;
-                                });
-
-                            await Task.WhenAll(updateTasks);
-                            Console.WriteLine(
-                                $"Updated {embeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("No embeddings returned from View service.");
-                        }
-
-                        break;
-                }
-
-                Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
-                Console.WriteLine($"File {filePath} ingested successfully!");
-                RefreshFileList();
-
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "File Ingested",
-                        "File was ingested successfully!",
-                        ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Success
-                    )
-                    .ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Ingestion Error",
-                        $"Something went wrong: {ex.Message}",
-                        ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Error
-                    )
-                    .ShowAsync();
-            }
+            await FileIngester.IngestFile_ClickAsync(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid,
+                this);
         }
 
-        private void ExportGraph_Click(object sender, RoutedEventArgs e)
+        public void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var exportFilePath = this.FindControl<TextBox>("ExportFilePathTextBox")?.Text;
-                if (string.IsNullOrWhiteSpace(exportFilePath))
-                    // If no path is provided, use a default one
-                    exportFilePath = "exported_graph.gexf";
-
-                _LiteGraph.ExportGraphToGexfFile(_TenantGuid, _GraphGuid, exportFilePath, true);
-
-                Console.WriteLine($"Graph {_GraphGuid} exported to {exportFilePath} successfully!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error exporting graph to GEXF: {ex.Message}");
-            }
+            GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
         private async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts, string openAIKey,
