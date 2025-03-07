@@ -359,7 +359,6 @@ namespace View.Personal
 
         private async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
-            // Get the file path and provider selection
             var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
             var providerCombo = this.FindControl<ComboBox>("NavModelProviderComboBox");
             var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
@@ -373,13 +372,12 @@ namespace View.Personal
                 return;
             }
 
-            // Get the provider settings
             var app = (App)Application.Current;
             var providerSettings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
             try
             {
-                // 1. Detect file type (only proceed if PDF)
+                // 1. Detect file type
                 string contentType = null;
                 var typeResult = _TypeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
@@ -390,7 +388,7 @@ namespace View.Personal
                     return;
                 }
 
-                // 2. Process PDF into DocumentAtom atoms
+                // 2. Process PDF into atoms
                 var processorSettings = new PdfProcessorSettings
                 {
                     Chunking = new ChunkingSettings
@@ -404,90 +402,27 @@ namespace View.Personal
                 var atoms = pdfProcessor.Extract(filePath).ToList();
                 Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
 
-                // 3. Create a Document node
-                var fileNodeGuid = Guid.NewGuid();
-                var fileNode = new Node
-                {
-                    GUID = fileNodeGuid,
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    Name = Path.GetFileName(filePath),
-                    Labels = new List<string> { "document" },
-                    Tags = new NameValueCollection
-                    {
-                        { "DocumentType", typeResult.Type.ToString() },
-                        { "Extension", typeResult.Extension },
-                        { "NodeType", "Document" },
-                        { "MimeType", typeResult.MimeType },
-                        { "FileName", Path.GetFileName(filePath) },
-                        { "FilePath", filePath },
-                        { "ContentLength", new FileInfo(filePath).Length.ToString() }
-                    },
-                    Data = atoms
-                };
-
+                // 3. Create and store document node
+                var fileNode =
+                    MainWindowHelpers.CreateDocumentNode(_TenantGuid, _GraphGuid, filePath, atoms, typeResult);
                 _LiteGraph.CreateNode(fileNode);
-                Console.WriteLine($"Created file document node {fileNodeGuid}");
+                Console.WriteLine($"Created file document node {fileNode.GUID}");
 
-                // 4. Create chunk nodes (one node per atom)
-                var chunkNodes = new List<Node>();
-                var atomIndex = 0;
-                foreach (var atom in atoms)
-                {
-                    if (atom == null || string.IsNullOrWhiteSpace(atom.Text))
-                    {
-                        Console.WriteLine($"Skipping empty atom at index {atomIndex}");
-                        atomIndex++;
-                        continue;
-                    }
-
-                    var chunkNodeGuid = Guid.NewGuid();
-                    var chunkNode = new Node
-                    {
-                        GUID = chunkNodeGuid,
-                        TenantGUID = _TenantGuid,
-                        GraphGUID = _GraphGuid,
-                        Name = $"Atom {atomIndex}",
-                        Labels = new List<string> { "atom" },
-                        Tags = new NameValueCollection
-                        {
-                            { "NodeType", "Atom" },
-                            { "AtomIndex", atomIndex.ToString() },
-                            { "ContentLength", atom.Text.Length.ToString() }
-                        },
-                        Data = atom
-                    };
-                    chunkNodes.Add(chunkNode);
-                    atomIndex++;
-                }
-
+                // 4. Create and store chunk nodes
+                var chunkNodes = MainWindowHelpers.CreateChunkNodes(_TenantGuid, _GraphGuid, atoms);
                 _LiteGraph.CreateNodes(_TenantGuid, _GraphGuid, chunkNodes);
                 Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
 
-                // 5. Create edges from the Document node to each chunk node
-                var edges = chunkNodes.Select(chunkNode => new Edge
-                {
-                    GUID = Guid.NewGuid(),
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    From = fileNodeGuid,
-                    To = chunkNode.GUID,
-                    Name = "Doc->Chunk",
-                    Labels = new List<string> { "edge", "document-chunk" },
-                    Tags = new NameValueCollection
-                    {
-                        { "Relationship", "ContainsChunk" }
-                    }
-                }).ToList();
-
+                // 5. Create and store edges
+                var edges = MainWindowHelpers.CreateDocumentChunkEdges(_TenantGuid, _GraphGuid, fileNode.GUID,
+                    chunkNodes);
                 _LiteGraph.CreateEdges(_TenantGuid, _GraphGuid, edges);
                 Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
 
-                // 6. Generate embeddings for each chunk
+                // 6. Generate embeddings
                 switch (selectedProvider)
                 {
                     case "OpenAI":
-                        // Ensure OpenAI settings are valid
                         if (string.IsNullOrEmpty(providerSettings.OpenAICompletionApiKey) ||
                             string.IsNullOrEmpty(providerSettings.OpenAIEmbeddingModel))
                         {
@@ -495,7 +430,6 @@ namespace View.Personal
                             break;
                         }
 
-                        // Batch process embeddings for efficiency
                         var validChunkNodes = chunkNodes
                             .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                             .ToList();
@@ -510,7 +444,6 @@ namespace View.Personal
                             break;
                         }
 
-                        // Generate embeddings using helper method
                         var embeddings = await MainWindowHelpers.GetOpenAIEmbeddingsBatchAsync(
                             chunkTexts,
                             providerSettings.OpenAICompletionApiKey,
@@ -522,7 +455,6 @@ namespace View.Personal
                             break;
                         }
 
-                        // Update chunk nodes with embeddings
                         for (var j = 0; j < validChunkNodes.Count; j++)
                         {
                             var chunkNode = validChunkNodes[j];
@@ -545,12 +477,6 @@ namespace View.Personal
                         }
 
                         Console.WriteLine($"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
-                        break;
-
-                    case "Voyage":
-                        break;
-
-                    case "Anthropic":
                         break;
 
                     case "View":
@@ -594,8 +520,6 @@ namespace View.Personal
                                 Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
                             break;
                         }
-
-                        Console.WriteLine($"Embeddings Success: {embeddingsResult.Success}");
 
                         if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
                         {
