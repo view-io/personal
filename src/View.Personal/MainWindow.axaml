@@ -26,9 +26,9 @@
 
         <!-- Left Navigation Panel with Model Provider Dropdown -->
         <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
-            <StackPanel>
-                <!-- Navigation List -->
-                <ListBox Background="Transparent" BorderThickness="0" x:Name="NavList"
+            <DockPanel LastChildFill="True">
+                <!-- Navigation List (Top) -->
+                <ListBox DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" x:Name="NavList"
                          SelectionChanged="NavList_SelectionChanged" Margin="0,0,0,10">
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
@@ -51,9 +51,9 @@
                     <ListBoxItem Content="Chat" />
                 </ListBox>
 
-                <!-- Model Provider Dropdown -->
-                <StackPanel Margin="20,10,20,0">
-                    <TextBlock Text="Model Provider" Foreground="Black" Margin="0,0,0,5" />
+                <!-- Model Provider Dropdown (Bottom) -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,10,20,200">
+                    <TextBlock Text="A.I. Provider" Foreground="Black" Margin="0,0,0,5" />
                     <ComboBox x:Name="NavModelProviderComboBox" Width="160" SelectedIndex="0"
                               SelectionChanged="ModelProvider_SelectionChanged">
                         <ComboBoxItem Content="View" />
@@ -62,43 +62,44 @@
                         <ComboBoxItem Content="Anthropic" />
                     </ComboBox>
                 </StackPanel>
-            </StackPanel>
+                <Panel />
+            </DockPanel>
         </Border>
 
         <!-- Main Content Area -->
         <Grid Name="MainContentArea">
             <!-- Dashboard View -->
-            <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20"
+            <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" Spacing="20"
                         IsVisible="True">
-                <TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,0,0,20" />
+                <TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,20,0,20" />
                 <StackPanel Spacing="10">
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToSettings_Click">
+                            <Button Classes="nav-link" Click="NavigateToSettings_Click" MaxWidth="100">
                                 <TextBlock Text="Settings" />
                             </Button>
                         </TextBlock>
                         <Run
-                            Text=" tab to provide the necessary credentials to access services for vectorization and chat completions." />
+                            Text="tab to provide the necessary credentials to access services for vectorization and chat completions." />
                     </TextBlock>
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToMyFiles_Click">
+                            <Button Classes="nav-link" Click="NavigateToMyFiles_Click" MaxWidth="100">
                                 <TextBlock Text="My Files" />
                             </Button>
                         </TextBlock>
-                        <Run Text=" tab to manage files stored in your personal store." />
+                        <Run Text="tab to manage files stored in your personal store." />
                     </TextBlock>
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToChat_Click">
+                            <Button Classes="nav-link" Click="NavigateToChat_Click" MaxWidth="100">
                                 <TextBlock Text="Chat" />
                             </Button>
                         </TextBlock>
-                        <Run Text=" tab to chat with your data." />
+                        <Run Text="tab to chat with your data." />
                     </TextBlock>
                 </StackPanel>
             </StackPanel>
