@@ -36,4 +36,8 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </AvaloniaResource>
     </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Helpers\"/>
+    </ItemGroup>
 </Project>

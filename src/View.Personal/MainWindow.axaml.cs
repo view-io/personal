@@ -15,15 +15,14 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
-    using Avalonia.Platform.Storage;
     using Avalonia.Interactivity;
     using Avalonia.Media;
-    using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
     using DocumentAtom.TypeDetection;
+    using Helpers;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
     using Sdk;
@@ -46,7 +45,7 @@ namespace View.Personal
 
         #region Private-Members
 
-        private static readonly HttpClient _httpClient = new();
+        private static readonly HttpClient _HttpClient = new();
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
@@ -140,47 +139,11 @@ namespace View.Personal
                         break;
                     case "My Files":
                         MyFilesPanel.IsVisible = true;
-
-                        // Query nodes with "document" label
-                        var documentNodes =
-                            _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
-                        if (documentNodes != null && documentNodes.Any())
+                        var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                        if (filesDataGrid != null)
                         {
-                            // Use a HashSet to track unique FilePaths
-                            var seenFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                            var uniqueFiles = new List<FileViewModel>();
-
-                            foreach (var node in documentNodes)
-                            {
-                                var filePath = node.Tags?["FilePath"] ?? "Unknown";
-
-                                // Skip if FilePath has already been seen
-                                if (!seenFilePaths.Add(filePath)) continue;
-
-                                // Extract required fields
-                                var name = node.Name ?? "Unnamed";
-                                var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
-                                var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-
-                                // Add to the list
-                                uniqueFiles.Add(new FileViewModel
-                                {
-                                    Name = name,
-                                    CreatedUtc = createdUtc,
-                                    FilePath = filePath,
-                                    DocumentType = documentType
-                                });
-                            }
-
-                            // Bind the list to the DataGrid
-                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                            if (filesDataGrid != null) filesDataGrid.ItemsSource = uniqueFiles;
-                        }
-                        else
-                        {
-                            // Clear the DataGrid if no files are found
-                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                            if (filesDataGrid != null) filesDataGrid.ItemsSource = null;
+                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _GraphGuid);
+                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
                         }
 
                         break;
@@ -194,6 +157,75 @@ namespace View.Personal
             }
         }
 
+        private async void DeleteFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is FileViewModel file)
+                try
+                {
+                    // Confirm deletion with the user
+                    var result = await MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Confirm Deletion",
+                            $"Are you sure you want to delete '{file.Name}'?",
+                            ButtonEnum.YesNo,
+                            MsBox.Avalonia.Enums.Icon.Warning)
+                        .ShowAsync();
+
+                    if (result != ButtonResult.Yes)
+                        return;
+
+                    // Delete the node using LiteGraph
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, file.NodeGuid);
+                    Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
+
+                    // Refresh the file list
+                    var documentNodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
+                    var ingestedFiles = new List<FileViewModel>();
+
+                    if (documentNodes != null && documentNodes.Any())
+                        foreach (var node in documentNodes)
+                        {
+                            var filePath = node.Tags?["FilePath"] ?? "Unknown";
+                            var name = node.Name ?? "Unnamed";
+                            var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
+                            var documentType = node.Tags?["DocumentType"] ?? "Unknown";
+                            var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
+
+                            ingestedFiles.Add(new FileViewModel
+                            {
+                                Name = name,
+                                CreatedUtc = createdUtc,
+                                FilePath = filePath,
+                                DocumentType = documentType,
+                                ContentLength = contentLength,
+                                NodeGuid = node.GUID
+                            });
+                        }
+
+                    var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                    if (filesDataGrid != null)
+                        filesDataGrid.ItemsSource = ingestedFiles;
+
+                    RefreshFileList();
+
+                    await MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Success",
+                            $"File '{file.Name}' deleted successfully!",
+                            ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Success)
+                        .ShowAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting file '{file.Name}': {ex.Message}");
+                    await MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Error",
+                            $"Failed to delete file: {ex.Message}",
+                            ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Error)
+                        .ShowAsync();
+                }
+        }
+
         private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
@@ -205,14 +237,12 @@ namespace View.Personal
 
         private void UpdateSettingsVisibility(string selectedProvider)
         {
-            if (OpenAISettings != null)
-                OpenAISettings.IsVisible = selectedProvider == "OpenAI";
-            if (VoyageSettings != null)
-                VoyageSettings.IsVisible = selectedProvider == "Voyage";
-            if (AnthropicSettings != null)
-                AnthropicSettings.IsVisible = selectedProvider == "Anthropic";
-            if (ViewSettings != null)
-                ViewSettings.IsVisible = selectedProvider == "View";
+            MainWindowHelpers.UpdateSettingsVisibility(
+                OpenAISettings,
+                VoyageSettings,
+                AnthropicSettings,
+                ViewSettings,
+                selectedProvider);
         }
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
@@ -278,6 +308,35 @@ namespace View.Personal
             }
         }
 
+        private void RefreshFileList()
+        {
+            var documentNodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
+            var ingestedFiles = new List<FileViewModel>();
+
+            if (documentNodes != null && documentNodes.Any())
+                foreach (var node in documentNodes)
+                {
+                    var filePath = node.Tags?["FilePath"] ?? "Unknown";
+                    var name = node.Name ?? "Unnamed";
+                    var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
+                    var documentType = node.Tags?["DocumentType"] ?? "Unknown";
+                    var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
+
+                    ingestedFiles.Add(new FileViewModel
+                    {
+                        Name = name,
+                        CreatedUtc = createdUtc,
+                        FilePath = filePath,
+                        DocumentType = documentType,
+                        ContentLength = contentLength,
+                        NodeGuid = node.GUID
+                    });
+                }
+
+            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+            if (filesDataGrid != null) filesDataGrid.ItemsSource = ingestedFiles;
+        }
+
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
@@ -321,7 +380,7 @@ namespace View.Personal
             try
             {
                 // 1. Detect file type (only proceed if PDF)
-                string contentType = null; // Explicitly declare as string instead of casting null
+                string contentType = null;
                 var typeResult = _TypeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
 
@@ -340,7 +399,6 @@ namespace View.Personal
                         MaximumLength = 512,
                         ShiftSize = 512
                     }
-                    // Enable OCR here if needed
                 };
                 var pdfProcessor = new PdfProcessor(processorSettings);
                 var atoms = pdfProcessor.Extract(filePath).ToList();
@@ -373,7 +431,7 @@ namespace View.Personal
 
                 // 4. Create chunk nodes (one node per atom)
                 var chunkNodes = new List<Node>();
-                var atomIndex = 0; // Renamed from 'i' to avoid confusion
+                var atomIndex = 0;
                 foreach (var atom in atoms)
                 {
                     if (atom == null || string.IsNullOrWhiteSpace(atom.Text))
@@ -403,7 +461,6 @@ namespace View.Personal
                     atomIndex++;
                 }
 
-                // ToDo: Add bulk node creation to LiteGraphClient
                 _LiteGraph.CreateNodes(_TenantGuid, _GraphGuid, chunkNodes);
                 Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
 
@@ -453,8 +510,8 @@ namespace View.Personal
                             break;
                         }
 
-                        // Generate embeddings in bulk
-                        var embeddings = await GetOpenAIEmbeddingsBatchAsync(
+                        // Generate embeddings using helper method
+                        var embeddings = await MainWindowHelpers.GetOpenAIEmbeddingsBatchAsync(
                             chunkTexts,
                             providerSettings.OpenAICompletionApiKey,
                             providerSettings.OpenAIEmbeddingModel);
@@ -478,7 +535,7 @@ namespace View.Personal
                                     TenantGUID = _TenantGuid,
                                     GraphGUID = _GraphGuid,
                                     NodeGUID = chunkNode.GUID,
-                                    Model = providerSettings.OpenAIEmbeddingModel, // "text-embedding-3-small"
+                                    Model = providerSettings.OpenAIEmbeddingModel,
                                     Dimensionality = vectorArray.Length,
                                     Vectors = vectorArray.ToList(),
                                     Content = (chunkNode.Data as Atom).Text
@@ -499,7 +556,7 @@ namespace View.Personal
                     case "View":
                         _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
                             providerSettings.ViewEndpoint,
-                            providerSettings.AccessKey); // ViewEndpoint-> http://192.168.197.128/ AccessKey-> default
+                            providerSettings.AccessKey);
 
                         var chunkContents = chunkNodes
                             .Select(x => x.Data as Atom)
@@ -517,20 +574,18 @@ namespace View.Personal
                         {
                             EmbeddingsRule = new EmbeddingsRule
                             {
-                                EmbeddingsGenerator =
-                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator), // LCProxy
+                                EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator),
                                 EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
-                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey, // ""
+                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
                                 BatchSize = 2,
                                 MaxGeneratorTasks = 4,
                                 MaxRetries = 3,
                                 MaxFailures = 3
                             },
-                            Model = providerSettings.Model, // all-MiniLM-L6-v2
+                            Model = providerSettings.Model,
                             Contents = chunkContents
                         };
 
-                        // Generate embeddings
                         var embeddingsResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(req);
                         if (!embeddingsResult.Success)
                         {
@@ -542,10 +597,9 @@ namespace View.Personal
 
                         Console.WriteLine($"Embeddings Success: {embeddingsResult.Success}");
 
-                        // Update chunk nodes with embeddings
                         if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
                         {
-                            var validChunkNodesView = chunkNodes // Renamed to avoid shadowing
+                            var validChunkNodesView = chunkNodes
                                 .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                                 .ToList();
 
@@ -586,6 +640,7 @@ namespace View.Personal
 
                 Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
                 Console.WriteLine($"File {filePath} ingested successfully!");
+                RefreshFileList();
 
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard(
@@ -650,7 +705,7 @@ namespace View.Personal
                     "application/json"
                 );
 
-                using var response = await _httpClient.SendAsync(request);
+                using var response = await _HttpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseJson = await response.Content.ReadAsStringAsync();
 
@@ -947,7 +1002,7 @@ namespace View.Personal
                     "application/json"
                 );
 
-                using var response = await _httpClient.SendAsync(request);
+                using var response = await _HttpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseJson = await response.Content.ReadAsStringAsync();
 
