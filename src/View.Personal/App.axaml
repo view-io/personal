@@ -6,6 +6,7 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+
         <Style Selector="TextBox">
             <Setter Property="MinWidth" Value="400" />
             <Setter Property="MaxWidth" Value="800" />

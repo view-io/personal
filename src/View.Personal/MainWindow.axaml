@@ -108,7 +108,9 @@
             <StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20" />
                 <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="200,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey" />
@@ -143,10 +145,12 @@
 
                 <!-- View Settings -->
                 <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Generator" Foreground="Black"
+                    <Grid ColumnDefinitions="200,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="Generator" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsGenerator" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" Foreground="Black"
                                    VerticalAlignment="Center" />
@@ -164,7 +168,7 @@
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="4" Grid.Column="1" x:Name="EmbeddingsGeneratorUrl" />
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Model" Foreground="Black"
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="5" Grid.Column="1" x:Name="Model" />
 
@@ -175,6 +179,29 @@
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="Preset GUID" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="7" Grid.Column="1" x:Name="ViewPresetGuid" />
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="9" Grid.Column="1" x:Name="ViewCompletionModel" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="11" Grid.Column="1" x:Name="Temperature" />
+
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="12" Grid.Column="1" x:Name="TopP" />
+
+                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="13" Grid.Column="1" x:Name="MaxTokens" />
                     </Grid>
                 </StackPanel>
 

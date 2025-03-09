@@ -63,8 +63,15 @@ namespace View.Personal
 
         public MainWindow()
         {
-            InitializeComponent();
-            Opened += MainWindow_Opened;
+            try
+            {
+                InitializeComponent();
+                Opened += MainWindow_Opened;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+            }
         }
 
         #endregion
@@ -114,17 +121,28 @@ namespace View.Personal
                 case "View":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                     {
-                        Generator = this.FindControl<TextBox>("Generator").Text ?? string.Empty,
+                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
                         ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
-                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ??
-                                       string.Empty,
-                        AccessKey =
-                            this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
+                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
+                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
                         EmbeddingsGeneratorUrl =
                             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
                         Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty
+                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
+                        ViewCompletionProvider =
+                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
+                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        ViewCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
+                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
+                            ? temp
+                            : 0.7,
+                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
+                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
+                            ? tokens
+                            : 150,
+                        Stream = false
                     };
                     break;
             }
@@ -146,7 +164,7 @@ namespace View.Personal
             var app = (App)Application.Current;
 
             var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
+            this.FindControl<TextBox>("EmbeddingsGenerator").Text = view.EmbeddingsGenerator ?? string.Empty;
             this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
             this.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
             this.FindControl<TextBox>("AccessKey").Text = view.AccessKey ?? string.Empty;
@@ -154,6 +172,13 @@ namespace View.Personal
             this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
             this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
+            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString();
+            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString();
+            this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
+            // this.FindControl<CheckBox>("Stream").IsChecked = view.Stream;
 
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
             this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;

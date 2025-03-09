@@ -65,6 +65,11 @@ namespace View.Personal
                     }
                 };
                 var pdfProcessor = new PdfProcessor(processorSettings);
+                // ToDo: need to add IDisposable to PdfProcessor like: using (PptxProcessor processor = new PptxProcessor(_ProcessorSettings, _ImageProcessorSettings))
+                // {
+                //     foreach (Atom atom in processor.Extract(filename))
+                //         Console.WriteLine(_Serializer.SerializeJson(atom, true));
+                // }
                 var atoms = pdfProcessor.Extract(filePath).ToList();
                 Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
 
@@ -165,8 +170,10 @@ namespace View.Personal
                         {
                             EmbeddingsRule = new EmbeddingsRule
                             {
-                                EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator),
-                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                EmbeddingsGenerator =
+                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.EmbeddingsGenerator),
+                                EmbeddingsGeneratorUrl = providerSettings.EmbeddingsGeneratorUrl,
+                                // EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                 EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
                                 BatchSize = 2,
                                 MaxGeneratorTasks = 4,
