@@ -241,6 +241,14 @@ namespace View.Personal
             SaveSettings();
         }
 
+        public void SaveSelectedProvider(string provider)
+        {
+            _AppSettings.SelectedProvider = provider;
+            SaveSettings();
+        }
+
+        public Settings AppSettings => _AppSettings;
+
         #endregion
 
         #region Private-Methods

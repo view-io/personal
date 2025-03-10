@@ -3,6 +3,7 @@
     using LiteGraph;
     using System;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Settings.
@@ -39,8 +40,20 @@
             }
         }
 
+        /// <summary>
+        /// List of provider settings.
+        /// </summary>
         public List<CompletionProviderSettings> ProviderSettings { get; set; } = new();
 
+        /// <summary>
+        /// Currently selected provider (e.g., "OpenAI", "Voyage", "Anthropic", "View").
+        /// </summary>
+        [JsonPropertyName("selectedProvider")]
+        public string SelectedProvider { get; set; }
+
+        /// <summary>
+        /// Completion settings (not used in this context, retained for compatibility).
+        /// </summary>
         public CompletionProviderSettings CompletionSettings { get; set; } = null!;
 
         #endregion
@@ -65,6 +78,7 @@
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.View));
+            SelectedProvider = "View";
         }
 
         #endregion

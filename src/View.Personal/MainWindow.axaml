@@ -26,9 +26,9 @@
 
         <!-- Left Navigation Panel with Model Provider Dropdown -->
         <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
-            <StackPanel>
-                <!-- Navigation List -->
-                <ListBox Background="Transparent" BorderThickness="0" x:Name="NavList"
+            <DockPanel LastChildFill="True">
+                <!-- Navigation List (Top) -->
+                <ListBox DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" x:Name="NavList"
                          SelectionChanged="NavList_SelectionChanged" Margin="0,0,0,10">
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
@@ -51,9 +51,9 @@
                     <ListBoxItem Content="Chat" />
                 </ListBox>
 
-                <!-- Model Provider Dropdown -->
-                <StackPanel Margin="20,10,20,0">
-                    <TextBlock Text="Model Provider" Foreground="Black" Margin="0,0,0,5" />
+                <!-- Model Provider Dropdown (Bottom) -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,10,20,200">
+                    <TextBlock Text="A.I. Provider" Foreground="Black" Margin="0,0,0,5" />
                     <ComboBox x:Name="NavModelProviderComboBox" Width="160" SelectedIndex="0"
                               SelectionChanged="ModelProvider_SelectionChanged">
                         <ComboBoxItem Content="View" />
@@ -62,43 +62,44 @@
                         <ComboBoxItem Content="Anthropic" />
                     </ComboBox>
                 </StackPanel>
-            </StackPanel>
+                <Panel />
+            </DockPanel>
         </Border>
 
         <!-- Main Content Area -->
         <Grid Name="MainContentArea">
             <!-- Dashboard View -->
-            <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20"
+            <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" Spacing="20"
                         IsVisible="True">
-                <TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,0,0,20" />
+                <TextBlock Text="Welcome to View Personal Edition." FontSize="24" Foreground="Black" Margin="0,20,0,20" />
                 <StackPanel Spacing="10">
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToSettings_Click">
+                            <Button Classes="nav-link" Click="NavigateToSettings_Click" MaxWidth="100">
                                 <TextBlock Text="Settings" />
                             </Button>
                         </TextBlock>
                         <Run
-                            Text=" tab to provide the necessary credentials to access services for vectorization and chat completions." />
+                            Text="tab to provide the necessary credentials to access services for vectorization and chat completions." />
                     </TextBlock>
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToMyFiles_Click">
+                            <Button Classes="nav-link" Click="NavigateToMyFiles_Click" MaxWidth="100">
                                 <TextBlock Text="My Files" />
                             </Button>
                         </TextBlock>
-                        <Run Text=" tab to manage files stored in your personal store." />
+                        <Run Text="tab to manage files stored in your personal store." />
                     </TextBlock>
                     <TextBlock Foreground="Black">
-                        <Run Text="Use the " />
+                        <Run Text="Use the" />
                         <TextBlock>
-                            <Button Classes="link" Click="NavigateToChat_Click">
+                            <Button Classes="nav-link" Click="NavigateToChat_Click" MaxWidth="100">
                                 <TextBlock Text="Chat" />
                             </Button>
                         </TextBlock>
-                        <Run Text=" tab to chat with your data." />
+                        <Run Text="tab to chat with your data." />
                     </TextBlock>
                 </StackPanel>
             </StackPanel>
@@ -107,7 +108,9 @@
             <StackPanel Name="SettingsPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Text="Settings" FontSize="24" Foreground="Black" Margin="0,0,0,20" />
                 <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="200,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey" />
@@ -142,10 +145,12 @@
 
                 <!-- View Settings -->
                 <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Generator" Foreground="Black"
+                    <Grid ColumnDefinitions="200,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" Foreground="Black"
                                    VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="Generator" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsGenerator" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" Foreground="Black"
                                    VerticalAlignment="Center" />
@@ -163,7 +168,7 @@
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="4" Grid.Column="1" x:Name="EmbeddingsGeneratorUrl" />
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Model" Foreground="Black"
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="5" Grid.Column="1" x:Name="Model" />
 
@@ -174,13 +179,54 @@
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="Preset GUID" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="7" Grid.Column="1" x:Name="ViewPresetGuid" />
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="9" Grid.Column="1" x:Name="ViewCompletionModel" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="11" Grid.Column="1" x:Name="Temperature" />
+
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="12" Grid.Column="1" x:Name="TopP" />
+
+                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="13" Grid.Column="1" x:Name="MaxTokens" />
+                        <TextBlock Grid.Row="14" Grid.Column="0" Text="Assistant Config" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="14" Grid.Column="1" x:Name="ViewAssistantConfigComboBox"
+                                  HorizontalAlignment="Stretch" Width="400"
+                                  DropDownOpened="ViewAssistantConfigComboBox_DropDownOpened">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="classes:AssistantConfig">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <!-- Add a placeholder item -->
+                            <ComboBoxItem Content="Click to load configurations..." />
+                        </ComboBox>
                     </Grid>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="Save Settings"
+                            Click="SaveSettings_Click"
+                            Margin="0,20,0,0" />
+                    <Button Content="Apply preset"
+                            Click="ApplyPreset_Click"
+                            Margin="0,20,0,0" />
+                </StackPanel>
 
-                <Button Content="Save Settings"
-                        Click="SaveSettings_Click"
-                        Margin="0,20,0,0"
-                        HorizontalAlignment="Left" />
+
             </StackPanel>
             <!-- My Files View -->
             <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
@@ -266,8 +312,29 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
                                 <DataGridTextColumn Header="Created (UTC)" Binding="{Binding CreatedUtc}" Width="150" />
-                                <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="300" />
+                                <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="250" />
                                 <DataGridTextColumn Header="Document Type" Binding="{Binding DocumentType}" Width="150" />
+                                <DataGridTextColumn Header="Content Length" Binding="{Binding ContentLength}"
+                                                    Width="100" />
+                                <!-- Add Delete Button Column -->
+                                <DataGridTemplateColumn Header="Action" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Delete"
+                                                    Click="DeleteFile_Click"
+                                                    Tag="{Binding}"
+                                                    Background="#FF4444"
+                                                    Foreground="White"
+                                                    HorizontalAlignment="Center">
+                                                <Button.Styles>
+                                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                                        <Setter Property="Background" Value="#CC0000" />
+                                                    </Style>
+                                                </Button.Styles>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </ScrollViewer>
@@ -275,18 +342,13 @@
             </StackPanel>
             <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
                 <TextBlock Text="Chat" FontSize="24" Foreground="Black" Margin="20,0,0,10" />
-                <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto" Margin="20,0">
-                    <TextBlock x:Name="ConversationWindow"
-                               Width="600"
-                               Height="400"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Top"
-                               Background="#F5F5F5"
-                               Foreground="#000000"
-                               FontWeight="Normal"
-                               Padding="10"
-                               FontSize="14" />
-                </ScrollViewer>
+                <Border Height="400" Margin="20,0" CornerRadius="5">
+                    <ScrollViewer x:Name="ChatScrollViewer" VerticalScrollBarVisibility="Auto">
+                        <Grid VerticalAlignment="Stretch">
+                            <StackPanel x:Name="ConversationContainer" VerticalAlignment="Bottom" Spacing="5" />
+                        </Grid>
+                    </ScrollViewer>
+                </Border>
                 <StackPanel Orientation="Horizontal" Margin="20,10">
                     <TextBox x:Name="ChatInputBox"
                              Width="400"

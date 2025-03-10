@@ -272,3 +272,5 @@ __pycache__/
 *.gexf
 
 identifier.sqlite
+
+*.jetclient

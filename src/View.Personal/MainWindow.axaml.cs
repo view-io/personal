@@ -5,7 +5,6 @@ namespace View.Personal
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Specialized;
     using System.IO;
     using System.Linq;
     using System.Net.Http;
@@ -15,22 +14,25 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
-    using Avalonia.Platform.Storage;
     using Avalonia.Interactivity;
-    using Avalonia.Threading;
+    using Avalonia.Media;
     using Classes;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
     using DocumentAtom.TypeDetection;
+    using Helpers;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
     using SerializationHelper;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
-    using Node = LiteGraph.Node;
     using Services;
+    using Sdk;
+    using RestWrapper;
+    using SyslogLogging;
+    using SyslogServer = SyslogLogging.SyslogServer;
 
     public partial class MainWindow : Window
     {
@@ -45,15 +47,17 @@ namespace View.Personal
 
         #region Private-Members
 
-        private static readonly HttpClient _httpClient = new();
+        private static readonly HttpClient _HttpClient = new();
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
-        private List<string> _ChatMessages = new();
+        private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _fileBrowserService = new();
+        private LoggingModule _Logging = null;
+        private bool _assistantConfigsLoaded = false;
 
         #endregion
 
@@ -65,8 +69,15 @@ namespace View.Personal
 
         public MainWindow()
         {
-            InitializeComponent();
-            Opened += MainWindow_Opened;
+            try
+            {
+                InitializeComponent();
+                Opened += MainWindow_Opened;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+            }
         }
 
         #endregion
@@ -77,141 +88,6 @@ namespace View.Personal
         {
             LoadSavedSettings();
             UpdateSettingsVisibility("View");
-        }
-
-        private void LoadSavedSettings()
-        {
-            var app = (App)Application.Current;
-
-            // View
-            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("Generator").Text = view.Generator ?? string.Empty;
-            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewEndpoint").Text =
-                view.ViewEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("AccessKey").Text =
-                view.AccessKey ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
-            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
-
-            // OpenAI
-            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-            this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
-            this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
-
-            // Voyage
-            var voyage = app.GetProviderSettings(CompletionProviderTypeEnum.Voyage);
-            this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text = voyage.VoyageEmbeddingModel ?? string.Empty;
-
-            // Anthropic
-            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
-            this.FindControl<TextBox>("AnthropicCompletionModel").Text =
-                anthropic.AnthropicCompletionModel ?? string.Empty;
-
-            UpdateSettingsVisibility("View");
-            this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedIndex = 0;
-        }
-
-        private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            Console.WriteLine("NavList_SelectionChanged triggered");
-
-            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
-            {
-                var selectedContent = selectedItem.Content?.ToString();
-
-                DashboardPanel.IsVisible = false;
-                SettingsPanel.IsVisible = false;
-                MyFilesPanel.IsVisible = false;
-                ChatPanel.IsVisible = false;
-                WorkspaceText.IsVisible = false;
-
-                switch (selectedContent)
-                {
-                    case "Dashboard":
-                        DashboardPanel.IsVisible = true;
-                        break;
-                    case "Settings":
-                        SettingsPanel.IsVisible = true;
-                        break;
-                    case "My Files":
-                        MyFilesPanel.IsVisible = true;
-
-                        // Query nodes with "document" label
-                        var documentNodes =
-                            _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid, new List<string> { "document" });
-                        if (documentNodes != null && documentNodes.Any())
-                        {
-                            // Use a HashSet to track unique FilePaths
-                            var seenFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                            var uniqueFiles = new List<FileViewModel>();
-
-                            foreach (var node in documentNodes)
-                            {
-                                var filePath = node.Tags?["FilePath"] ?? "Unknown";
-
-                                // Skip if FilePath has already been seen
-                                if (!seenFilePaths.Add(filePath)) continue;
-
-                                // Extract required fields
-                                var name = node.Name ?? "Unnamed";
-                                var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
-                                var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-
-                                // Add to the list
-                                uniqueFiles.Add(new FileViewModel
-                                {
-                                    Name = name,
-                                    CreatedUtc = createdUtc,
-                                    FilePath = filePath,
-                                    DocumentType = documentType
-                                });
-                            }
-
-                            // Bind the list to the DataGrid
-                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                            if (filesDataGrid != null) filesDataGrid.ItemsSource = uniqueFiles;
-                        }
-                        else
-                        {
-                            // Clear the DataGrid if no files are found
-                            var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
-                            if (filesDataGrid != null) filesDataGrid.ItemsSource = null;
-                        }
-
-                        break;
-                    case "Chat":
-                        ChatPanel.IsVisible = true;
-                        break;
-                    default:
-                        WorkspaceText.IsVisible = true;
-                        break;
-                }
-            }
-        }
-
-        private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
-            {
-                var selectedProvider = selectedItem.Content.ToString();
-                UpdateSettingsVisibility(selectedProvider);
-            }
-        }
-
-        private void UpdateSettingsVisibility(string selectedProvider)
-        {
-            if (OpenAISettings != null)
-                OpenAISettings.IsVisible = selectedProvider == "OpenAI";
-            if (VoyageSettings != null)
-                VoyageSettings.IsVisible = selectedProvider == "Voyage";
-            if (AnthropicSettings != null)
-                AnthropicSettings.IsVisible = selectedProvider == "Anthropic";
-            if (ViewSettings != null)
-                ViewSettings.IsVisible = selectedProvider == "View";
         }
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
@@ -251,17 +127,32 @@ namespace View.Personal
                 case "View":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                     {
-                        Generator = this.FindControl<TextBox>("Generator").Text ?? string.Empty,
+                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
                         ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
-                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ??
-                                       string.Empty,
-                        AccessKey =
-                            this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
+                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
+                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
                         EmbeddingsGeneratorUrl =
                             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
                         Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty
+                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
+                        ViewCompletionProvider =
+                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
+                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        ViewCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
+                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
+                            ? temp
+                            : 0.7,
+                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
+                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
+                            ? tokens
+                            : 150,
+                        Stream = false,
+                        // Add this line to save the selected assistant config
+                        ViewAssistantConfigGuid =
+                            (this.FindControl<ComboBox>("ViewAssistantConfigComboBox").SelectedItem as AssistantConfig)
+                            ?.GUID
                     };
                     break;
             }
@@ -269,6 +160,7 @@ namespace View.Personal
             if (settings != null)
             {
                 app.UpdateProviderSettings(settings);
+                app.SaveSelectedProvider(selectedProvider);
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
                         ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
@@ -276,6 +168,127 @@ namespace View.Personal
                 LoadSavedSettings();
             }
         }
+
+        private void LoadSavedSettings()
+        {
+            var app = (App)Application.Current;
+
+            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+            this.FindControl<TextBox>("EmbeddingsGenerator").Text = view.EmbeddingsGenerator ?? string.Empty;
+            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("AccessKey").Text = view.AccessKey ?? string.Empty;
+            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
+            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
+            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString();
+            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString();
+            this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
+            // this.FindControl<CheckBox>("Stream").IsChecked = view.Stream;
+
+            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+            this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
+            this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
+
+            var voyage = app.GetProviderSettings(CompletionProviderTypeEnum.Voyage);
+            this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text = voyage.VoyageEmbeddingModel ?? string.Empty;
+
+            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
+            this.FindControl<TextBox>("AnthropicCompletionModel").Text =
+                anthropic.AnthropicCompletionModel ?? string.Empty;
+
+            var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
+            if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
+            {
+                var selectedItem = comboBox.Items
+                    .OfType<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
+                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0]; // Fallback to first item
+            }
+            else
+            {
+                comboBox.SelectedIndex = 0; // Default to first provider
+            }
+
+            UpdateSettingsVisibility(app.AppSettings.SelectedProvider ?? "View");
+        }
+
+        private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
+            {
+                var selectedContent = selectedItem.Content?.ToString();
+
+                DashboardPanel.IsVisible = false;
+                SettingsPanel.IsVisible = false;
+                MyFilesPanel.IsVisible = false;
+                ChatPanel.IsVisible = false;
+                WorkspaceText.IsVisible = false;
+
+                switch (selectedContent)
+                {
+                    case "Dashboard":
+                        DashboardPanel.IsVisible = true;
+                        break;
+                    case "Settings":
+                        SettingsPanel.IsVisible = true;
+                        var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
+                        var currentProvider = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                        if (!string.IsNullOrEmpty(currentProvider))
+                            UpdateSettingsVisibility(currentProvider);
+                        break;
+                    case "My Files":
+                        MyFilesPanel.IsVisible = true;
+                        var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                        if (filesDataGrid != null)
+                        {
+                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _GraphGuid);
+                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
+                        }
+
+                        break;
+                    case "Chat":
+                        ChatPanel.IsVisible = true;
+                        break;
+                    default:
+                        WorkspaceText.IsVisible = true;
+                        break;
+                }
+            }
+        }
+
+        public async void DeleteFile_Click(object sender, RoutedEventArgs e)
+        {
+            await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+        }
+
+        private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                var selectedProvider = selectedItem.Content.ToString();
+                UpdateSettingsVisibility(selectedProvider);
+            }
+        }
+
+        private void UpdateSettingsVisibility(string selectedProvider)
+        {
+            MainWindowHelpers.UpdateSettingsVisibility(
+                OpenAISettings,
+                VoyageSettings,
+                AnthropicSettings,
+                ViewSettings,
+                selectedProvider);
+
+            // // Fetch assistant configs when View provider is selected
+            // if (selectedProvider == "View") _ = FetchAssistantConfigs();
+        }
+
 
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -297,335 +310,15 @@ namespace View.Personal
                 chatItem) NavList.SelectedItem = chatItem;
         }
 
-        private async void IngestFile_Click(object sender, RoutedEventArgs e)
+        public async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
-            // Get the file path and provider selection
-            var filePath = this.FindControl<TextBox>("FilePathTextBox").Text;
-            var providerCombo = this.FindControl<ComboBox>("NavModelProviderComboBox");
-            var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            if (string.IsNullOrEmpty(selectedProvider))
-            {
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Error", "Please select a provider", ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Error)
-                    .ShowAsync();
-                return;
-            }
-
-            // Get the provider settings
-            var app = (App)Application.Current;
-            var providerSettings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
-
-            try
-            {
-                // 1. Detect file type (only proceed if PDF)
-                string contentType = null; // Explicitly declare as string instead of casting null
-                var typeResult = _TypeDetector.Process(filePath, contentType);
-                Console.WriteLine($"Detected Type: {typeResult.Type}");
-
-                if (typeResult.Type != DocumentTypeEnum.Pdf)
-                {
-                    Console.WriteLine($"Unsupported file type: {typeResult.Type} (only PDF is supported).");
-                    return;
-                }
-
-                // 2. Process PDF into DocumentAtom atoms
-                var processorSettings = new PdfProcessorSettings
-                {
-                    Chunking = new ChunkingSettings
-                    {
-                        Enable = true,
-                        MaximumLength = 512,
-                        ShiftSize = 512
-                    }
-                    // Enable OCR here if needed
-                };
-                var pdfProcessor = new PdfProcessor(processorSettings);
-                var atoms = pdfProcessor.Extract(filePath).ToList();
-                Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
-
-                // 3. Create a Document node
-                var fileNodeGuid = Guid.NewGuid();
-                var fileNode = new Node
-                {
-                    GUID = fileNodeGuid,
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    Name = Path.GetFileName(filePath),
-                    Labels = new List<string> { "document" },
-                    Tags = new NameValueCollection
-                    {
-                        { "DocumentType", typeResult.Type.ToString() },
-                        { "Extension", typeResult.Extension },
-                        { "NodeType", "Document" },
-                        { "MimeType", typeResult.MimeType },
-                        { "FileName", Path.GetFileName(filePath) },
-                        { "FilePath", filePath },
-                        { "ContentLength", new FileInfo(filePath).Length.ToString() }
-                    },
-                    Data = atoms
-                };
-
-                _LiteGraph.CreateNode(fileNode);
-                Console.WriteLine($"Created file document node {fileNodeGuid}");
-
-                // 4. Create chunk nodes (one node per atom)
-                var chunkNodes = new List<Node>();
-                var atomIndex = 0; // Renamed from 'i' to avoid confusion
-                foreach (var atom in atoms)
-                {
-                    if (atom == null || string.IsNullOrWhiteSpace(atom.Text))
-                    {
-                        Console.WriteLine($"Skipping empty atom at index {atomIndex}");
-                        atomIndex++;
-                        continue;
-                    }
-
-                    var chunkNodeGuid = Guid.NewGuid();
-                    var chunkNode = new Node
-                    {
-                        GUID = chunkNodeGuid,
-                        TenantGUID = _TenantGuid,
-                        GraphGUID = _GraphGuid,
-                        Name = $"Atom {atomIndex}",
-                        Labels = new List<string> { "atom" },
-                        Tags = new NameValueCollection
-                        {
-                            { "NodeType", "Atom" },
-                            { "AtomIndex", atomIndex.ToString() },
-                            { "ContentLength", atom.Text.Length.ToString() }
-                        },
-                        Data = atom
-                    };
-                    chunkNodes.Add(chunkNode);
-                    atomIndex++;
-                }
-
-                // ToDo: Add bulk node creation to LiteGraphClient
-                _LiteGraph.CreateNodes(_TenantGuid, _GraphGuid, chunkNodes);
-                Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
-
-                // 5. Create edges from the Document node to each chunk node
-                var edges = chunkNodes.Select(chunkNode => new Edge
-                {
-                    GUID = Guid.NewGuid(),
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    From = fileNodeGuid,
-                    To = chunkNode.GUID,
-                    Name = "Doc->Chunk",
-                    Labels = new List<string> { "edge", "document-chunk" },
-                    Tags = new NameValueCollection
-                    {
-                        { "Relationship", "ContainsChunk" }
-                    }
-                }).ToList();
-
-                _LiteGraph.CreateEdges(_TenantGuid, _GraphGuid, edges);
-                Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
-
-                // 6. Generate embeddings for each chunk
-                switch (selectedProvider)
-                {
-                    case "OpenAI":
-                        // Ensure OpenAI settings are valid
-                        if (string.IsNullOrEmpty(providerSettings.OpenAICompletionApiKey) ||
-                            string.IsNullOrEmpty(providerSettings.OpenAIEmbeddingModel))
-                        {
-                            Console.WriteLine("OpenAI API key or embedding model not configured.");
-                            break;
-                        }
-
-                        // Batch process embeddings for efficiency
-                        var validChunkNodes = chunkNodes
-                            .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                            .ToList();
-
-                        var chunkTexts = validChunkNodes
-                            .Select(x => (x.Data as Atom).Text)
-                            .ToList();
-
-                        if (!chunkTexts.Any())
-                        {
-                            Console.WriteLine("No valid text content found in atoms for embedding.");
-                            break;
-                        }
-
-                        // Generate embeddings in bulk
-                        var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                            chunkTexts,
-                            providerSettings.OpenAICompletionApiKey,
-                            providerSettings.OpenAIEmbeddingModel);
-
-                        if (embeddings == null || embeddings.Length != validChunkNodes.Count)
-                        {
-                            Console.WriteLine("Failed to generate embeddings or mismatch in count.");
-                            break;
-                        }
-
-                        // Update chunk nodes with embeddings
-                        for (var j = 0; j < validChunkNodes.Count; j++)
-                        {
-                            var chunkNode = validChunkNodes[j];
-                            var vectorArray = embeddings[j];
-
-                            chunkNode.Vectors = new List<VectorMetadata>
-                            {
-                                new()
-                                {
-                                    TenantGUID = _TenantGuid,
-                                    GraphGUID = _GraphGuid,
-                                    NodeGUID = chunkNode.GUID,
-                                    Model = providerSettings.OpenAIEmbeddingModel, // "text-embedding-3-small"
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
-                                    Content = (chunkNode.Data as Atom).Text
-                                }
-                            };
-                            _LiteGraph.UpdateNode(chunkNode);
-                        }
-
-                        Console.WriteLine($"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
-                        break;
-
-                    case "Voyage":
-                        break;
-
-                    case "Anthropic":
-                        break;
-
-                    case "View":
-                        _ViewEmbeddingsSdk = new ViewEmbeddingsServerSdk(_TenantGuid,
-                            providerSettings.ViewEndpoint,
-                            providerSettings.AccessKey); // ViewEndpoint-> http://192.168.197.128/ AccessKey-> default
-
-                        var chunkContents = chunkNodes
-                            .Select(x => x.Data as Atom)
-                            .Where(atom => atom != null && !string.IsNullOrWhiteSpace(atom.Text))
-                            .Select(atom => atom.Text)
-                            .ToList();
-
-                        if (!chunkContents.Any())
-                        {
-                            Console.WriteLine("No valid text content found in atoms for embedding.");
-                            break;
-                        }
-
-                        var req = new EmbeddingsRequest
-                        {
-                            EmbeddingsRule = new EmbeddingsRule
-                            {
-                                EmbeddingsGenerator =
-                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.Generator), // LCProxy
-                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
-                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey, // ""
-                                BatchSize = 2,
-                                MaxGeneratorTasks = 4,
-                                MaxRetries = 3,
-                                MaxFailures = 3
-                            },
-                            Model = providerSettings.Model, // all-MiniLM-L6-v2
-                            Contents = chunkContents
-                        };
-
-                        // Generate embeddings
-                        var embeddingsResult = await _ViewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!embeddingsResult.Success)
-                        {
-                            Console.WriteLine($"Embeddings generation failed: {embeddingsResult.StatusCode}");
-                            if (embeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
-                            break;
-                        }
-
-                        Console.WriteLine($"Embeddings Success: {embeddingsResult.Success}");
-
-                        // Update chunk nodes with embeddings
-                        if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
-                        {
-                            var validChunkNodesView = chunkNodes // Renamed to avoid shadowing
-                                .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                                .ToList();
-
-                            var updateTasks = embeddingsResult.ContentEmbeddings
-                                .Zip(validChunkNodesView,
-                                    (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
-                                .Select(item =>
-                                {
-                                    var atom = item.ChunkNode.Data as Atom;
-                                    item.ChunkNode.Vectors = new List<VectorMetadata>
-                                    {
-                                        new()
-                                        {
-                                            TenantGUID = _TenantGuid,
-                                            GraphGUID = _GraphGuid,
-                                            NodeGUID = item.ChunkNode.GUID,
-                                            Model = providerSettings.Model,
-                                            Dimensionality = item.Embedding.Embeddings?.Count ?? 0,
-                                            Vectors = item.Embedding.Embeddings,
-                                            Content = atom.Text
-                                        }
-                                    };
-                                    _LiteGraph.UpdateNode(item.ChunkNode);
-                                    return Task.CompletedTask;
-                                });
-
-                            await Task.WhenAll(updateTasks);
-                            Console.WriteLine(
-                                $"Updated {embeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("No embeddings returned from View service.");
-                        }
-
-                        break;
-                }
-
-                Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
-                Console.WriteLine($"File {filePath} ingested successfully!");
-
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "File Ingested",
-                        "File was ingested successfully!",
-                        ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Success
-                    )
-                    .ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Ingestion Error",
-                        $"Something went wrong: {ex.Message}",
-                        ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Error
-                    )
-                    .ShowAsync();
-            }
+            await FileIngester.IngestFile_ClickAsync(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid,
+                this);
         }
 
-        private void ExportGraph_Click(object sender, RoutedEventArgs e)
+        public void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var exportFilePath = this.FindControl<TextBox>("ExportFilePathTextBox")?.Text;
-                if (string.IsNullOrWhiteSpace(exportFilePath))
-                    // If no path is provided, use a default one
-                    exportFilePath = "exported_graph.gexf";
-
-                _LiteGraph.ExportGraphToGexfFile(_TenantGuid, _GraphGuid, exportFilePath, true);
-
-                Console.WriteLine($"Graph {_GraphGuid} exported to {exportFilePath} successfully!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error exporting graph to GEXF: {ex.Message}");
-            }
+            GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
         private async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts, string openAIKey,
@@ -649,7 +342,7 @@ namespace View.Personal
                     "application/json"
                 );
 
-                using var response = await _httpClient.SendAsync(request);
+                using var response = await _HttpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var responseJson = await response.Content.ReadAsStringAsync();
 
@@ -694,32 +387,47 @@ namespace View.Personal
         private async void SendMessage_Click(object sender, RoutedEventArgs e)
         {
             var inputBox = this.FindControl<TextBox>("ChatInputBox");
-            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            var scrollViewer = this.FindControl<ScrollViewer>("ChatScrollViewer");
 
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
-                var userMessage = $"You: {inputBox.Text}";
-                _ChatMessages.Add(userMessage);
-                UpdateConversationWindow(conversationWindow);
+                // Add the user's new message to conversation history
+                _ConversationHistory.Add(new ChatMessage
+                {
+                    Role = "user",
+                    Content = inputBox.Text
+                });
 
-                // Get AI response and append it
+                // Update UI
+                UpdateConversationWindow(conversationContainer);
+                scrollViewer?.ScrollToEnd(); // Scroll to bottom after user message
+
+                // Get AI response
                 var aiResponse = await GetAIResponse(inputBox.Text);
                 if (!string.IsNullOrEmpty(aiResponse))
                 {
-                    _ChatMessages.Add($"AI: {aiResponse}");
-                    UpdateConversationWindow(conversationWindow);
+                    _ConversationHistory.Add(new ChatMessage
+                    {
+                        Role = "assistant",
+                        Content = aiResponse
+                    });
+
+                    // Refresh the UI display again
+                    UpdateConversationWindow(conversationContainer);
+                    scrollViewer?.ScrollToEnd(); // Scroll to bottom after AI response
                 }
 
-                inputBox.Text = string.Empty; // Clear input
+                // Clear the input
+                inputBox.Text = string.Empty;
             }
         }
 
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
-            _ChatMessages.Clear();
-            var conversationWindow = this.FindControl<TextBlock>("ConversationWindow");
-            if (conversationWindow != null)
-                conversationWindow.Text = string.Empty;
+            _ConversationHistory.Clear();
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            conversationContainer?.Children.Clear();
         }
 
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
@@ -729,7 +437,8 @@ namespace View.Personal
             if (!string.IsNullOrEmpty(filePath))
                 try
                 {
-                    await File.WriteAllLinesAsync(filePath, _ChatMessages);
+                    await File.WriteAllLinesAsync(filePath,
+                        _ConversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
                     Console.WriteLine($"Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
@@ -738,126 +447,535 @@ namespace View.Personal
                 }
         }
 
-        private void UpdateConversationWindow(TextBlock conversationWindow)
+        private void UpdateConversationWindow(StackPanel conversationContainer)
         {
-            if (conversationWindow != null)
-                conversationWindow.Text = string.Join(Environment.NewLine + Environment.NewLine, _ChatMessages);
+            if (conversationContainer != null)
+            {
+                // Clear existing messages
+                conversationContainer.Children.Clear();
+
+                // Add each message with appropriate background color
+                foreach (var msg in _ConversationHistory)
+                {
+                    var messageBlock = new TextBlock
+                    {
+                        Text = msg.Content,
+                        TextWrapping = TextWrapping.Wrap,
+                        // Remove Width to let it auto-size
+                        Padding = new Thickness(10),
+                        FontSize = 14,
+                        Foreground = new SolidColorBrush(Colors.Black) // Black text for both
+                    };
+
+                    var messageBorder = new Border
+                    {
+                        Background = msg.Role == "user"
+                            ? new SolidColorBrush(Color.FromArgb(100, 173, 216, 230)) // Light blue for user
+                            : new SolidColorBrush(Color.FromArgb(100, 144, 238, 144)), // Light green for assistant
+                        CornerRadius = new CornerRadius(5),
+                        Padding = new Thickness(5, 2, 5, 2), // Horizontal padding to hug text, vertical for spacing
+                        Child = messageBlock
+                    };
+
+                    conversationContainer.Children.Add(messageBorder);
+                }
+            }
+        }
+
+        private List<ChatMessage> BuildPromptMessages()
+        {
+            // If conversation is short, just return everything
+            if (_ConversationHistory.Count <= 8)
+                return _ConversationHistory;
+
+            // Separate older messages from more recent ones
+            var olderMessages = _ConversationHistory
+                .Take(_ConversationHistory.Count - 6)
+                .ToList();
+            var recentMessages = _ConversationHistory
+                .Skip(_ConversationHistory.Count - 6)
+                .ToList();
+
+            // For a proper summary, you'd actually do a second call to GPT to summarize `olderMessages`.
+            // For now, we do a “naïve summary”:
+            var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
+            var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
+
+            // Make one message with this summary
+            var summaryMessage = new ChatMessage
+            {
+                Role = "system",
+                Content = summaryContent
+            };
+
+            // Return the summary plus the recent messages
+            var finalList = new List<ChatMessage>();
+            finalList.Add(summaryMessage);
+            finalList.AddRange(recentMessages);
+
+            return finalList;
         }
 
         private async Task<string> GetAIResponse(string userInput)
         {
+            var syslogServers = new List<SyslogServer>
+            {
+                new("127.0.0.1", 514)
+            };
+            var log = new LoggingModule(syslogServers, true);
+
             try
             {
                 var app = (App)Application.Current;
-                var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+                var selectedProvider = app.AppSettings.SelectedProvider;
 
-                if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
-                    return "Error: OpenAI API key not configured in settings.";
-
-                // Generate embeddings
-                var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                    new List<string> { userInput },
-                    openAISettings.OpenAICompletionApiKey,
-                    openAISettings.OpenAIEmbeddingModel);
-                if (embeddings == null || embeddings.Length == 0)
-                    return "Error: Failed to generate embeddings for the prompt.";
-
-                var promptEmbeddings = embeddings[0].ToList();
-                Console.WriteLine(
-                    $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
-
-                // Log search parameters
-                Console.WriteLine($"Searching with TenantGUID={_TenantGuid}, GraphGUID={_GraphGuid}");
-                var searchRequest = new VectorSearchRequest
+                // OpenAi
+                if (selectedProvider == "OpenAI")
                 {
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    Domain = VectorSearchDomainEnum.Node,
-                    SearchType = VectorSearchTypeEnum.CosineSimilarity,
-                    Embeddings = promptEmbeddings
-                };
+                    var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+                    if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
+                        return "Error: OpenAI API key not configured in settings.";
 
-                var searchResults = _LiteGraph.SearchVectors(searchRequest);
-                Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
-                if (searchResults == null || !searchResults.Any())
-                {
-                    Console.WriteLine("Search failed: No matching nodes found.");
-                    return "No relevant documents found to answer your question.";
-                }
+                    // 1. Generate embeddings for user prompt
+                    var embeddings = await GetOpenAIEmbeddingsBatchAsync(
+                        new List<string> { userInput },
+                        openAISettings.OpenAICompletionApiKey,
+                        openAISettings.OpenAIEmbeddingModel);
 
-                // Extract top 5 results with fallback logic
-                var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
-                var nodeContents = sortedResults
-                    .Select(r =>
+                    if (embeddings == null || embeddings.Length == 0)
+                        return "Error: Failed to generate embeddings for the prompt.";
+
+                    var promptEmbeddings = embeddings[0].ToList();
+                    Console.WriteLine(
+                        $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
+
+                    // 2. Vector search for context
+                    var searchRequest = new VectorSearchRequest
                     {
-                        // Try casting Data to Atom
-                        if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                            return atom.Text;
+                        TenantGUID = _TenantGuid,
+                        GraphGUID = _GraphGuid,
+                        Domain = VectorSearchDomainEnum.Node,
+                        SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                        Embeddings = promptEmbeddings
+                    };
 
-                        // Fallback to Vectors[0].Content if available
-                        if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
-                            !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
-                            return r.Node.Vectors[0].Content;
+                    var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                    Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
 
-                        // Fallback to Tags["Content"]
-                        return r.Node.Tags["Content"] ?? "[No Content]";
-                    })
-                    .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
-                    .ToList();
+                    if (searchResults == null || !searchResults.Any())
+                        return "No relevant documents found to answer your question.";
 
-                Console.WriteLine(
-                    $"Extracted {nodeContents.Count} valid content items: {string.Join(", ", nodeContents)}");
+                    // 3. Build the context
+                    var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                    var nodeContents = sortedResults
+                        .Select(r =>
+                        {
+                            if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                return atom.Text;
+                            if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                return r.Node.Vectors[0].Content;
+                            return r.Node.Tags["Content"] ?? "[No Content]";
+                        })
+                        .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                        .ToList();
 
-                // Construct RAG query
-                var context = string.Join("\n\n", nodeContents);
-                if (string.IsNullOrEmpty(context))
-                    Console.WriteLine("Warning: Context is empty after filtering.");
-                if (context.Length > 4000)
-                    context = context.Substring(0, 4000) + "... [truncated]";
-                var ragQuery = $@"
-You are a helpful AI assistant.
-Answer the question that follows, using the context that appears before the question as hints to answer the question.
-Do not make up an answer; if you do not know the answer, say that you do not know the answer.
-The context is as follows: {context}
-The question asked by the user is: {userInput}";
+                    var context = string.Join("\n\n", nodeContents);
+                    if (context.Length > 4000)
+                        context = context.Substring(0, 4000) + "... [truncated]";
 
-                // OpenAI completion with gpt-4o-mini
-                var requestUri = "https://api.openai.com/v1/chat/completions";
-                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", openAISettings.OpenAICompletionApiKey);
+                    // 4. Build the conversation messages
+                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
 
-                var requestBody = new
+                    var contextMessage = new ChatMessage
+                    {
+                        Role = "system",
+                        Content =
+                            "You are an assistant answering based solely on the provided document context. " +
+                            "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                            context
+                    };
+                    var questionMessage = new ChatMessage
+                    {
+                        Role = "user",
+                        Content = userInput
+                    };
+
+                    var finalMessages = new List<ChatMessage>();
+                    finalMessages.AddRange(conversationSoFar);
+                    finalMessages.Add(contextMessage);
+                    finalMessages.Add(questionMessage);
+
+                    var messagesForOpenAI = finalMessages.Select(msg => new
+                    {
+                        role = msg.Role,
+                        content = msg.Content
+                    }).ToList();
+
+                    // 5. Call OpenAI chat
+                    var requestBody = new
+                    {
+                        model = openAISettings.OpenAICompletionModel,
+                        messages = messagesForOpenAI,
+                        max_tokens = 300,
+                        temperature = 0.7
+                    };
+
+                    var requestUri = "https://api.openai.com/v1/chat/completions";
+
+                    using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                    {
+                        restRequest.Headers["Authorization"] = $"Bearer {openAISettings.OpenAICompletionApiKey}";
+                        restRequest.ContentType = "application/json";
+
+                        var jsonPayload = _Serializer.SerializeJson(requestBody);
+                        using (var restResponse = await restRequest.SendAsync(jsonPayload))
+                        {
+                            if (restResponse.StatusCode > 299)
+                                throw new Exception($"OpenAI call failed with status: {restResponse.StatusCode}");
+
+                            var responseJson = restResponse.Data;
+                            using var doc = JsonDocument.Parse(responseJson);
+                            var aiText = doc.RootElement
+                                .GetProperty("choices")[0]
+                                .GetProperty("message")
+                                .GetProperty("content")
+                                .GetString();
+
+                            return aiText ?? "No response from AI.";
+                        }
+                    }
+                }
+                // View
+                else if (selectedProvider == "View")
                 {
-                    model = openAISettings.OpenAICompletionModel, // "gpt-4o-mini"
-                    messages = new[] { new { role = "user", content = ragQuery } },
-                    max_tokens = 300,
-                    temperature = 0.7
-                };
+                    // 1. Retrieve View settings
+                    var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+                    if (string.IsNullOrEmpty(viewSettings.ViewEndpoint))
+                        return "Error: View endpoint not configured in settings.";
 
-                request.Content = new StringContent(
-                    _Serializer.SerializeJson(requestBody),
-                    Encoding.UTF8,
-                    "application/json"
-                );
+                    // 2. Generate embeddings for the user prompt via ViewEmbeddingsServerSdk
+                    var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(
+                        _TenantGuid,
+                        viewSettings.ViewEndpoint,
+                        viewSettings.AccessKey);
 
-                using var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseJson = await response.Content.ReadAsStringAsync();
+                    var embeddingsRequest = new EmbeddingsRequest
+                    {
+                        EmbeddingsRule = new EmbeddingsRule
+                        {
+                            EmbeddingsGenerator =
+                                Enum.Parse<EmbeddingsGeneratorEnum>(viewSettings.EmbeddingsGenerator),
+                            EmbeddingsGeneratorUrl = viewSettings.EmbeddingsGeneratorUrl,
+                            EmbeddingsGeneratorApiKey = viewSettings.ApiKey,
+                            BatchSize = 2,
+                            MaxGeneratorTasks = 4,
+                            MaxRetries = 3,
+                            MaxFailures = 3
+                        },
+                        Model = viewSettings.Model,
+                        Contents = new List<string> { userInput }
+                    };
 
-                using var doc = JsonDocument.Parse(responseJson);
-                var aiText = doc.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString();
+                    var embeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(embeddingsRequest);
+                    if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                        embeddingsResult.ContentEmbeddings.Count == 0)
+                    {
+                        Console.WriteLine($"Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                        if (embeddingsResult.Error != null)
+                            Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                        return "Error: Failed to generate embeddings for the prompt.";
+                    }
 
-                return aiText ?? "No response from AI.";
+                    var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings;
+                    if (promptEmbeddings == null || !promptEmbeddings.Any())
+                        return "Error: Embedding array was empty for the prompt.";
+
+                    Console.WriteLine(
+                        $"[View] Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
+
+                    // 3. Vector search in LiteGraph using the prompt embeddings
+                    var searchRequest = new VectorSearchRequest
+                    {
+                        TenantGUID = _TenantGuid,
+                        GraphGUID = _GraphGuid,
+                        Domain = VectorSearchDomainEnum.Node,
+                        SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                        Embeddings = promptEmbeddings
+                    };
+
+                    var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                    Console.WriteLine($"[View] Search returned {searchResults?.Count() ?? 0} results");
+
+                    if (searchResults == null || !searchResults.Any())
+                        return "No relevant documents found to answer your question.";
+
+                    // 4. Build the RAG context from top results
+                    var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                    var nodeContents = sortedResults
+                        .Select(r =>
+                        {
+                            if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                return atom.Text;
+                            if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                return r.Node.Vectors[0].Content;
+                            return r.Node.Tags["Content"] ?? "[No Content]";
+                        })
+                        .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                        .ToList();
+
+                    var context = string.Join("\n\n", nodeContents);
+                    if (context.Length > 4000)
+                        context = context.Substring(0, 4000) + "... [truncated]";
+
+                    // 5. Prepare final conversation with context
+                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                    var contextMessage = new ChatMessage
+                    {
+                        Role = "system",
+                        Content =
+                            "You are an assistant answering based solely on the provided document context. " +
+                            "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                            context
+                    };
+                    var questionMessage = new ChatMessage
+                    {
+                        Role = "user",
+                        Content = userInput
+                    };
+
+                    var finalMessages = new List<ChatMessage>();
+                    finalMessages.AddRange(conversationSoFar);
+                    finalMessages.Add(contextMessage);
+                    finalMessages.Add(questionMessage);
+
+                    var messagesForView = finalMessages.Select(msg => new
+                    {
+                        role = msg.Role,
+                        content = msg.Content
+                    }).ToList();
+                    Console.WriteLine($"messagesForView: {messagesForView}");
+
+                    // 6. Build payload for the View chat completions
+                    var payload = new
+                    {
+                        Messages = messagesForView,
+                        ModelName = viewSettings.ViewCompletionModel,
+                        Temperature = viewSettings.Temperature,
+                        TopP = viewSettings.TopP,
+                        MaxTokens = viewSettings.MaxTokens,
+                        GenerationProvider = viewSettings.ViewCompletionProvider,
+                        GenerationApiKey = viewSettings.ViewCompletionApiKey,
+                        OllamaHostname = "192.168.197.1", // Adjust as needed
+                        OllamaPort = viewSettings.ViewCompletionPort,
+                        Stream = false
+                    };
+
+                    // 7. Send request to the View chat completions API
+                    var requestUri =
+                        $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions";
+                    Console.WriteLine($"[View] requestUri: {requestUri}");
+
+                    using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                    {
+                        restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+                        restRequest.ContentType = "application/json";
+
+                        var jsonPayload = _Serializer.SerializeJson(payload);
+                        using (var restResponse = await restRequest.SendAsync(jsonPayload))
+                        {
+                            if (restResponse.StatusCode > 299)
+                                throw new Exception($"View call failed with status: {restResponse.StatusCode}");
+
+                            var responseJson = restResponse.Data;
+                            using var doc = JsonDocument.Parse(responseJson);
+
+                            if (doc.RootElement.TryGetProperty("response", out var responseProp))
+                            {
+                                var text = responseProp.GetString();
+                                return text ?? "No response from View AI.";
+                            }
+                            else
+                            {
+                                return "Could not find 'response' in JSON returned by View.";
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return "Error: Unsupported provider.";
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in GetAIResponse: {ex.Message}");
                 return $"Error: {ex.Message}";
+            }
+        }
+
+        private void ViewAssistantConfigComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            // Only fetch if we haven't loaded the configs yet
+            if (!_assistantConfigsLoaded)
+            {
+                // Show loading indicator as the first item
+                var comboBox = (ComboBox)sender;
+                comboBox.Items.Clear();
+                comboBox.Items.Add(new ComboBoxItem { Content = "Loading configurations..." });
+
+                // Start the async operation
+                FetchAssistantConfigsAsync(comboBox);
+            }
+        }
+
+        private async void FetchAssistantConfigsAsync(ComboBox comboBox)
+        {
+            try
+            {
+                var app = (App)Application.Current;
+                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+
+                if (string.IsNullOrEmpty(viewSettings.ViewEndpoint) || string.IsNullOrEmpty(viewSettings.AccessKey))
+                {
+                    Console.WriteLine("View endpoint or access key not configured");
+                    comboBox.Items.Clear();
+                    comboBox.Items.Add(new ComboBoxItem
+                        { Content = "Configuration missing. Set endpoint and access key first." });
+                    return;
+                }
+
+                var requestUri = $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs";
+                Console.WriteLine($"Fetching assistant configs from: {requestUri}");
+
+                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
+                {
+                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+
+                    using (var restResponse = await restRequest.SendAsync())
+                    {
+                        if (restResponse.StatusCode > 299)
+                        {
+                            Console.WriteLine($"Failed to fetch assistant configs: {restResponse.StatusCode}");
+                            comboBox.Items.Clear();
+                            comboBox.Items.Add(new ComboBoxItem
+                                { Content = $"Error loading configurations (Status: {restResponse.StatusCode})" });
+                            return;
+                        }
+
+                        var responseJson = restResponse.DataAsString;
+                        var configResponse = _Serializer.DeserializeJson<AssistantConfigResponse>(responseJson);
+
+                        if (configResponse != null && configResponse.AssistantConfigs != null &&
+                            configResponse.AssistantConfigs.Count > 0)
+                        {
+                            // Replace the loading placeholder with actual items
+                            comboBox.Items.Clear();
+                            comboBox.ItemsSource = configResponse.AssistantConfigs;
+                            comboBox.SelectedIndex = 0;
+                            _assistantConfigsLoaded = true;
+                            Console.WriteLine($"Loaded {configResponse.AssistantConfigs.Count} assistant configs");
+                        }
+                        else
+                        {
+                            comboBox.Items.Clear();
+                            comboBox.Items.Add(new ComboBoxItem { Content = "No assistant configurations found" });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching assistant configs: {ex.Message}");
+                comboBox.Items.Clear();
+                comboBox.Items.Add(new ComboBoxItem { Content = $"Error: {ex.Message}" });
+            }
+        }
+
+        private async void ApplyPreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Grab the selected config from the combo box
+                var comboBox = this.FindControl<ComboBox>("ViewAssistantConfigComboBox");
+                var selectedConfig = comboBox.SelectedItem as AssistantConfig;
+                if (selectedConfig == null)
+                {
+                    Console.WriteLine("No preset selected.");
+                    return;
+                }
+
+                Console.WriteLine($"Selected config GUID: {selectedConfig.GUID}");
+
+                // Pull the stored View settings
+                var app = (App)Application.Current;
+                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+
+                // Fetch the full details from /assistant/configs/{GUID}
+                var requestUri =
+                    $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs/{selectedConfig.GUID}";
+                Console.WriteLine($"Fetching config details from: {requestUri}");
+
+                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
+                {
+                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+
+                    using (var restResponse = await restRequest.SendAsync())
+                    {
+                        if (restResponse.StatusCode > 299)
+                        {
+                            Console.WriteLine($"Failed to fetch config details: {restResponse.StatusCode}");
+                            return;
+                        }
+
+                        // Grab raw JSON, then deserialize
+                        var responseJson = restResponse.DataAsString;
+                        Console.WriteLine("Raw JSON for preset details:");
+                        Console.WriteLine(responseJson);
+
+                        var configDetails = _Serializer.DeserializeJson<AssistantConfigDetails>(responseJson);
+                        if (configDetails == null)
+                        {
+                            Console.WriteLine("Error: unable to deserialize config details.");
+                            return;
+                        }
+
+                        // Now map the fields to the CompletionProviderSettings
+                        viewSettings.ViewAssistantConfigGuid =
+                            configDetails.GUID;
+                        viewSettings.ViewPresetGuid = configDetails.GUID;
+                        viewSettings.Name = configDetails.Name;
+                        viewSettings.Description = configDetails.Description;
+                        viewSettings.SystemPrompt = configDetails.SystemPrompt;
+                        viewSettings.EmbeddingsGenerator = configDetails.EmbeddingModel;
+                        viewSettings.Model = configDetails.EmbeddingModel;
+                        viewSettings.ApiKey = configDetails.GenerationApiKey ?? string.Empty;
+
+                        // generation details
+                        viewSettings.ViewCompletionProvider = configDetails.GenerationProvider;
+                        viewSettings.ViewCompletionModel = configDetails.GenerationModel;
+                        viewSettings.Temperature = configDetails.Temperature;
+                        viewSettings.TopP = configDetails.TopP;
+                        viewSettings.MaxTokens = configDetails.MaxTokens;
+                        viewSettings.ViewCompletionPort = configDetails.OllamaPort;
+
+                        // Save the updated settings
+                        app.UpdateProviderSettings(viewSettings);
+
+                        // Feedback 
+                        Console.WriteLine($"Preset '{configDetails.Name}' applied to local settings.");
+                        await MsBox.Avalonia.MessageBoxManager
+                            .GetMessageBoxStandard("Presets Applied", $"Your presets have been saved!",
+                                ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
+                            .ShowAsync();
+                        LoadSavedSettings();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying preset: {ex.Message}");
             }
         }
 
