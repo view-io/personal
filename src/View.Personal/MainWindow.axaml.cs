@@ -57,6 +57,7 @@ namespace View.Personal
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _fileBrowserService = new();
         private LoggingModule _Logging = null;
+        private bool _assistantConfigsLoaded = false;
 
         #endregion
 
@@ -147,7 +148,11 @@ namespace View.Personal
                         MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
                             ? tokens
                             : 150,
-                        Stream = false
+                        Stream = false,
+                        // Add this line to save the selected assistant config
+                        ViewAssistantConfigGuid =
+                            (this.FindControl<ComboBox>("ViewAssistantConfigComboBox").SelectedItem as AssistantConfig)
+                            ?.GUID
                     };
                     break;
             }
@@ -279,6 +284,9 @@ namespace View.Personal
                 AnthropicSettings,
                 ViewSettings,
                 selectedProvider);
+
+            // // Fetch assistant configs when View provider is selected
+            // if (selectedProvider == "View") _ = FetchAssistantConfigs();
         }
 
 
@@ -804,6 +812,170 @@ namespace View.Personal
             {
                 Console.WriteLine($"Error in GetAIResponse: {ex.Message}");
                 return $"Error: {ex.Message}";
+            }
+        }
+
+        private void ViewAssistantConfigComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            // Only fetch if we haven't loaded the configs yet
+            if (!_assistantConfigsLoaded)
+            {
+                // Show loading indicator as the first item
+                var comboBox = (ComboBox)sender;
+                comboBox.Items.Clear();
+                comboBox.Items.Add(new ComboBoxItem { Content = "Loading configurations..." });
+
+                // Start the async operation
+                FetchAssistantConfigsAsync(comboBox);
+            }
+        }
+
+        private async void FetchAssistantConfigsAsync(ComboBox comboBox)
+        {
+            try
+            {
+                var app = (App)Application.Current;
+                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+
+                if (string.IsNullOrEmpty(viewSettings.ViewEndpoint) || string.IsNullOrEmpty(viewSettings.AccessKey))
+                {
+                    Console.WriteLine("View endpoint or access key not configured");
+                    comboBox.Items.Clear();
+                    comboBox.Items.Add(new ComboBoxItem
+                        { Content = "Configuration missing. Set endpoint and access key first." });
+                    return;
+                }
+
+                var requestUri = $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs";
+                Console.WriteLine($"Fetching assistant configs from: {requestUri}");
+
+                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
+                {
+                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+
+                    using (var restResponse = await restRequest.SendAsync())
+                    {
+                        if (restResponse.StatusCode > 299)
+                        {
+                            Console.WriteLine($"Failed to fetch assistant configs: {restResponse.StatusCode}");
+                            comboBox.Items.Clear();
+                            comboBox.Items.Add(new ComboBoxItem
+                                { Content = $"Error loading configurations (Status: {restResponse.StatusCode})" });
+                            return;
+                        }
+
+                        var responseJson = restResponse.DataAsString;
+                        var configResponse = _Serializer.DeserializeJson<AssistantConfigResponse>(responseJson);
+
+                        if (configResponse != null && configResponse.AssistantConfigs != null &&
+                            configResponse.AssistantConfigs.Count > 0)
+                        {
+                            // Replace the loading placeholder with actual items
+                            comboBox.Items.Clear();
+                            comboBox.ItemsSource = configResponse.AssistantConfigs;
+                            comboBox.SelectedIndex = 0;
+                            _assistantConfigsLoaded = true;
+                            Console.WriteLine($"Loaded {configResponse.AssistantConfigs.Count} assistant configs");
+                        }
+                        else
+                        {
+                            comboBox.Items.Clear();
+                            comboBox.Items.Add(new ComboBoxItem { Content = "No assistant configurations found" });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching assistant configs: {ex.Message}");
+                comboBox.Items.Clear();
+                comboBox.Items.Add(new ComboBoxItem { Content = $"Error: {ex.Message}" });
+            }
+        }
+
+        private async void ApplyPreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Grab the selected config from the combo box
+                var comboBox = this.FindControl<ComboBox>("ViewAssistantConfigComboBox");
+                var selectedConfig = comboBox.SelectedItem as AssistantConfig;
+                if (selectedConfig == null)
+                {
+                    Console.WriteLine("No preset selected.");
+                    return;
+                }
+
+                Console.WriteLine($"Selected config GUID: {selectedConfig.GUID}");
+
+                // Pull the stored View settings
+                var app = (App)Application.Current;
+                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+
+                // Fetch the full details from /assistant/configs/{GUID}
+                var requestUri =
+                    $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs/{selectedConfig.GUID}";
+                Console.WriteLine($"Fetching config details from: {requestUri}");
+
+                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
+                {
+                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+
+                    using (var restResponse = await restRequest.SendAsync())
+                    {
+                        if (restResponse.StatusCode > 299)
+                        {
+                            Console.WriteLine($"Failed to fetch config details: {restResponse.StatusCode}");
+                            return;
+                        }
+
+                        // Grab raw JSON, then deserialize
+                        var responseJson = restResponse.DataAsString;
+                        Console.WriteLine("Raw JSON for preset details:");
+                        Console.WriteLine(responseJson);
+
+                        var configDetails = _Serializer.DeserializeJson<AssistantConfigDetails>(responseJson);
+                        if (configDetails == null)
+                        {
+                            Console.WriteLine("Error: unable to deserialize config details.");
+                            return;
+                        }
+
+                        // Now map the fields to the CompletionProviderSettings
+                        viewSettings.ViewAssistantConfigGuid =
+                            configDetails.GUID;
+                        viewSettings.ViewPresetGuid = configDetails.GUID;
+                        viewSettings.Name = configDetails.Name;
+                        viewSettings.Description = configDetails.Description;
+                        viewSettings.SystemPrompt = configDetails.SystemPrompt;
+                        viewSettings.EmbeddingsGenerator = configDetails.EmbeddingModel;
+                        viewSettings.Model = configDetails.EmbeddingModel;
+                        viewSettings.ApiKey = configDetails.GenerationApiKey ?? string.Empty;
+
+                        // generation details
+                        viewSettings.ViewCompletionProvider = configDetails.GenerationProvider;
+                        viewSettings.ViewCompletionModel = configDetails.GenerationModel;
+                        viewSettings.Temperature = configDetails.Temperature;
+                        viewSettings.TopP = configDetails.TopP;
+                        viewSettings.MaxTokens = configDetails.MaxTokens;
+                        viewSettings.ViewCompletionPort = configDetails.OllamaPort;
+
+                        // Save the updated settings
+                        app.UpdateProviderSettings(viewSettings);
+
+                        // Feedback 
+                        Console.WriteLine($"Preset '{configDetails.Name}' applied to local settings.");
+                        await MsBox.Avalonia.MessageBoxManager
+                            .GetMessageBoxStandard("Presets Applied", $"Your presets have been saved!",
+                                ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
+                            .ShowAsync();
+                        LoadSavedSettings();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying preset: {ex.Message}");
             }
         }
 

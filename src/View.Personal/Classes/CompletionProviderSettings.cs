@@ -18,46 +18,30 @@
         public string AnthropicCompletionModel { get; set; } = string.Empty;
 
         // View Settings
-        public string EmbeddingsGenerator { get; set; }
-        public string ApiKey { get; set; }
+        public string EmbeddingsGenerator { get; set; } // EmbeddingModel
+        public string ApiKey { get; set; } // GenerationApiKey
         public string ViewEndpoint { get; set; }
         public string AccessKey { get; set; }
         public string EmbeddingsGeneratorUrl { get; set; }
-        public string Model { get; set; }
+        public string Model { get; set; } // EmbeddingModel
+
         public string ViewCompletionApiKey { get; set; }
-        public string ViewPresetGuid { get; set; }
 
-        // New View completion settings
-        public string ViewCompletionProvider { get; set; }
-        public string ViewCompletionModel { get; set; }
-        public int ViewCompletionPort { get; set; }
-        public double Temperature { get; set; }
-        public double TopP { get; set; }
-        public int MaxTokens { get; set; }
+        public string ViewPresetGuid { get; set; } // GUID
+        public string ViewCompletionProvider { get; set; } // GenerationProvider
+        public string ViewCompletionModel { get; set; } // GenerationModel
+        public int ViewCompletionPort { get; set; } // OllamaPort
+        public double Temperature { get; set; } // Temperature
+        public double TopP { get; set; } // TopP
+        public int MaxTokens { get; set; } //MaxTokens
         public bool Stream { get; set; }
+        public string ViewAssistantConfigGuid { get; set; } // GUID
 
-        // public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
-        // {
-        //     ProviderType = providerType;
-        //     // Set default values
-        //     switch (providerType)
-        //     {
-        //         case CompletionProviderTypeEnum.OpenAI:
-        //             OpenAIEmbeddingModel = "text-embedding-ada-002";
-        //             OpenAICompletionModel = "gpt-3.5-turbo";
-        //             break;
-        //         case CompletionProviderTypeEnum.Voyage:
-        //             VoyageEmbeddingModel = "voyage-01";
-        //             break;
-        //         case CompletionProviderTypeEnum.Anthropic:
-        //             AnthropicCompletionModel = "claude-2";
-        //             break;
-        //         case CompletionProviderTypeEnum.View:
-        //             Generator = "default";
-        //             Model = "default";
-        //             break;
-        //     }
-        // }
+        public string Name { get; set; } // Name
+
+        public string Description { get; set; } // Description
+
+        public string SystemPrompt { get; set; } // SystemPrompt
 
         public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
         {

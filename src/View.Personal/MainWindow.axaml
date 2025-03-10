@@ -202,13 +202,31 @@
                         <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="13" Grid.Column="1" x:Name="MaxTokens" />
+                        <TextBlock Grid.Row="14" Grid.Column="0" Text="Assistant Config" Foreground="Black"
+                                   VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="14" Grid.Column="1" x:Name="ViewAssistantConfigComboBox"
+                                  HorizontalAlignment="Stretch" Width="400"
+                                  DropDownOpened="ViewAssistantConfigComboBox_DropDownOpened">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="classes:AssistantConfig">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <!-- Add a placeholder item -->
+                            <ComboBoxItem Content="Click to load configurations..." />
+                        </ComboBox>
                     </Grid>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="Save Settings"
+                            Click="SaveSettings_Click"
+                            Margin="0,20,0,0" />
+                    <Button Content="Apply preset"
+                            Click="ApplyPreset_Click"
+                            Margin="0,20,0,0" />
+                </StackPanel>
 
-                <Button Content="Save Settings"
-                        Click="SaveSettings_Click"
-                        Margin="0,20,0,0"
-                        HorizontalAlignment="Left" />
+
             </StackPanel>
             <!-- My Files View -->
             <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
