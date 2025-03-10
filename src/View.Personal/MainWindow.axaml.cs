@@ -29,6 +29,10 @@ namespace View.Personal
     using SerializationHelper;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Services;
+    using Sdk;
+    using RestWrapper;
+    using SyslogLogging;
+    using SyslogServer = SyslogLogging.SyslogServer;
 
     public partial class MainWindow : Window
     {
@@ -52,6 +56,7 @@ namespace View.Personal
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _fileBrowserService = new();
+        private LoggingModule _Logging = null;
 
         #endregion
 
@@ -503,141 +508,297 @@ namespace View.Personal
             return finalList;
         }
 
-
         private async Task<string> GetAIResponse(string userInput)
         {
+            var syslogServers = new List<SyslogServer>
+            {
+                new("127.0.0.1", 514)
+            };
+            var log = new LoggingModule(syslogServers, true);
+
             try
             {
                 var app = (App)Application.Current;
-                var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+                var selectedProvider = app.AppSettings.SelectedProvider;
 
-                if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
-                    return "Error: OpenAI API key not configured in settings.";
-
-                // Generate embeddings
-                var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                    new List<string> { userInput },
-                    openAISettings.OpenAICompletionApiKey,
-                    openAISettings.OpenAIEmbeddingModel);
-                if (embeddings == null || embeddings.Length == 0)
-                    return "Error: Failed to generate embeddings for the prompt.";
-
-                var promptEmbeddings = embeddings[0].ToList();
-                Console.WriteLine(
-                    $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
-
-                // Log search parameters
-                Console.WriteLine($"Searching with TenantGUID={_TenantGuid}, GraphGUID={_GraphGuid}");
-                var searchRequest = new VectorSearchRequest
+                // OpenAi
+                if (selectedProvider == "OpenAI")
                 {
-                    TenantGUID = _TenantGuid,
-                    GraphGUID = _GraphGuid,
-                    Domain = VectorSearchDomainEnum.Node,
-                    SearchType = VectorSearchTypeEnum.CosineSimilarity,
-                    Embeddings = promptEmbeddings
-                };
+                    var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+                    if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
+                        return "Error: OpenAI API key not configured in settings.";
 
-                var searchResults = _LiteGraph.SearchVectors(searchRequest);
-                Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
-                if (searchResults == null || !searchResults.Any())
-                {
-                    Console.WriteLine("Search failed: No matching nodes found.");
-                    return "No relevant documents found to answer your question.";
-                }
+                    // 1. Generate embeddings for user prompt
+                    var embeddings = await GetOpenAIEmbeddingsBatchAsync(
+                        new List<string> { userInput },
+                        openAISettings.OpenAICompletionApiKey,
+                        openAISettings.OpenAIEmbeddingModel);
 
-                // Extract top 5 results with fallback logic
-                var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
-                var nodeContents = sortedResults
-                    .Select(r =>
+                    if (embeddings == null || embeddings.Length == 0)
+                        return "Error: Failed to generate embeddings for the prompt.";
+
+                    var promptEmbeddings = embeddings[0].ToList();
+                    Console.WriteLine(
+                        $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
+
+                    // 2. Vector search for context
+                    var searchRequest = new VectorSearchRequest
                     {
-                        // Try casting Data to Atom
-                        if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                            return atom.Text;
+                        TenantGUID = _TenantGuid,
+                        GraphGUID = _GraphGuid,
+                        Domain = VectorSearchDomainEnum.Node,
+                        SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                        Embeddings = promptEmbeddings
+                    };
 
-                        // Fallback to Vectors[0].Content if available
-                        if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
-                            !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
-                            return r.Node.Vectors[0].Content;
+                    var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                    Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
 
-                        // Fallback to Tags["Content"]
-                        return r.Node.Tags["Content"] ?? "[No Content]";
-                    })
-                    .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
-                    .ToList();
+                    if (searchResults == null || !searchResults.Any())
+                        return "No relevant documents found to answer your question.";
 
-                Console.WriteLine(
-                    $"Extracted {nodeContents.Count} valid content items: {string.Join(", ", nodeContents)}");
+                    // 3. Build the context
+                    var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                    var nodeContents = sortedResults
+                        .Select(r =>
+                        {
+                            if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                return atom.Text;
+                            if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                return r.Node.Vectors[0].Content;
+                            return r.Node.Tags["Content"] ?? "[No Content]";
+                        })
+                        .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                        .ToList();
 
-                // Construct RAG query
-                var context = string.Join("\n\n", nodeContents);
-                if (string.IsNullOrEmpty(context))
-                    Console.WriteLine("Warning: Context is empty after filtering.");
-                if (context.Length > 4000)
-                    context = context.Substring(0, 4000) + "... [truncated]";
-                var conversationSoFar = BuildPromptMessages(); // returns List<ChatMessage>
+                    var context = string.Join("\n\n", nodeContents);
+                    if (context.Length > 4000)
+                        context = context.Substring(0, 4000) + "... [truncated]";
 
-                // Then create a brand-new message for the context
-                // (You can make this a “system” role or an “assistant” role, your choice.)
-                var contextMessage = new ChatMessage
+                    // 4. Build the conversation messages
+                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+
+                    var contextMessage = new ChatMessage
+                    {
+                        Role = "system",
+                        Content =
+                            "You are an assistant answering based solely on the provided document context. " +
+                            "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                            context
+                    };
+                    var questionMessage = new ChatMessage
+                    {
+                        Role = "user",
+                        Content = userInput
+                    };
+
+                    var finalMessages = new List<ChatMessage>();
+                    finalMessages.AddRange(conversationSoFar);
+                    finalMessages.Add(contextMessage);
+                    finalMessages.Add(questionMessage);
+
+                    var messagesForOpenAI = finalMessages.Select(msg => new
+                    {
+                        role = msg.Role,
+                        content = msg.Content
+                    }).ToList();
+
+                    // 5. Call OpenAI chat
+                    var requestBody = new
+                    {
+                        model = openAISettings.OpenAICompletionModel,
+                        messages = messagesForOpenAI,
+                        max_tokens = 300,
+                        temperature = 0.7
+                    };
+
+                    var requestUri = "https://api.openai.com/v1/chat/completions";
+
+                    using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                    {
+                        restRequest.Headers["Authorization"] = $"Bearer {openAISettings.OpenAICompletionApiKey}";
+                        restRequest.ContentType = "application/json";
+
+                        var jsonPayload = _Serializer.SerializeJson(requestBody);
+                        using (var restResponse = await restRequest.SendAsync(jsonPayload))
+                        {
+                            if (restResponse.StatusCode > 299)
+                                throw new Exception($"OpenAI call failed with status: {restResponse.StatusCode}");
+
+                            var responseJson = restResponse.Data;
+                            using var doc = JsonDocument.Parse(responseJson);
+                            var aiText = doc.RootElement
+                                .GetProperty("choices")[0]
+                                .GetProperty("message")
+                                .GetProperty("content")
+                                .GetString();
+
+                            return aiText ?? "No response from AI.";
+                        }
+                    }
+                }
+                // View
+                else if (selectedProvider == "View")
                 {
-                    Role = "system", // Use "system" to set instructions
-                    Content =
-                        "You are an assistant answering based solely on the provided document context. Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
-                        context
-                };
+                    // 1. Retrieve View settings
+                    var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+                    if (string.IsNullOrEmpty(viewSettings.ViewEndpoint))
+                        return "Error: View endpoint not configured in settings.";
 
-                // Then the new user question
-                var questionMessage = new ChatMessage
+                    // 2. Generate embeddings for the user prompt via ViewEmbeddingsServerSdk
+                    var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(
+                        _TenantGuid,
+                        viewSettings.ViewEndpoint,
+                        viewSettings.AccessKey);
+
+                    var embeddingsRequest = new EmbeddingsRequest
+                    {
+                        EmbeddingsRule = new EmbeddingsRule
+                        {
+                            EmbeddingsGenerator =
+                                Enum.Parse<EmbeddingsGeneratorEnum>(viewSettings.EmbeddingsGenerator),
+                            EmbeddingsGeneratorUrl = viewSettings.EmbeddingsGeneratorUrl,
+                            EmbeddingsGeneratorApiKey = viewSettings.ApiKey,
+                            BatchSize = 2,
+                            MaxGeneratorTasks = 4,
+                            MaxRetries = 3,
+                            MaxFailures = 3
+                        },
+                        Model = viewSettings.Model,
+                        Contents = new List<string> { userInput }
+                    };
+
+                    var embeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(embeddingsRequest);
+                    if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                        embeddingsResult.ContentEmbeddings.Count == 0)
+                    {
+                        Console.WriteLine($"Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                        if (embeddingsResult.Error != null)
+                            Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                        return "Error: Failed to generate embeddings for the prompt.";
+                    }
+
+                    var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings;
+                    if (promptEmbeddings == null || !promptEmbeddings.Any())
+                        return "Error: Embedding array was empty for the prompt.";
+
+                    Console.WriteLine(
+                        $"[View] Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
+
+                    // 3. Vector search in LiteGraph using the prompt embeddings
+                    var searchRequest = new VectorSearchRequest
+                    {
+                        TenantGUID = _TenantGuid,
+                        GraphGUID = _GraphGuid,
+                        Domain = VectorSearchDomainEnum.Node,
+                        SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                        Embeddings = promptEmbeddings
+                    };
+
+                    var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                    Console.WriteLine($"[View] Search returned {searchResults?.Count() ?? 0} results");
+
+                    if (searchResults == null || !searchResults.Any())
+                        return "No relevant documents found to answer your question.";
+
+                    // 4. Build the RAG context from top results
+                    var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                    var nodeContents = sortedResults
+                        .Select(r =>
+                        {
+                            if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                return atom.Text;
+                            if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                return r.Node.Vectors[0].Content;
+                            return r.Node.Tags["Content"] ?? "[No Content]";
+                        })
+                        .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                        .ToList();
+
+                    var context = string.Join("\n\n", nodeContents);
+                    if (context.Length > 4000)
+                        context = context.Substring(0, 4000) + "... [truncated]";
+
+                    // 5. Prepare final conversation with context
+                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                    var contextMessage = new ChatMessage
+                    {
+                        Role = "system",
+                        Content =
+                            "You are an assistant answering based solely on the provided document context. " +
+                            "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                            context
+                    };
+                    var questionMessage = new ChatMessage
+                    {
+                        Role = "user",
+                        Content = userInput
+                    };
+
+                    var finalMessages = new List<ChatMessage>();
+                    finalMessages.AddRange(conversationSoFar);
+                    finalMessages.Add(contextMessage);
+                    finalMessages.Add(questionMessage);
+
+                    var messagesForView = finalMessages.Select(msg => new
+                    {
+                        role = msg.Role,
+                        content = msg.Content
+                    }).ToList();
+                    Console.WriteLine($"messagesForView: {messagesForView}");
+
+                    // 6. Build payload for the View chat completions
+                    var payload = new
+                    {
+                        Messages = messagesForView,
+                        ModelName = viewSettings.ViewCompletionModel,
+                        Temperature = viewSettings.Temperature,
+                        TopP = viewSettings.TopP,
+                        MaxTokens = viewSettings.MaxTokens,
+                        GenerationProvider = viewSettings.ViewCompletionProvider,
+                        GenerationApiKey = viewSettings.ViewCompletionApiKey,
+                        OllamaHostname = "192.168.197.1", // Adjust as needed
+                        OllamaPort = viewSettings.ViewCompletionPort,
+                        Stream = false
+                    };
+
+                    // 7. Send request to the View chat completions API
+                    var requestUri =
+                        $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions";
+                    Console.WriteLine($"[View] requestUri: {requestUri}");
+
+                    using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                    {
+                        restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
+                        restRequest.ContentType = "application/json";
+
+                        var jsonPayload = _Serializer.SerializeJson(payload);
+                        using (var restResponse = await restRequest.SendAsync(jsonPayload))
+                        {
+                            if (restResponse.StatusCode > 299)
+                                throw new Exception($"View call failed with status: {restResponse.StatusCode}");
+
+                            var responseJson = restResponse.Data;
+                            using var doc = JsonDocument.Parse(responseJson);
+
+                            if (doc.RootElement.TryGetProperty("response", out var responseProp))
+                            {
+                                var text = responseProp.GetString();
+                                return text ?? "No response from View AI.";
+                            }
+                            else
+                            {
+                                return "Could not find 'response' in JSON returned by View.";
+                            }
+                        }
+                    }
+                }
+                else
                 {
-                    Role = "user",
-                    Content = userInput
-                };
-
-                // We'll combine them:
-                var finalMessages = new List<ChatMessage>();
-                finalMessages.AddRange(conversationSoFar); // older chat + summary
-                finalMessages.Add(contextMessage); // your RAG context
-                finalMessages.Add(questionMessage); // the user's question
-
-                // 5) Convert to OpenAI Chat Completion format
-                var messagesForOpenAI = finalMessages.Select(msg => new
-                {
-                    role = msg.Role,
-                    content = msg.Content
-                }).ToList();
-
-                // 6) Call OpenAI
-                var requestBody = new
-                {
-                    model = openAISettings.OpenAICompletionModel,
-                    messages = messagesForOpenAI,
-                    max_tokens = 300,
-                    temperature = 0.7
-                };
-
-                var requestUri = "https://api.openai.com/v1/chat/completions";
-                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", openAISettings.OpenAICompletionApiKey);
-
-                request.Content = new StringContent(
-                    _Serializer.SerializeJson(requestBody),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                using var response = await _HttpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseJson = await response.Content.ReadAsStringAsync();
-
-                using var doc = JsonDocument.Parse(responseJson);
-                var aiText = doc.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString();
-
-                return aiText ?? "No response from AI.";
+                    return "Error: Unsupported provider.";
+                }
             }
             catch (Exception ex)
             {
