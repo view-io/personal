@@ -390,6 +390,7 @@ namespace View.Personal
             var inputBox = this.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = this.FindControl<ScrollViewer>("ChatScrollViewer");
+            var spinner = this.FindControl<ProgressBar>("ChatSpinner");
 
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
@@ -404,19 +405,30 @@ namespace View.Personal
                 UpdateConversationWindow(conversationContainer);
                 scrollViewer?.ScrollToEnd(); // Scroll to bottom after user message
 
-                // Get AI response
-                var aiResponse = await GetAIResponse(inputBox.Text);
-                if (!string.IsNullOrEmpty(aiResponse))
-                {
-                    _ConversationHistory.Add(new ChatMessage
-                    {
-                        Role = "assistant",
-                        Content = aiResponse
-                    });
+                if (spinner != null) spinner.IsVisible = true;
 
-                    // Refresh the UI display again
-                    UpdateConversationWindow(conversationContainer);
-                    scrollViewer?.ScrollToEnd(); // Scroll to bottom after AI response
+                // Get AI response
+                try
+                {
+                    // Get AI response
+                    var aiResponse = await GetAIResponse(inputBox.Text);
+                    if (!string.IsNullOrEmpty(aiResponse))
+                    {
+                        _ConversationHistory.Add(new ChatMessage
+                        {
+                            Role = "assistant",
+                            Content = aiResponse
+                        });
+
+                        // Refresh the UI display again
+                        UpdateConversationWindow(conversationContainer);
+                        scrollViewer?.ScrollToEnd(); // Scroll to bottom after AI response
+                    }
+                }
+                finally
+                {
+                    // Hide spinner regardless of success or failure
+                    if (spinner != null) spinner.IsVisible = false;
                 }
 
                 // Clear the input
