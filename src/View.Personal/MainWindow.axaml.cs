@@ -151,7 +151,6 @@ namespace View.Personal
                             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
                         Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
                         ViewCompletionProvider =
                             this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
                         ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
@@ -163,6 +162,42 @@ namespace View.Personal
                         TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
                         MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
                             ? tokens
+                            : 150
+                    };
+                    break;
+
+                case "Ollama":
+                    Console.WriteLine("[INFO] Creating settings for Ollama provider...");
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
+                    {
+                        OllamaEmbeddingsGenerator =
+                            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text ?? string.Empty,
+                        OllamaApiKey = this.FindControl<TextBox>("OllamaApiKey").Text ?? string.Empty,
+                        OllamaEndpoint = this.FindControl<TextBox>("OllamaEndpoint").Text ?? string.Empty,
+                        OllamaAccessKey = this.FindControl<TextBox>("OllamaAccessKey").Text ?? string.Empty,
+                        OllamaEmbeddingsGeneratorUrl =
+                            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text ?? string.Empty,
+                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
+                        OllamaCompletionApiKey =
+                            this.FindControl<TextBox>("OllamaCompletionApiKey").Text ?? string.Empty,
+                        OllamaCompletionProvider =
+                            this.FindControl<TextBox>("OllamaCompletionProvider").Text ?? string.Empty,
+                        OllamaCompletionModel =
+                            this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
+                        OllamaCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("OllamaCompletionPort").Text, out var ollamaPort)
+                                ? ollamaPort
+                                : 0,
+                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
+                            out var ollamaTemp)
+                            ? ollamaTemp
+                            : 0.7,
+                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
+                            ? ollamaTopp
+                            : 1.0,
+                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
+                            out var OllamaTokens)
+                            ? OllamaTokens
                             : 150
                     };
                     break;
@@ -199,7 +234,6 @@ namespace View.Personal
             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
             this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
@@ -316,6 +350,7 @@ namespace View.Personal
                 VoyageSettings,
                 AnthropicSettings,
                 ViewSettings,
+                OllamaSettings,
                 selectedProvider);
         }
 
@@ -362,7 +397,6 @@ namespace View.Personal
                             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
                         Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
                         ViewCompletionProvider =
                             this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
                         ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
@@ -374,6 +408,40 @@ namespace View.Personal
                         TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
                         MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
                             ? tokens
+                            : 150
+                    };
+                    break;
+
+                case "Ollama":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
+                    {
+                        OllamaEmbeddingsGenerator =
+                            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text ?? string.Empty,
+                        OllamaApiKey = this.FindControl<TextBox>("OllamaApiKey").Text ?? string.Empty,
+                        OllamaEndpoint = this.FindControl<TextBox>("OllamaEndpoint").Text ?? string.Empty,
+                        OllamaAccessKey = this.FindControl<TextBox>("OllamaAccessKey").Text ?? string.Empty,
+                        OllamaEmbeddingsGeneratorUrl =
+                            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text ?? string.Empty,
+                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
+                        OllamaCompletionApiKey =
+                            this.FindControl<TextBox>("OllamaCompletionApiKey").Text ?? string.Empty,
+                        OllamaCompletionProvider =
+                            this.FindControl<TextBox>("OllamaCompletionProvider").Text ?? string.Empty,
+                        OllamaCompletionModel = this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
+                        OllamaCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("OllamaCompletionPort").Text, out var ollamaPort)
+                                ? ollamaPort
+                                : 0,
+                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
+                            out var ollamaTemp)
+                            ? ollamaTemp
+                            : 0.7,
+                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
+                            ? ollamaTopp
+                            : 1.0,
+                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
+                            out var ollamaTokens)
+                            ? ollamaTokens
                             : 150
                     };
                     break;
@@ -1019,6 +1087,32 @@ namespace View.Personal
             {
                 Console.WriteLine($"[ERROR] GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
+            }
+        }
+
+        private void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property.Name == "Text")
+            {
+                var textBox = sender as TextBox;
+                var ingestButton = this.FindControl<Button>("IngestButton");
+
+                if (ingestButton != null && textBox != null)
+                    // Enable the button only if there's text in the textbox
+                    ingestButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
+            }
+        }
+
+        private void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property.Name == "Text")
+            {
+                var textBox = sender as TextBox;
+                var exportButton = this.FindControl<Button>("ExportButton");
+
+                if (exportButton != null && textBox != null)
+                    // Enable the button only if there's text in the textbox
+                    exportButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
         }
 

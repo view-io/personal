@@ -35,7 +35,7 @@ namespace View.Personal.Helpers
         #region Public-Methods
 
         public static void UpdateSettingsVisibility(Control openAISettings, Control voyageSettings,
-            Control anthropicSettings, Control viewSettings, string selectedProvider)
+            Control anthropicSettings, Control viewSettings, Control ollamaSettings, string selectedProvider)
         {
             if (openAISettings != null)
                 openAISettings.IsVisible = selectedProvider == "OpenAI";
@@ -45,6 +45,8 @@ namespace View.Personal.Helpers
                 anthropicSettings.IsVisible = selectedProvider == "Anthropic";
             if (viewSettings != null)
                 viewSettings.IsVisible = selectedProvider == "View";
+            if (ollamaSettings != null)
+                ollamaSettings.IsVisible = selectedProvider == "Ollama";
         }
 
         public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
