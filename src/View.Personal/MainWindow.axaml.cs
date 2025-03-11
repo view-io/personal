@@ -14,6 +14,7 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
     using Classes;
@@ -420,6 +421,15 @@ namespace View.Personal
 
                 // Clear the input
                 inputBox.Text = string.Empty;
+            }
+        }
+
+        private async void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SendMessage_Click(sender, new RoutedEventArgs());
+                e.Handled = true;
             }
         }
 

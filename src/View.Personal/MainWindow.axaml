@@ -353,7 +353,8 @@
                     <TextBox x:Name="ChatInputBox"
                              Width="400"
                              Watermark="Type your message here..."
-                             AcceptsReturn="False" />
+                             AcceptsReturn="False"
+                             KeyDown="ChatInputBox_KeyDown" />
                     <Button x:Name="SendButton"
                             Content="Send"
                             Margin="5,0,0,0"
