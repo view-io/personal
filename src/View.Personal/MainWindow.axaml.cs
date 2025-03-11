@@ -18,9 +18,7 @@ namespace View.Personal
     using Avalonia.Interactivity;
     using Avalonia.Media;
     using Classes;
-    using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
-    using DocumentAtom.Pdf;
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
@@ -28,9 +26,7 @@ namespace View.Personal
     using Sdk;
     using Sdk.Embeddings;
     using SerializationHelper;
-    using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Services;
-    using Sdk;
     using RestWrapper;
     using SyslogLogging;
     using SyslogServer = SyslogLogging.SyslogServer;
@@ -52,13 +48,17 @@ namespace View.Personal
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
+
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
-        private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
+
+        // private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
-        private readonly FileBrowserService _fileBrowserService = new();
-        private LoggingModule _Logging = null;
-        private bool _assistantConfigsLoaded = false;
+
+        private readonly FileBrowserService _FileBrowserService = new();
+
+        // private LoggingModule _Logging = null;
+        private bool _WindowInitialized;
 
         #endregion
 
@@ -73,7 +73,11 @@ namespace View.Personal
             try
             {
                 InitializeComponent();
-                Opened += MainWindow_Opened;
+                Opened += (_, __) =>
+                {
+                    MainWindow_Opened(this, null);
+                    _WindowInitialized = true;
+                };
             }
             catch (Exception e)
             {
@@ -159,12 +163,7 @@ namespace View.Personal
                         TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
                         MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
                             ? tokens
-                            : 150,
-                        Stream = false,
-                        // Add this line to save the selected assistant config
-                        ViewAssistantConfigGuid =
-                            (this.FindControl<ComboBox>("ViewAssistantConfigComboBox").SelectedItem as AssistantConfig)
-                            ?.GUID
+                            : 150
                     };
                     break;
             }
@@ -296,10 +295,15 @@ namespace View.Personal
 
         private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            if (!_WindowInitialized) return;
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 var selectedProvider = selectedItem.Content.ToString();
                 Console.WriteLine($"[INFO] ModelProvider_SelectionChanged: {selectedProvider}");
+
+                var app = (App)Application.Current;
+                app.SaveSelectedProvider(selectedProvider);
+                UpdateProviderSettings(selectedProvider);
                 UpdateSettingsVisibility(selectedProvider);
             }
         }
@@ -313,11 +317,74 @@ namespace View.Personal
                 AnthropicSettings,
                 ViewSettings,
                 selectedProvider);
-
-            // // Fetch assistant configs when View provider is selected
-            // if (selectedProvider == "View") _ = FetchAssistantConfigs();
         }
 
+
+        private void UpdateProviderSettings(string selectedProvider)
+        {
+            var app = (App)Application.Current;
+            CompletionProviderSettings settings = null;
+
+            switch (selectedProvider)
+            {
+                case "OpenAI":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI)
+                    {
+                        OpenAICompletionApiKey = this.FindControl<TextBox>("OpenAIKey").Text ?? string.Empty,
+                        OpenAIEmbeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text ?? string.Empty,
+                        OpenAICompletionModel = this.FindControl<TextBox>("OpenAICompletionModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "Voyage":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage)
+                    {
+                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "Anthropic":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
+                    {
+                        AnthropicCompletionModel =
+                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "View":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
+                    {
+                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
+                        ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
+                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
+                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
+                        EmbeddingsGeneratorUrl =
+                            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
+                        Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
+                        ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
+                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
+                        ViewCompletionProvider =
+                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
+                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        ViewCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
+                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
+                            ? temp
+                            : 0.7,
+                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
+                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
+                            ? tokens
+                            : 150
+                    };
+                    break;
+            }
+
+            if (settings != null)
+            {
+                app.UpdateProviderSettings(settings);
+                Console.WriteLine($"[INFO] {selectedProvider} settings updated due to provider change.");
+            }
+        }
 
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -405,7 +472,7 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
             if (textBox == null) return;
 
-            var filePath = await _fileBrowserService.BrowseForExportLocation(this);
+            var filePath = await _FileBrowserService.BrowseForExportLocation(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
             Console.WriteLine($"[INFO] User selected export path: {filePath}");
         }
@@ -416,7 +483,7 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("FilePathTextBox");
             if (textBox == null) return;
 
-            var filePath = await _fileBrowserService.BrowseForFileToIngest(this);
+            var filePath = await _FileBrowserService.BrowseForFileToIngest(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
             Console.WriteLine($"[INFO] User selected ingest path: {filePath}");
         }
@@ -502,7 +569,7 @@ namespace View.Personal
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] DownloadChat_Click triggered...");
-            var filePath = await _fileBrowserService.BrowseForChatHistorySaveLocation(this);
+            var filePath = await _FileBrowserService.BrowseForChatHistorySaveLocation(this);
 
             if (!string.IsNullOrEmpty(filePath))
                 try
@@ -705,7 +772,7 @@ namespace View.Personal
                         restRequest.ContentType = "application/json";
 
                         var jsonPayload = _Serializer.SerializeJson(requestBody);
-                        
+
                         using (var resp = await restRequest.SendAsync(jsonPayload))
                         {
                             if (resp.StatusCode > 299)
@@ -724,7 +791,7 @@ namespace View.Personal
                                 // Null means the server closed the connection or we’re done
                                 if (sseEvent == null)
                                     break;
-                                
+
                                 var chunkJson = sseEvent.Data;
 
                                 // Check for the end token 
@@ -912,40 +979,6 @@ namespace View.Personal
 
                             var sb = new StringBuilder();
 
-                            // Repeatedly call ReadEventAsync() to get new SSE chunks
-                            // while (true)
-                            // {
-                            //     // Each call returns one ServerSentEvent or null (on end)
-                            //     var sse = await restResponse.ReadEventAsync();
-                            //
-                            //     // If the stream ended or the server closed the connection
-                            //     if (sse == null) break;
-                            //
-                            //     var rawJson = sse.Data;
-                            //
-                            //     // Usually you check sse.Data or sse.EventType
-                            //     // If you see an indicator that the stream is finished...
-                            //     if (rawJson == "[END_OF_TEXT_STREAM]") break;
-                            //
-                            //     // Accumulate the data tokens
-                            //     if (!string.IsNullOrEmpty(rawJson))
-                            //     {
-                            //         using var doc = JsonDocument.Parse(rawJson);
-                            //         if (doc.RootElement.TryGetProperty("token", out var tokenProp))
-                            //         {
-                            //             var token = tokenProp.GetString();
-                            //
-                            //             // Accumulate tokens or update UI in real-time
-                            //             sb.Append(token);
-                            //
-                            //             // e.g. For real-time chat streaming:
-                            //             // UpdateChatUI(token);
-                            //         }
-                            //     }
-                            //     // Or if you want to update the UI in real-time, do:
-                            //     // UpdateChatUI(sse.Data);
-                            //     // UpdateChatUI(sse.Data);
-                            // }
                             while (true)
                             {
                                 var sse = await restResponse.ReadEventAsync();
@@ -970,7 +1003,6 @@ namespace View.Personal
                                 }
                             }
 
-
                             // Convert accumulated tokens into a single string
                             var finalResponse = sb.ToString();
                             return finalResponse;
@@ -987,176 +1019,6 @@ namespace View.Personal
             {
                 Console.WriteLine($"[ERROR] GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
-            }
-        }
-
-        private void ViewAssistantConfigComboBox_DropDownOpened(object sender, EventArgs e)
-        {
-            // Only fetch if we haven't loaded the configs yet
-            if (!_assistantConfigsLoaded)
-            {
-                Console.WriteLine("[INFO] ViewAssistantConfigComboBox_DropDownOpened: loading assistant configs...");
-                // Show loading indicator as the first item
-                var comboBox = (ComboBox)sender;
-                comboBox.Items.Clear();
-                comboBox.Items.Add(new ComboBoxItem { Content = "Loading configurations..." });
-
-                // Start the async operation
-                FetchAssistantConfigsAsync(comboBox);
-            }
-        }
-
-        private async void FetchAssistantConfigsAsync(ComboBox comboBox)
-        {
-            try
-            {
-                var app = (App)Application.Current;
-                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-
-                if (string.IsNullOrEmpty(viewSettings.ViewEndpoint) || string.IsNullOrEmpty(viewSettings.AccessKey))
-                {
-                    Console.WriteLine(
-                        "[WARN] View endpoint or access key not configured. Cannot load assistant configs.");
-                    comboBox.Items.Clear();
-                    comboBox.Items.Add(new ComboBoxItem
-                        { Content = "Configuration missing. Set endpoint and access key first." });
-                    return;
-                }
-
-                var requestUri = $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs";
-                Console.WriteLine($"[INFO] Fetching assistant configs from: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
-                {
-                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
-
-                    using (var restResponse = await restRequest.SendAsync())
-                    {
-                        if (restResponse.StatusCode > 299)
-                        {
-                            Console.WriteLine($"[ERROR] Failed to fetch assistant configs: {restResponse.StatusCode}");
-                            comboBox.Items.Clear();
-                            comboBox.Items.Add(new ComboBoxItem
-                                { Content = $"Error loading configurations (Status: {restResponse.StatusCode})" });
-                            return;
-                        }
-
-                        var responseJson = restResponse.DataAsString;
-                        var configResponse = _Serializer.DeserializeJson<AssistantConfigResponse>(responseJson);
-
-                        if (configResponse != null && configResponse.AssistantConfigs != null &&
-                            configResponse.AssistantConfigs.Count > 0)
-                        {
-                            Console.WriteLine(
-                                $"[INFO] Loaded {configResponse.AssistantConfigs.Count} assistant configs.");
-                            // Replace the loading placeholder with actual items
-                            comboBox.Items.Clear();
-                            comboBox.ItemsSource = configResponse.AssistantConfigs;
-                            comboBox.SelectedIndex = 0;
-                            _assistantConfigsLoaded = true;
-                            Console.WriteLine($"Loaded {configResponse.AssistantConfigs.Count} assistant configs");
-                        }
-                        else
-                        {
-                            Console.WriteLine("[WARN] No assistant configs returned or parse failure.");
-                            comboBox.Items.Clear();
-                            comboBox.Items.Add(new ComboBoxItem { Content = "No assistant configurations found" });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ERROR] FetchAssistantConfigsAsync exception: {ex.Message}");
-                comboBox.Items.Clear();
-                comboBox.Items.Add(new ComboBoxItem { Content = $"Error: {ex.Message}" });
-            }
-        }
-
-        private async void ApplyPreset_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("[INFO] ApplyPreset_Click triggered.");
-            try
-            {
-                // Grab the selected config from the combo box
-                var comboBox = this.FindControl<ComboBox>("ViewAssistantConfigComboBox");
-                var selectedConfig = comboBox.SelectedItem as AssistantConfig;
-                if (selectedConfig == null)
-                {
-                    Console.WriteLine("[WARN] No preset selected in combo box.");
-                    return;
-                }
-
-                Console.WriteLine($"[INFO] Fetching details for config GUID: {selectedConfig.GUID}");
-
-                // Pull the stored View settings
-                var app = (App)Application.Current;
-                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-
-                // Fetch the full details from /assistant/configs/{GUID}
-                var requestUri =
-                    $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs/{selectedConfig.GUID}";
-                Console.WriteLine($"Fetching config details from: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
-                {
-                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
-
-                    using (var restResponse = await restRequest.SendAsync())
-                    {
-                        if (restResponse.StatusCode > 299)
-                        {
-                            Console.WriteLine($"[ERROR] Failed to fetch config details: {restResponse.StatusCode}");
-                            return;
-                        }
-
-                        // Grab raw JSON, then deserialize
-                        var responseJson = restResponse.DataAsString;
-                        Console.WriteLine("Raw JSON for preset details:");
-                        Console.WriteLine(responseJson);
-
-                        var configDetails = _Serializer.DeserializeJson<AssistantConfigDetails>(responseJson);
-                        if (configDetails == null)
-                        {
-                            Console.WriteLine("[ERROR] Unable to deserialize config details.");
-                            return;
-                        }
-
-                        // Now map the fields to the CompletionProviderSettings
-                        viewSettings.ViewAssistantConfigGuid =
-                            configDetails.GUID;
-                        viewSettings.ViewPresetGuid = configDetails.GUID;
-                        viewSettings.Name = configDetails.Name;
-                        viewSettings.Description = configDetails.Description;
-                        viewSettings.SystemPrompt = configDetails.SystemPrompt;
-                        viewSettings.EmbeddingsGenerator = configDetails.EmbeddingModel;
-                        viewSettings.Model = configDetails.EmbeddingModel;
-                        viewSettings.ApiKey = configDetails.GenerationApiKey ?? string.Empty;
-
-                        // generation details
-                        viewSettings.ViewCompletionProvider = configDetails.GenerationProvider;
-                        viewSettings.ViewCompletionModel = configDetails.GenerationModel;
-                        viewSettings.Temperature = configDetails.Temperature;
-                        viewSettings.TopP = configDetails.TopP;
-                        viewSettings.MaxTokens = configDetails.MaxTokens;
-                        viewSettings.ViewCompletionPort = configDetails.OllamaPort;
-
-                        // Save the updated settings
-                        app.UpdateProviderSettings(viewSettings);
-
-                        // Feedback 
-                        Console.WriteLine($"[INFO] Preset '{configDetails.Name}' applied to local settings.");
-                        await MsBox.Avalonia.MessageBoxManager
-                            .GetMessageBoxStandard("Presets Applied", $"Your presets have been saved!",
-                                ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
-                            .ShowAsync();
-                        LoadSavedSettings();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ERROR] ApplyPreset_Click exception: {ex.Message}");
             }
         }
 

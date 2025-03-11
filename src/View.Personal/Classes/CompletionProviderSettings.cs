@@ -34,14 +34,6 @@
         public double Temperature { get; set; } // Temperature
         public double TopP { get; set; } // TopP
         public int MaxTokens { get; set; } //MaxTokens
-        public bool Stream { get; set; }
-        public string ViewAssistantConfigGuid { get; set; } // GUID
-
-        public string Name { get; set; } // Name
-
-        public string Description { get; set; } // Description
-
-        public string SystemPrompt { get; set; } // SystemPrompt
 
         public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
         {
