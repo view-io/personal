@@ -353,7 +353,8 @@
                     <TextBox x:Name="ChatInputBox"
                              Width="400"
                              Watermark="Type your message here..."
-                             AcceptsReturn="False" />
+                             AcceptsReturn="False"
+                             KeyDown="ChatInputBox_KeyDown" />
                     <Button x:Name="SendButton"
                             Content="Send"
                             Margin="5,0,0,0"
@@ -367,6 +368,16 @@
                             Margin="5,0,0,0"
                             Click="DownloadChat_Click" />
                 </StackPanel>
+                <Grid VerticalAlignment="Stretch"><!-- Spinner Overlay -->
+                    <ProgressBar x:Name="ChatSpinner"
+                                 IsIndeterminate="True"
+                                 IsVisible="False"
+                                 Width="30"
+                                 Height="30"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Foreground="#007BFF" />
+                </Grid>
             </StackPanel>
 
             <!-- Default View -->
