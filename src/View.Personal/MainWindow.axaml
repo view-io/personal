@@ -49,6 +49,8 @@
                     <ListBoxItem Content="Settings" />
                     <ListBoxItem Content="My Files" />
                     <ListBoxItem Content="Chat" />
+                    <ListBoxItem Content="Console" />
+
                 </ListBox>
 
                 <!-- Model Provider Dropdown (Bottom) -->
@@ -340,6 +342,7 @@
                     </ScrollViewer>
                 </StackPanel>
             </StackPanel>
+            <!-- Chat View -->
             <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
                 <TextBlock Text="Chat" FontSize="24" Foreground="Black" Margin="20,0,0,10" />
                 <Border Height="400" Margin="20,0" CornerRadius="5">
@@ -379,7 +382,16 @@
                                  Foreground="#007BFF" />
                 </Grid>
             </StackPanel>
-
+            <!-- Console View -->
+            <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
+                <TextBlock Text="Console" FontSize="24" Foreground="Black" Margin="0,0,0,10" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">
+                    <TextBox x:Name="ConsoleOutputTextBox"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap" />
+                </ScrollViewer>
+            </StackPanel>
             <!-- Default View -->
             <TextBlock Name="WorkspaceText" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Foreground="#666666" />

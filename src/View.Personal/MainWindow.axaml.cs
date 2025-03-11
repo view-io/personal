@@ -77,7 +77,7 @@ namespace View.Personal
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error: {e.Message}");
+                Console.WriteLine($"[ERROR] MainWindow constructor exception: {e.Message}");
             }
         }
 
@@ -87,12 +87,19 @@ namespace View.Personal
 
         private void MainWindow_Opened(object sender, EventArgs e)
         {
+            Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
             LoadSavedSettings();
             UpdateSettingsVisibility("View");
+            Console.WriteLine("[INFO] Finished MainWindow_Opened.");
+            var consoleBox = this.FindControl<TextBox>("ConsoleOutputTextBox");
+            if (consoleBox != null)
+                // Redirect all Console.WriteLine calls
+                Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
         }
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] SaveSettings_Click triggered.");
             var app = (App)Application.Current;
             var selectedProvider = (this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
                 ?.Content.ToString();
@@ -102,6 +109,7 @@ namespace View.Personal
             switch (selectedProvider)
             {
                 case "OpenAI":
+                    Console.WriteLine("[INFO] Creating settings for OpenAI provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI)
                     {
                         OpenAICompletionApiKey = this.FindControl<TextBox>("OpenAIKey").Text ?? string.Empty,
@@ -111,6 +119,7 @@ namespace View.Personal
                     break;
 
                 case "Voyage":
+                    Console.WriteLine("[INFO] Creating settings for Voyage provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage)
                     {
                         VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text ?? string.Empty
@@ -118,6 +127,7 @@ namespace View.Personal
                     break;
 
                 case "Anthropic":
+                    Console.WriteLine("[INFO] Creating settings for Anthropic provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
                     {
                         AnthropicCompletionModel =
@@ -126,6 +136,7 @@ namespace View.Personal
                     break;
 
                 case "View":
+                    Console.WriteLine("[INFO] Creating settings for View provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                     {
                         EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
@@ -162,16 +173,23 @@ namespace View.Personal
             {
                 app.UpdateProviderSettings(settings);
                 app.SaveSelectedProvider(selectedProvider);
+
+                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
                         ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
                     .ShowAsync();
                 LoadSavedSettings();
             }
+            else
+            {
+                Console.WriteLine("[WARN] No settings were created because selectedProvider was null or invalid.");
+            }
         }
 
         private void LoadSavedSettings()
         {
+            Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
             var app = (App)Application.Current;
 
             var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
@@ -216,6 +234,7 @@ namespace View.Personal
                 comboBox.SelectedIndex = 0; // Default to first provider
             }
 
+            Console.WriteLine("[INFO] Finished loading settings.");
             UpdateSettingsVisibility(app.AppSettings.SelectedProvider ?? "View");
         }
 
@@ -225,10 +244,12 @@ namespace View.Personal
             {
                 var selectedContent = selectedItem.Content?.ToString();
 
+
                 DashboardPanel.IsVisible = false;
                 SettingsPanel.IsVisible = false;
                 MyFilesPanel.IsVisible = false;
                 ChatPanel.IsVisible = false;
+                ConsolePanel.IsVisible = false;
                 WorkspaceText.IsVisible = false;
 
                 switch (selectedContent)
@@ -250,11 +271,15 @@ namespace View.Personal
                         {
                             var uniqueFiles = MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _GraphGuid);
                             filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
+                            Console.WriteLine($"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
                         }
 
                         break;
                     case "Chat":
                         ChatPanel.IsVisible = true;
+                        break;
+                    case "Console":
+                        ConsolePanel.IsVisible = true;
                         break;
                     default:
                         WorkspaceText.IsVisible = true;
@@ -265,6 +290,7 @@ namespace View.Personal
 
         public async void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] DeleteFile_Click triggered.");
             await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
@@ -273,12 +299,14 @@ namespace View.Personal
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 var selectedProvider = selectedItem.Content.ToString();
+                Console.WriteLine($"[INFO] ModelProvider_SelectionChanged: {selectedProvider}");
                 UpdateSettingsVisibility(selectedProvider);
             }
         }
 
         private void UpdateSettingsVisibility(string selectedProvider)
         {
+            Console.WriteLine($"[INFO] Updating settings visibility for provider: {selectedProvider}");
             MainWindowHelpers.UpdateSettingsVisibility(
                 OpenAISettings,
                 VoyageSettings,
@@ -313,12 +341,14 @@ namespace View.Personal
 
         public async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] IngestFile_Click triggered.");
             await FileIngester.IngestFile_ClickAsync(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid,
                 this);
         }
 
         public void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] ExportGraph_Click triggered.");
             GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
@@ -327,6 +357,7 @@ namespace View.Personal
         {
             try
             {
+                Console.WriteLine("[INFO] Generating OpenAI embeddings...");
                 var requestUri = "https://api.openai.com/v1/embeddings";
                 using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", openAIKey);
@@ -358,6 +389,7 @@ namespace View.Personal
                         .ToArray())
                     .ToArray();
 
+                Console.WriteLine("[INFO] Successfully retrieved OpenAI embeddings.");
                 return embeddings;
             }
             catch (Exception ex)
@@ -369,24 +401,29 @@ namespace View.Personal
 
         private async void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] BrowseButton_Click triggered for export file path.");
             var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
             if (textBox == null) return;
 
             var filePath = await _fileBrowserService.BrowseForExportLocation(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
+            Console.WriteLine($"[INFO] User selected export path: {filePath}");
         }
 
         private async void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] IngestBrowseButton_Click triggered for ingest file path.");
             var textBox = this.FindControl<TextBox>("FilePathTextBox");
             if (textBox == null) return;
 
             var filePath = await _fileBrowserService.BrowseForFileToIngest(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
+            Console.WriteLine($"[INFO] User selected ingest path: {filePath}");
         }
 
         private async void SendMessage_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] SendMessage_Click triggered. Sending user prompt to AI...");
             var inputBox = this.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = this.FindControl<ScrollViewer>("ChatScrollViewer");
@@ -434,6 +471,10 @@ namespace View.Personal
                 // Clear the input
                 inputBox.Text = string.Empty;
             }
+            else
+            {
+                Console.WriteLine("[WARN] User tried to send an empty or null message.");
+            }
         }
 
         private async void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
@@ -447,6 +488,7 @@ namespace View.Personal
 
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] Clearing chat history...");
             _ConversationHistory.Clear();
             var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
             conversationContainer?.Children.Clear();
@@ -454,6 +496,7 @@ namespace View.Personal
 
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] DownloadChat_Click triggered...");
             var filePath = await _fileBrowserService.BrowseForChatHistorySaveLocation(this);
 
             if (!string.IsNullOrEmpty(filePath))
@@ -461,12 +504,14 @@ namespace View.Personal
                 {
                     await File.WriteAllLinesAsync(filePath,
                         _ConversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
-                    Console.WriteLine($"Chat history saved to {filePath}");
+                    Console.WriteLine($"[INFO] Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error saving chat history: {ex.Message}");
+                    Console.WriteLine($"[ERROR] Error saving chat history: {ex.Message}");
                 }
+            else
+                Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
         private void UpdateConversationWindow(StackPanel conversationContainer)
@@ -546,6 +591,7 @@ namespace View.Personal
             };
             var log = new LoggingModule(syslogServers, true);
 
+            Console.WriteLine("[INFO] GetAIResponse called. Checking selected provider...");
             try
             {
                 var app = (App)Application.Current;
@@ -554,11 +600,13 @@ namespace View.Personal
                 // OpenAi
                 if (selectedProvider == "OpenAI")
                 {
+                    Console.WriteLine("[INFO] Using OpenAI for chat completion.");
                     var openAISettings = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
                     if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
                         return "Error: OpenAI API key not configured in settings.";
 
                     // 1. Generate embeddings for user prompt
+                    Console.WriteLine("[INFO] Generating embeddings for user prompt via OpenAI...");
                     var embeddings = await GetOpenAIEmbeddingsBatchAsync(
                         new List<string> { userInput },
                         openAISettings.OpenAICompletionApiKey,
@@ -568,8 +616,7 @@ namespace View.Personal
                         return "Error: Failed to generate embeddings for the prompt.";
 
                     var promptEmbeddings = embeddings[0].ToList();
-                    Console.WriteLine(
-                        $"Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
+                    Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
 
                     // 2. Vector search for context
                     var searchRequest = new VectorSearchRequest
@@ -582,7 +629,7 @@ namespace View.Personal
                     };
 
                     var searchResults = _LiteGraph.SearchVectors(searchRequest);
-                    Console.WriteLine($"Search returned {searchResults?.Count() ?? 0} results");
+                    Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
 
                     if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
@@ -635,6 +682,7 @@ namespace View.Personal
                     }).ToList();
 
                     // 5. Call OpenAI chat
+                    Console.WriteLine("[INFO] Sending request to OpenAI ChatCompletions...");
                     var requestBody = new
                     {
                         model = openAISettings.OpenAICompletionModel,
@@ -664,6 +712,7 @@ namespace View.Personal
                                 .GetProperty("content")
                                 .GetString();
 
+                            Console.WriteLine("[INFO] Received response from OpenAI.");
                             return aiText ?? "No response from AI.";
                         }
                     }
@@ -671,6 +720,7 @@ namespace View.Personal
                 // View
                 else if (selectedProvider == "View")
                 {
+                    Console.WriteLine("[INFO] Using View for chat completion...");
                     // 1. Retrieve View settings
                     var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
                     if (string.IsNullOrEmpty(viewSettings.ViewEndpoint))
@@ -699,14 +749,20 @@ namespace View.Personal
                         Contents = new List<string> { userInput }
                     };
 
+                    Console.WriteLine("[INFO] Generating embeddings via ViewEmbeddingsServerSdk...");
                     var embeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(embeddingsRequest);
                     if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
                         embeddingsResult.ContentEmbeddings.Count == 0)
                     {
-                        Console.WriteLine($"Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                        Console.WriteLine(
+                            $"[ERROR] Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
                         if (embeddingsResult.Error != null)
-                            Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
-                        return "Error: Failed to generate embeddings for the prompt.";
+                        {
+                            Console.WriteLine($"[ERROR] {embeddingsResult.Error.Message}");
+                            return "Error: Failed to generate embeddings for the prompt.";
+                        }
+
+                        Console.WriteLine("[INFO] Prompt embeddings generated successfully.");
                     }
 
                     var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings;
@@ -727,7 +783,7 @@ namespace View.Personal
                     };
 
                     var searchResults = _LiteGraph.SearchVectors(searchRequest);
-                    Console.WriteLine($"[View] Search returned {searchResults?.Count() ?? 0} results");
+                    Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
 
                     if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
@@ -777,7 +833,8 @@ namespace View.Personal
                         role = msg.Role,
                         content = msg.Content
                     }).ToList();
-                    Console.WriteLine($"messagesForView: {messagesForView}");
+
+                    Console.WriteLine("[INFO] Sending request to View chat completions...");
 
                     // 6. Build payload for the View chat completions
                     var payload = new
@@ -816,6 +873,7 @@ namespace View.Personal
                             if (doc.RootElement.TryGetProperty("response", out var responseProp))
                             {
                                 var text = responseProp.GetString();
+                                Console.WriteLine("[INFO] Received response from View.");
                                 return text ?? "No response from View AI.";
                             }
                             else
@@ -827,12 +885,13 @@ namespace View.Personal
                 }
                 else
                 {
-                    return "Error: Unsupported provider.";
+                    Console.WriteLine("[WARN] No supported provider selected.");
+                    return "[ERROR] Unsupported provider.";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetAIResponse: {ex.Message}");
+                Console.WriteLine($"[ERROR] GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -842,6 +901,7 @@ namespace View.Personal
             // Only fetch if we haven't loaded the configs yet
             if (!_assistantConfigsLoaded)
             {
+                Console.WriteLine("[INFO] ViewAssistantConfigComboBox_DropDownOpened: loading assistant configs...");
                 // Show loading indicator as the first item
                 var comboBox = (ComboBox)sender;
                 comboBox.Items.Clear();
@@ -861,7 +921,8 @@ namespace View.Personal
 
                 if (string.IsNullOrEmpty(viewSettings.ViewEndpoint) || string.IsNullOrEmpty(viewSettings.AccessKey))
                 {
-                    Console.WriteLine("View endpoint or access key not configured");
+                    Console.WriteLine(
+                        "[WARN] View endpoint or access key not configured. Cannot load assistant configs.");
                     comboBox.Items.Clear();
                     comboBox.Items.Add(new ComboBoxItem
                         { Content = "Configuration missing. Set endpoint and access key first." });
@@ -869,7 +930,7 @@ namespace View.Personal
                 }
 
                 var requestUri = $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs";
-                Console.WriteLine($"Fetching assistant configs from: {requestUri}");
+                Console.WriteLine($"[INFO] Fetching assistant configs from: {requestUri}");
 
                 using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
                 {
@@ -879,7 +940,7 @@ namespace View.Personal
                     {
                         if (restResponse.StatusCode > 299)
                         {
-                            Console.WriteLine($"Failed to fetch assistant configs: {restResponse.StatusCode}");
+                            Console.WriteLine($"[ERROR] Failed to fetch assistant configs: {restResponse.StatusCode}");
                             comboBox.Items.Clear();
                             comboBox.Items.Add(new ComboBoxItem
                                 { Content = $"Error loading configurations (Status: {restResponse.StatusCode})" });
@@ -892,6 +953,8 @@ namespace View.Personal
                         if (configResponse != null && configResponse.AssistantConfigs != null &&
                             configResponse.AssistantConfigs.Count > 0)
                         {
+                            Console.WriteLine(
+                                $"[INFO] Loaded {configResponse.AssistantConfigs.Count} assistant configs.");
                             // Replace the loading placeholder with actual items
                             comboBox.Items.Clear();
                             comboBox.ItemsSource = configResponse.AssistantConfigs;
@@ -901,6 +964,7 @@ namespace View.Personal
                         }
                         else
                         {
+                            Console.WriteLine("[WARN] No assistant configs returned or parse failure.");
                             comboBox.Items.Clear();
                             comboBox.Items.Add(new ComboBoxItem { Content = "No assistant configurations found" });
                         }
@@ -909,7 +973,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching assistant configs: {ex.Message}");
+                Console.WriteLine($"[ERROR] FetchAssistantConfigsAsync exception: {ex.Message}");
                 comboBox.Items.Clear();
                 comboBox.Items.Add(new ComboBoxItem { Content = $"Error: {ex.Message}" });
             }
@@ -917,6 +981,7 @@ namespace View.Personal
 
         private async void ApplyPreset_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[INFO] ApplyPreset_Click triggered.");
             try
             {
                 // Grab the selected config from the combo box
@@ -924,11 +989,11 @@ namespace View.Personal
                 var selectedConfig = comboBox.SelectedItem as AssistantConfig;
                 if (selectedConfig == null)
                 {
-                    Console.WriteLine("No preset selected.");
+                    Console.WriteLine("[WARN] No preset selected in combo box.");
                     return;
                 }
 
-                Console.WriteLine($"Selected config GUID: {selectedConfig.GUID}");
+                Console.WriteLine($"[INFO] Fetching details for config GUID: {selectedConfig.GUID}");
 
                 // Pull the stored View settings
                 var app = (App)Application.Current;
@@ -947,7 +1012,7 @@ namespace View.Personal
                     {
                         if (restResponse.StatusCode > 299)
                         {
-                            Console.WriteLine($"Failed to fetch config details: {restResponse.StatusCode}");
+                            Console.WriteLine($"[ERROR] Failed to fetch config details: {restResponse.StatusCode}");
                             return;
                         }
 
@@ -959,7 +1024,7 @@ namespace View.Personal
                         var configDetails = _Serializer.DeserializeJson<AssistantConfigDetails>(responseJson);
                         if (configDetails == null)
                         {
-                            Console.WriteLine("Error: unable to deserialize config details.");
+                            Console.WriteLine("[ERROR] Unable to deserialize config details.");
                             return;
                         }
 
@@ -986,7 +1051,7 @@ namespace View.Personal
                         app.UpdateProviderSettings(viewSettings);
 
                         // Feedback 
-                        Console.WriteLine($"Preset '{configDetails.Name}' applied to local settings.");
+                        Console.WriteLine($"[INFO] Preset '{configDetails.Name}' applied to local settings.");
                         await MsBox.Avalonia.MessageBoxManager
                             .GetMessageBoxStandard("Presets Applied", $"Your presets have been saved!",
                                 ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
@@ -997,7 +1062,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error applying preset: {ex.Message}");
+                Console.WriteLine($"[ERROR] ApplyPreset_Click exception: {ex.Message}");
             }
         }
 
