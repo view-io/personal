@@ -447,20 +447,25 @@ namespace View.Personal
                 // Get AI response
                 try
                 {
-                    // Get AI response
-                    var aiResponse = await GetAIResponse(inputBox.Text);
-                    if (!string.IsNullOrEmpty(aiResponse))
+                    // 2) Create a placeholder ChatMessage for the assistant
+                    var assistantMsg = new ChatMessage
                     {
-                        _ConversationHistory.Add(new ChatMessage
-                        {
-                            Role = "assistant",
-                            Content = aiResponse
-                        });
+                        Role = "assistant",
+                        Content = "" // start empty
+                    };
+                    _ConversationHistory.Add(assistantMsg);
+                    UpdateConversationWindow(conversationContainer);
 
-                        // Refresh the UI display again
+                    // 3) Call GetAIResponse, passing a callback that updates assistantMsg on each token
+                    var finalContent = await GetAIResponse(inputBox.Text, token =>
+                    {
+                        // Append the new token
+                        assistantMsg.Content += token;
+
+                        // Force UI to refresh so user sees partial tokens
                         UpdateConversationWindow(conversationContainer);
-                        scrollViewer?.ScrollToEnd(); // Scroll to bottom after AI response
-                    }
+                        scrollViewer?.ScrollToEnd();
+                    });
                 }
                 finally
                 {
@@ -583,7 +588,7 @@ namespace View.Personal
             return finalList;
         }
 
-        private async Task<string> GetAIResponse(string userInput)
+        private async Task<string> GetAIResponse(string userInput, Action<string> onTokenReceived = null)
         {
             var syslogServers = new List<SyslogServer>
             {
@@ -688,7 +693,8 @@ namespace View.Personal
                         model = openAISettings.OpenAICompletionModel,
                         messages = messagesForOpenAI,
                         max_tokens = 300,
-                        temperature = 0.7
+                        temperature = 0.7,
+                        stream = true
                     };
 
                     var requestUri = "https://api.openai.com/v1/chat/completions";
@@ -699,21 +705,52 @@ namespace View.Personal
                         restRequest.ContentType = "application/json";
 
                         var jsonPayload = _Serializer.SerializeJson(requestBody);
-                        using (var restResponse = await restRequest.SendAsync(jsonPayload))
+                        
+                        using (var resp = await restRequest.SendAsync(jsonPayload))
                         {
-                            if (restResponse.StatusCode > 299)
-                                throw new Exception($"OpenAI call failed with status: {restResponse.StatusCode}");
+                            if (resp.StatusCode > 299)
+                                throw new Exception("OpenAI call failed.");
 
-                            var responseJson = restResponse.Data;
-                            using var doc = JsonDocument.Parse(responseJson);
-                            var aiText = doc.RootElement
-                                .GetProperty("choices")[0]
-                                .GetProperty("message")
-                                .GetProperty("content")
-                                .GetString();
+                            // The library says it's SSE if Content-Type is text/event-stream
+                            if (!resp.ServerSentEvents)
+                                throw new Exception("Expected SSE but didn't get it.");
 
-                            Console.WriteLine("[INFO] Received response from OpenAI.");
-                            return aiText ?? "No response from AI.";
+                            var sb = new StringBuilder();
+
+                            // Repeatedly call ReadEventAsync()
+                            while (true)
+                            {
+                                var sseEvent = await resp.ReadEventAsync();
+                                // Null means the server closed the connection or we’re done
+                                if (sseEvent == null)
+                                    break;
+                                
+                                var chunkJson = sseEvent.Data;
+
+                                // Check for the end token 
+                                if (chunkJson == "[DONE]")
+                                    break;
+
+                                if (!string.IsNullOrEmpty(chunkJson))
+                                {
+                                    // Parse the JSON partial chunk 
+                                    using var doc = JsonDocument.Parse(chunkJson);
+                                    if (doc.RootElement.TryGetProperty("choices", out var choicesProp))
+                                    {
+                                        var firstChoice = choicesProp[0];
+                                        if (firstChoice.TryGetProperty("delta", out var deltaProp))
+                                            if (deltaProp.TryGetProperty("content", out var contentProp))
+                                            {
+                                                var partialText = contentProp.GetString();
+                                                onTokenReceived?.Invoke(partialText);
+                                                sb.Append(partialText);
+                                            }
+                                    }
+                                }
+                            }
+
+                            var finalResponse = sb.ToString();
+                            return finalResponse;
                         }
                     }
                 }
@@ -848,7 +885,7 @@ namespace View.Personal
                         GenerationApiKey = viewSettings.ViewCompletionApiKey,
                         OllamaHostname = "192.168.197.1", // Adjust as needed
                         OllamaPort = viewSettings.ViewCompletionPort,
-                        Stream = false
+                        Stream = true
                     };
 
                     // 7. Send request to the View chat completions API
@@ -862,24 +899,81 @@ namespace View.Personal
                         restRequest.ContentType = "application/json";
 
                         var jsonPayload = _Serializer.SerializeJson(payload);
+
                         using (var restResponse = await restRequest.SendAsync(jsonPayload))
                         {
                             if (restResponse.StatusCode > 299)
                                 throw new Exception($"View call failed with status: {restResponse.StatusCode}");
 
-                            var responseJson = restResponse.Data;
-                            using var doc = JsonDocument.Parse(responseJson);
+                            // If ServerSentEvents = true, we must read events in a loop
+                            if (!restResponse.ServerSentEvents)
+                                throw new InvalidOperationException(
+                                    "Response is not SSE! Check if your server is returning text/event-stream.");
 
-                            if (doc.RootElement.TryGetProperty("response", out var responseProp))
+                            var sb = new StringBuilder();
+
+                            // Repeatedly call ReadEventAsync() to get new SSE chunks
+                            // while (true)
+                            // {
+                            //     // Each call returns one ServerSentEvent or null (on end)
+                            //     var sse = await restResponse.ReadEventAsync();
+                            //
+                            //     // If the stream ended or the server closed the connection
+                            //     if (sse == null) break;
+                            //
+                            //     var rawJson = sse.Data;
+                            //
+                            //     // Usually you check sse.Data or sse.EventType
+                            //     // If you see an indicator that the stream is finished...
+                            //     if (rawJson == "[END_OF_TEXT_STREAM]") break;
+                            //
+                            //     // Accumulate the data tokens
+                            //     if (!string.IsNullOrEmpty(rawJson))
+                            //     {
+                            //         using var doc = JsonDocument.Parse(rawJson);
+                            //         if (doc.RootElement.TryGetProperty("token", out var tokenProp))
+                            //         {
+                            //             var token = tokenProp.GetString();
+                            //
+                            //             // Accumulate tokens or update UI in real-time
+                            //             sb.Append(token);
+                            //
+                            //             // e.g. For real-time chat streaming:
+                            //             // UpdateChatUI(token);
+                            //         }
+                            //     }
+                            //     // Or if you want to update the UI in real-time, do:
+                            //     // UpdateChatUI(sse.Data);
+                            //     // UpdateChatUI(sse.Data);
+                            // }
+                            while (true)
                             {
-                                var text = responseProp.GetString();
-                                Console.WriteLine("[INFO] Received response from View.");
-                                return text ?? "No response from View AI.";
+                                var sse = await restResponse.ReadEventAsync();
+                                if (sse == null) break; // connection closed
+                                var rawJson = sse.Data;
+                                if (rawJson == "[END_OF_TEXT_STREAM]")
+                                    break;
+
+                                if (!string.IsNullOrEmpty(rawJson))
+                                {
+                                    using var doc = JsonDocument.Parse(rawJson);
+                                    if (doc.RootElement.TryGetProperty("token", out var tokenProp))
+                                    {
+                                        var token = tokenProp.GetString();
+
+                                        // If a callback was provided, call it with the new token
+                                        onTokenReceived?.Invoke(token);
+
+                                        // Also accumulate in the final response
+                                        sb.Append(token);
+                                    }
+                                }
                             }
-                            else
-                            {
-                                return "Could not find 'response' in JSON returned by View.";
-                            }
+
+
+                            // Convert accumulated tokens into a single string
+                            var finalResponse = sb.ToString();
+                            return finalResponse;
                         }
                     }
                 }
