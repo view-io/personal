@@ -477,14 +477,40 @@ namespace View.Personal
         public async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] IngestFile_Click triggered.");
-            await FileIngester.IngestFile_ClickAsync(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid,
-                this);
+
+            // Get and show the spinner
+            var spinner = this.FindControl<ProgressBar>("IngestSpinner");
+            if (spinner != null) spinner.IsVisible = true;
+
+            try
+            {
+                await FileIngester.IngestFile_ClickAsync(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid,
+                    this);
+            }
+            finally
+            {
+                // Hide spinner regardless of success or failure
+                if (spinner != null) spinner.IsVisible = false;
+            }
         }
 
         public void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] ExportGraph_Click triggered.");
-            GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+
+            // Get and show the spinner
+            var spinner = this.FindControl<ProgressBar>("ExportSpinner");
+            if (spinner != null) spinner.IsVisible = true;
+
+            try
+            {
+                GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+            }
+            finally
+            {
+                // Hide spinner regardless of success or failure
+                if (spinner != null) spinner.IsVisible = false;
+            }
         }
 
         private async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts, string openAIKey,

@@ -343,6 +343,28 @@
                         </Button>
                     </Grid>
                 </StackPanel>
+                <Grid VerticalAlignment="Stretch" Margin="0,5,0,10">
+                    <!-- Ingest spinner -->
+                    <ProgressBar x:Name="IngestSpinner"
+                                 IsIndeterminate="True"
+                                 IsVisible="False"
+                                 Width="30"
+                                 Height="30"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Foreground="#007BFF" />
+                </Grid>
+                <Grid VerticalAlignment="Stretch" Margin="0,5,0,10">
+                    <!-- Export spinner -->
+                    <ProgressBar x:Name="ExportSpinner"
+                                 IsIndeterminate="True"
+                                 IsVisible="False"
+                                 Width="30"
+                                 Height="30"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Foreground="#007BFF" />
+                </Grid>
 
                 <!-- Files Table -->
                 <StackPanel Orientation="Vertical" Spacing="5">
