@@ -1,3 +1,9 @@
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+
+// ReSharper disable PossibleMultipleEnumeration
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
@@ -30,6 +36,7 @@ namespace View.Personal
     using Services;
     using RestWrapper;
     using SyslogLogging;
+    using System.Globalization;
     using SyslogServer = SyslogLogging.SyslogServer;
 
     public partial class MainWindow : Window
@@ -74,6 +81,7 @@ namespace View.Personal
             try
             {
                 InitializeComponent();
+                // ReSharper disable once UnusedParameter.Local
                 Opened += (_, __) =>
                 {
                     MainWindow_Opened(this, null);
@@ -223,8 +231,8 @@ namespace View.Personal
             this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString();
-            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString();
+            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString(CultureInfo.InvariantCulture);
+            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString(CultureInfo.InvariantCulture);
             this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
 
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
@@ -242,8 +250,9 @@ namespace View.Personal
             var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
             this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
             this.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
-            this.FindControl<TextBox>("OllamaTemperature").Text = ollama.OllamaTemperature.ToString();
-            this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString();
+            this.FindControl<TextBox>("OllamaTemperature").Text =
+                ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
+            this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
             this.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
 
             var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
@@ -434,21 +443,19 @@ namespace View.Personal
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
-                ListBoxItem
-                settingsItem) NavList.SelectedItem = settingsItem;
+                { } settingsItem) NavList.SelectedItem = settingsItem;
         }
 
         private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "My Files") is
-                ListBoxItem
-                myFilesItem) NavList.SelectedItem = myFilesItem;
+                { } myFilesItem) NavList.SelectedItem = myFilesItem;
         }
 
         private void NavigateToChat_Click(object sender, RoutedEventArgs e)
         {
-            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is ListBoxItem
-                chatItem) NavList.SelectedItem = chatItem;
+            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is
+                { } chatItem) NavList.SelectedItem = chatItem;
         }
 
         public async void IngestFile_Click(object sender, RoutedEventArgs e)
@@ -569,6 +576,7 @@ namespace View.Personal
                     UpdateConversationWindow(conversationContainer);
 
                     // 3) Call GetAIResponse, passing a callback that updates assistantMsg on each token
+                    // ReSharper disable once UnusedVariable
                     var finalContent = await GetAIResponse(inputBox.Text, token =>
                     {
                         // Append the new token
@@ -594,7 +602,7 @@ namespace View.Personal
             }
         }
 
-        private async void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
+        private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -631,7 +639,7 @@ namespace View.Personal
                 Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
-        private void UpdateConversationWindow(StackPanel conversationContainer)
+        private void UpdateConversationWindow(StackPanel? conversationContainer)
         {
             if (conversationContainer != null)
             {
@@ -704,9 +712,10 @@ namespace View.Personal
         {
             var syslogServers = new List<SyslogServer>
             {
-                new("127.0.0.1", 514)
+                new("127.0.0.1")
             };
-            var log = new LoggingModule(syslogServers, true);
+            // ReSharper disable once UnusedVariable
+            var log = new LoggingModule(syslogServers);
 
             Console.WriteLine("[INFO] GetAIResponse called. Checking selected provider...");
             try
@@ -729,7 +738,7 @@ namespace View.Personal
                         openAISettings.OpenAICompletionApiKey,
                         openAISettings.OpenAIEmbeddingModel);
 
-                    if (embeddings == null || embeddings.Length == 0)
+                    if (embeddings.Length == 0)
                         return "Error: Failed to generate embeddings for the prompt.";
 
                     var promptEmbeddings = embeddings[0].ToList();
@@ -878,7 +887,7 @@ namespace View.Personal
                             new List<string> { userInput },
                             ollamaSettings.OllamaModel);
 
-                        if (embeddings == null || embeddings.Length == 0)
+                        if (embeddings.Length == 0)
                             return "Error: Failed to generate embeddings for the prompt.";
 
                         var promptEmbeddings = embeddings[0].ToList();
@@ -1002,7 +1011,7 @@ namespace View.Personal
                                                 // Dispatch UI update to the main thread
                                                 await Dispatcher.UIThread.InvokeAsync(() =>
                                                 {
-                                                    onTokenReceived?.Invoke(partialText);
+                                                    onTokenReceived.Invoke(partialText);
                                                 });
                                                 sb.Append(partialText);
                                             }
@@ -1141,12 +1150,12 @@ namespace View.Personal
                     {
                         Messages = messagesForView,
                         ModelName = viewSettings.ViewCompletionModel,
-                        Temperature = viewSettings.Temperature,
-                        TopP = viewSettings.TopP,
-                        MaxTokens = viewSettings.MaxTokens,
+                        viewSettings.Temperature,
+                        viewSettings.TopP,
+                        viewSettings.MaxTokens,
                         GenerationProvider = viewSettings.ViewCompletionProvider,
                         GenerationApiKey = viewSettings.ViewCompletionApiKey,
-                        OllamaHostname = "192.168.197.1", // Adjust as needed
+                        OllamaHostname = "192.168.197.1",
                         OllamaPort = viewSettings.ViewCompletionPort,
                         Stream = true
                     };

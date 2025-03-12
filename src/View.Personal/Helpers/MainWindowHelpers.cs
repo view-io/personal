@@ -147,8 +147,6 @@ namespace View.Personal.Helpers
                     using (var resp = await restRequest.SendAsync(jsonPayload))
                     {
                         var responseJson = resp.DataAsString;
-                        Console.WriteLine($"[Ollama] Status Code: {(int)resp.StatusCode}");
-                        Console.WriteLine($"[Ollama] Raw response: {responseJson}");
 
                         if (resp.StatusCode > 299)
                             throw new Exception(
