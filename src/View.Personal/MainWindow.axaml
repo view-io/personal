@@ -388,18 +388,11 @@
                                 <DataGridTemplateColumn Header="Action" Width="80">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Delete"
-                                                    Click="DeleteFile_Click"
-                                                    Tag="{Binding}"
-                                                    Background="#FF4444"
-                                                    Foreground="White"
-                                                    HorizontalAlignment="Center">
-                                                <Button.Styles>
-                                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                                        <Setter Property="Background" Value="#CC0000" />
-                                                    </Style>
-                                                </Button.Styles>
-                                            </Button>
+                                            <Button
+                                                Classes="delete"
+                                                Content="Remove"
+                                                Click="DeleteFile_Click"
+                                                Tag="{Binding}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
