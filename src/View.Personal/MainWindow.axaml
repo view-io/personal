@@ -206,44 +206,13 @@
                     <Grid ColumnDefinitions="200,*"
                           RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="OllamaEmbeddingsGenerator" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="OllamaApiKey" />
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="View Endpoint" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="OllamaEndpoint" />
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Access Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="OllamaAccessKey" />
-
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Embeddings Url" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="OllamaEmbeddingsGeneratorUrl" />
-
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="5" Grid.Column="1" x:Name="OllamaModel" />
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="6" Grid.Column="1" x:Name="OllamaCompletionApiKey" />
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="8" Grid.Column="1" x:Name="OllamaCompletionProvider" />
-
                         <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="9" Grid.Column="1" x:Name="OllamaCompletionModel" />
-
-                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="10" Grid.Column="1" x:Name="OllamaCompletionPort" />
 
                         <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" Foreground="Black"
                                    VerticalAlignment="Center" />

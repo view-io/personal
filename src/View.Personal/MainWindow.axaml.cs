@@ -171,24 +171,9 @@ namespace View.Personal
                     Console.WriteLine("[INFO] Creating settings for Ollama provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
                     {
-                        OllamaEmbeddingsGenerator =
-                            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text ?? string.Empty,
-                        OllamaApiKey = this.FindControl<TextBox>("OllamaApiKey").Text ?? string.Empty,
-                        OllamaEndpoint = this.FindControl<TextBox>("OllamaEndpoint").Text ?? string.Empty,
-                        OllamaAccessKey = this.FindControl<TextBox>("OllamaAccessKey").Text ?? string.Empty,
-                        OllamaEmbeddingsGeneratorUrl =
-                            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text ?? string.Empty,
                         OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
-                        OllamaCompletionApiKey =
-                            this.FindControl<TextBox>("OllamaCompletionApiKey").Text ?? string.Empty,
-                        OllamaCompletionProvider =
-                            this.FindControl<TextBox>("OllamaCompletionProvider").Text ?? string.Empty,
                         OllamaCompletionModel =
                             this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
-                        OllamaCompletionPort =
-                            int.TryParse(this.FindControl<TextBox>("OllamaCompletionPort").Text, out var ollamaPort)
-                                ? ollamaPort
-                                : 0,
                         OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
                             out var ollamaTemp)
                             ? ollamaTemp
@@ -255,19 +240,8 @@ namespace View.Personal
                 anthropic.AnthropicCompletionModel ?? string.Empty;
 
             var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
-            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text =
-                ollama.OllamaEmbeddingsGenerator ?? string.Empty;
-            this.FindControl<TextBox>("OllamaApiKey").Text = ollama.OllamaApiKey ?? string.Empty;
-            this.FindControl<TextBox>("OllamaEndpoint").Text = ollama.OllamaEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("OllamaAccessKey").Text = ollama.OllamaAccessKey ?? string.Empty;
-            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text =
-                ollama.OllamaEmbeddingsGeneratorUrl ?? string.Empty;
             this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
-            this.FindControl<TextBox>("OllamaCompletionApiKey").Text = ollama.OllamaCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("OllamaCompletionProvider").Text =
-                ollama.OllamaCompletionProvider ?? string.Empty;
             this.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
-            this.FindControl<TextBox>("OllamaCompletionPort").Text = ollama.OllamaCompletionPort.ToString();
             this.FindControl<TextBox>("OllamaTemperature").Text = ollama.OllamaTemperature.ToString();
             this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString();
             this.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
@@ -433,23 +407,8 @@ namespace View.Personal
                 case "Ollama":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
                     {
-                        OllamaEmbeddingsGenerator =
-                            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text ?? string.Empty,
-                        OllamaApiKey = this.FindControl<TextBox>("OllamaApiKey").Text ?? string.Empty,
-                        OllamaEndpoint = this.FindControl<TextBox>("OllamaEndpoint").Text ?? string.Empty,
-                        OllamaAccessKey = this.FindControl<TextBox>("OllamaAccessKey").Text ?? string.Empty,
-                        OllamaEmbeddingsGeneratorUrl =
-                            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text ?? string.Empty,
                         OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
-                        OllamaCompletionApiKey =
-                            this.FindControl<TextBox>("OllamaCompletionApiKey").Text ?? string.Empty,
-                        OllamaCompletionProvider =
-                            this.FindControl<TextBox>("OllamaCompletionProvider").Text ?? string.Empty,
                         OllamaCompletionModel = this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
-                        OllamaCompletionPort =
-                            int.TryParse(this.FindControl<TextBox>("OllamaCompletionPort").Text, out var ollamaPort)
-                                ? ollamaPort
-                                : 0,
                         OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
                             out var ollamaTemp)
                             ? ollamaTemp
@@ -994,8 +953,8 @@ namespace View.Personal
                         {
                             model = ollamaSettings.OllamaCompletionModel,
                             messages = messagesForOllama,
-                            max_tokens = 300,
-                            temperature = 0.7,
+                            max_tokens = ollamaSettings.OllamaMaxTokens,
+                            temperature = ollamaSettings.OllamaTemperature,
                             stream = true
                         };
 
