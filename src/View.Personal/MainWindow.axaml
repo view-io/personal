@@ -448,7 +448,11 @@
                     <TextBox x:Name="ConsoleOutputTextBox"
                              IsReadOnly="True"
                              AcceptsReturn="True"
-                             TextWrapping="Wrap" />
+                             TextWrapping="Wrap"
+                             Background="Black"
+                             Foreground="White"
+                             HorizontalAlignment="Left"
+                             Width="1000" />
                 </ScrollViewer>
             </StackPanel>
             <!-- Default View -->
