@@ -28,11 +28,6 @@ namespace View.Personal
 
         #region Internal-Members
 
-        internal string? OpenAIKey { get; set; }
-        internal string? OpenAIEmbeddingModel { get; set; }
-
-        internal string? OpenAICompletionModel { get; set; }
-
         #endregion
 
         #region Private-Members

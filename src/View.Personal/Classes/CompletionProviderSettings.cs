@@ -26,22 +26,19 @@
         public string Model { get; set; } // EmbeddingModel
 
         public string ViewCompletionApiKey { get; set; }
-
-        public string ViewPresetGuid { get; set; } // GUID
         public string ViewCompletionProvider { get; set; } // GenerationProvider
         public string ViewCompletionModel { get; set; } // GenerationModel
         public int ViewCompletionPort { get; set; } // OllamaPort
         public double Temperature { get; set; } // Temperature
         public double TopP { get; set; } // TopP
         public int MaxTokens { get; set; } //MaxTokens
-        public bool Stream { get; set; }
-        public string ViewAssistantConfigGuid { get; set; } // GUID
 
-        public string Name { get; set; } // Name
-
-        public string Description { get; set; } // Description
-
-        public string SystemPrompt { get; set; } // SystemPrompt
+        // Ollama Settings
+        public string OllamaModel { get; set; } // EmbeddingModel
+        public string OllamaCompletionModel { get; set; } // GenerationModel
+        public double OllamaTemperature { get; set; } // Temperature
+        public double OllamaTopP { get; set; } // TopP
+        public int OllamaMaxTokens { get; set; } //MaxTokens
 
         public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
         {

@@ -22,11 +22,6 @@
         Anthropic,
 
         /// <summary>
-        /// View AI.
-        /// </summary>
-        ViewAI,
-
-        /// <summary>
         /// Ollama.
         /// </summary>
         Ollama,

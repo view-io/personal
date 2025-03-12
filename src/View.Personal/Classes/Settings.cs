@@ -78,6 +78,7 @@
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.View));
+            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama));
             SelectedProvider = "View";
         }
 

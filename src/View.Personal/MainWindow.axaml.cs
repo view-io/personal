@@ -1,3 +1,9 @@
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+
+// ReSharper disable PossibleMultipleEnumeration
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
@@ -17,10 +23,9 @@ namespace View.Personal
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
+    using Avalonia.Threading;
     using Classes;
-    using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
-    using DocumentAtom.Pdf;
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
@@ -28,11 +33,10 @@ namespace View.Personal
     using Sdk;
     using Sdk.Embeddings;
     using SerializationHelper;
-    using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using Services;
-    using Sdk;
     using RestWrapper;
     using SyslogLogging;
+    using System.Globalization;
     using SyslogServer = SyslogLogging.SyslogServer;
 
     public partial class MainWindow : Window
@@ -52,13 +56,17 @@ namespace View.Personal
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
+
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
-        private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
+
+        // private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
-        private readonly FileBrowserService _fileBrowserService = new();
-        private LoggingModule _Logging = null;
-        private bool _assistantConfigsLoaded = false;
+
+        private readonly FileBrowserService _FileBrowserService = new();
+
+        // private LoggingModule _Logging = null;
+        private bool _WindowInitialized;
 
         #endregion
 
@@ -73,7 +81,12 @@ namespace View.Personal
             try
             {
                 InitializeComponent();
-                Opened += MainWindow_Opened;
+                // ReSharper disable once UnusedParameter.Local
+                Opened += (_, __) =>
+                {
+                    MainWindow_Opened(this, null);
+                    _WindowInitialized = true;
+                };
             }
             catch (Exception e)
             {
@@ -147,7 +160,6 @@ namespace View.Personal
                             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
                         Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
                         ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewPresetGuid = this.FindControl<TextBox>("ViewPresetGuid").Text ?? string.Empty,
                         ViewCompletionProvider =
                             this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
                         ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
@@ -159,12 +171,28 @@ namespace View.Personal
                         TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
                         MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
                             ? tokens
-                            : 150,
-                        Stream = false,
-                        // Add this line to save the selected assistant config
-                        ViewAssistantConfigGuid =
-                            (this.FindControl<ComboBox>("ViewAssistantConfigComboBox").SelectedItem as AssistantConfig)
-                            ?.GUID
+                            : 150
+                    };
+                    break;
+
+                case "Ollama":
+                    Console.WriteLine("[INFO] Creating settings for Ollama provider...");
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
+                    {
+                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
+                        OllamaCompletionModel =
+                            this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
+                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
+                            out var ollamaTemp)
+                            ? ollamaTemp
+                            : 0.7,
+                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
+                            ? ollamaTopp
+                            : 1.0,
+                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
+                            out var OllamaTokens)
+                            ? OllamaTokens
+                            : 150
                     };
                     break;
             }
@@ -200,14 +228,12 @@ namespace View.Personal
             this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
             this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewPresetGuid").Text = view.ViewPresetGuid ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
             this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString();
-            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString();
+            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString(CultureInfo.InvariantCulture);
+            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString(CultureInfo.InvariantCulture);
             this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
-            // this.FindControl<CheckBox>("Stream").IsChecked = view.Stream;
 
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
             this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
@@ -220,6 +246,14 @@ namespace View.Personal
             var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
             this.FindControl<TextBox>("AnthropicCompletionModel").Text =
                 anthropic.AnthropicCompletionModel ?? string.Empty;
+
+            var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+            this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
+            this.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("OllamaTemperature").Text =
+                ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
+            this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
+            this.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
 
             var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
             if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
@@ -296,10 +330,15 @@ namespace View.Personal
 
         private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            if (!_WindowInitialized) return;
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 var selectedProvider = selectedItem.Content.ToString();
                 Console.WriteLine($"[INFO] ModelProvider_SelectionChanged: {selectedProvider}");
+
+                var app = (App)Application.Current;
+                app.SaveSelectedProvider(selectedProvider);
+                UpdateProviderSettings(selectedProvider);
                 UpdateSettingsVisibility(selectedProvider);
             }
         }
@@ -312,31 +351,111 @@ namespace View.Personal
                 VoyageSettings,
                 AnthropicSettings,
                 ViewSettings,
+                OllamaSettings,
                 selectedProvider);
-
-            // // Fetch assistant configs when View provider is selected
-            // if (selectedProvider == "View") _ = FetchAssistantConfigs();
         }
 
+
+        private void UpdateProviderSettings(string selectedProvider)
+        {
+            var app = (App)Application.Current;
+            CompletionProviderSettings settings = null;
+
+            switch (selectedProvider)
+            {
+                case "OpenAI":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI)
+                    {
+                        OpenAICompletionApiKey = this.FindControl<TextBox>("OpenAIKey").Text ?? string.Empty,
+                        OpenAIEmbeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text ?? string.Empty,
+                        OpenAICompletionModel = this.FindControl<TextBox>("OpenAICompletionModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "Voyage":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage)
+                    {
+                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "Anthropic":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
+                    {
+                        AnthropicCompletionModel =
+                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty
+                    };
+                    break;
+
+                case "View":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
+                    {
+                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
+                        ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
+                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
+                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
+                        EmbeddingsGeneratorUrl =
+                            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
+                        Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
+                        ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
+                        ViewCompletionProvider =
+                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
+                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
+                        ViewCompletionPort =
+                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
+                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
+                            ? temp
+                            : 0.7,
+                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
+                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
+                            ? tokens
+                            : 150
+                    };
+                    break;
+
+                case "Ollama":
+                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
+                    {
+                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
+                        OllamaCompletionModel = this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
+                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
+                            out var ollamaTemp)
+                            ? ollamaTemp
+                            : 0.7,
+                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
+                            ? ollamaTopp
+                            : 1.0,
+                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
+                            out var ollamaTokens)
+                            ? ollamaTokens
+                            : 150
+                    };
+                    break;
+            }
+
+            if (settings != null)
+            {
+                app.UpdateProviderSettings(settings);
+                Console.WriteLine($"[INFO] {selectedProvider} settings updated due to provider change.");
+            }
+        }
 
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
-                ListBoxItem
-                settingsItem) NavList.SelectedItem = settingsItem;
+                { } settingsItem) NavList.SelectedItem = settingsItem;
         }
 
         private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "My Files") is
-                ListBoxItem
-                myFilesItem) NavList.SelectedItem = myFilesItem;
+                { } myFilesItem) NavList.SelectedItem = myFilesItem;
         }
 
         private void NavigateToChat_Click(object sender, RoutedEventArgs e)
         {
-            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is ListBoxItem
-                chatItem) NavList.SelectedItem = chatItem;
+            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is
+                { } chatItem) NavList.SelectedItem = chatItem;
         }
 
         public async void IngestFile_Click(object sender, RoutedEventArgs e)
@@ -405,7 +524,7 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
             if (textBox == null) return;
 
-            var filePath = await _fileBrowserService.BrowseForExportLocation(this);
+            var filePath = await _FileBrowserService.BrowseForExportLocation(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
             Console.WriteLine($"[INFO] User selected export path: {filePath}");
         }
@@ -416,7 +535,7 @@ namespace View.Personal
             var textBox = this.FindControl<TextBox>("FilePathTextBox");
             if (textBox == null) return;
 
-            var filePath = await _fileBrowserService.BrowseForFileToIngest(this);
+            var filePath = await _FileBrowserService.BrowseForFileToIngest(this);
             if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
             Console.WriteLine($"[INFO] User selected ingest path: {filePath}");
         }
@@ -457,6 +576,7 @@ namespace View.Personal
                     UpdateConversationWindow(conversationContainer);
 
                     // 3) Call GetAIResponse, passing a callback that updates assistantMsg on each token
+                    // ReSharper disable once UnusedVariable
                     var finalContent = await GetAIResponse(inputBox.Text, token =>
                     {
                         // Append the new token
@@ -482,7 +602,7 @@ namespace View.Personal
             }
         }
 
-        private async void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
+        private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -502,7 +622,7 @@ namespace View.Personal
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] DownloadChat_Click triggered...");
-            var filePath = await _fileBrowserService.BrowseForChatHistorySaveLocation(this);
+            var filePath = await _FileBrowserService.BrowseForChatHistorySaveLocation(this);
 
             if (!string.IsNullOrEmpty(filePath))
                 try
@@ -519,7 +639,7 @@ namespace View.Personal
                 Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
-        private void UpdateConversationWindow(StackPanel conversationContainer)
+        private void UpdateConversationWindow(StackPanel? conversationContainer)
         {
             if (conversationContainer != null)
             {
@@ -592,9 +712,10 @@ namespace View.Personal
         {
             var syslogServers = new List<SyslogServer>
             {
-                new("127.0.0.1", 514)
+                new("127.0.0.1")
             };
-            var log = new LoggingModule(syslogServers, true);
+            // ReSharper disable once UnusedVariable
+            var log = new LoggingModule(syslogServers);
 
             Console.WriteLine("[INFO] GetAIResponse called. Checking selected provider...");
             try
@@ -617,7 +738,7 @@ namespace View.Personal
                         openAISettings.OpenAICompletionApiKey,
                         openAISettings.OpenAIEmbeddingModel);
 
-                    if (embeddings == null || embeddings.Length == 0)
+                    if (embeddings.Length == 0)
                         return "Error: Failed to generate embeddings for the prompt.";
 
                     var promptEmbeddings = embeddings[0].ToList();
@@ -705,7 +826,7 @@ namespace View.Personal
                         restRequest.ContentType = "application/json";
 
                         var jsonPayload = _Serializer.SerializeJson(requestBody);
-                        
+
                         using (var resp = await restRequest.SendAsync(jsonPayload))
                         {
                             if (resp.StatusCode > 299)
@@ -724,7 +845,7 @@ namespace View.Personal
                                 // Null means the server closed the connection or we’re done
                                 if (sseEvent == null)
                                     break;
-                                
+
                                 var chunkJson = sseEvent.Data;
 
                                 // Check for the end token 
@@ -754,6 +875,157 @@ namespace View.Personal
                         }
                     }
                 }
+                else if (selectedProvider == "Ollama")
+                {
+                    {
+                        Console.WriteLine("[INFO] Using Ollama for chat completion.");
+                        var ollamaSettings = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+
+                        // 1. Generate embeddings for user prompt
+                        Console.WriteLine("[INFO] Generating embeddings for user prompt via Ollama...");
+                        var embeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
+                            new List<string> { userInput },
+                            ollamaSettings.OllamaModel);
+
+                        if (embeddings.Length == 0)
+                            return "Error: Failed to generate embeddings for the prompt.";
+
+                        var promptEmbeddings = embeddings[0].ToList();
+                        Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
+
+                        // 2. Vector search for context
+                        var searchRequest = new VectorSearchRequest
+                        {
+                            TenantGUID = _TenantGuid,
+                            GraphGUID = _GraphGuid,
+                            Domain = VectorSearchDomainEnum.Node,
+                            SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                            Embeddings = promptEmbeddings
+                        };
+
+                        var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                        Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
+
+                        if (searchResults == null || !searchResults.Any())
+                            return "No relevant documents found to answer your question.";
+
+                        // 3. Build the context
+                        var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                        var nodeContents = sortedResults
+                            .Select(r =>
+                            {
+                                if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                    return atom.Text;
+                                if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                    !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                    return r.Node.Vectors[0].Content;
+                                return r.Node.Tags["Content"] ?? "[No Content]";
+                            })
+                            .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                            .ToList();
+
+                        var context = string.Join("\n\n", nodeContents);
+                        if (context.Length > 4000)
+                            context = context.Substring(0, 4000) + "... [truncated]";
+
+                        // 4. Build the conversation messages
+                        var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+
+                        var contextMessage = new ChatMessage
+                        {
+                            Role = "system",
+                            Content =
+                                "You are an assistant answering based solely on the provided document context. " +
+                                "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                                context
+                        };
+                        var questionMessage = new ChatMessage
+                        {
+                            Role = "user",
+                            Content = userInput
+                        };
+
+                        var finalMessages = new List<ChatMessage>();
+                        finalMessages.AddRange(conversationSoFar);
+                        finalMessages.Add(contextMessage);
+                        finalMessages.Add(questionMessage);
+
+                        var messagesForOllama = finalMessages.Select(msg => new
+                        {
+                            role = msg.Role,
+                            content = msg.Content
+                        }).ToList();
+
+                        // 5. Call chat
+                        Console.WriteLine("[INFO] Sending request to Ollama ChatCompletions...");
+                        var requestBody = new
+                        {
+                            model = ollamaSettings.OllamaCompletionModel,
+                            messages = messagesForOllama,
+                            max_tokens = ollamaSettings.OllamaMaxTokens,
+                            temperature = ollamaSettings.OllamaTemperature,
+                            stream = true
+                        };
+
+                        var requestUri = "http://localhost:11434/api/chat";
+
+                        using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                        {
+                            restRequest.ContentType = "application/json";
+
+                            var jsonPayload = _Serializer.SerializeJson(requestBody);
+
+                            using (var resp = await restRequest.SendAsync(jsonPayload))
+                            {
+                                if (resp.StatusCode > 299)
+                                    throw new Exception("OpenAI call failed.");
+
+                                if (resp.ContentType != "application/x-ndjson")
+                                    throw new Exception("Expected NDJSON stream but got " + resp.ContentType);
+
+                                var sb = new StringBuilder();
+
+                                using (var reader = new StreamReader(resp.Data))
+                                {
+                                    while (!reader.EndOfStream)
+                                    {
+                                        var line = await reader.ReadLineAsync();
+                                        if (string.IsNullOrEmpty(line))
+                                            continue;
+
+                                        // Parse each NDJSON line
+                                        using var doc = JsonDocument.Parse(line);
+                                        var root = doc.RootElement;
+
+                                        // Check if the stream is done
+                                        if (root.TryGetProperty("done", out var doneProp) && doneProp.GetBoolean())
+                                            break;
+
+                                        // Extract the content from the message
+                                        if (root.TryGetProperty("message", out var messageProp) &&
+                                            messageProp.TryGetProperty("content", out var contentProp))
+                                        {
+                                            var partialText = contentProp.GetString();
+                                            if (!string.IsNullOrEmpty(partialText))
+                                            {
+                                                // Dispatch UI update to the main thread
+                                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                                {
+                                                    onTokenReceived.Invoke(partialText);
+                                                });
+                                                sb.Append(partialText);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                var finalResponse = sb.ToString();
+                                return finalResponse;
+                            }
+                        }
+                    }
+                }
+
                 // View
                 else if (selectedProvider == "View")
                 {
@@ -878,12 +1150,12 @@ namespace View.Personal
                     {
                         Messages = messagesForView,
                         ModelName = viewSettings.ViewCompletionModel,
-                        Temperature = viewSettings.Temperature,
-                        TopP = viewSettings.TopP,
-                        MaxTokens = viewSettings.MaxTokens,
+                        viewSettings.Temperature,
+                        viewSettings.TopP,
+                        viewSettings.MaxTokens,
                         GenerationProvider = viewSettings.ViewCompletionProvider,
                         GenerationApiKey = viewSettings.ViewCompletionApiKey,
-                        OllamaHostname = "192.168.197.1", // Adjust as needed
+                        OllamaHostname = "192.168.197.1",
                         OllamaPort = viewSettings.ViewCompletionPort,
                         Stream = true
                     };
@@ -912,40 +1184,6 @@ namespace View.Personal
 
                             var sb = new StringBuilder();
 
-                            // Repeatedly call ReadEventAsync() to get new SSE chunks
-                            // while (true)
-                            // {
-                            //     // Each call returns one ServerSentEvent or null (on end)
-                            //     var sse = await restResponse.ReadEventAsync();
-                            //
-                            //     // If the stream ended or the server closed the connection
-                            //     if (sse == null) break;
-                            //
-                            //     var rawJson = sse.Data;
-                            //
-                            //     // Usually you check sse.Data or sse.EventType
-                            //     // If you see an indicator that the stream is finished...
-                            //     if (rawJson == "[END_OF_TEXT_STREAM]") break;
-                            //
-                            //     // Accumulate the data tokens
-                            //     if (!string.IsNullOrEmpty(rawJson))
-                            //     {
-                            //         using var doc = JsonDocument.Parse(rawJson);
-                            //         if (doc.RootElement.TryGetProperty("token", out var tokenProp))
-                            //         {
-                            //             var token = tokenProp.GetString();
-                            //
-                            //             // Accumulate tokens or update UI in real-time
-                            //             sb.Append(token);
-                            //
-                            //             // e.g. For real-time chat streaming:
-                            //             // UpdateChatUI(token);
-                            //         }
-                            //     }
-                            //     // Or if you want to update the UI in real-time, do:
-                            //     // UpdateChatUI(sse.Data);
-                            //     // UpdateChatUI(sse.Data);
-                            // }
                             while (true)
                             {
                                 var sse = await restResponse.ReadEventAsync();
@@ -970,7 +1208,6 @@ namespace View.Personal
                                 }
                             }
 
-
                             // Convert accumulated tokens into a single string
                             var finalResponse = sb.ToString();
                             return finalResponse;
@@ -990,173 +1227,29 @@ namespace View.Personal
             }
         }
 
-        private void ViewAssistantConfigComboBox_DropDownOpened(object sender, EventArgs e)
+        private void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
-            // Only fetch if we haven't loaded the configs yet
-            if (!_assistantConfigsLoaded)
+            if (e.Property.Name == "Text")
             {
-                Console.WriteLine("[INFO] ViewAssistantConfigComboBox_DropDownOpened: loading assistant configs...");
-                // Show loading indicator as the first item
-                var comboBox = (ComboBox)sender;
-                comboBox.Items.Clear();
-                comboBox.Items.Add(new ComboBoxItem { Content = "Loading configurations..." });
+                var textBox = sender as TextBox;
+                var ingestButton = this.FindControl<Button>("IngestButton");
 
-                // Start the async operation
-                FetchAssistantConfigsAsync(comboBox);
+                if (ingestButton != null && textBox != null)
+                    // Enable the button only if there's text in the textbox
+                    ingestButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
         }
 
-        private async void FetchAssistantConfigsAsync(ComboBox comboBox)
+        private void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
-            try
+            if (e.Property.Name == "Text")
             {
-                var app = (App)Application.Current;
-                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+                var textBox = sender as TextBox;
+                var exportButton = this.FindControl<Button>("ExportButton");
 
-                if (string.IsNullOrEmpty(viewSettings.ViewEndpoint) || string.IsNullOrEmpty(viewSettings.AccessKey))
-                {
-                    Console.WriteLine(
-                        "[WARN] View endpoint or access key not configured. Cannot load assistant configs.");
-                    comboBox.Items.Clear();
-                    comboBox.Items.Add(new ComboBoxItem
-                        { Content = "Configuration missing. Set endpoint and access key first." });
-                    return;
-                }
-
-                var requestUri = $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs";
-                Console.WriteLine($"[INFO] Fetching assistant configs from: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
-                {
-                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
-
-                    using (var restResponse = await restRequest.SendAsync())
-                    {
-                        if (restResponse.StatusCode > 299)
-                        {
-                            Console.WriteLine($"[ERROR] Failed to fetch assistant configs: {restResponse.StatusCode}");
-                            comboBox.Items.Clear();
-                            comboBox.Items.Add(new ComboBoxItem
-                                { Content = $"Error loading configurations (Status: {restResponse.StatusCode})" });
-                            return;
-                        }
-
-                        var responseJson = restResponse.DataAsString;
-                        var configResponse = _Serializer.DeserializeJson<AssistantConfigResponse>(responseJson);
-
-                        if (configResponse != null && configResponse.AssistantConfigs != null &&
-                            configResponse.AssistantConfigs.Count > 0)
-                        {
-                            Console.WriteLine(
-                                $"[INFO] Loaded {configResponse.AssistantConfigs.Count} assistant configs.");
-                            // Replace the loading placeholder with actual items
-                            comboBox.Items.Clear();
-                            comboBox.ItemsSource = configResponse.AssistantConfigs;
-                            comboBox.SelectedIndex = 0;
-                            _assistantConfigsLoaded = true;
-                            Console.WriteLine($"Loaded {configResponse.AssistantConfigs.Count} assistant configs");
-                        }
-                        else
-                        {
-                            Console.WriteLine("[WARN] No assistant configs returned or parse failure.");
-                            comboBox.Items.Clear();
-                            comboBox.Items.Add(new ComboBoxItem { Content = "No assistant configurations found" });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ERROR] FetchAssistantConfigsAsync exception: {ex.Message}");
-                comboBox.Items.Clear();
-                comboBox.Items.Add(new ComboBoxItem { Content = $"Error: {ex.Message}" });
-            }
-        }
-
-        private async void ApplyPreset_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("[INFO] ApplyPreset_Click triggered.");
-            try
-            {
-                // Grab the selected config from the combo box
-                var comboBox = this.FindControl<ComboBox>("ViewAssistantConfigComboBox");
-                var selectedConfig = comboBox.SelectedItem as AssistantConfig;
-                if (selectedConfig == null)
-                {
-                    Console.WriteLine("[WARN] No preset selected in combo box.");
-                    return;
-                }
-
-                Console.WriteLine($"[INFO] Fetching details for config GUID: {selectedConfig.GUID}");
-
-                // Pull the stored View settings
-                var app = (App)Application.Current;
-                var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-
-                // Fetch the full details from /assistant/configs/{GUID}
-                var requestUri =
-                    $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/configs/{selectedConfig.GUID}";
-                Console.WriteLine($"Fetching config details from: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Get))
-                {
-                    restRequest.Headers["Authorization"] = $"Bearer {viewSettings.AccessKey}";
-
-                    using (var restResponse = await restRequest.SendAsync())
-                    {
-                        if (restResponse.StatusCode > 299)
-                        {
-                            Console.WriteLine($"[ERROR] Failed to fetch config details: {restResponse.StatusCode}");
-                            return;
-                        }
-
-                        // Grab raw JSON, then deserialize
-                        var responseJson = restResponse.DataAsString;
-                        Console.WriteLine("Raw JSON for preset details:");
-                        Console.WriteLine(responseJson);
-
-                        var configDetails = _Serializer.DeserializeJson<AssistantConfigDetails>(responseJson);
-                        if (configDetails == null)
-                        {
-                            Console.WriteLine("[ERROR] Unable to deserialize config details.");
-                            return;
-                        }
-
-                        // Now map the fields to the CompletionProviderSettings
-                        viewSettings.ViewAssistantConfigGuid =
-                            configDetails.GUID;
-                        viewSettings.ViewPresetGuid = configDetails.GUID;
-                        viewSettings.Name = configDetails.Name;
-                        viewSettings.Description = configDetails.Description;
-                        viewSettings.SystemPrompt = configDetails.SystemPrompt;
-                        viewSettings.EmbeddingsGenerator = configDetails.EmbeddingModel;
-                        viewSettings.Model = configDetails.EmbeddingModel;
-                        viewSettings.ApiKey = configDetails.GenerationApiKey ?? string.Empty;
-
-                        // generation details
-                        viewSettings.ViewCompletionProvider = configDetails.GenerationProvider;
-                        viewSettings.ViewCompletionModel = configDetails.GenerationModel;
-                        viewSettings.Temperature = configDetails.Temperature;
-                        viewSettings.TopP = configDetails.TopP;
-                        viewSettings.MaxTokens = configDetails.MaxTokens;
-                        viewSettings.ViewCompletionPort = configDetails.OllamaPort;
-
-                        // Save the updated settings
-                        app.UpdateProviderSettings(viewSettings);
-
-                        // Feedback 
-                        Console.WriteLine($"[INFO] Preset '{configDetails.Name}' applied to local settings.");
-                        await MsBox.Avalonia.MessageBoxManager
-                            .GetMessageBoxStandard("Presets Applied", $"Your presets have been saved!",
-                                ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
-                            .ShowAsync();
-                        LoadSavedSettings();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ERROR] ApplyPreset_Click exception: {ex.Message}");
+                if (exportButton != null && textBox != null)
+                    // Enable the button only if there's text in the textbox
+                    exportButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
         }
 
