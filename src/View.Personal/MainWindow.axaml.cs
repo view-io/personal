@@ -240,7 +240,6 @@ namespace View.Personal
             this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString();
             this.FindControl<TextBox>("TopP").Text = view.TopP.ToString();
             this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
-            // this.FindControl<CheckBox>("Stream").IsChecked = view.Stream;
 
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
             this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
@@ -253,6 +252,24 @@ namespace View.Personal
             var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
             this.FindControl<TextBox>("AnthropicCompletionModel").Text =
                 anthropic.AnthropicCompletionModel ?? string.Empty;
+
+            var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+            this.FindControl<TextBox>("OllamaEmbeddingsGenerator").Text =
+                ollama.OllamaEmbeddingsGenerator ?? string.Empty;
+            this.FindControl<TextBox>("OllamaApiKey").Text = ollama.OllamaApiKey ?? string.Empty;
+            this.FindControl<TextBox>("OllamaEndpoint").Text = ollama.OllamaEndpoint ?? string.Empty;
+            this.FindControl<TextBox>("OllamaAccessKey").Text = ollama.OllamaAccessKey ?? string.Empty;
+            this.FindControl<TextBox>("OllamaEmbeddingsGeneratorUrl").Text =
+                ollama.OllamaEmbeddingsGeneratorUrl ?? string.Empty;
+            this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
+            this.FindControl<TextBox>("OllamaCompletionApiKey").Text = ollama.OllamaCompletionApiKey ?? string.Empty;
+            this.FindControl<TextBox>("OllamaCompletionProvider").Text =
+                ollama.OllamaCompletionProvider ?? string.Empty;
+            this.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("OllamaCompletionPort").Text = ollama.OllamaCompletionPort.ToString();
+            this.FindControl<TextBox>("OllamaTemperature").Text = ollama.OllamaTemperature.ToString();
+            this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString();
+            this.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
 
             var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
             if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))

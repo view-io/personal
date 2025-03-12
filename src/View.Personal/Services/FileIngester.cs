@@ -240,6 +240,65 @@ namespace View.Personal
                         }
 
                         break;
+
+                    case "Ollama":
+
+                        var ollamaValidChunkNodes = chunkNodes
+                            .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                            .ToList();
+
+                        var ollamaChunkTexts = ollamaValidChunkNodes
+                            .Select(x => (x.Data as Atom).Text)
+                            .ToList();
+
+                        if (!ollamaChunkTexts.Any())
+                        {
+                            Console.WriteLine("No valid text content found in atoms for embedding.");
+                            break;
+                        }
+
+                        var ollamaEmbeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
+                            ollamaChunkTexts,
+                            providerSettings.OllamaModel);
+
+                        if (ollamaEmbeddings == null || ollamaEmbeddings.Length != ollamaValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error ingesting file {filePath}");
+                            if (spinner != null) spinner.IsVisible = false;
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    $"Something went wrong",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
+                            return;
+                        }
+
+                        for (var j = 0; j < ollamaValidChunkNodes.Count; j++)
+                        {
+                            var chunkNode = ollamaValidChunkNodes[j];
+                            var vectorArray = ollamaEmbeddings[j];
+
+                            chunkNode.Vectors = new List<VectorMetadata>
+                            {
+                                new()
+                                {
+                                    TenantGUID = tenantGuid,
+                                    GraphGUID = graphGuid,
+                                    NodeGUID = chunkNode.GUID,
+                                    Model = providerSettings.OllamaCompletionModel,
+                                    Dimensionality = vectorArray.Length,
+                                    Vectors = vectorArray.ToList(),
+                                    Content = (chunkNode.Data as Atom).Text
+                                }
+                            };
+                            liteGraph.UpdateNode(chunkNode);
+                        }
+
+                        Console.WriteLine($"Updated {ollamaValidChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                        break;
                 }
 
                 Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
@@ -257,7 +316,6 @@ namespace View.Personal
                     )
                     .ShowAsync();
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
