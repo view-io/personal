@@ -17,6 +17,7 @@ namespace View.Personal
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
+    using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
@@ -906,6 +907,157 @@ namespace View.Personal
                         }
                     }
                 }
+                else if (selectedProvider == "Ollama")
+                {
+                    {
+                        Console.WriteLine("[INFO] Using Ollama for chat completion.");
+                        var ollamaSettings = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+
+                        // 1. Generate embeddings for user prompt
+                        Console.WriteLine("[INFO] Generating embeddings for user prompt via Ollama...");
+                        var embeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
+                            new List<string> { userInput },
+                            ollamaSettings.OllamaModel);
+
+                        if (embeddings == null || embeddings.Length == 0)
+                            return "Error: Failed to generate embeddings for the prompt.";
+
+                        var promptEmbeddings = embeddings[0].ToList();
+                        Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
+
+                        // 2. Vector search for context
+                        var searchRequest = new VectorSearchRequest
+                        {
+                            TenantGUID = _TenantGuid,
+                            GraphGUID = _GraphGuid,
+                            Domain = VectorSearchDomainEnum.Node,
+                            SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                            Embeddings = promptEmbeddings
+                        };
+
+                        var searchResults = _LiteGraph.SearchVectors(searchRequest);
+                        Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
+
+                        if (searchResults == null || !searchResults.Any())
+                            return "No relevant documents found to answer your question.";
+
+                        // 3. Build the context
+                        var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
+                        var nodeContents = sortedResults
+                            .Select(r =>
+                            {
+                                if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                                    return atom.Text;
+                                if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                                    !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                                    return r.Node.Vectors[0].Content;
+                                return r.Node.Tags["Content"] ?? "[No Content]";
+                            })
+                            .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+                            .ToList();
+
+                        var context = string.Join("\n\n", nodeContents);
+                        if (context.Length > 4000)
+                            context = context.Substring(0, 4000) + "... [truncated]";
+
+                        // 4. Build the conversation messages
+                        var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+
+                        var contextMessage = new ChatMessage
+                        {
+                            Role = "system",
+                            Content =
+                                "You are an assistant answering based solely on the provided document context. " +
+                                "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" +
+                                context
+                        };
+                        var questionMessage = new ChatMessage
+                        {
+                            Role = "user",
+                            Content = userInput
+                        };
+
+                        var finalMessages = new List<ChatMessage>();
+                        finalMessages.AddRange(conversationSoFar);
+                        finalMessages.Add(contextMessage);
+                        finalMessages.Add(questionMessage);
+
+                        var messagesForOllama = finalMessages.Select(msg => new
+                        {
+                            role = msg.Role,
+                            content = msg.Content
+                        }).ToList();
+
+                        // 5. Call chat
+                        Console.WriteLine("[INFO] Sending request to Ollama ChatCompletions...");
+                        var requestBody = new
+                        {
+                            model = ollamaSettings.OllamaCompletionModel,
+                            messages = messagesForOllama,
+                            max_tokens = 300,
+                            temperature = 0.7,
+                            stream = true
+                        };
+
+                        var requestUri = "http://localhost:11434/api/chat";
+
+                        using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
+                        {
+                            restRequest.ContentType = "application/json";
+
+                            var jsonPayload = _Serializer.SerializeJson(requestBody);
+
+                            using (var resp = await restRequest.SendAsync(jsonPayload))
+                            {
+                                if (resp.StatusCode > 299)
+                                    throw new Exception("OpenAI call failed.");
+
+                                if (resp.ContentType != "application/x-ndjson")
+                                    throw new Exception("Expected NDJSON stream but got " + resp.ContentType);
+
+                                var sb = new StringBuilder();
+
+                                using (var reader = new StreamReader(resp.Data))
+                                {
+                                    while (!reader.EndOfStream)
+                                    {
+                                        var line = await reader.ReadLineAsync();
+                                        if (string.IsNullOrEmpty(line))
+                                            continue;
+
+                                        // Parse each NDJSON line
+                                        using var doc = JsonDocument.Parse(line);
+                                        var root = doc.RootElement;
+
+                                        // Check if the stream is done
+                                        if (root.TryGetProperty("done", out var doneProp) && doneProp.GetBoolean())
+                                            break;
+
+                                        // Extract the content from the message
+                                        if (root.TryGetProperty("message", out var messageProp) &&
+                                            messageProp.TryGetProperty("content", out var contentProp))
+                                        {
+                                            var partialText = contentProp.GetString();
+                                            if (!string.IsNullOrEmpty(partialText))
+                                            {
+                                                // Dispatch UI update to the main thread
+                                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                                {
+                                                    onTokenReceived?.Invoke(partialText);
+                                                });
+                                                sb.Append(partialText);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                var finalResponse = sb.ToString();
+                                return finalResponse;
+                            }
+                        }
+                    }
+                }
+
                 // View
                 else if (selectedProvider == "View")
                 {
