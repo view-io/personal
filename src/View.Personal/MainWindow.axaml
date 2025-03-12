@@ -448,6 +448,8 @@
                     <TextBox x:Name="ConsoleOutputTextBox"
                              IsReadOnly="True"
                              AcceptsReturn="True"
+                             IsHitTestVisible="False"
+                             IsTabStop="False"
                              TextWrapping="Wrap"
                              Background="Black"
                              Foreground="White"

@@ -30,19 +30,27 @@ namespace View.Personal
             var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
             var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            if (string.IsNullOrEmpty(selectedProvider))
+            var spinner = window.FindControl<ProgressBar>("IngestSpinner");
+            if (spinner != null)
             {
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Error", "Please select a provider", ButtonEnum.Ok, Icon.Error)
-                    .ShowAsync();
-                return;
+                spinner.IsVisible = true;
+                spinner.IsIndeterminate = true;
             }
-
-            var app = (App)Application.Current;
-            var providerSettings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
             try
             {
+                if (string.IsNullOrEmpty(selectedProvider))
+                {
+                    await MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Error", "Please select a provider", ButtonEnum.Ok, Icon.Error)
+                        .ShowAsync();
+                    return;
+                }
+
+                var app = (App)Application.Current;
+                var providerSettings =
+                    app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
+
                 // 1. Detect file type
                 string contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
@@ -237,6 +245,8 @@ namespace View.Personal
                 Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
                 Console.WriteLine($"File {filePath} ingested successfully!");
                 FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                window.FindControl<TextBox>("FilePathTextBox").Text = "";
+                if (spinner != null) spinner.IsVisible = false;
 
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard(
@@ -247,9 +257,11 @@ namespace View.Personal
                     )
                     .ShowAsync();
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
+                if (spinner != null) spinner.IsVisible = false;
                 await MsBox.Avalonia.MessageBoxManager
                     .GetMessageBoxStandard(
                         "Ingestion Error",
