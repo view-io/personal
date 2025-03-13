@@ -32,6 +32,7 @@ namespace View.Personal
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
+    using Sdk.Embeddings.Providers.Ollama;
     using SerializationHelper;
     using Services;
     using RestWrapper;
@@ -880,18 +881,32 @@ namespace View.Personal
                     {
                         Console.WriteLine("[INFO] Using Ollama for chat completion.");
                         var ollamaSettings = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+                        var ollamaSdk = new ViewOllamaSdk(
+                            _TenantGuid,
+                            "http://localhost:11434",
+                            ""
+                        );
 
-                        // 1. Generate embeddings for user prompt
-                        Console.WriteLine("[INFO] Generating embeddings for user prompt via Ollama...");
-                        var embeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
-                            new List<string> { userInput },
-                            ollamaSettings.OllamaModel);
+                        var embeddingsRequest = new EmbeddingsRequest
+                        {
+                            Model = ollamaSettings.OllamaModel,
+                            Contents = new List<string> { userInput }
+                        };
 
-                        if (embeddings.Length == 0)
-                            return "Error: Failed to generate embeddings for the prompt.";
+                        var embeddingsResult = await ollamaSdk.GenerateEmbeddings(embeddingsRequest);
+                        if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                            embeddingsResult.ContentEmbeddings.Count == 0)
+                        {
+                            Console.WriteLine(
+                                $"[ERROR] Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                            if (embeddingsResult.Error != null)
+                            {
+                                Console.WriteLine($"[ERROR] {embeddingsResult.Error.Message}");
+                                return "Error: Failed to generate embeddings for the prompt.";
+                            }
+                        }
 
-                        var promptEmbeddings = embeddings[0].ToList();
-                        Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
+                        var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings.ToList();
 
                         // 2. Vector search for context
                         var searchRequest = new VectorSearchRequest

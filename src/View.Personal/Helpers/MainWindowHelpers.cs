@@ -124,54 +124,6 @@ namespace View.Personal.Helpers
             }
         }
 
-        public static async Task<float[][]> GetOllamaEmbeddingsBatchAsync(List<string> texts,
-            string ollamaEmbeddingModel)
-        {
-            try
-            {
-                var requestUri = "http://localhost:11434/api/embed";
-                Console.WriteLine($"[Ollama] requestUri: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
-                {
-                    restRequest.ContentType = "application/json";
-
-                    var payload = new
-                    {
-                        model = ollamaEmbeddingModel,
-                        input = texts
-                    };
-
-                    var jsonPayload = _Serializer.SerializeJson(payload);
-
-                    using (var resp = await restRequest.SendAsync(jsonPayload))
-                    {
-                        var responseJson = resp.DataAsString;
-
-                        if (resp.StatusCode > 299)
-                            throw new Exception(
-                                $"[Ollama] Request failed: {(int)resp.StatusCode}, Response: {responseJson}");
-
-                        // Attempt deserialization
-                        OllamaEmbeddingResponse responseObj;
-
-                        responseObj = _Serializer.DeserializeJson<OllamaEmbeddingResponse>(responseJson);
-
-                        if (responseObj == null || responseObj.Embeddings == null)
-                            throw new Exception(
-                                "[Ollama] Deserialization resulted in null object or missing embeddings");
-
-                        return responseObj.Embeddings;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error generating Ollama embeddings: {ex.Message}");
-                return null;
-            }
-        }
-
         public static Node CreateDocumentNode(Guid tenantGuid, Guid graphGuid, string filePath,
             List<Atom> atoms, TypeResult typeResult)
         {

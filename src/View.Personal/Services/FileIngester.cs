@@ -18,6 +18,7 @@ namespace View.Personal
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
+    using Sdk.Embeddings.Providers.Ollama;
     using Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
@@ -242,6 +243,11 @@ namespace View.Personal
                         break;
 
                     case "Ollama":
+                        if (string.IsNullOrEmpty(providerSettings.OllamaModel))
+                        {
+                            Console.WriteLine("Ollama model not configured.");
+                            break;
+                        }
 
                         var ollamaValidChunkNodes = chunkNodes
                             .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -257,29 +263,58 @@ namespace View.Personal
                             break;
                         }
 
-                        var ollamaEmbeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
-                            ollamaChunkTexts,
-                            providerSettings.OllamaModel);
+                        var ollamaSdk = new ViewOllamaSdk(
+                            tenantGuid,
+                            "http://localhost:11434/",
+                            "");
 
-                        if (ollamaEmbeddings == null || ollamaEmbeddings.Length != ollamaValidChunkNodes.Count)
+                        var embeddingsRequest = new EmbeddingsRequest
                         {
-                            Console.WriteLine($"Error ingesting file {filePath}");
-                            if (spinner != null) spinner.IsVisible = false;
+                            Model = providerSettings.OllamaModel,
+                            Contents = ollamaChunkTexts
+                        };
+
+                        Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOllamaSdk...");
+                        var ollamaEmbeddingsResult = await ollamaSdk.GenerateEmbeddings(embeddingsRequest);
+
+                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
+                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
+                            if (ollamaEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
                             await MsBox.Avalonia.MessageBoxManager
                                 .GetMessageBoxStandard(
                                     "Ingestion Error",
-                                    $"Something went wrong",
+                                    "Failed to generate embeddings for chunks.",
                                     ButtonEnum.Ok,
                                     Icon.Error
                                 )
                                 .ShowAsync();
-                            return;
+                            break;
+                        }
+
+                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
+                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
+                            if (ollamaEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    "Failed to generate embeddings for chunks.",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
+                            break;
                         }
 
                         for (var j = 0; j < ollamaValidChunkNodes.Count; j++)
                         {
                             var chunkNode = ollamaValidChunkNodes[j];
-                            var vectorArray = ollamaEmbeddings[j];
+                            var vectorArray = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings;
 
                             chunkNode.Vectors = new List<VectorMetadata>
                             {
@@ -289,15 +324,16 @@ namespace View.Personal
                                     GraphGUID = graphGuid,
                                     NodeGUID = chunkNode.GUID,
                                     Model = providerSettings.OllamaCompletionModel,
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
+                                    Dimensionality = vectorArray.Count,
+                                    Vectors = vectorArray,
                                     Content = (chunkNode.Data as Atom).Text
                                 }
                             };
                             liteGraph.UpdateNode(chunkNode);
                         }
 
-                        Console.WriteLine($"Updated {ollamaValidChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                        Console.WriteLine(
+                            $"Updated {ollamaValidChunkNodes.Count} chunk nodes with {providerSettings.ProviderType} embeddings.");
                         break;
                 }
 
