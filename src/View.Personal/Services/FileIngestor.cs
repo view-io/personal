@@ -19,6 +19,7 @@ namespace View.Personal
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
+    using Sdk.Embeddings.Providers.OpenAI;
     using Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
@@ -123,21 +124,46 @@ namespace View.Personal
                             break;
                         }
 
-                        var embeddings = await MainWindowHelpers.GetOpenAIEmbeddingsBatchAsync(
-                            chunkTexts,
-                            providerSettings.OpenAICompletionApiKey,
-                            providerSettings.OpenAIEmbeddingModel);
+                        // Instantiate ViewOpenAiSdk
+                        var openAiSdk = new ViewOpenAiSdk(
+                            tenantGuid,
+                            "https://api.openai.com/",
+                            providerSettings.OpenAICompletionApiKey);
 
-                        if (embeddings == null || embeddings.Length != validChunkNodes.Count)
+                        // Prepare embeddings request
+                        var openAIembeddingsRequest = new EmbeddingsRequest
                         {
-                            Console.WriteLine("Failed to generate embeddings or mismatch in count.");
+                            Model = providerSettings.OpenAIEmbeddingModel ??
+                                    "text-embedding-ada-002", // Default model if not specified
+                            Contents = chunkTexts
+                        };
+
+                        // Generate embeddings
+                        Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
+                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
+
+                        if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                            embeddingsResult.ContentEmbeddings.Count != validChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {embeddingsResult.StatusCode}");
+                            if (embeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    "Failed to generate embeddings for chunks.",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
                             break;
                         }
 
+                        // Update chunk nodes with embeddings
                         for (var j = 0; j < validChunkNodes.Count; j++)
                         {
                             var chunkNode = validChunkNodes[j];
-                            var vectorArray = embeddings[j];
+                            var vectorArray = embeddingsResult.ContentEmbeddings[j].Embeddings;
 
                             chunkNode.Vectors = new List<VectorMetadata>
                             {
@@ -147,8 +173,8 @@ namespace View.Personal
                                     GraphGUID = graphGuid,
                                     NodeGUID = chunkNode.GUID,
                                     Model = providerSettings.OpenAIEmbeddingModel,
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
+                                    Dimensionality = vectorArray.Count,
+                                    Vectors = vectorArray,
                                     Content = (chunkNode.Data as Atom).Text
                                 }
                             };
@@ -193,22 +219,23 @@ namespace View.Personal
                             Contents = chunkContents
                         };
 
-                        var embeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!embeddingsResult.Success)
+                        var openAIEmbeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
+                        if (!openAIEmbeddingsResult.Success)
                         {
-                            Console.WriteLine($"Embeddings generation failed: {embeddingsResult.StatusCode}");
-                            if (embeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                            Console.WriteLine($"Embeddings generation failed: {openAIEmbeddingsResult.StatusCode}");
+                            if (openAIEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {openAIEmbeddingsResult.Error.Message}");
                             break;
                         }
 
-                        if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
+                        if (openAIEmbeddingsResult.ContentEmbeddings != null &&
+                            openAIEmbeddingsResult.ContentEmbeddings.Any())
                         {
                             var validChunkNodesView = chunkNodes
                                 .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                                 .ToList();
 
-                            var updateTasks = embeddingsResult.ContentEmbeddings
+                            var updateTasks = openAIEmbeddingsResult.ContentEmbeddings
                                 .Zip(validChunkNodesView,
                                     (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
                                 .Select(item =>
@@ -233,7 +260,7 @@ namespace View.Personal
 
                             await Task.WhenAll(updateTasks);
                             Console.WriteLine(
-                                $"Updated {embeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
+                                $"Updated {openAIEmbeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
                         }
                         else
                         {

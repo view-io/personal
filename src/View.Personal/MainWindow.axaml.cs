@@ -33,6 +33,7 @@ namespace View.Personal
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
+    using Sdk.Embeddings.Providers.OpenAI;
     using SerializationHelper;
     using Services;
     using RestWrapper;
@@ -732,20 +733,35 @@ namespace View.Personal
                     if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
                         return "Error: OpenAI API key not configured in settings.";
 
-                    // 1. Generate embeddings for user prompt
-                    Console.WriteLine("[INFO] Generating embeddings for user prompt via OpenAI...");
-                    var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                        new List<string> { userInput },
-                        openAISettings.OpenAICompletionApiKey,
-                        openAISettings.OpenAIEmbeddingModel);
+                    Console.WriteLine("[INFO] Generating embeddings for user prompt via ViewOpenAiSdk...");
+                    var openAiSdk = new ViewOpenAiSdk(
+                        _TenantGuid,
+                        "https://api.openai.com/",
+                        openAISettings.OpenAICompletionApiKey);
 
-                    if (embeddings.Length == 0)
-                        return "Error: Failed to generate embeddings for the prompt.";
+                    var embeddingsRequest = new EmbeddingsRequest
+                    {
+                        Model = openAISettings.OpenAIEmbeddingModel ??
+                                "text-embedding-ada-002",
+                        Contents = new List<string> { userInput }
+                    };
 
-                    var promptEmbeddings = embeddings[0].ToList();
+                    var embeddingsResult = await openAiSdk.GenerateEmbeddings(embeddingsRequest);
+                    if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                        embeddingsResult.ContentEmbeddings.Count == 0)
+                    {
+                        Console.WriteLine(
+                            $"[ERROR] Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                        if (embeddingsResult.Error != null)
+                        {
+                            Console.WriteLine($"[ERROR] {embeddingsResult.Error.Message}");
+                            return "Error: Failed to generate embeddings for the prompt.";
+                        }
+                    }
+
+                    var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings.ToList();
                     Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
 
-                    // 2. Vector search for context
                     var searchRequest = new VectorSearchRequest
                     {
                         TenantGUID = _TenantGuid,
@@ -761,7 +777,6 @@ namespace View.Personal
                     if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
 
-                    // 3. Build the context
                     var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
                     var nodeContents = sortedResults
                         .Select(r =>
@@ -780,8 +795,7 @@ namespace View.Personal
                     if (context.Length > 4000)
                         context = context.Substring(0, 4000) + "... [truncated]";
 
-                    // 4. Build the conversation messages
-                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                    var conversationSoFar = BuildPromptMessages();
 
                     var contextMessage = new ChatMessage
                     {
@@ -833,29 +847,24 @@ namespace View.Personal
                             if (resp.StatusCode > 299)
                                 throw new Exception("OpenAI call failed.");
 
-                            // The library says it's SSE if Content-Type is text/event-stream
                             if (!resp.ServerSentEvents)
                                 throw new Exception("Expected SSE but didn't get it.");
 
                             var sb = new StringBuilder();
 
-                            // Repeatedly call ReadEventAsync()
                             while (true)
                             {
                                 var sseEvent = await resp.ReadEventAsync();
-                                // Null means the server closed the connection or we’re done
                                 if (sseEvent == null)
                                     break;
 
                                 var chunkJson = sseEvent.Data;
 
-                                // Check for the end token 
                                 if (chunkJson == "[DONE]")
                                     break;
 
                                 if (!string.IsNullOrEmpty(chunkJson))
                                 {
-                                    // Parse the JSON partial chunk 
                                     using var doc = JsonDocument.Parse(chunkJson);
                                     if (doc.RootElement.TryGetProperty("choices", out var choicesProp))
                                     {

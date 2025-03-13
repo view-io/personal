@@ -81,49 +81,6 @@ namespace View.Personal.Helpers
             return uniqueFiles;
         }
 
-        public static async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts,
-            string openAIKey, string openAIEmbeddingModel)
-        {
-            try
-            {
-                var requestUri = "https://api.openai.com/v1/embeddings";
-                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", openAIKey);
-
-                var requestBody = new
-                {
-                    model = openAIEmbeddingModel,
-                    input = texts
-                };
-
-                request.Content = new StringContent(
-                    JsonSerializer.Serialize(requestBody),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                using var response = await _HttpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseJson = await response.Content.ReadAsStringAsync();
-
-                using var doc = JsonDocument.Parse(responseJson);
-                var root = doc.RootElement;
-                var dataArray = root.GetProperty("data").EnumerateArray();
-
-                return dataArray
-                    .Select(item => item.GetProperty("embedding")
-                        .EnumerateArray()
-                        .Select(x => x.GetSingle())
-                        .ToArray())
-                    .ToArray();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error generating OpenAI embeddings: {ex.Message}");
-                return null;
-            }
-        }
-
         public static Node CreateDocumentNode(Guid tenantGuid, Guid graphGuid, string filePath,
             List<Atom> atoms, TypeResult typeResult)
         {
