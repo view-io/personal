@@ -99,7 +99,7 @@ namespace View.Personal
         private void MainWindow_Opened(object sender, EventArgs e)
         {
             Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
-            LoadSavedSettings();
+            SettingsHelper.LoadSavedSettings(this);
             UpdateSettingsVisibility("View");
             Console.WriteLine("[INFO] Finished MainWindow_Opened.");
             var consoleBox = this.FindControl<TextBox>("ConsoleOutputTextBox");
@@ -115,6 +115,14 @@ namespace View.Personal
         /// Returns:
         /// None; configures and saves settings to the application instance asynchronously
         /// </summary>
+        /// <summary>
+        /// Handles the saving of provider-specific settings when the Save button is clicked, based on the selected provider
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; configures and saves settings to the application instance asynchronously
+        /// </summary>
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] SaveSettings_Click triggered.");
@@ -122,81 +130,7 @@ namespace View.Personal
             var selectedProvider = (this.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
                 ?.Content.ToString();
 
-            CompletionProviderSettings settings = null;
-
-            switch (selectedProvider)
-            {
-                case "OpenAI":
-                    Console.WriteLine("[INFO] Creating settings for OpenAI provider...");
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI)
-                    {
-                        OpenAICompletionApiKey = this.FindControl<TextBox>("OpenAIKey").Text ?? string.Empty,
-                        OpenAIEmbeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text ?? string.Empty,
-                        OpenAICompletionModel = this.FindControl<TextBox>("OpenAICompletionModel").Text ?? string.Empty
-                    };
-                    break;
-
-                case "Anthropic":
-                    Console.WriteLine("[INFO] Creating settings for Anthropic provider...");
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
-                    {
-                        AnthropicCompletionModel =
-                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty,
-                        AnthropicApiKey = this.FindControl<TextBox>("AnthropicApiKey").Text ?? string.Empty,
-                        VoyageApiKey = this.FindControl<TextBox>("VoyageApiKey").Text ?? string.Empty,
-                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageEmbeddingModel").Text ?? string.Empty
-                    };
-                    break;
-
-                case "View":
-                    Console.WriteLine("[INFO] Creating settings for View provider...");
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
-                    {
-                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
-                        ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
-                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
-                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
-                        EmbeddingsGeneratorUrl =
-                            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
-                        Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
-                        ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewCompletionProvider =
-                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
-                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
-                        ViewCompletionPort =
-                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
-                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
-                            ? temp
-                            : 0.7,
-                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
-                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
-                            ? tokens
-                            : 150
-                    };
-                    break;
-
-                case "Ollama":
-                    Console.WriteLine("[INFO] Creating settings for Ollama provider...");
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
-                    {
-                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
-                        OllamaCompletionModel =
-                            this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
-                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
-                            out var ollamaTemp)
-                            ? ollamaTemp
-                            : 0.7,
-                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
-                            ? ollamaTopp
-                            : 1.0,
-                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
-                            out var OllamaTokens)
-                            ? OllamaTokens
-                            : 150
-                    };
-                    break;
-            }
-
+            var settings = SettingsHelper.ExtractSettingsFromUI(this, selectedProvider);
             if (settings != null)
             {
                 app.UpdateProviderSettings(settings);
@@ -207,7 +141,7 @@ namespace View.Personal
                     .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
                         ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success)
                     .ShowAsync();
-                LoadSavedSettings();
+                SettingsHelper.LoadSavedSettings(this);
             }
             else
             {
@@ -215,69 +149,6 @@ namespace View.Personal
             }
         }
 
-        /// <summary>
-        /// Loads saved provider settings from the application and populates the corresponding UI controls
-        /// Params:
-        /// None
-        /// Returns:
-        /// None; updates UI controls with loaded settings directly
-        /// </summary>
-        private void LoadSavedSettings()
-        {
-            Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
-            var app = (App)Application.Current;
-
-            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            this.FindControl<TextBox>("EmbeddingsGenerator").Text = view.EmbeddingsGenerator ?? string.Empty;
-            this.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
-            this.FindControl<TextBox>("AccessKey").Text = view.AccessKey ?? string.Empty;
-            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
-            this.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
-            this.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-            this.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString(CultureInfo.InvariantCulture);
-            this.FindControl<TextBox>("TopP").Text = view.TopP.ToString(CultureInfo.InvariantCulture);
-            this.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
-
-            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-            this.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
-            this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
-            this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
-
-            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
-            this.FindControl<TextBox>("AnthropicCompletionModel").Text =
-                anthropic.AnthropicCompletionModel ?? string.Empty;
-            this.FindControl<TextBox>("AnthropicApiKey").Text = anthropic.AnthropicApiKey ?? string.Empty;
-            this.FindControl<TextBox>("VoyageApiKey").Text = anthropic.VoyageApiKey ?? string.Empty;
-            this.FindControl<TextBox>("VoyageEmbeddingModel").Text = anthropic.VoyageEmbeddingModel ?? string.Empty;
-
-            var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
-            this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
-            this.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
-            this.FindControl<TextBox>("OllamaTemperature").Text =
-                ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
-            this.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
-            this.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
-
-            var comboBox = this.FindControl<ComboBox>("NavModelProviderComboBox");
-            if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
-            {
-                var selectedItem = comboBox.Items
-                    .OfType<ComboBoxItem>()
-                    .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
-                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
-            }
-            else
-            {
-                comboBox.SelectedIndex = 0;
-            }
-
-            Console.WriteLine("[INFO] Finished loading settings.");
-            UpdateSettingsVisibility(app.AppSettings.SelectedProvider ?? "View");
-        }
 
         /// <summary>
         /// Handles navigation panel selection changes by toggling visibility of corresponding UI panels
@@ -398,80 +269,17 @@ namespace View.Personal
         /// Returns:
         /// None; updates the application's provider settings directly
         /// </summary>
+        /// <summary>
+        /// Updates the provider settings in the application based on the selected provider and UI control values
+        /// Params:
+        /// selectedProvider — The string indicating the currently selected provider
+        /// Returns:
+        /// None; updates the application's provider settings directly
+        /// </summary>
         private void UpdateProviderSettings(string selectedProvider)
         {
             var app = (App)Application.Current;
-            CompletionProviderSettings settings = null;
-
-            switch (selectedProvider)
-            {
-                case "OpenAI":
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI)
-                    {
-                        OpenAICompletionApiKey = this.FindControl<TextBox>("OpenAIKey").Text ?? string.Empty,
-                        OpenAIEmbeddingModel = this.FindControl<TextBox>("OpenAIEmbeddingModel").Text ?? string.Empty,
-                        OpenAICompletionModel = this.FindControl<TextBox>("OpenAICompletionModel").Text ?? string.Empty
-                    };
-                    break;
-
-                case "Anthropic":
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
-                    {
-                        AnthropicCompletionModel =
-                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty,
-                        AnthropicApiKey =
-                            this.FindControl<TextBox>("AnthropicApiKey").Text ?? string.Empty,
-                        VoyageApiKey = this.FindControl<TextBox>("VoyageApiKey").Text ?? string.Empty,
-                        VoyageEmbeddingModel =
-                            this.FindControl<TextBox>("VoyageEmbeddingModel").Text ?? string.Empty
-                    };
-                    break;
-
-                case "View":
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.View)
-                    {
-                        EmbeddingsGenerator = this.FindControl<TextBox>("EmbeddingsGenerator").Text ?? string.Empty,
-                        ApiKey = this.FindControl<TextBox>("ApiKey").Text ?? string.Empty,
-                        ViewEndpoint = this.FindControl<TextBox>("ViewEndpoint").Text ?? string.Empty,
-                        AccessKey = this.FindControl<TextBox>("AccessKey").Text ?? string.Empty,
-                        EmbeddingsGeneratorUrl =
-                            this.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text ?? string.Empty,
-                        Model = this.FindControl<TextBox>("Model").Text ?? string.Empty,
-                        ViewCompletionApiKey = this.FindControl<TextBox>("ViewCompletionApiKey").Text ?? string.Empty,
-                        ViewCompletionProvider =
-                            this.FindControl<TextBox>("ViewCompletionProvider").Text ?? string.Empty,
-                        ViewCompletionModel = this.FindControl<TextBox>("ViewCompletionModel").Text ?? string.Empty,
-                        ViewCompletionPort =
-                            int.TryParse(this.FindControl<TextBox>("ViewCompletionPort").Text, out var port) ? port : 0,
-                        Temperature = double.TryParse(this.FindControl<TextBox>("Temperature").Text, out var temp)
-                            ? temp
-                            : 0.7,
-                        TopP = double.TryParse(this.FindControl<TextBox>("TopP").Text, out var topp) ? topp : 1.0,
-                        MaxTokens = int.TryParse(this.FindControl<TextBox>("MaxTokens").Text, out var tokens)
-                            ? tokens
-                            : 150
-                    };
-                    break;
-
-                case "Ollama":
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
-                    {
-                        OllamaModel = this.FindControl<TextBox>("OllamaModel").Text ?? string.Empty,
-                        OllamaCompletionModel = this.FindControl<TextBox>("OllamaCompletionModel").Text ?? string.Empty,
-                        OllamaTemperature = double.TryParse(this.FindControl<TextBox>("OllamaTemperature").Text,
-                            out var ollamaTemp)
-                            ? ollamaTemp
-                            : 0.7,
-                        OllamaTopP = double.TryParse(this.FindControl<TextBox>("OllamaTopP").Text, out var ollamaTopp)
-                            ? ollamaTopp
-                            : 1.0,
-                        OllamaMaxTokens = int.TryParse(this.FindControl<TextBox>("OllamaMaxTokens").Text,
-                            out var ollamaTokens)
-                            ? ollamaTokens
-                            : 150
-                    };
-                    break;
-            }
+            var settings = SettingsHelper.ExtractSettingsFromUI(this, selectedProvider);
 
             if (settings != null)
             {
