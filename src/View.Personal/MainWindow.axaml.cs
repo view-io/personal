@@ -3,6 +3,8 @@
 
 // ReSharper disable PossibleMultipleEnumeration
 
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -37,7 +39,6 @@ namespace View.Personal
     using Services;
     using RestWrapper;
     using SyslogLogging;
-    using System.Globalization;
     using SyslogServer = SyslogLogging.SyslogServer;
 
     public partial class MainWindow : Window
@@ -288,46 +289,25 @@ namespace View.Personal
             }
         }
 
-        /// <summary>
-        /// Navigates to the Settings panel by selecting the corresponding item in the navigation list
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// Returns:
-        /// None; updates the selected item in the NavList to display the Settings panel
-        /// </summary>
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
-                { } settingsItem) NavList.SelectedItem = settingsItem;
+            NavigateToPanel("Settings");
         }
 
-        /// <summary>
-        /// Navigates to the My Files panel by selecting the corresponding item in the navigation list
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// Returns:
-        /// None; updates the selected item in the NavList to display the My Files panel
-        /// </summary>
         private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
         {
-            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "My Files") is
-                { } myFilesItem) NavList.SelectedItem = myFilesItem;
+            NavigateToPanel("My Files");
         }
 
-        /// <summary>
-        /// Navigates to the Chat panel by selecting the corresponding item in the navigation list
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// Returns:
-        /// None; updates the selected item in the NavList to display the Chat panel
-        /// </summary>
         private void NavigateToChat_Click(object sender, RoutedEventArgs e)
         {
-            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is
-                { } chatItem) NavList.SelectedItem = chatItem;
+            NavigateToPanel("Chat");
+        }
+
+        private void NavigateToPanel(string panelName)
+        {
+            if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == panelName) is { } item)
+                NavList.SelectedItem = item;
         }
 
         /// <summary>
@@ -359,42 +339,29 @@ namespace View.Personal
             GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
-        /// <summary>
-        /// Opens a file browser dialog to select an export location and updates the export file path textbox
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// Returns:
-        /// None; updates the ExportFilePathTextBox with the selected file path asynchronously
-        /// </summary>
-        private async void BrowseButton_Click(object sender, RoutedEventArgs e)
+        private async Task BrowseAndUpdateTextBoxAsync(string textBoxName, Func<Window, Task<string>> browseFunc)
         {
-            Console.WriteLine("[INFO] BrowseButton_Click triggered for export file path.");
-            var textBox = this.FindControl<TextBox>("ExportFilePathTextBox");
+            Console.WriteLine($"[INFO] Browse triggered for {textBoxName}.");
+            var textBox = this.FindControl<TextBox>(textBoxName);
             if (textBox == null) return;
 
-            var filePath = await _FileBrowserService.BrowseForExportLocation(this);
-            if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
-            Console.WriteLine($"[INFO] User selected export path: {filePath}");
+            var filePath = await browseFunc(this);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                textBox.Text = filePath;
+                Console.WriteLine($"[INFO] User selected path: {filePath}");
+            }
         }
 
-        /// <summary>
-        /// Opens a file browser dialog to select a file for ingestion and updates the file path textbox
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// Returns:
-        /// None; updates the FilePathTextBox with the selected file path asynchronously
-        /// </summary>
+        private async void BrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            await BrowseAndUpdateTextBoxAsync("ExportFilePathTextBox",
+                w => _FileBrowserService.BrowseForExportLocation(w));
+        }
+
         private async void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[INFO] IngestBrowseButton_Click triggered for ingest file path.");
-            var textBox = this.FindControl<TextBox>("FilePathTextBox");
-            if (textBox == null) return;
-
-            var filePath = await _FileBrowserService.BrowseForFileToIngest(this);
-            if (!string.IsNullOrEmpty(filePath)) textBox.Text = filePath;
-            Console.WriteLine($"[INFO] User selected ingest path: {filePath}");
+            await BrowseAndUpdateTextBoxAsync("FilePathTextBox", w => _FileBrowserService.BrowseForFileToIngest(w));
         }
 
         /// <summary>
