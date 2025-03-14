@@ -1,6 +1,7 @@
-// FileIngester.cs
-
-namespace View.Personal
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+namespace View.Personal.Services
 {
     using Avalonia;
     using System;
@@ -25,6 +26,19 @@ namespace View.Personal
 
     public static class FileIngester
     {
+        /// <summary>
+        /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// typeDetector — The TypeDetector instance for identifying file types
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// window — The parent window for UI interactions and dialogs
+        /// Returns:
+        /// Task representing the asynchronous operation; no direct return value
+        /// </summary>
         public static async Task IngestFile_ClickAsync(object sender, RoutedEventArgs e, TypeDetector typeDetector,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -53,7 +67,6 @@ namespace View.Personal
                 var providerSettings =
                     app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                // 1. Detect file type
                 string contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
@@ -64,7 +77,6 @@ namespace View.Personal
                     return;
                 }
 
-                // 2. Process PDF into atoms
                 var processorSettings = new PdfProcessorSettings
                 {
                     Chunking = new ChunkingSettings
@@ -83,23 +95,19 @@ namespace View.Personal
                 var atoms = pdfProcessor.Extract(filePath).ToList();
                 Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
 
-                // 3. Create and store document node
                 var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
                 liteGraph.CreateNode(fileNode);
                 Console.WriteLine($"Created file document node {fileNode.GUID}");
 
-                // 4. Create and store chunk nodes
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, atoms);
                 liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
                 Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
 
-                // 5. Create and store edges
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.CreateEdges(tenantGuid, graphGuid, edges);
                 Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
 
-                // 6. Generate embeddings
                 switch (selectedProvider)
                 {
                     case "OpenAI":
@@ -124,21 +132,17 @@ namespace View.Personal
                             break;
                         }
 
-                        // Instantiate ViewOpenAiSdk
                         var openAiSdk = new ViewOpenAiSdk(
                             tenantGuid,
                             "https://api.openai.com/",
                             providerSettings.OpenAICompletionApiKey);
 
-                        // Prepare embeddings request
                         var openAIembeddingsRequest = new EmbeddingsRequest
                         {
-                            Model = providerSettings.OpenAIEmbeddingModel ??
-                                    "text-embedding-ada-002", // Default model if not specified
+                            Model = providerSettings.OpenAIEmbeddingModel,
                             Contents = chunkTexts
                         };
 
-                        // Generate embeddings
                         Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
                         var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
 
@@ -159,7 +163,6 @@ namespace View.Personal
                             break;
                         }
 
-                        // Update chunk nodes with embeddings
                         for (var j = 0; j < validChunkNodes.Count; j++)
                         {
                             var chunkNode = validChunkNodes[j];
@@ -208,7 +211,6 @@ namespace View.Personal
                                 EmbeddingsGenerator =
                                     Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.EmbeddingsGenerator),
                                 EmbeddingsGeneratorUrl = providerSettings.EmbeddingsGeneratorUrl,
-                                // EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                 EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
                                 BatchSize = 2,
                                 MaxGeneratorTasks = 4,
