@@ -1,4 +1,5 @@
-namespace View.Personal
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+namespace View.Personal.Services
 {
     using System;
     using Avalonia.Controls;
@@ -9,6 +10,18 @@ namespace View.Personal
 
     public static class GraphExporter
     {
+        /// <summary>
+        /// Exports a graph from LiteGraph to a GEXF file based on the provided file path
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// window — The parent window for UI interactions and dialogs
+        /// Returns:
+        /// Task representing the asynchronous operation; no direct return value
+        /// </summary>
         public static async Task ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {

@@ -75,7 +75,6 @@
             DatabaseFilename = Constants.LiteGraphDatabaseFilename;
             Logging = new LoggingSettings();
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.OpenAI));
-            ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.View));
             ProviderSettings.Add(new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama));

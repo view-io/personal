@@ -1,23 +1,18 @@
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace View.Personal.Helpers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
     using Avalonia.Controls;
     using LiteGraph;
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
-    using RestWrapper;
     using System.Collections.Specialized;
     using System.IO;
-    using System.Net.Http.Headers;
-    using RestWrapper;
-    using SerializationHelper;
 
     public static class MainWindowHelpers
     {
@@ -27,9 +22,6 @@ namespace View.Personal.Helpers
 
         #region Private-Members
 
-        private static readonly HttpClient _HttpClient = new();
-        private static Serializer _Serializer = new();
-
         #endregion
 
         #region Constructors-and-Factories
@@ -38,13 +30,22 @@ namespace View.Personal.Helpers
 
         #region Public-Methods
 
-        public static void UpdateSettingsVisibility(Control openAISettings, Control voyageSettings,
+        /// <summary>
+        /// Updates the visibility of provider-specific settings controls based on the selected provider
+        /// Params:
+        /// openAISettings — The control containing OpenAI-specific settings
+        /// anthropicSettings — The control containing Anthropic-specific settings
+        /// viewSettings — The control containing View-specific settings
+        /// ollamaSettings — The control containing Ollama-specific settings
+        /// selectedProvider — The string indicating the currently selected provider
+        /// Returns:
+        /// None; modifies the visibility of the provided controls directly
+        /// </summary>
+        public static void UpdateSettingsVisibility(Control openAISettings,
             Control anthropicSettings, Control viewSettings, Control ollamaSettings, string selectedProvider)
         {
             if (openAISettings != null)
                 openAISettings.IsVisible = selectedProvider == "OpenAI";
-            if (voyageSettings != null)
-                voyageSettings.IsVisible = selectedProvider == "Voyage";
             if (anthropicSettings != null)
                 anthropicSettings.IsVisible = selectedProvider == "Anthropic";
             if (viewSettings != null)
@@ -53,6 +54,15 @@ namespace View.Personal.Helpers
                 ollamaSettings.IsVisible = selectedProvider == "Ollama";
         }
 
+        /// <summary>
+        /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+        /// Params:
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// Returns:
+        /// A List of FileViewModel objects representing the document nodes; empty if no nodes are found
+        /// </summary>
         public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" });
@@ -81,97 +91,17 @@ namespace View.Personal.Helpers
             return uniqueFiles;
         }
 
-        public static async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts,
-            string openAIKey, string openAIEmbeddingModel)
-        {
-            try
-            {
-                var requestUri = "https://api.openai.com/v1/embeddings";
-                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", openAIKey);
-
-                var requestBody = new
-                {
-                    model = openAIEmbeddingModel,
-                    input = texts
-                };
-
-                request.Content = new StringContent(
-                    JsonSerializer.Serialize(requestBody),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                using var response = await _HttpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseJson = await response.Content.ReadAsStringAsync();
-
-                using var doc = JsonDocument.Parse(responseJson);
-                var root = doc.RootElement;
-                var dataArray = root.GetProperty("data").EnumerateArray();
-
-                return dataArray
-                    .Select(item => item.GetProperty("embedding")
-                        .EnumerateArray()
-                        .Select(x => x.GetSingle())
-                        .ToArray())
-                    .ToArray();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error generating OpenAI embeddings: {ex.Message}");
-                return null;
-            }
-        }
-
-        public static async Task<float[][]> GetOllamaEmbeddingsBatchAsync(List<string> texts,
-            string ollamaEmbeddingModel)
-        {
-            try
-            {
-                var requestUri = "http://localhost:11434/api/embed";
-                Console.WriteLine($"[Ollama] requestUri: {requestUri}");
-
-                using (var restRequest = new RestRequest(requestUri, HttpMethod.Post))
-                {
-                    restRequest.ContentType = "application/json";
-
-                    var payload = new
-                    {
-                        model = ollamaEmbeddingModel,
-                        input = texts
-                    };
-
-                    var jsonPayload = _Serializer.SerializeJson(payload);
-
-                    using (var resp = await restRequest.SendAsync(jsonPayload))
-                    {
-                        var responseJson = resp.DataAsString;
-
-                        if (resp.StatusCode > 299)
-                            throw new Exception(
-                                $"[Ollama] Request failed: {(int)resp.StatusCode}, Response: {responseJson}");
-
-                        // Attempt deserialization
-                        OllamaEmbeddingResponse responseObj;
-
-                        responseObj = _Serializer.DeserializeJson<OllamaEmbeddingResponse>(responseJson);
-
-                        if (responseObj == null || responseObj.Embeddings == null)
-                            throw new Exception(
-                                "[Ollama] Deserialization resulted in null object or missing embeddings");
-
-                        return responseObj.Embeddings;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error generating Ollama embeddings: {ex.Message}");
-                return null;
-            }
-        }
-
+        /// <summary>
+        /// Creates a document node for LiteGraph with metadata and content from a file and its extracted atoms
+        /// Params:
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// filePath — The path to the file being represented
+        /// atoms — The list of Atom objects extracted from the file
+        /// typeResult — The TypeResult object containing file type information
+        /// Returns:
+        /// A Node object configured as a document node with the specified properties
+        /// </summary>
         public static Node CreateDocumentNode(Guid tenantGuid, Guid graphGuid, string filePath,
             List<Atom> atoms, TypeResult typeResult)
         {
@@ -198,6 +128,15 @@ namespace View.Personal.Helpers
             return fileNode;
         }
 
+        /// <summary>
+        /// Creates a list of chunk nodes for LiteGraph from a list of Atom objects, each representing a content segment
+        /// Params:
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// atoms — The list of Atom objects to convert into chunk nodes
+        /// Returns:
+        /// A List of Node objects configured as chunk nodes; empty if no valid atoms are provided
+        /// </summary>
         public static List<Node> CreateChunkNodes(Guid tenantGuid, Guid graphGuid, List<Atom> atoms)
         {
             var chunkNodes = new List<Node>();
@@ -235,6 +174,16 @@ namespace View.Personal.Helpers
             return chunkNodes;
         }
 
+        /// <summary>
+        /// Creates a list of edges connecting a document node to its chunk nodes in LiteGraph
+        /// Params:
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// fileNodeGuid — The GUID of the document node
+        /// chunkNodes — The list of chunk nodes to connect to the document node
+        /// Returns:
+        /// A List of Edge objects representing the relationships between the document node and its chunks
+        /// </summary>
         public static List<Edge> CreateDocumentChunkEdges(Guid tenantGuid, Guid graphGuid,
             Guid fileNodeGuid, List<Node> chunkNodes)
         {

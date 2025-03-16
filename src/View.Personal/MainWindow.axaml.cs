@@ -14,7 +14,6 @@ namespace View.Personal
     using System.IO;
     using System.Linq;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -32,6 +31,8 @@ namespace View.Personal
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
+    using Sdk.Embeddings.Providers.Ollama;
+    using Sdk.Embeddings.Providers.OpenAI;
     using SerializationHelper;
     using Services;
     using RestWrapper;
@@ -52,20 +53,17 @@ namespace View.Personal
 
         #region Private-Members
 
-        private static readonly HttpClient _HttpClient = new();
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
-
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
 
-        // private static ViewEmbeddingsServerSdk _ViewEmbeddingsSdk = null;
         private static Serializer _Serializer = new();
+
         private List<ChatMessage> _ConversationHistory = new();
 
         private readonly FileBrowserService _FileBrowserService = new();
 
-        // private LoggingModule _Logging = null;
         private bool _WindowInitialized;
 
         #endregion
@@ -106,10 +104,17 @@ namespace View.Personal
             Console.WriteLine("[INFO] Finished MainWindow_Opened.");
             var consoleBox = this.FindControl<TextBox>("ConsoleOutputTextBox");
             if (consoleBox != null)
-                // Redirect all Console.WriteLine calls
                 Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
         }
 
+        /// <summary>
+        /// Handles the saving of provider-specific settings when the Save button is clicked, based on the selected provider
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; configures and saves settings to the application instance asynchronously
+        /// </summary>
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] SaveSettings_Click triggered.");
@@ -131,20 +136,15 @@ namespace View.Personal
                     };
                     break;
 
-                case "Voyage":
-                    Console.WriteLine("[INFO] Creating settings for Voyage provider...");
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage)
-                    {
-                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text ?? string.Empty
-                    };
-                    break;
-
                 case "Anthropic":
                     Console.WriteLine("[INFO] Creating settings for Anthropic provider...");
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
                     {
                         AnthropicCompletionModel =
-                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty
+                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty,
+                        AnthropicApiKey = this.FindControl<TextBox>("AnthropicApiKey").Text ?? string.Empty,
+                        VoyageApiKey = this.FindControl<TextBox>("VoyageApiKey").Text ?? string.Empty,
+                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageEmbeddingModel").Text ?? string.Empty
                     };
                     break;
 
@@ -215,6 +215,13 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Loads saved provider settings from the application and populates the corresponding UI controls
+        /// Params:
+        /// None
+        /// Returns:
+        /// None; updates UI controls with loaded settings directly
+        /// </summary>
         private void LoadSavedSettings()
         {
             Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
@@ -240,12 +247,12 @@ namespace View.Personal
             this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
             this.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
 
-            var voyage = app.GetProviderSettings(CompletionProviderTypeEnum.Voyage);
-            this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text = voyage.VoyageEmbeddingModel ?? string.Empty;
-
             var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
             this.FindControl<TextBox>("AnthropicCompletionModel").Text =
                 anthropic.AnthropicCompletionModel ?? string.Empty;
+            this.FindControl<TextBox>("AnthropicApiKey").Text = anthropic.AnthropicApiKey ?? string.Empty;
+            this.FindControl<TextBox>("VoyageApiKey").Text = anthropic.VoyageApiKey ?? string.Empty;
+            this.FindControl<TextBox>("VoyageEmbeddingModel").Text = anthropic.VoyageEmbeddingModel ?? string.Empty;
 
             var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
             this.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
@@ -261,23 +268,30 @@ namespace View.Personal
                 var selectedItem = comboBox.Items
                     .OfType<ComboBoxItem>()
                     .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
-                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0]; // Fallback to first item
+                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
             }
             else
             {
-                comboBox.SelectedIndex = 0; // Default to first provider
+                comboBox.SelectedIndex = 0;
             }
 
             Console.WriteLine("[INFO] Finished loading settings.");
             UpdateSettingsVisibility(app.AppSettings.SelectedProvider ?? "View");
         }
 
+        /// <summary>
+        /// Handles navigation panel selection changes by toggling visibility of corresponding UI panels
+        /// Params:
+        /// sender — The object triggering the event (expected to be a ListBox)
+        /// e — Selection changed event arguments
+        /// Returns:
+        /// None; updates panel visibility based on selection
+        /// </summary>
         private void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
             {
                 var selectedContent = selectedItem.Content?.ToString();
-
 
                 DashboardPanel.IsVisible = false;
                 SettingsPanel.IsVisible = false;
@@ -322,12 +336,28 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Triggers the asynchronous deletion of a file when the delete button is clicked
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; delegates to FileDeleter.DeleteFile_ClickAsync for processing
+        /// </summary>
         public async void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] DeleteFile_Click triggered.");
             await FileDeleter.DeleteFile_ClickAsync(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
+        /// <summary>
+        /// Handles changes in the model provider selection by updating settings visibility and saving the selection
+        /// Params:
+        /// sender — The object triggering the event (expected to be a ComboBox)
+        /// e — Selection changed event arguments
+        /// Returns:
+        /// None; updates settings and visibility based on the selected provider
+        /// </summary>
         private void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (!_WindowInitialized) return;
@@ -343,19 +373,31 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Updates the visibility of provider-specific settings controls based on the selected provider
+        /// Params:
+        /// selectedProvider — The string indicating the currently selected provider
+        /// Returns:
+        /// None; delegates to MainWindowHelpers.UpdateSettingsVisibility to modify control visibility
+        /// </summary>
         private void UpdateSettingsVisibility(string selectedProvider)
         {
             Console.WriteLine($"[INFO] Updating settings visibility for provider: {selectedProvider}");
             MainWindowHelpers.UpdateSettingsVisibility(
                 OpenAISettings,
-                VoyageSettings,
                 AnthropicSettings,
                 ViewSettings,
                 OllamaSettings,
                 selectedProvider);
         }
 
-
+        /// <summary>
+        /// Updates the provider settings in the application based on the selected provider and UI control values
+        /// Params:
+        /// selectedProvider — The string indicating the currently selected provider
+        /// Returns:
+        /// None; updates the application's provider settings directly
+        /// </summary>
         private void UpdateProviderSettings(string selectedProvider)
         {
             var app = (App)Application.Current;
@@ -372,18 +414,16 @@ namespace View.Personal
                     };
                     break;
 
-                case "Voyage":
-                    settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Voyage)
-                    {
-                        VoyageEmbeddingModel = this.FindControl<TextBox>("VoyageAIEmbeddingModel").Text ?? string.Empty
-                    };
-                    break;
-
                 case "Anthropic":
                     settings = new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
                     {
                         AnthropicCompletionModel =
-                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty
+                            this.FindControl<TextBox>("AnthropicCompletionModel").Text ?? string.Empty,
+                        AnthropicApiKey =
+                            this.FindControl<TextBox>("AnthropicApiKey").Text ?? string.Empty,
+                        VoyageApiKey = this.FindControl<TextBox>("VoyageApiKey").Text ?? string.Empty,
+                        VoyageEmbeddingModel =
+                            this.FindControl<TextBox>("VoyageEmbeddingModel").Text ?? string.Empty
                     };
                     break;
 
@@ -440,24 +480,56 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Navigates to the Settings panel by selecting the corresponding item in the navigation list
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the selected item in the NavList to display the Settings panel
+        /// </summary>
         private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Settings") is
                 { } settingsItem) NavList.SelectedItem = settingsItem;
         }
 
+        /// <summary>
+        /// Navigates to the My Files panel by selecting the corresponding item in the navigation list
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the selected item in the NavList to display the My Files panel
+        /// </summary>
         private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "My Files") is
                 { } myFilesItem) NavList.SelectedItem = myFilesItem;
         }
 
+        /// <summary>
+        /// Navigates to the Chat panel by selecting the corresponding item in the navigation list
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the selected item in the NavList to display the Chat panel
+        /// </summary>
         private void NavigateToChat_Click(object sender, RoutedEventArgs e)
         {
             if (NavList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == "Chat") is
                 { } chatItem) NavList.SelectedItem = chatItem;
         }
 
+        /// <summary>
+        /// Triggers the asynchronous ingestion of a file when the ingest button is clicked
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; delegates to FileIngester.IngestFile_ClickAsync for processing
+        /// </summary>
         public async void IngestFile_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] IngestFile_Click triggered.");
@@ -465,59 +537,28 @@ namespace View.Personal
                 this);
         }
 
+        /// <summary>
+        /// Triggers the export of a graph to a GEXF file when the export button is clicked
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; delegates to GraphExporter.ExportGraph_Click for processing
+        /// </summary>
         public void ExportGraph_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] ExportGraph_Click triggered.");
             GraphExporter.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
-        private async Task<float[][]> GetOpenAIEmbeddingsBatchAsync(List<string> texts, string openAIKey,
-            string openAIEmbeddingModel)
-        {
-            try
-            {
-                Console.WriteLine("[INFO] Generating OpenAI embeddings...");
-                var requestUri = "https://api.openai.com/v1/embeddings";
-                using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", openAIKey);
-
-                var requestBody = new
-                {
-                    model = openAIEmbeddingModel, // "text-embedding-3-small"
-                    input = texts
-                };
-
-                request.Content = new StringContent(
-                    JsonSerializer.Serialize(requestBody),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                using var response = await _HttpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseJson = await response.Content.ReadAsStringAsync();
-
-                using var doc = JsonDocument.Parse(responseJson);
-                var root = doc.RootElement;
-                var dataArray = root.GetProperty("data").EnumerateArray();
-
-                var embeddings = dataArray
-                    .Select(item => item.GetProperty("embedding")
-                        .EnumerateArray()
-                        .Select(x => x.GetSingle())
-                        .ToArray())
-                    .ToArray();
-
-                Console.WriteLine("[INFO] Successfully retrieved OpenAI embeddings.");
-                return embeddings;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error generating OpenAI embeddings: {ex.Message}");
-                return null;
-            }
-        }
-
+        /// <summary>
+        /// Opens a file browser dialog to select an export location and updates the export file path textbox
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the ExportFilePathTextBox with the selected file path asynchronously
+        /// </summary>
         private async void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] BrowseButton_Click triggered for export file path.");
@@ -529,6 +570,14 @@ namespace View.Personal
             Console.WriteLine($"[INFO] User selected export path: {filePath}");
         }
 
+        /// <summary>
+        /// Opens a file browser dialog to select a file for ingestion and updates the file path textbox
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the FilePathTextBox with the selected file path asynchronously
+        /// </summary>
         private async void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] IngestBrowseButton_Click triggered for ingest file path.");
@@ -540,6 +589,14 @@ namespace View.Personal
             Console.WriteLine($"[INFO] User selected ingest path: {filePath}");
         }
 
+        /// <summary>
+        /// Handles sending a user message in the chat interface, updating the conversation, and retrieving an AI response
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; updates the chat UI and conversation history asynchronously
+        /// </summary>
         private async void SendMessage_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] SendMessage_Click triggered. Sending user prompt to AI...");
@@ -559,7 +616,7 @@ namespace View.Personal
 
                 // Update UI
                 UpdateConversationWindow(conversationContainer);
-                scrollViewer?.ScrollToEnd(); // Scroll to bottom after user message
+                scrollViewer?.ScrollToEnd();
 
                 if (spinner != null) spinner.IsVisible = true;
 
@@ -602,6 +659,14 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the Enter key press in the chat input box to trigger sending a message
+        /// Params:
+        /// sender — The object triggering the event (expected to be the ChatInputBox)
+        /// e — Key event arguments
+        /// Returns:
+        /// None; calls SendMessage_Click when Enter is pressed
+        /// </summary>
         private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -611,6 +676,14 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Clears the chat conversation history and removes all messages from the UI
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; resets the conversation history and UI
+        /// </summary>
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] Clearing chat history...");
@@ -619,6 +692,14 @@ namespace View.Personal
             conversationContainer?.Children.Clear();
         }
 
+        /// <summary>
+        /// Triggers the download of the chat history to a user-selected file location
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// Returns:
+        /// None; saves the chat history to a file asynchronously
+        /// </summary>
         private async void DownloadChat_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("[INFO] DownloadChat_Click triggered...");
@@ -639,6 +720,13 @@ namespace View.Personal
                 Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
+        /// <summary>
+        /// Updates the chat conversation UI by refreshing the displayed messages in the conversation container
+        /// Params:
+        /// conversationContainer — The StackPanel where chat messages are displayed
+        /// Returns:
+        /// None; modifies the conversationContainer's children to reflect the current conversation history
+        /// </summary>
         private void UpdateConversationWindow(StackPanel? conversationContainer)
         {
             if (conversationContainer != null)
@@ -653,19 +741,18 @@ namespace View.Personal
                     {
                         Text = msg.Content,
                         TextWrapping = TextWrapping.Wrap,
-                        // Remove Width to let it auto-size
                         Padding = new Thickness(10),
                         FontSize = 14,
-                        Foreground = new SolidColorBrush(Colors.Black) // Black text for both
+                        Foreground = new SolidColorBrush(Colors.Black)
                     };
 
                     var messageBorder = new Border
                     {
                         Background = msg.Role == "user"
-                            ? new SolidColorBrush(Color.FromArgb(100, 173, 216, 230)) // Light blue for user
-                            : new SolidColorBrush(Color.FromArgb(100, 144, 238, 144)), // Light green for assistant
+                            ? new SolidColorBrush(Color.FromArgb(100, 173, 216, 230))
+                            : new SolidColorBrush(Color.FromArgb(100, 144, 238, 144)),
                         CornerRadius = new CornerRadius(5),
-                        Padding = new Thickness(5, 2, 5, 2), // Horizontal padding to hug text, vertical for spacing
+                        Padding = new Thickness(5, 2, 5, 2),
                         Child = messageBlock
                     };
 
@@ -674,6 +761,13 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Builds a list of chat messages for the prompt, summarizing older messages if the conversation exceeds 8 entries
+        /// Params:
+        /// None
+        /// Returns:
+        /// A List of ChatMessage objects, including a summary of older messages and the most recent ones
+        /// </summary>
         private List<ChatMessage> BuildPromptMessages()
         {
             // If conversation is short, just return everything
@@ -688,8 +782,7 @@ namespace View.Personal
                 .Skip(_ConversationHistory.Count - 6)
                 .ToList();
 
-            // For a proper summary, you'd actually do a second call to GPT to summarize `olderMessages`.
-            // For now, we do a “naïve summary”:
+            // For a proper summary, should I do second call to GPT to summarize `olderMessages`?
             var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
             var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
 
@@ -708,6 +801,14 @@ namespace View.Personal
             return finalList;
         }
 
+        /// <summary>
+        /// Retrieves an AI-generated response based on the user input and selected provider, using embeddings and vector search for context
+        /// Params:
+        /// userInput — The user's input text to process
+        /// onTokenReceived — Optional callback to handle streaming tokens as they are received
+        /// Returns:
+        /// A Task string representing the AI's response; may include error messages if the process fails
+        /// </summary>
         private async Task<string> GetAIResponse(string userInput, Action<string> onTokenReceived = null)
         {
             var syslogServers = new List<SyslogServer>
@@ -723,7 +824,6 @@ namespace View.Personal
                 var app = (App)Application.Current;
                 var selectedProvider = app.AppSettings.SelectedProvider;
 
-                // OpenAi
                 if (selectedProvider == "OpenAI")
                 {
                     Console.WriteLine("[INFO] Using OpenAI for chat completion.");
@@ -731,20 +831,35 @@ namespace View.Personal
                     if (string.IsNullOrEmpty(openAISettings.OpenAICompletionApiKey))
                         return "Error: OpenAI API key not configured in settings.";
 
-                    // 1. Generate embeddings for user prompt
-                    Console.WriteLine("[INFO] Generating embeddings for user prompt via OpenAI...");
-                    var embeddings = await GetOpenAIEmbeddingsBatchAsync(
-                        new List<string> { userInput },
-                        openAISettings.OpenAICompletionApiKey,
-                        openAISettings.OpenAIEmbeddingModel);
+                    Console.WriteLine("[INFO] Generating embeddings for user prompt via ViewOpenAiSdk...");
+                    var openAiSdk = new ViewOpenAiSdk(
+                        _TenantGuid,
+                        "https://api.openai.com/",
+                        openAISettings.OpenAICompletionApiKey);
 
-                    if (embeddings.Length == 0)
-                        return "Error: Failed to generate embeddings for the prompt.";
+                    var embeddingsRequest = new EmbeddingsRequest
+                    {
+                        Model = openAISettings.OpenAIEmbeddingModel ??
+                                "text-embedding-ada-002",
+                        Contents = new List<string> { userInput }
+                    };
 
-                    var promptEmbeddings = embeddings[0].ToList();
+                    var embeddingsResult = await openAiSdk.GenerateEmbeddings(embeddingsRequest);
+                    if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                        embeddingsResult.ContentEmbeddings.Count == 0)
+                    {
+                        Console.WriteLine(
+                            $"[ERROR] Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                        if (embeddingsResult.Error != null)
+                        {
+                            Console.WriteLine($"[ERROR] {embeddingsResult.Error.Message}");
+                            return "Error: Failed to generate embeddings for the prompt.";
+                        }
+                    }
+
+                    var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings.ToList();
                     Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
 
-                    // 2. Vector search for context
                     var searchRequest = new VectorSearchRequest
                     {
                         TenantGUID = _TenantGuid,
@@ -760,7 +875,6 @@ namespace View.Personal
                     if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
 
-                    // 3. Build the context
                     var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
                     var nodeContents = sortedResults
                         .Select(r =>
@@ -779,8 +893,7 @@ namespace View.Personal
                     if (context.Length > 4000)
                         context = context.Substring(0, 4000) + "... [truncated]";
 
-                    // 4. Build the conversation messages
-                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                    var conversationSoFar = BuildPromptMessages();
 
                     var contextMessage = new ChatMessage
                     {
@@ -807,7 +920,6 @@ namespace View.Personal
                         content = msg.Content
                     }).ToList();
 
-                    // 5. Call OpenAI chat
                     Console.WriteLine("[INFO] Sending request to OpenAI ChatCompletions...");
                     var requestBody = new
                     {
@@ -832,29 +944,24 @@ namespace View.Personal
                             if (resp.StatusCode > 299)
                                 throw new Exception("OpenAI call failed.");
 
-                            // The library says it's SSE if Content-Type is text/event-stream
                             if (!resp.ServerSentEvents)
                                 throw new Exception("Expected SSE but didn't get it.");
 
                             var sb = new StringBuilder();
 
-                            // Repeatedly call ReadEventAsync()
                             while (true)
                             {
                                 var sseEvent = await resp.ReadEventAsync();
-                                // Null means the server closed the connection or we’re done
                                 if (sseEvent == null)
                                     break;
 
                                 var chunkJson = sseEvent.Data;
 
-                                // Check for the end token 
                                 if (chunkJson == "[DONE]")
                                     break;
 
                                 if (!string.IsNullOrEmpty(chunkJson))
                                 {
-                                    // Parse the JSON partial chunk 
                                     using var doc = JsonDocument.Parse(chunkJson);
                                     if (doc.RootElement.TryGetProperty("choices", out var choicesProp))
                                     {
@@ -880,20 +987,33 @@ namespace View.Personal
                     {
                         Console.WriteLine("[INFO] Using Ollama for chat completion.");
                         var ollamaSettings = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+                        var ollamaSdk = new ViewOllamaSdk(
+                            _TenantGuid,
+                            "http://localhost:11434",
+                            ""
+                        );
 
-                        // 1. Generate embeddings for user prompt
-                        Console.WriteLine("[INFO] Generating embeddings for user prompt via Ollama...");
-                        var embeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
-                            new List<string> { userInput },
-                            ollamaSettings.OllamaModel);
+                        var embeddingsRequest = new EmbeddingsRequest
+                        {
+                            Model = ollamaSettings.OllamaModel,
+                            Contents = new List<string> { userInput }
+                        };
 
-                        if (embeddings.Length == 0)
-                            return "Error: Failed to generate embeddings for the prompt.";
+                        var embeddingsResult = await ollamaSdk.GenerateEmbeddings(embeddingsRequest);
+                        if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                            embeddingsResult.ContentEmbeddings.Count == 0)
+                        {
+                            Console.WriteLine(
+                                $"[ERROR] Prompt embeddings generation failed: {embeddingsResult.StatusCode}");
+                            if (embeddingsResult.Error != null)
+                            {
+                                Console.WriteLine($"[ERROR] {embeddingsResult.Error.Message}");
+                                return "Error: Failed to generate embeddings for the prompt.";
+                            }
+                        }
 
-                        var promptEmbeddings = embeddings[0].ToList();
-                        Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
+                        var promptEmbeddings = embeddingsResult.ContentEmbeddings[0].Embeddings.ToList();
 
-                        // 2. Vector search for context
                         var searchRequest = new VectorSearchRequest
                         {
                             TenantGUID = _TenantGuid,
@@ -909,7 +1029,6 @@ namespace View.Personal
                         if (searchResults == null || !searchResults.Any())
                             return "No relevant documents found to answer your question.";
 
-                        // 3. Build the context
                         var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
                         var nodeContents = sortedResults
                             .Select(r =>
@@ -928,8 +1047,7 @@ namespace View.Personal
                         if (context.Length > 4000)
                             context = context.Substring(0, 4000) + "... [truncated]";
 
-                        // 4. Build the conversation messages
-                        var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                        var conversationSoFar = BuildPromptMessages();
 
                         var contextMessage = new ChatMessage
                         {
@@ -956,7 +1074,6 @@ namespace View.Personal
                             content = msg.Content
                         }).ToList();
 
-                        // 5. Call chat
                         Console.WriteLine("[INFO] Sending request to Ollama ChatCompletions...");
                         var requestBody = new
                         {
@@ -993,22 +1110,18 @@ namespace View.Personal
                                         if (string.IsNullOrEmpty(line))
                                             continue;
 
-                                        // Parse each NDJSON line
                                         using var doc = JsonDocument.Parse(line);
                                         var root = doc.RootElement;
 
-                                        // Check if the stream is done
                                         if (root.TryGetProperty("done", out var doneProp) && doneProp.GetBoolean())
                                             break;
 
-                                        // Extract the content from the message
                                         if (root.TryGetProperty("message", out var messageProp) &&
                                             messageProp.TryGetProperty("content", out var contentProp))
                                         {
                                             var partialText = contentProp.GetString();
                                             if (!string.IsNullOrEmpty(partialText))
                                             {
-                                                // Dispatch UI update to the main thread
                                                 await Dispatcher.UIThread.InvokeAsync(() =>
                                                 {
                                                     onTokenReceived.Invoke(partialText);
@@ -1026,16 +1139,13 @@ namespace View.Personal
                     }
                 }
 
-                // View
                 else if (selectedProvider == "View")
                 {
                     Console.WriteLine("[INFO] Using View for chat completion...");
-                    // 1. Retrieve View settings
                     var viewSettings = app.GetProviderSettings(CompletionProviderTypeEnum.View);
                     if (string.IsNullOrEmpty(viewSettings.ViewEndpoint))
                         return "Error: View endpoint not configured in settings.";
 
-                    // 2. Generate embeddings for the user prompt via ViewEmbeddingsServerSdk
                     var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(
                         _TenantGuid,
                         viewSettings.ViewEndpoint,
@@ -1081,7 +1191,6 @@ namespace View.Personal
                     Console.WriteLine(
                         $"[View] Prompt embeddings generated: Dimensions={promptEmbeddings.Count}, Input='{userInput}'");
 
-                    // 3. Vector search in LiteGraph using the prompt embeddings
                     var searchRequest = new VectorSearchRequest
                     {
                         TenantGUID = _TenantGuid,
@@ -1097,7 +1206,6 @@ namespace View.Personal
                     if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
 
-                    // 4. Build the RAG context from top results
                     var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
                     var nodeContents = sortedResults
                         .Select(r =>
@@ -1116,8 +1224,7 @@ namespace View.Personal
                     if (context.Length > 4000)
                         context = context.Substring(0, 4000) + "... [truncated]";
 
-                    // 5. Prepare final conversation with context
-                    var conversationSoFar = BuildPromptMessages(); // Summaries older messages if needed
+                    var conversationSoFar = BuildPromptMessages();
                     var contextMessage = new ChatMessage
                     {
                         Role = "system",
@@ -1145,7 +1252,6 @@ namespace View.Personal
 
                     Console.WriteLine("[INFO] Sending request to View chat completions...");
 
-                    // 6. Build payload for the View chat completions
                     var payload = new
                     {
                         Messages = messagesForView,
@@ -1160,7 +1266,6 @@ namespace View.Personal
                         Stream = true
                     };
 
-                    // 7. Send request to the View chat completions API
                     var requestUri =
                         $"{viewSettings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions";
                     Console.WriteLine($"[View] requestUri: {requestUri}");
@@ -1177,7 +1282,6 @@ namespace View.Personal
                             if (restResponse.StatusCode > 299)
                                 throw new Exception($"View call failed with status: {restResponse.StatusCode}");
 
-                            // If ServerSentEvents = true, we must read events in a loop
                             if (!restResponse.ServerSentEvents)
                                 throw new InvalidOperationException(
                                     "Response is not SSE! Check if your server is returning text/event-stream.");
@@ -1187,7 +1291,7 @@ namespace View.Personal
                             while (true)
                             {
                                 var sse = await restResponse.ReadEventAsync();
-                                if (sse == null) break; // connection closed
+                                if (sse == null) break;
                                 var rawJson = sse.Data;
                                 if (rawJson == "[END_OF_TEXT_STREAM]")
                                     break;
@@ -1198,17 +1302,12 @@ namespace View.Personal
                                     if (doc.RootElement.TryGetProperty("token", out var tokenProp))
                                     {
                                         var token = tokenProp.GetString();
-
-                                        // If a callback was provided, call it with the new token
                                         onTokenReceived?.Invoke(token);
-
-                                        // Also accumulate in the final response
                                         sb.Append(token);
                                     }
                                 }
                             }
 
-                            // Convert accumulated tokens into a single string
                             var finalResponse = sb.ToString();
                             return finalResponse;
                         }
@@ -1227,6 +1326,14 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Updates the enabled state of the IngestButton based on changes to the FilePathTextBox text
+        /// Params:
+        /// sender — The object triggering the event (expected to be the FilePathTextBox)
+        /// e — Property changed event arguments
+        /// Returns:
+        /// None; enables or disables the IngestButton based on text presence
+        /// </summary>
         private void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property.Name == "Text")
@@ -1235,11 +1342,18 @@ namespace View.Personal
                 var ingestButton = this.FindControl<Button>("IngestButton");
 
                 if (ingestButton != null && textBox != null)
-                    // Enable the button only if there's text in the textbox
                     ingestButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
         }
 
+        /// <summary>
+        /// Updates the enabled state of the ExportButton based on changes to the ExportFilePathTextBox text
+        /// Params:
+        /// sender — The object triggering the event (expected to be the ExportFilePathTextBox)
+        /// e — Property changed event arguments
+        /// Returns:
+        /// None; enables or disables the ExportButton based on text presence
+        /// </summary>
         private void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property.Name == "Text")
@@ -1248,7 +1362,6 @@ namespace View.Personal
                 var exportButton = this.FindControl<Button>("ExportButton");
 
                 if (exportButton != null && textBox != null)
-                    // Enable the button only if there's text in the textbox
                     exportButton.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
         }

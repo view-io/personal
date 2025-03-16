@@ -1,16 +1,26 @@
-// FileListHelper.cs
+// ReSharper disable PossibleMultipleEnumeration
 
-namespace View.Personal
+namespace View.Personal.Helpers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Avalonia.Controls;
     using LiteGraph;
-    using Classes; // For FileViewModel
+    using Classes;
 
     public static class FileListHelper
     {
+        /// <summary>
+        /// Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
+        /// Params:
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// window — The parent window containing the DataGrid to refresh
+        /// Returns:
+        /// None; updates the DataGrid's ItemsSource directly
+        /// </summary>
         public static void RefreshFileList(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" });

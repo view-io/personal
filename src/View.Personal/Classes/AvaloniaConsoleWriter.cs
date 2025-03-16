@@ -4,6 +4,9 @@ using System;
 using System.IO;
 using System.Text;
 
+// ReSharper disable CheckNamespace
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
+
 public class AvaloniaConsoleWriter : TextWriter
 {
     private readonly TextBox _TextBox;
@@ -21,7 +24,6 @@ public class AvaloniaConsoleWriter : TextWriter
         Dispatcher.UIThread.Post(() =>
         {
             _TextBox.Text += value + Environment.NewLine;
-            // automatically scroll the TextBox to the bottom.
             _TextBox.CaretIndex = _TextBox.Text.Length;
         });
     }

@@ -1,7 +1,6 @@
-﻿namespace View.Personal.Classes
+﻿#pragma warning disable CS8618, CS9264
+namespace View.Personal.Classes
 {
-    using System;
-
     public class CompletionProviderSettings
     {
         public CompletionProviderTypeEnum ProviderType { get; set; }
@@ -13,32 +12,34 @@
 
         // Voyage Settings
         public string VoyageEmbeddingModel { get; set; } = string.Empty;
+        public string VoyageApiKey { get; set; } = string.Empty;
 
         // Anthropic Settings
         public string AnthropicCompletionModel { get; set; } = string.Empty;
+        public string AnthropicApiKey { get; set; } = string.Empty;
 
         // View Settings
-        public string EmbeddingsGenerator { get; set; } // EmbeddingModel
-        public string ApiKey { get; set; } // GenerationApiKey
+        public string EmbeddingsGenerator { get; set; }
+        public string ApiKey { get; set; }
         public string ViewEndpoint { get; set; }
         public string AccessKey { get; set; }
         public string EmbeddingsGeneratorUrl { get; set; }
-        public string Model { get; set; } // EmbeddingModel
+        public string Model { get; set; }
 
         public string ViewCompletionApiKey { get; set; }
-        public string ViewCompletionProvider { get; set; } // GenerationProvider
-        public string ViewCompletionModel { get; set; } // GenerationModel
-        public int ViewCompletionPort { get; set; } // OllamaPort
-        public double Temperature { get; set; } // Temperature
-        public double TopP { get; set; } // TopP
-        public int MaxTokens { get; set; } //MaxTokens
+        public string ViewCompletionProvider { get; set; }
+        public string ViewCompletionModel { get; set; }
+        public int ViewCompletionPort { get; set; }
+        public double Temperature { get; set; }
+        public double TopP { get; set; }
+        public int MaxTokens { get; set; }
 
         // Ollama Settings
-        public string OllamaModel { get; set; } // EmbeddingModel
-        public string OllamaCompletionModel { get; set; } // GenerationModel
-        public double OllamaTemperature { get; set; } // Temperature
-        public double OllamaTopP { get; set; } // TopP
-        public int OllamaMaxTokens { get; set; } //MaxTokens
+        public string OllamaModel { get; set; }
+        public string OllamaCompletionModel { get; set; }
+        public double OllamaTemperature { get; set; }
+        public double OllamaTopP { get; set; }
+        public int OllamaMaxTokens { get; set; }
 
         public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
         {

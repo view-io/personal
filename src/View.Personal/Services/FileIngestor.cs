@@ -1,6 +1,7 @@
-// FileIngester.cs
-
-namespace View.Personal
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+namespace View.Personal.Services
 {
     using Avalonia;
     using System;
@@ -18,11 +19,26 @@ namespace View.Personal
     using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
+    using Sdk.Embeddings.Providers.Ollama;
+    using Sdk.Embeddings.Providers.OpenAI;
     using Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
     public static class FileIngester
     {
+        /// <summary>
+        /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
+        /// Params:
+        /// sender — The object triggering the event (expected to be a control)
+        /// e — Routed event arguments
+        /// typeDetector — The TypeDetector instance for identifying file types
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// window — The parent window for UI interactions and dialogs
+        /// Returns:
+        /// Task representing the asynchronous operation; no direct return value
+        /// </summary>
         public static async Task IngestFile_ClickAsync(object sender, RoutedEventArgs e, TypeDetector typeDetector,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -51,7 +67,6 @@ namespace View.Personal
                 var providerSettings =
                     app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                // 1. Detect file type
                 string contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
@@ -62,7 +77,6 @@ namespace View.Personal
                     return;
                 }
 
-                // 2. Process PDF into atoms
                 var processorSettings = new PdfProcessorSettings
                 {
                     Chunking = new ChunkingSettings
@@ -81,23 +95,19 @@ namespace View.Personal
                 var atoms = pdfProcessor.Extract(filePath).ToList();
                 Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
 
-                // 3. Create and store document node
                 var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
                 liteGraph.CreateNode(fileNode);
                 Console.WriteLine($"Created file document node {fileNode.GUID}");
 
-                // 4. Create and store chunk nodes
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, atoms);
                 liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
                 Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
 
-                // 5. Create and store edges
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.CreateEdges(tenantGuid, graphGuid, edges);
                 Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
 
-                // 6. Generate embeddings
                 switch (selectedProvider)
                 {
                     case "OpenAI":
@@ -122,21 +132,41 @@ namespace View.Personal
                             break;
                         }
 
-                        var embeddings = await MainWindowHelpers.GetOpenAIEmbeddingsBatchAsync(
-                            chunkTexts,
-                            providerSettings.OpenAICompletionApiKey,
-                            providerSettings.OpenAIEmbeddingModel);
+                        var openAiSdk = new ViewOpenAiSdk(
+                            tenantGuid,
+                            "https://api.openai.com/",
+                            providerSettings.OpenAICompletionApiKey);
 
-                        if (embeddings == null || embeddings.Length != validChunkNodes.Count)
+                        var openAIembeddingsRequest = new EmbeddingsRequest
                         {
-                            Console.WriteLine("Failed to generate embeddings or mismatch in count.");
+                            Model = providerSettings.OpenAIEmbeddingModel,
+                            Contents = chunkTexts
+                        };
+
+                        Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
+                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
+
+                        if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
+                            embeddingsResult.ContentEmbeddings.Count != validChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {embeddingsResult.StatusCode}");
+                            if (embeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    "Failed to generate embeddings for chunks.",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
                             break;
                         }
 
                         for (var j = 0; j < validChunkNodes.Count; j++)
                         {
                             var chunkNode = validChunkNodes[j];
-                            var vectorArray = embeddings[j];
+                            var vectorArray = embeddingsResult.ContentEmbeddings[j].Embeddings;
 
                             chunkNode.Vectors = new List<VectorMetadata>
                             {
@@ -146,8 +176,8 @@ namespace View.Personal
                                     GraphGUID = graphGuid,
                                     NodeGUID = chunkNode.GUID,
                                     Model = providerSettings.OpenAIEmbeddingModel,
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
+                                    Dimensionality = vectorArray.Count,
+                                    Vectors = vectorArray,
                                     Content = (chunkNode.Data as Atom).Text
                                 }
                             };
@@ -181,7 +211,6 @@ namespace View.Personal
                                 EmbeddingsGenerator =
                                     Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.EmbeddingsGenerator),
                                 EmbeddingsGeneratorUrl = providerSettings.EmbeddingsGeneratorUrl,
-                                // EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                 EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
                                 BatchSize = 2,
                                 MaxGeneratorTasks = 4,
@@ -192,22 +221,23 @@ namespace View.Personal
                             Contents = chunkContents
                         };
 
-                        var embeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!embeddingsResult.Success)
+                        var openAIEmbeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
+                        if (!openAIEmbeddingsResult.Success)
                         {
-                            Console.WriteLine($"Embeddings generation failed: {embeddingsResult.StatusCode}");
-                            if (embeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
+                            Console.WriteLine($"Embeddings generation failed: {openAIEmbeddingsResult.StatusCode}");
+                            if (openAIEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {openAIEmbeddingsResult.Error.Message}");
                             break;
                         }
 
-                        if (embeddingsResult.ContentEmbeddings != null && embeddingsResult.ContentEmbeddings.Any())
+                        if (openAIEmbeddingsResult.ContentEmbeddings != null &&
+                            openAIEmbeddingsResult.ContentEmbeddings.Any())
                         {
                             var validChunkNodesView = chunkNodes
                                 .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                                 .ToList();
 
-                            var updateTasks = embeddingsResult.ContentEmbeddings
+                            var updateTasks = openAIEmbeddingsResult.ContentEmbeddings
                                 .Zip(validChunkNodesView,
                                     (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
                                 .Select(item =>
@@ -232,7 +262,7 @@ namespace View.Personal
 
                             await Task.WhenAll(updateTasks);
                             Console.WriteLine(
-                                $"Updated {embeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
+                                $"Updated {openAIEmbeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
                         }
                         else
                         {
@@ -242,6 +272,11 @@ namespace View.Personal
                         break;
 
                     case "Ollama":
+                        if (string.IsNullOrEmpty(providerSettings.OllamaModel))
+                        {
+                            Console.WriteLine("Ollama model not configured.");
+                            break;
+                        }
 
                         var ollamaValidChunkNodes = chunkNodes
                             .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -257,29 +292,58 @@ namespace View.Personal
                             break;
                         }
 
-                        var ollamaEmbeddings = await MainWindowHelpers.GetOllamaEmbeddingsBatchAsync(
-                            ollamaChunkTexts,
-                            providerSettings.OllamaModel);
+                        var ollamaSdk = new ViewOllamaSdk(
+                            tenantGuid,
+                            "http://localhost:11434/",
+                            "");
 
-                        if (ollamaEmbeddings == null || ollamaEmbeddings.Length != ollamaValidChunkNodes.Count)
+                        var embeddingsRequest = new EmbeddingsRequest
                         {
-                            Console.WriteLine($"Error ingesting file {filePath}");
-                            if (spinner != null) spinner.IsVisible = false;
+                            Model = providerSettings.OllamaModel,
+                            Contents = ollamaChunkTexts
+                        };
+
+                        Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOllamaSdk...");
+                        var ollamaEmbeddingsResult = await ollamaSdk.GenerateEmbeddings(embeddingsRequest);
+
+                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
+                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
+                            if (ollamaEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
                             await MsBox.Avalonia.MessageBoxManager
                                 .GetMessageBoxStandard(
                                     "Ingestion Error",
-                                    $"Something went wrong",
+                                    "Failed to generate embeddings for chunks.",
                                     ButtonEnum.Ok,
                                     Icon.Error
                                 )
                                 .ShowAsync();
-                            return;
+                            break;
+                        }
+
+                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
+                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
+                            if (ollamaEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    "Failed to generate embeddings for chunks.",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
+                            break;
                         }
 
                         for (var j = 0; j < ollamaValidChunkNodes.Count; j++)
                         {
                             var chunkNode = ollamaValidChunkNodes[j];
-                            var vectorArray = ollamaEmbeddings[j];
+                            var vectorArray = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings;
 
                             chunkNode.Vectors = new List<VectorMetadata>
                             {
@@ -289,15 +353,16 @@ namespace View.Personal
                                     GraphGUID = graphGuid,
                                     NodeGUID = chunkNode.GUID,
                                     Model = providerSettings.OllamaCompletionModel,
-                                    Dimensionality = vectorArray.Length,
-                                    Vectors = vectorArray.ToList(),
+                                    Dimensionality = vectorArray.Count,
+                                    Vectors = vectorArray,
                                     Content = (chunkNode.Data as Atom).Text
                                 }
                             };
                             liteGraph.UpdateNode(chunkNode);
                         }
 
-                        Console.WriteLine($"Updated {ollamaValidChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                        Console.WriteLine(
+                            $"Updated {ollamaValidChunkNodes.Count} chunk nodes with {providerSettings.ProviderType} embeddings.");
                         break;
                 }
 

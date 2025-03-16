@@ -1,4 +1,4 @@
-namespace View.Personal
+namespace View.Personal.Services
 {
     using System;
     using System.Threading.Tasks;
@@ -6,17 +6,29 @@ namespace View.Personal
     using Avalonia.Interactivity;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
-    using Classes; // For FileViewModel
+    using Classes;
+    using Helpers;
 
     public static class FileDeleter
     {
+        /// <summary>
+        /// Handles the deletion of a file from LiteGraph
+        /// Params:
+        /// sender — The object triggering the event (expected to be a Button)
+        /// e — Routed event arguments
+        /// liteGraph — The LiteGraphClient instance for graph operations
+        /// tenantGuid — The unique identifier for the tenant
+        /// graphGuid — The unique identifier for the graph
+        /// window — The parent window for displaying dialogs
+        /// Returns:
+        /// Task representing the asynchronous operation; no direct return value
+        /// </summary>
         public static async Task DeleteFile_ClickAsync(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
-                    // Confirm deletion with the user
                     var result = await MsBox.Avalonia.MessageBoxManager
                         .GetMessageBoxStandard("Confirm Deletion",
                             $"Are you sure you want to delete '{file.Name}'?",
@@ -27,11 +39,9 @@ namespace View.Personal
                     if (result != ButtonResult.Yes)
                         return;
 
-                    // Delete the node using LiteGraph
                     liteGraph.DeleteNode(tenantGuid, graphGuid, file.NodeGuid);
                     Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
 
-                    // Refresh the file list using the helper
                     FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
 
                     await MsBox.Avalonia.MessageBoxManager
