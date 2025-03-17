@@ -1,30 +1,53 @@
-using Avalonia.Controls;
-using Avalonia.Threading;
-using System;
-using System.IO;
-using System.Text;
-
 // ReSharper disable CheckNamespace
+
 #pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
-
-public class AvaloniaConsoleWriter : TextWriter
+namespace View.Personal.Classes
 {
-    private readonly TextBox _TextBox;
+    using Avalonia.Controls;
+    using Avalonia.Threading;
+    using System;
+    using System.IO;
+    using System.Text;
 
-    public AvaloniaConsoleWriter(TextBox textBox)
+    public class AvaloniaConsoleWriter : TextWriter
     {
-        _TextBox = textBox;
-    }
+        #region Public-Members
 
-    public override Encoding Encoding => Encoding.UTF8;
+        public override Encoding Encoding => Encoding.UTF8;
 
-    public override void WriteLine(string value)
-    {
-        // Console.WriteLine on background threads.
-        Dispatcher.UIThread.Post(() =>
+        #endregion
+
+        #region Private-Members
+
+        private readonly TextBox _TextBox;
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        public AvaloniaConsoleWriter(TextBox textBox)
         {
-            _TextBox.Text += value + Environment.NewLine;
-            _TextBox.CaretIndex = _TextBox.Text.Length;
-        });
+            _TextBox = textBox;
+        }
+
+        #endregion
+
+        #region Public-Methods
+
+        public override void WriteLine(string value)
+        {
+            // Console.WriteLine on background threads.
+            Dispatcher.UIThread.Post(() =>
+            {
+                _TextBox.Text += value + Environment.NewLine;
+                _TextBox.CaretIndex = _TextBox.Text.Length;
+            });
+        }
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }
