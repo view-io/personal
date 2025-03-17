@@ -373,7 +373,6 @@ namespace View.Personal
             var finalMessages = new List<ChatMessage>();
             finalMessages.AddRange(conversationSoFar);
             finalMessages.Add(contextMessage);
-            // finalMessages.Add(questionMessage);
             return finalMessages;
         }
 
