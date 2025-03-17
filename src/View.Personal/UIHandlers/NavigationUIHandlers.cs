@@ -14,9 +14,22 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using LiteGraph;
 
-
     public static class NavigationUIHandlers
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
         public static void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
@@ -104,5 +117,11 @@ namespace View.Personal.UIHandlers
             if (navList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == panelName) is { } item)
                 navList.SelectedItem = item;
         }
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }

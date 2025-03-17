@@ -1,5 +1,6 @@
-// View.Personal.UIHandlers/MainWindowUIHandlers.cs
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -11,6 +12,7 @@ namespace View.Personal.UIHandlers
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Interactivity;
+    using Classes;
     using Helpers;
     using MsBox.Avalonia.Enums;
     using Services;
@@ -19,6 +21,20 @@ namespace View.Personal.UIHandlers
 
     public static class MainWindowUIHandlers
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
         public static void MainWindow_Opened(Window window)
         {
             Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
@@ -152,5 +168,11 @@ namespace View.Personal.UIHandlers
                 Console.WriteLine($"[INFO] {selectedProvider} settings updated due to provider change.");
             }
         }
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }

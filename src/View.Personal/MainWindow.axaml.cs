@@ -445,7 +445,6 @@ namespace View.Personal
         private void ValidateResponseStream(string provider, RestResponse resp)
         {
             var expectedContentType = provider == "Ollama" ? "application/x-ndjson" : "text/event-stream";
-            Console.WriteLine($"[DEBUG] Response Content-Type from {provider}: {resp.ContentType}");
             if (resp.ContentType != expectedContentType)
                 throw new InvalidOperationException($"Expected {expectedContentType} but got {resp.ContentType}");
         }
@@ -467,12 +466,10 @@ namespace View.Personal
 
                     if (!string.IsNullOrEmpty(chunkJson))
                     {
-                        Console.WriteLine($"[DEBUG] Raw chunk from {provider}: {chunkJson}");
                         using var doc = JsonDocument.Parse(chunkJson);
                         var token = ExtractTokenFromJson(doc, provider);
                         if (token != null)
                         {
-                            Console.WriteLine($"[DEBUG] Extracted token: {token}");
                             onTokenReceived?.Invoke(token);
                             sb.Append(token);
                         }
@@ -491,12 +488,10 @@ namespace View.Personal
                     var line = await reader.ReadLineAsync();
                     if (string.IsNullOrEmpty(line)) continue;
 
-                    Console.WriteLine($"[DEBUG] Raw line from {provider}: {line}");
                     using var doc = JsonDocument.Parse(line);
                     var token = ExtractTokenFromJson(doc, provider);
                     if (token != null)
                     {
-                        Console.WriteLine($"[DEBUG] Extracted token: {token}");
                         await Dispatcher.UIThread.InvokeAsync(() => onTokenReceived?.Invoke(token));
                         sb.Append(token);
                     }

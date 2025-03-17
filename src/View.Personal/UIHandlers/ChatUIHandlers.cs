@@ -21,55 +21,95 @@ namespace View.Personal.UIHandlers
 
     public static class ChatUIHandlers
     {
-        public static async void SendMessage_Click(object sender, RoutedEventArgs e, Window window,
-            List<ChatMessage> conversationHistory, Func<string, Action<string>, Task<string>> getAIResponse)
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
+        public static async void SendMessage_Click(
+            object sender,
+            RoutedEventArgs e,
+            Window window,
+            List<ChatMessage> conversationHistory,
+            Func<string, Action<string>, Task<string>> getAIResponse)
         {
             Console.WriteLine("[INFO] SendMessage_Click triggered. Sending user prompt to AI...");
+
             var inputBox = window.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
             var spinner = window.FindControl<ProgressBar>("ChatSpinner");
 
-            if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
+            if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
             {
-                // Add the user's new message to conversation history
-                conversationHistory.Add(new ChatMessage
-                {
-                    Role = "user",
-                    Content = inputBox.Text
-                });
+                Console.WriteLine("[WARN] User tried to send an empty or null message.");
+                return;
+            }
 
-                // Update UI
+            // 1) Move user’s text into local var and clear box
+            var userText = inputBox.Text.Trim();
+            inputBox.Text = string.Empty;
+
+            // 2) Add the user's new message to conversation history
+            conversationHistory.Add(new ChatMessage
+            {
+                Role = "user",
+                Content = userText
+            });
+
+            // 3) Refresh UI to show the user's message
+            UpdateConversationWindow(conversationContainer, conversationHistory);
+            scrollViewer?.ScrollToEnd();
+
+            if (spinner != null) spinner.IsVisible = true;
+
+            try
+            {
+                // 4) Create an empty assistant message, add to conversation
+                var assistantMsg = new ChatMessage
+                {
+                    Role = "assistant",
+                    Content = "" // start empty
+                };
+                conversationHistory.Add(assistantMsg);
                 UpdateConversationWindow(conversationContainer, conversationHistory);
                 scrollViewer?.ScrollToEnd();
 
-                if (spinner != null) spinner.IsVisible = true;
-
-                // Get AI response
-                try
+                // 5) Actually call the getAIResponse function
+                //    We'll capture final text in aiFullResponse in case the provider doesn't stream.
+                var aiFullResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
-                    // Create a placeholder ChatMessage for the assistant
-                    var assistantMsg = new ChatMessage
-                    {
-                        Role = "assistant",
-                        Content = "" // start empty
-                    };
-                    conversationHistory.Add(assistantMsg);
+                    // This callback fires for each chunk from the SSE/stream
+                    assistantMsg.Content += tokenChunk;
                     UpdateConversationWindow(conversationContainer, conversationHistory);
-                }
-                finally
-                {
-                    if (spinner != null) spinner.IsVisible = false;
-                }
+                    scrollViewer?.ScrollToEnd();
+                });
 
-                // Clear the input
-                inputBox.Text = string.Empty;
+                // If your provider returns everything at once (no streaming),
+                // you might do this instead of (or in addition to) the callback:
+                // assistantMsg.Content = aiFullResponse;
+                // UpdateConversationWindow(conversationContainer, conversationHistory);
+                // scrollViewer?.ScrollToEnd();
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("[WARN] User tried to send an empty or null message.");
+                Console.WriteLine($"[ERROR] Error getting AI response: {ex.Message}");
+            }
+            finally
+            {
+                if (spinner != null) spinner.IsVisible = false;
             }
         }
+
 
         public static void ChatInputBox_KeyDown(object sender, KeyEventArgs e, Window window,
             List<ChatMessage> conversationHistory, Func<string, Action<string>, Task<string>> getAIResponse)
@@ -145,5 +185,11 @@ namespace View.Personal.UIHandlers
                 }
             }
         }
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }
