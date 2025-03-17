@@ -34,6 +34,7 @@ namespace View.Personal
     using SerializationHelper;
     using Services;
     using RestWrapper;
+    using Sdk.Embeddings.Providers.VoyageAI;
     using UIHandlers;
 
     public partial class MainWindow : Window
@@ -258,6 +259,7 @@ namespace View.Personal
                 "OpenAI" => settings.OpenAICompletionApiKey,
                 "Ollama" => "",
                 "View" => settings.AccessKey,
+                "Anthropic" => settings.AnthropicApiKey,
                 _ => null
             };
         }
@@ -288,6 +290,12 @@ namespace View.Personal
                         Model = settings.Model,
                         Contents = new List<string> { userInput }
                     }),
+                "Anthropic" => (new ViewVoyageAiSdk(_TenantGuid, "https://api.voyageai.com/", settings.VoyageApiKey),
+                    new EmbeddingsRequest
+                    {
+                        Model = settings.VoyageEmbeddingModel ?? "text-embedding-ada-002",
+                        Contents = new List<string> { userInput }
+                    }),
                 _ => throw new ArgumentException("Unsupported provider")
             };
         }
@@ -299,6 +307,7 @@ namespace View.Personal
                 ViewOpenAiSdk openAi => openAi.GenerateEmbeddings(request),
                 ViewOllamaSdk ollama => ollama.GenerateEmbeddings(request),
                 ViewEmbeddingsServerSdk view => view.GenerateEmbeddings(request),
+                ViewVoyageAiSdk voyage => voyage.GenerateEmbeddings(request),
                 _ => throw new ArgumentException("Unsupported SDK type")
             });
 
@@ -364,47 +373,65 @@ namespace View.Personal
             var finalMessages = new List<ChatMessage>();
             finalMessages.AddRange(conversationSoFar);
             finalMessages.Add(contextMessage);
-            finalMessages.Add(questionMessage);
             return finalMessages;
         }
 
         private object CreateRequestBody(string provider, CompletionProviderSettings settings,
             List<ChatMessage> finalMessages)
         {
-            var messages = finalMessages.Select(msg => new { role = msg.Role, content = msg.Content }).ToList();
-            return provider switch
+            switch (provider)
             {
-                "OpenAI" => new
-                {
-                    model = settings.OpenAICompletionModel,
-                    messages,
-                    max_tokens = 300,
-                    temperature = 0.7,
-                    stream = true
-                },
-                "Ollama" => new
-                {
-                    model = settings.OllamaCompletionModel,
-                    messages,
-                    max_tokens = settings.OllamaMaxTokens,
-                    temperature = settings.OllamaTemperature,
-                    stream = true
-                },
-                "View" => new
-                {
-                    Messages = messages,
-                    ModelName = settings.ViewCompletionModel,
-                    Temperature = settings.Temperature,
-                    TopP = settings.TopP,
-                    MaxTokens = settings.MaxTokens,
-                    GenerationProvider = settings.ViewCompletionProvider,
-                    GenerationApiKey = settings.ViewCompletionApiKey,
-                    OllamaHostname = "192.168.197.1",
-                    OllamaPort = settings.ViewCompletionPort,
-                    Stream = true
-                },
-                _ => throw new ArgumentException("Unsupported provider")
-            };
+                case "OpenAI":
+                    return new
+                    {
+                        model = settings.OpenAICompletionModel,
+                        messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                        max_tokens = 300,
+                        temperature = 0.7,
+                        stream = true
+                    };
+                case "Ollama":
+                    return new
+                    {
+                        model = settings.OllamaCompletionModel,
+                        messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                        max_tokens = settings.OllamaMaxTokens,
+                        temperature = settings.OllamaTemperature,
+                        stream = true
+                    };
+                case "View":
+                    return new
+                    {
+                        Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                        ModelName = settings.ViewCompletionModel,
+                        Temperature = settings.Temperature,
+                        TopP = settings.TopP,
+                        MaxTokens = settings.MaxTokens,
+                        GenerationProvider = settings.ViewCompletionProvider,
+                        GenerationApiKey = settings.ViewCompletionApiKey,
+                        OllamaHostname = "192.168.197.1",
+                        OllamaPort = settings.ViewCompletionPort,
+                        Stream = true
+                    };
+                case "Anthropic":
+                    var systemMessages = finalMessages.Where(m => m.Role == "system").ToList();
+                    var systemContent = string.Join("\n\n", systemMessages.Select(m => m.Content));
+                    var conversationMessages = finalMessages
+                        .Where(m => m.Role != "system" && !string.IsNullOrEmpty(m.Content))
+                        .Select(m => new { role = m.Role, content = m.Content })
+                        .ToList();
+                    return new
+                    {
+                        model = settings.AnthropicCompletionModel,
+                        system = systemContent,
+                        messages = conversationMessages,
+                        max_tokens = 300,
+                        temperature = 0.7,
+                        stream = true
+                    };
+                default:
+                    throw new ArgumentException("Unsupported provider");
+            }
         }
 
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
@@ -415,6 +442,7 @@ namespace View.Personal
                 "OpenAI" => "https://api.openai.com/v1/chat/completions",
                 "Ollama" => "http://localhost:11434/api/chat",
                 "View" => $"{settings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions",
+                "Anthropic" => "https://api.anthropic.com/v1/messages",
                 _ => throw new ArgumentException("Unsupported provider")
             };
 
@@ -437,9 +465,18 @@ namespace View.Personal
         {
             restRequest.ContentType = "application/json";
             if (provider == "OpenAI")
+            {
                 restRequest.Headers["Authorization"] = $"Bearer {settings.OpenAICompletionApiKey}";
+            }
             else if (provider == "View")
+            {
                 restRequest.Headers["Authorization"] = $"Bearer {settings.AccessKey}";
+            }
+            else if (provider == "Anthropic")
+            {
+                restRequest.Headers["x-api-key"] = $"{settings.AnthropicApiKey}";
+                restRequest.Headers["anthropic-version"] = "2023-06-01";
+            }
         }
 
         private void ValidateResponseStream(string provider, RestResponse resp)
@@ -524,6 +561,12 @@ namespace View.Personal
                 "Ollama" => doc.RootElement.TryGetProperty("message", out var messageProp) &&
                             messageProp.TryGetProperty("content", out var contentProp)
                     ? contentProp.GetString()
+                    : null,
+                "Anthropic" => doc.RootElement.TryGetProperty("type", out var typeProp) &&
+                               typeProp.GetString() == "content_block_delta" &&
+                               doc.RootElement.TryGetProperty("delta", out var deltaProp) &&
+                               deltaProp.TryGetProperty("text", out var textProp)
+                    ? textProp.GetString()
                     : null,
                 _ => null
             };

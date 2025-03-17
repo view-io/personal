@@ -21,6 +21,7 @@ namespace View.Personal.Services
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
+    using Sdk.Embeddings.Providers.VoyageAI;
     using Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
@@ -221,23 +222,23 @@ namespace View.Personal.Services
                             Contents = chunkContents
                         };
 
-                        var openAIEmbeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!openAIEmbeddingsResult.Success)
+                        var viewEmbeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
+                        if (!viewEmbeddingsResult.Success)
                         {
-                            Console.WriteLine($"Embeddings generation failed: {openAIEmbeddingsResult.StatusCode}");
-                            if (openAIEmbeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {openAIEmbeddingsResult.Error.Message}");
+                            Console.WriteLine($"Embeddings generation failed: {viewEmbeddingsResult.StatusCode}");
+                            if (viewEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {viewEmbeddingsResult.Error.Message}");
                             break;
                         }
 
-                        if (openAIEmbeddingsResult.ContentEmbeddings != null &&
-                            openAIEmbeddingsResult.ContentEmbeddings.Any())
+                        if (viewEmbeddingsResult.ContentEmbeddings != null &&
+                            viewEmbeddingsResult.ContentEmbeddings.Any())
                         {
                             var validChunkNodesView = chunkNodes
                                 .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                                 .ToList();
 
-                            var updateTasks = openAIEmbeddingsResult.ContentEmbeddings
+                            var updateTasks = viewEmbeddingsResult.ContentEmbeddings
                                 .Zip(validChunkNodesView,
                                     (embedding, chunkNode) => new { Embedding = embedding, ChunkNode = chunkNode })
                                 .Select(item =>
@@ -262,7 +263,7 @@ namespace View.Personal.Services
 
                             await Task.WhenAll(updateTasks);
                             Console.WriteLine(
-                                $"Updated {openAIEmbeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
+                                $"Updated {viewEmbeddingsResult.ContentEmbeddings.Count} chunk nodes with embeddings.");
                         }
                         else
                         {
@@ -363,6 +364,83 @@ namespace View.Personal.Services
 
                         Console.WriteLine(
                             $"Updated {ollamaValidChunkNodes.Count} chunk nodes with {providerSettings.ProviderType} embeddings.");
+                        break;
+
+                    case "Anthropic":
+                        if (string.IsNullOrEmpty(providerSettings.VoyageApiKey) ||
+                            string.IsNullOrEmpty(providerSettings.VoyageEmbeddingModel))
+                        {
+                            Console.WriteLine("Voyage API key or embedding model not configured.");
+                            break;
+                        }
+
+                        var voyageValidChunkNodes = chunkNodes
+                            .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                            .ToList();
+
+                        var voyageChunkTexts = voyageValidChunkNodes
+                            .Select(x => (x.Data as Atom).Text)
+                            .ToList();
+
+                        if (!voyageChunkTexts.Any())
+                        {
+                            Console.WriteLine("No valid text content found in atoms for embedding.");
+                            break;
+                        }
+
+                        var voyageSdk = new ViewVoyageAiSdk(
+                            tenantGuid,
+                            "https://api.voyageai.com/",
+                            providerSettings.VoyageApiKey);
+
+                        var voyageEmbeddingsRequest = new EmbeddingsRequest
+                        {
+                            Model = providerSettings.VoyageEmbeddingModel,
+                            Contents = voyageChunkTexts
+                        };
+
+                        Console.WriteLine("[INFO] Generating embeddings for chunks via VoyageAiSdk...");
+                        var voyageEmbeddingsResult = await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
+
+                        if (!voyageEmbeddingsResult.Success || voyageEmbeddingsResult.ContentEmbeddings == null ||
+                            voyageEmbeddingsResult.ContentEmbeddings.Count != voyageValidChunkNodes.Count)
+                        {
+                            Console.WriteLine($"Error generating embeddings: {voyageEmbeddingsResult.StatusCode}");
+                            if (voyageEmbeddingsResult.Error != null)
+                                Console.WriteLine($"Error: {voyageEmbeddingsResult.Error.Message}");
+                            await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard(
+                                    "Ingestion Error",
+                                    "Failed to generate embeddings for chunks.",
+                                    ButtonEnum.Ok,
+                                    Icon.Error
+                                )
+                                .ShowAsync();
+                            break;
+                        }
+
+                        for (var j = 0; j < voyageValidChunkNodes.Count; j++)
+                        {
+                            var chunkNode = voyageValidChunkNodes[j];
+                            var vectorArray = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings;
+
+                            chunkNode.Vectors = new List<VectorMetadata>
+                            {
+                                new()
+                                {
+                                    TenantGUID = tenantGuid,
+                                    GraphGUID = graphGuid,
+                                    NodeGUID = chunkNode.GUID,
+                                    Model = providerSettings.VoyageEmbeddingModel,
+                                    Dimensionality = vectorArray.Count,
+                                    Vectors = vectorArray,
+                                    Content = (chunkNode.Data as Atom).Text
+                                }
+                            };
+                            liteGraph.UpdateNode(chunkNode);
+                        }
+
+                        Console.WriteLine($"Updated {voyageValidChunkNodes.Count} chunk nodes with Voyage embeddings.");
                         break;
                 }
 
