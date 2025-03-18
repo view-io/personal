@@ -84,8 +84,7 @@ namespace View.Personal.UIHandlers
                 UpdateConversationWindow(conversationContainer, conversationHistory);
                 scrollViewer?.ScrollToEnd();
 
-                // 5) Actually call the getAIResponse function
-                //    We'll capture final text in aiFullResponse in case the provider doesn't stream.
+                // 5) Call the getAIResponse function
                 var aiFullResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
                     // This callback fires for each chunk from the SSE/stream
@@ -93,12 +92,6 @@ namespace View.Personal.UIHandlers
                     UpdateConversationWindow(conversationContainer, conversationHistory);
                     scrollViewer?.ScrollToEnd();
                 });
-
-                // If your provider returns everything at once (no streaming),
-                // you might do this instead of (or in addition to) the callback:
-                // assistantMsg.Content = aiFullResponse;
-                // UpdateConversationWindow(conversationContainer, conversationHistory);
-                // scrollViewer?.ScrollToEnd();
             }
             catch (Exception ex)
             {

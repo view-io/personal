@@ -1,6 +1,8 @@
 ﻿#pragma warning disable CS8618, CS9264
 namespace View.Personal.Classes
 {
+    using System;
+
     public class CompletionProviderSettings
     {
         public CompletionProviderTypeEnum ProviderType { get; set; }
@@ -9,6 +11,15 @@ namespace View.Personal.Classes
         public string OpenAICompletionApiKey { get; set; } = string.Empty;
         public string OpenAIEmbeddingModel { get; set; } = string.Empty;
         public string OpenAICompletionModel { get; set; } = string.Empty;
+
+        public int? OpenAIMaxTokens { get; set; } = null;
+
+        public string? OpenAIReasoningEffort { get; set; } = null;
+
+        public double? OpenAITemperature { get; set; } = null;
+
+        public float? OpenAITopP { get; set; } = null;
+
 
         // Voyage Settings
         public string VoyageEmbeddingModel { get; set; } = string.Empty;
@@ -44,6 +55,22 @@ namespace View.Personal.Classes
         public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
         {
             ProviderType = providerType;
+        }
+
+        public void SetReasoningEffort(OpenAIReasoningEffortEnum level)
+        {
+            OpenAIReasoningEffort = level.ToString().ToLowerInvariant();
+        }
+
+        public OpenAIReasoningEffortEnum? GetReasoningEffortLevel()
+        {
+            if (OpenAIReasoningEffort == null)
+                return null;
+
+            if (Enum.TryParse<OpenAIReasoningEffortEnum>(OpenAIReasoningEffort, true, out var level))
+                return level;
+
+            return null;
         }
     }
 }

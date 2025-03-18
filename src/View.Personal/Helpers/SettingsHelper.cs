@@ -44,7 +44,11 @@ namespace View.Personal.Helpers
                 {
                     OpenAICompletionApiKey = GetTextBoxValue(window, "OpenAIKey"),
                     OpenAIEmbeddingModel = GetTextBoxValue(window, "OpenAIEmbeddingModel"),
-                    OpenAICompletionModel = GetTextBoxValue(window, "OpenAICompletionModel")
+                    OpenAICompletionModel = GetTextBoxValue(window, "OpenAICompletionModel"),
+                    OpenAIMaxTokens = ParseIntOrDefault(window, "OpenAIMaxTokens", 300),
+                    OpenAITemperature = GetNumericUpDownValueOrNull(window, "OpenAITemperature"),
+                    OpenAITopP = GetNumericUpDownFloatValueOrNull(window, "OpenAITopP"),
+                    OpenAIReasoningEffort = GetReasoningEffortValue(window, "OpenAIReasoningEffort")
                 },
                 ["Anthropic"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
                 {
@@ -109,10 +113,42 @@ namespace View.Personal.Helpers
             window.FindControl<TextBox>("TopP").Text = view.TopP.ToString(CultureInfo.InvariantCulture);
             window.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
 
+
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
             window.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
             window.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
             window.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("OpenAIMaxTokens").Text = openAI.OpenAIMaxTokens.ToString();
+            var temperatureControl = window.FindControl<NumericUpDown>("OpenAITemperature");
+            if (openAI.OpenAITemperature.HasValue)
+                temperatureControl.Value = (decimal)openAI.OpenAITemperature.Value;
+            else
+                temperatureControl.Value = null;
+            var topPControl = window.FindControl<NumericUpDown>("OpenAITopP");
+            if (openAI.OpenAITopP.HasValue)
+                topPControl.Value = (decimal)openAI.OpenAITopP.Value;
+            else
+                topPControl.Value = null;
+            var reasoningEffortControl = window.FindControl<ComboBox>("OpenAIReasoningEffort");
+            var effortLevel = openAI.GetReasoningEffortLevel();
+
+            if (effortLevel == null)
+            {
+                reasoningEffortControl.SelectedIndex = 0;
+            }
+            else
+            {
+                var effortName = effortLevel.ToString();
+                var item = reasoningEffortControl.Items
+                    .OfType<ComboBoxItem>()
+                    .FirstOrDefault(i => i.Content.ToString().Equals(effortName, StringComparison.OrdinalIgnoreCase));
+
+                if (item != null)
+                    reasoningEffortControl.SelectedItem = item;
+                else
+                    reasoningEffortControl.SelectedIndex = 0;
+            }
+
 
             var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
             window.FindControl<TextBox>("AnthropicCompletionModel").Text =
@@ -194,6 +230,61 @@ namespace View.Personal.Helpers
         private static double ParseDoubleOrDefault(Window window, string controlName, double defaultValue)
         {
             return double.TryParse(GetTextBoxValue(window, controlName), out var value) ? value : defaultValue;
+        }
+
+        private static float? ParseFloatOrNullable(Window window, string controlName)
+        {
+            var text = GetTextBoxValue(window, controlName);
+            if (string.IsNullOrWhiteSpace(text)) return null;
+
+            if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value)) return value;
+
+            return null;
+        }
+
+        private static float? GetNumericUpDownFloatValueOrNull(Window window, string controlName)
+        {
+            var control = window.FindControl<NumericUpDown>(controlName);
+            if (control != null && control.Value.HasValue)
+                // Convert from decimal? to float?
+                return (float)control.Value.Value;
+            return null;
+        }
+
+        private static double? GetNumericUpDownValueOrNull(Window window, string controlName)
+        {
+            var control = window.FindControl<NumericUpDown>(controlName);
+            if (control != null && control.Value.HasValue) return (double)control.Value.Value;
+            return null;
+        }
+
+        private static int? ParseIntOrNullable(Window window, string controlName)
+        {
+            var text = GetTextBoxValue(window, controlName);
+            if (string.IsNullOrWhiteSpace(text)) return null;
+
+            if (int.TryParse(text, out var value)) return value;
+
+            return null;
+        }
+
+        private static string? GetReasoningEffortValue(Window window, string controlName)
+        {
+            var comboBox = window.FindControl<ComboBox>(controlName);
+            if (comboBox?.SelectedItem is ComboBoxItem selectedItem)
+            {
+                var content = selectedItem.Content?.ToString() ?? string.Empty;
+
+                // Return null for "Default" to use OpenAI's default (medium)
+                if (content == "Default")
+                    return null;
+
+                // Try to parse as enum and convert to lowercase string
+                if (Enum.TryParse<OpenAIReasoningEffortEnum>(content, true, out var level))
+                    return level.ToString().ToLowerInvariant();
+            }
+
+            return null;
         }
 
         #endregion

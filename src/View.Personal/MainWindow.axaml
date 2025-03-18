@@ -125,6 +125,31 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Completion Model" Foreground="Black"
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="2" Grid.Column="1" x:Name="OpenAICompletionModel" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Tokens"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="OpenAIMaxTokens" />
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Temperature"
+                                   VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="4" Grid.Column="1" x:Name="OpenAITemperature" Value="1"
+                                       Increment="0.1" Minimum="0" Maximum="2" />
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Top P"
+                                   VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="5" Grid.Column="1" x:Name="OpenAITopP"
+                                       Value="1.0"
+                                       Increment="0.01"
+                                       Minimum="0.0"
+                                       Maximum="1.0"
+                                       FormatString="0.00" />
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Reasoning Effort"
+                                   VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="OpenAIReasoningEffort">
+                            <ComboBoxItem Content="Default" />
+                            <ComboBoxItem Content="Low" />
+                            <ComboBoxItem Content="Medium" />
+                            <ComboBoxItem Content="High" />
+                        </ComboBox>
+
+
                     </Grid>
                 </StackPanel>
                 <!-- Anthropic Settings -->

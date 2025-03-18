@@ -3,6 +3,7 @@
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable PossibleMultipleEnumeration
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -80,6 +81,7 @@ namespace View.Personal
                 {
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
+                    Console.WriteLine("[INFO] MainWindow opened.");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -159,7 +161,6 @@ namespace View.Personal
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
 
-        // Proxy methods for XAML event bindings
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -234,7 +235,7 @@ namespace View.Personal
                     return "Error: Failed to generate embeddings for the prompt.";
 
                 Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
-                var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList(); // Convert double to float
+                var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
                 var searchResults = await PerformVectorSearch(floatEmbeddings);
                 if (searchResults == null || !searchResults.Any())
                     return "No relevant documents found to answer your question.";
@@ -386,8 +387,10 @@ namespace View.Personal
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        max_tokens = 300,
-                        temperature = 0.7,
+                        temperature = settings.OpenAITemperature,
+                        max_completion_tokens = settings.OpenAIMaxTokens,
+                        top_p = settings.OpenAITopP,
+                        reasoning_effort = settings.OpenAIReasoningEffort,
                         stream = true
                     };
                 case "Ollama":
