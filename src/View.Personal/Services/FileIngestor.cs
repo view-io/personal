@@ -1,6 +1,3 @@
-#pragma warning disable CS8604 // Possible null reference argument.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
 namespace View.Personal.Services
 {
     using Avalonia;
@@ -27,16 +24,19 @@ namespace View.Personal.Services
 
     public static class FileIngester
     {
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
         /// <summary>
         /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// typeDetector — The TypeDetector instance for identifying file types
-        /// liteGraph — The LiteGraphClient instance for graph operations
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// window — The parent window for UI interactions and dialogs
+        /// <param name="sender">The object triggering the event (expected to be a control)</param>
+        /// <param name="e">Routed event arguments</param>
+        /// <param name="typeDetector">The TypeDetector instance for identifying file types</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="window">The parent window for UI interactions and dialogs</param>
         /// Returns:
         /// Task representing the asynchronous operation; no direct return value
         /// </summary>
@@ -191,7 +191,7 @@ namespace View.Personal.Services
                     case "View":
                         var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                             providerSettings.ViewEndpoint,
-                            providerSettings.AccessKey);
+                            providerSettings.ViewAccessKey);
 
                         var chunkContents = chunkNodes
                             .Select(x => x.Data as Atom)
@@ -210,15 +210,15 @@ namespace View.Personal.Services
                             EmbeddingsRule = new EmbeddingsRule
                             {
                                 EmbeddingsGenerator =
-                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.EmbeddingsGenerator),
-                                EmbeddingsGeneratorUrl = providerSettings.EmbeddingsGeneratorUrl,
-                                EmbeddingsGeneratorApiKey = providerSettings.ApiKey,
+                                    Enum.Parse<EmbeddingsGeneratorEnum>(providerSettings.ViewEmbeddingsGenerator),
+                                EmbeddingsGeneratorUrl = providerSettings.ViewEmbeddingsGeneratorUrl,
+                                EmbeddingsGeneratorApiKey = providerSettings.ViewApiKey,
                                 BatchSize = 2,
                                 MaxGeneratorTasks = 4,
                                 MaxRetries = 3,
                                 MaxFailures = 3
                             },
-                            Model = providerSettings.Model,
+                            Model = providerSettings.ViewModel,
                             Contents = chunkContents
                         };
 
@@ -251,7 +251,7 @@ namespace View.Personal.Services
                                             TenantGUID = tenantGuid,
                                             GraphGUID = graphGuid,
                                             NodeGUID = item.ChunkNode.GUID,
-                                            Model = providerSettings.Model,
+                                            Model = providerSettings.ViewModel,
                                             Dimensionality = item.Embedding.Embeddings?.Count ?? 0,
                                             Vectors = item.Embedding.Embeddings,
                                             Content = atom.Text
@@ -473,5 +473,8 @@ namespace View.Personal.Services
                     .ShowAsync();
             }
         }
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

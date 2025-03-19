@@ -1,4 +1,3 @@
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
 namespace View.Personal.Services
 {
     using System;
@@ -10,15 +9,16 @@ namespace View.Personal.Services
 
     public static class GraphExporter
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
         /// <summary>
         /// Exports a graph from LiteGraph to a GEXF file based on the provided file path
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// liteGraph — The LiteGraphClient instance for graph operations
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// window — The parent window for UI interactions and dialogs
+        /// <param name="sender">The object triggering the event (expected to be a control)</param>
+        /// <param name="e">Routed event arguments</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="window">The parent window for UI interactions and dialogs</param>
         /// Returns:
         /// Task representing the asynchronous operation; no direct return value
         /// </summary>
@@ -65,5 +65,7 @@ namespace View.Personal.Services
                     .ShowAsync();
             }
         }
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

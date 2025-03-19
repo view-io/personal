@@ -1,6 +1,3 @@
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-// ReSharper disable PossibleMultipleEnumeration
-
 namespace View.Personal.Helpers
 {
     using System;
@@ -16,6 +13,9 @@ namespace View.Personal.Helpers
 
     public static class MainWindowHelpers
     {
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // ReSharper disable PossibleMultipleEnumeration
+
         #region Public-Members
 
         #endregion
@@ -24,20 +24,15 @@ namespace View.Personal.Helpers
 
         #endregion
 
-        #region Constructors-and-Factories
-
-        #endregion
-
         #region Public-Methods
 
         /// <summary>
         /// Updates the visibility of provider-specific settings controls based on the selected provider
-        /// Params:
-        /// openAISettings — The control containing OpenAI-specific settings
-        /// anthropicSettings — The control containing Anthropic-specific settings
-        /// viewSettings — The control containing View-specific settings
-        /// ollamaSettings — The control containing Ollama-specific settings
-        /// selectedProvider — The string indicating the currently selected provider
+        /// <param name="openAISettings">The control containing OpenAI-specific settings</param>
+        /// <param name="anthropicSettings">The control containing Anthropic-specific settings</param>
+        /// <param name="viewSettings">The control containing View-specific settings</param>
+        /// <param name="ollamaSettings">The control containing Ollama-specific settings</param>
+        /// <param name="selectedProvider">The string indicating the currently selected provider</param>
         /// Returns:
         /// None; modifies the visibility of the provided controls directly
         /// </summary>
@@ -56,10 +51,9 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
-        /// Params:
-        /// liteGraph — The LiteGraphClient instance for graph operations
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
         /// Returns:
         /// A List of FileViewModel objects representing the document nodes; empty if no nodes are found
         /// </summary>
@@ -93,12 +87,11 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Creates a document node for LiteGraph with metadata and content from a file and its extracted atoms
-        /// Params:
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// filePath — The path to the file being represented
-        /// atoms — The list of Atom objects extracted from the file
-        /// typeResult — The TypeResult object containing file type information
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="filePath">The path to the file being represented</param>
+        /// <param name="atoms">The list of Atom objects extracted from the file</param>
+        /// <param name="typeResult">The TypeResult object containing file type information</param>
         /// Returns:
         /// A Node object configured as a document node with the specified properties
         /// </summary>
@@ -130,10 +123,9 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Creates a list of chunk nodes for LiteGraph from a list of Atom objects, each representing a content segment
-        /// Params:
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// atoms — The list of Atom objects to convert into chunk nodes
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="atoms">The list of Atom objects to convert into chunk nodes</param>
         /// Returns:
         /// A List of Node objects configured as chunk nodes; empty if no valid atoms are provided
         /// </summary>
@@ -176,11 +168,10 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Creates a list of edges connecting a document node to its chunk nodes in LiteGraph
-        /// Params:
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// fileNodeGuid — The GUID of the document node
-        /// chunkNodes — The list of chunk nodes to connect to the document node
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="fileNodeGuid">The GUID of the document node</param>
+        /// <param name="chunkNodes">The list of chunk nodes to connect to the document node</param>
         /// Returns:
         /// A List of Edge objects representing the relationships between the document node and its chunks
         /// </summary>

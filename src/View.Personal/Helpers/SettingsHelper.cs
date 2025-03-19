@@ -22,17 +22,12 @@ namespace View.Personal.Helpers
 
         #endregion
 
-        #region Constructors-and-Factories
-
-        #endregion
-
         #region Public-Methods
 
         /// <summary>
         /// Extracts provider-specific settings from UI controls in the specified window based on the selected provider
-        /// Params:
-        /// window — The window containing the UI controls with settings data
-        /// selectedProvider — The string indicating the currently selected provider (e.g., "OpenAI", "Anthropic", "View", "Ollama")
+        /// <param name="window">The window containing the UI controls with settings data</param>
+        /// <param name="selectedProvider">The string indicating the currently selected provider (e.g., "OpenAI", "Anthropic", "View", "Ollama")</param>
         /// Returns:
         /// A CompletionProviderSettings object populated with values from the UI, or null if the provider is not supported
         /// </summary>
@@ -59,19 +54,19 @@ namespace View.Personal.Helpers
                 },
                 ["View"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                 {
-                    EmbeddingsGenerator = GetTextBoxValue(window, "EmbeddingsGenerator"),
-                    ApiKey = GetTextBoxValue(window, "ApiKey"),
+                    ViewEmbeddingsGenerator = GetTextBoxValue(window, "EmbeddingsGenerator"),
+                    ViewApiKey = GetTextBoxValue(window, "ApiKey"),
                     ViewEndpoint = GetTextBoxValue(window, "ViewEndpoint"),
-                    AccessKey = GetTextBoxValue(window, "AccessKey"),
-                    EmbeddingsGeneratorUrl = GetTextBoxValue(window, "EmbeddingsGeneratorUrl"),
-                    Model = GetTextBoxValue(window, "Model"),
+                    ViewAccessKey = GetTextBoxValue(window, "AccessKey"),
+                    ViewEmbeddingsGeneratorUrl = GetTextBoxValue(window, "EmbeddingsGeneratorUrl"),
+                    ViewModel = GetTextBoxValue(window, "Model"),
                     ViewCompletionApiKey = GetTextBoxValue(window, "ViewCompletionApiKey"),
                     ViewCompletionProvider = GetTextBoxValue(window, "ViewCompletionProvider"),
                     ViewCompletionModel = GetTextBoxValue(window, "ViewCompletionModel"),
                     ViewCompletionPort = ParseIntOrDefault(window, "ViewCompletionPort", 0),
-                    Temperature = ParseDoubleOrDefault(window, "Temperature", 0.7),
-                    TopP = ParseDoubleOrDefault(window, "TopP", 1.0),
-                    MaxTokens = ParseIntOrDefault(window, "MaxTokens", 150)
+                    ViewTemperature = ParseDoubleOrDefault(window, "Temperature", 0.7),
+                    ViewTopP = ParseDoubleOrDefault(window, "TopP", 1.0),
+                    ViewMaxTokens = ParseIntOrDefault(window, "MaxTokens", 150)
                 },
                 ["Ollama"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
                 {
@@ -88,8 +83,7 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Loads saved provider settings from the application and populates the corresponding UI controls
-        /// Params:
-        /// None
+        /// <param name="window">The window</param>
         /// Returns:
         /// None; updates UI controls with loaded settings directly
         /// </summary>
@@ -99,19 +93,21 @@ namespace View.Personal.Helpers
             var app = (App)Application.Current;
 
             var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            window.FindControl<TextBox>("EmbeddingsGenerator").Text = view.EmbeddingsGenerator ?? string.Empty;
-            window.FindControl<TextBox>("ApiKey").Text = view.ApiKey ?? string.Empty;
+            window.FindControl<TextBox>("ViewEmbeddingsGenerator").Text = view.ViewEmbeddingsGenerator ?? string.Empty;
+            window.FindControl<TextBox>("ViewApiKey").Text = view.ViewApiKey ?? string.Empty;
             window.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
-            window.FindControl<TextBox>("AccessKey").Text = view.AccessKey ?? string.Empty;
-            window.FindControl<TextBox>("EmbeddingsGeneratorUrl").Text = view.EmbeddingsGeneratorUrl ?? string.Empty;
-            window.FindControl<TextBox>("Model").Text = view.Model ?? string.Empty;
+            window.FindControl<TextBox>("ViewAccessKey").Text = view.ViewAccessKey ?? string.Empty;
+            window.FindControl<TextBox>("ViewEmbeddingsGeneratorUrl").Text =
+                view.ViewEmbeddingsGeneratorUrl ?? string.Empty;
+            window.FindControl<TextBox>("ViewModel").Text = view.ViewModel ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-            window.FindControl<TextBox>("Temperature").Text = view.Temperature.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("TopP").Text = view.TopP.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("MaxTokens").Text = view.MaxTokens.ToString();
+            window.FindControl<TextBox>("ViewTemperature").Text =
+                view.ViewTemperature.ToString(CultureInfo.InvariantCulture);
+            window.FindControl<TextBox>("ViewTopP").Text = view.ViewTopP.ToString(CultureInfo.InvariantCulture);
+            window.FindControl<TextBox>("ViewMaxTokens").Text = view.ViewMaxTokens.ToString();
 
 
             var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
@@ -193,9 +189,8 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Retrieves the text value from a TextBox control in the specified window, returning an empty string if not found
-        /// Params:
-        /// window — The window containing the TextBox control
-        /// controlName — The name of the TextBox control to query
+        /// <param name="window">The window containing the TextBox control</param>
+        /// <param name="controlName">The name of the TextBox control to query</param>
         /// Returns:
         /// The text content of the TextBox, or an empty string if the control is not found or has no text
         /// </summary>
@@ -206,10 +201,9 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Parses the text value from a TextBox control into an integer, returning a default value if parsing fails
-        /// Params:
-        /// window — The window containing the TextBox control
-        /// controlName — The name of the TextBox control to query
-        /// defaultValue — The default integer value to return if parsing is unsuccessful
+        /// <param name="window">The window containing the TextBox control</param>
+        /// <param name="controlName">The name of the TextBox control to query</param>
+        /// <param name="defaultValue">The default integer value to return if parsing is unsuccessful</param>
         /// Returns:
         /// The parsed integer value from the TextBox, or the defaultValue if the text is not a valid integer
         /// </summary>
@@ -220,10 +214,9 @@ namespace View.Personal.Helpers
 
         /// <summary>
         /// Parses the text value from a TextBox control into a double, returning a default value if parsing fails
-        /// Params:
-        /// window — The window containing the TextBox control
-        /// controlName — The name of the TextBox control to query
-        /// defaultValue — The default double value to return if parsing is unsuccessful
+        /// <param name="window">The window containing the TextBox control</param>
+        /// <param name="controlName">The name of the TextBox control to query</param>
+        /// <param name="defaultValue">The default double value to return if parsing is unsuccessful</param>
         /// Returns:
         /// The parsed double value from the TextBox, or the defaultValue if the text is not a valid double
         /// </summary>

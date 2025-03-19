@@ -1,14 +1,3 @@
-// View.Personal/MainWindow.cs
-
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-// ReSharper disable PossibleMultipleEnumeration
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-#pragma warning disable CS8603 // Possible null reference return.
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
-
 namespace View.Personal
 {
     using System;
@@ -40,6 +29,13 @@ namespace View.Personal
 
     public partial class MainWindow : Window
     {
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // ReSharper disable PossibleMultipleEnumeration
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -259,7 +255,7 @@ namespace View.Personal
             {
                 "OpenAI" => settings.OpenAICompletionApiKey,
                 "Ollama" => "",
-                "View" => settings.AccessKey,
+                "View" => settings.ViewAccessKey,
                 "Anthropic" => settings.AnthropicApiKey,
                 _ => null
             };
@@ -278,17 +274,17 @@ namespace View.Personal
                     }),
                 "Ollama" => (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
                     new EmbeddingsRequest { Model = settings.OllamaModel, Contents = new List<string> { userInput } }),
-                "View" => (new ViewEmbeddingsServerSdk(_TenantGuid, settings.ViewEndpoint, settings.AccessKey),
+                "View" => (new ViewEmbeddingsServerSdk(_TenantGuid, settings.ViewEndpoint, settings.ViewAccessKey),
                     new EmbeddingsRequest
                     {
                         EmbeddingsRule = new EmbeddingsRule
                         {
-                            EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(settings.EmbeddingsGenerator),
-                            EmbeddingsGeneratorUrl = settings.EmbeddingsGeneratorUrl,
-                            EmbeddingsGeneratorApiKey = settings.ApiKey,
+                            EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(settings.ViewEmbeddingsGenerator),
+                            EmbeddingsGeneratorUrl = settings.ViewEmbeddingsGeneratorUrl,
+                            EmbeddingsGeneratorApiKey = settings.ViewApiKey,
                             BatchSize = 2, MaxGeneratorTasks = 4, MaxRetries = 3, MaxFailures = 3
                         },
-                        Model = settings.Model,
+                        Model = settings.ViewModel,
                         Contents = new List<string> { userInput }
                     }),
                 "Anthropic" => (new ViewVoyageAiSdk(_TenantGuid, "https://api.voyageai.com/", settings.VoyageApiKey),
@@ -407,9 +403,9 @@ namespace View.Personal
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = settings.Temperature,
-                        TopP = settings.TopP,
-                        MaxTokens = settings.MaxTokens,
+                        Temperature = settings.ViewTemperature,
+                        TopP = settings.ViewTopP,
+                        MaxTokens = settings.ViewMaxTokens,
                         GenerationProvider = settings.ViewCompletionProvider,
                         GenerationApiKey = settings.ViewCompletionApiKey,
                         OllamaHostname = "192.168.197.1",
@@ -473,7 +469,7 @@ namespace View.Personal
             }
             else if (provider == "View")
             {
-                restRequest.Headers["Authorization"] = $"Bearer {settings.AccessKey}";
+                restRequest.Headers["Authorization"] = $"Bearer {settings.ViewAccessKey}";
             }
             else if (provider == "Anthropic")
             {
@@ -577,9 +573,14 @@ namespace View.Personal
 
         #endregion
 
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 #pragma warning restore CA1822 // Mark members as static
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

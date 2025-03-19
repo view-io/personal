@@ -1,5 +1,3 @@
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-#pragma warning disable CS8603 // Possible null reference return.
 namespace View.Personal.Services
 {
     using System;
@@ -12,6 +10,9 @@ namespace View.Personal.Services
     /// </summary>
     public class FileBrowserService
     {
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+#pragma warning disable CS8603 // Possible null reference return.
+
         #region Public-Members
 
         #endregion
@@ -149,5 +150,7 @@ namespace View.Personal.Services
         #region Private-Methods
 
         #endregion
+
+#pragma warning restore CS8603 // Possible null reference return.
     }
 }

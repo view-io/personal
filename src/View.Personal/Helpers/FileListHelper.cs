@@ -1,5 +1,3 @@
-// ReSharper disable PossibleMultipleEnumeration
-
 namespace View.Personal.Helpers
 {
     using System;
@@ -11,13 +9,14 @@ namespace View.Personal.Helpers
 
     public static class FileListHelper
     {
+        // ReSharper disable PossibleMultipleEnumeration
+
         /// <summary>
         /// Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
-        /// Params:
-        /// liteGraph — The LiteGraphClient instance for graph operations
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// window — The parent window containing the DataGrid to refresh
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="window">The parent window containing the DataGrid to refresh</param>
         /// Returns:
         /// None; updates the DataGrid's ItemsSource directly
         /// </summary>

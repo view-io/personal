@@ -29,10 +29,6 @@ namespace View.Personal.UIHandlers
 
         #endregion
 
-        #region Constructors-and-Factories
-
-        #endregion
-
         #region Public-Methods
 
         public static void MainWindow_Opened(Window window)
