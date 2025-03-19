@@ -54,19 +54,19 @@ namespace View.Personal.Helpers
                 },
                 ["View"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                 {
-                    ViewEmbeddingsGenerator = GetTextBoxValue(window, "EmbeddingsGenerator"),
-                    ViewApiKey = GetTextBoxValue(window, "ApiKey"),
+                    ViewEmbeddingsGenerator = GetTextBoxValue(window, "ViewEmbeddingsGenerator"),
+                    ViewApiKey = GetTextBoxValue(window, "ViewApiKey"),
                     ViewEndpoint = GetTextBoxValue(window, "ViewEndpoint"),
-                    ViewAccessKey = GetTextBoxValue(window, "AccessKey"),
-                    ViewEmbeddingsGeneratorUrl = GetTextBoxValue(window, "EmbeddingsGeneratorUrl"),
-                    ViewModel = GetTextBoxValue(window, "Model"),
+                    ViewAccessKey = GetTextBoxValue(window, "ViewAccessKey"),
+                    ViewEmbeddingsGeneratorUrl = GetTextBoxValue(window, "ViewEmbeddingsGeneratorUrl"),
+                    ViewModel = GetTextBoxValue(window, "ViewModel"),
                     ViewCompletionApiKey = GetTextBoxValue(window, "ViewCompletionApiKey"),
                     ViewCompletionProvider = GetTextBoxValue(window, "ViewCompletionProvider"),
                     ViewCompletionModel = GetTextBoxValue(window, "ViewCompletionModel"),
                     ViewCompletionPort = ParseIntOrDefault(window, "ViewCompletionPort", 0),
-                    ViewTemperature = ParseDoubleOrDefault(window, "Temperature", 0.7),
-                    ViewTopP = ParseDoubleOrDefault(window, "TopP", 1.0),
-                    ViewMaxTokens = ParseIntOrDefault(window, "MaxTokens", 150)
+                    ViewTemperature = ParseDoubleOrDefault(window, "ViewTemperature", 0.7),
+                    ViewTopP = ParseDoubleOrDefault(window, "ViewTopP", 1.0),
+                    ViewMaxTokens = ParseIntOrDefault(window, "ViewMaxTokens", 150)
                 },
                 ["Ollama"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
                 {

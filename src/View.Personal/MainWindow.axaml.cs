@@ -383,10 +383,11 @@ namespace View.Personal
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        temperature = settings.OpenAITemperature,
-                        max_completion_tokens = settings.OpenAIMaxTokens,
-                        top_p = settings.OpenAITopP,
-                        reasoning_effort = settings.OpenAIReasoningEffort,
+                        // ToDo: Add these settings and account for different models
+                        // temperature = settings.OpenAITemperature,
+                        // max_completion_tokens = settings.OpenAIMaxTokens,
+                        // top_p = settings.OpenAITopP,
+                        // reasoning_effort = settings.OpenAIReasoningEffort,
                         stream = true
                     };
                 case "Ollama":
