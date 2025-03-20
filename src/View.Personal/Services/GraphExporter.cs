@@ -2,6 +2,7 @@ namespace View.Personal.Services
 {
     using System;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
@@ -41,28 +42,17 @@ namespace View.Personal.Services
                 Console.WriteLine($"Graph {graphGuid} exported to {exportFilePath} successfully!");
                 window.FindControl<TextBox>("ExportFilePathTextBox").Text = "";
                 if (spinner != null) spinner.IsVisible = false;
-
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Export Success",
-                        "Graph was exported successfully!",
-                        ButtonEnum.Ok,
-                        Icon.Success
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("File Exported", "File was exported successfully!",
+                        NotificationType.Success);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error exporting graph to GEXF: {ex.Message}");
                 if (spinner != null) spinner.IsVisible = false;
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Export Error",
-                        $"Something went wrong: {ex.Message}",
-                        ButtonEnum.Ok,
-                        Icon.Error
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Export error", $"Error exporting graph to GEXF: {ex.Message}",
+                        NotificationType.Error);
             }
         }
 

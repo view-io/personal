@@ -1,12 +1,13 @@
 namespace View.Personal.Services
 {
     using Avalonia;
+    using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
+    using Avalonia.Interactivity;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Avalonia.Controls;
-    using Avalonia.Interactivity;
     using Classes;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
@@ -450,27 +451,17 @@ namespace View.Personal.Services
                 window.FindControl<TextBox>("FilePathTextBox").Text = "";
                 if (spinner != null) spinner.IsVisible = false;
 
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "File Ingested",
-                        "File was ingested successfully!",
-                        ButtonEnum.Ok,
-                        Icon.Success
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
+                        NotificationType.Success);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
                 if (spinner != null) spinner.IsVisible = false;
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Ingestion Error",
-                        $"Something went wrong: {ex.Message}",
-                        ButtonEnum.Ok,
-                        Icon.Error
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
             }
         }
 #pragma warning restore CS8604 // Possible null reference argument.

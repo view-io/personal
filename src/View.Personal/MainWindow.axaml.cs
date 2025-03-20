@@ -10,6 +10,7 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Threading;
@@ -58,6 +59,8 @@ namespace View.Personal
 
         private readonly FileBrowserService _FileBrowserService = new();
 
+        private WindowNotificationManager _WindowNotificationManager;
+
         private bool _WindowInitialized;
 
         #endregion
@@ -77,6 +80,7 @@ namespace View.Personal
                 {
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
+                    _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
                     Console.WriteLine("[INFO] MainWindow opened.");
                 };
                 NavList.SelectionChanged += (s, e) =>
@@ -91,6 +95,17 @@ namespace View.Personal
             {
                 Console.WriteLine($"[ERROR] MainWindow constructor exception: {e.Message}");
             }
+        }
+
+        public void ShowNotification(string title, string message, NotificationType notificationType)
+        {
+            var notification = new Notification(
+                title,
+                message,
+                notificationType,
+                TimeSpan.FromSeconds(5)
+            );
+            _WindowNotificationManager.Show(notification);
         }
 
         #endregion
