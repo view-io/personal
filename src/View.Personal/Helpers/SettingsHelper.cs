@@ -42,7 +42,6 @@ namespace View.Personal.Helpers
                     OpenAICompletionModel = GetTextBoxValue(window, "OpenAICompletionModel"),
                     OpenAIMaxTokens = ParseIntOrDefault(window, "OpenAIMaxTokens", 300),
                     OpenAITemperature = GetNumericUpDownValueOrNull(window, "OpenAITemperature"),
-                    OpenAITopP = GetNumericUpDownFloatValueOrNull(window, "OpenAITopP"),
                     OpenAIReasoningEffort = GetReasoningEffortValue(window, "OpenAIReasoningEffort")
                 },
                 ["Anthropic"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Anthropic)
@@ -54,7 +53,7 @@ namespace View.Personal.Helpers
                 },
                 ["View"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.View)
                 {
-                    ViewEmbeddingsGenerator = GetTextBoxValue(window, "ViewEmbeddingsGenerator"),
+                    ViewEmbeddingsGenerator = GetComboBoxValue(window, "ViewEmbeddingsGenerator"),
                     ViewApiKey = GetTextBoxValue(window, "ViewApiKey"),
                     ViewEndpoint = GetTextBoxValue(window, "ViewEndpoint"),
                     ViewAccessKey = GetTextBoxValue(window, "ViewAccessKey"),
@@ -65,7 +64,7 @@ namespace View.Personal.Helpers
                     ViewCompletionModel = GetTextBoxValue(window, "ViewCompletionModel"),
                     ViewCompletionPort = ParseIntOrDefault(window, "ViewCompletionPort", 0),
                     ViewTemperature = ParseDoubleOrDefault(window, "ViewTemperature", 0.7),
-                    ViewTopP = ParseDoubleOrDefault(window, "ViewTopP", 1.0),
+                    ViewTopP = GetNumericUpDownFloatValueOrNull(window, "ViewTopP"),
                     ViewMaxTokens = ParseIntOrDefault(window, "ViewMaxTokens", 150)
                 },
                 ["Ollama"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
@@ -89,98 +88,122 @@ namespace View.Personal.Helpers
         /// </summary>
         public static void LoadSavedSettings(Window window)
         {
-            Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
-            var app = (App)Application.Current;
-
-            var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
-            window.FindControl<TextBox>("ViewEmbeddingsGenerator").Text = view.ViewEmbeddingsGenerator ?? string.Empty;
-            window.FindControl<TextBox>("ViewApiKey").Text = view.ViewApiKey ?? string.Empty;
-            window.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
-            window.FindControl<TextBox>("ViewAccessKey").Text = view.ViewAccessKey ?? string.Empty;
-            window.FindControl<TextBox>("ViewEmbeddingsGeneratorUrl").Text =
-                view.ViewEmbeddingsGeneratorUrl ?? string.Empty;
-            window.FindControl<TextBox>("ViewModel").Text = view.ViewModel ?? string.Empty;
-            window.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-            window.FindControl<TextBox>("ViewCompletionProvider").Text = view.ViewCompletionProvider ?? string.Empty;
-            window.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
-            window.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-            window.FindControl<TextBox>("ViewTemperature").Text =
-                view.ViewTemperature.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("ViewTopP").Text = view.ViewTopP.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("ViewMaxTokens").Text = view.ViewMaxTokens.ToString();
-
-
-            var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-            window.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
-            window.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
-            window.FindControl<TextBox>("OpenAICompletionModel").Text = openAI.OpenAICompletionModel ?? string.Empty;
-            window.FindControl<TextBox>("OpenAIMaxTokens").Text = openAI.OpenAIMaxTokens.ToString();
-            var temperatureControl = window.FindControl<NumericUpDown>("OpenAITemperature");
-            if (openAI.OpenAITemperature.HasValue)
-                temperatureControl.Value = (decimal)openAI.OpenAITemperature.Value;
-            else
-                temperatureControl.Value = null;
-            var topPControl = window.FindControl<NumericUpDown>("OpenAITopP");
-            if (openAI.OpenAITopP.HasValue)
-                topPControl.Value = (decimal)openAI.OpenAITopP.Value;
-            else
-                topPControl.Value = null;
-            var reasoningEffortControl = window.FindControl<ComboBox>("OpenAIReasoningEffort");
-            var effortLevel = openAI.GetReasoningEffortLevel();
-
-            if (effortLevel == null)
+            try
             {
-                reasoningEffortControl.SelectedIndex = 0;
-            }
-            else
-            {
-                var effortName = effortLevel.ToString();
-                var item = reasoningEffortControl.Items
-                    .OfType<ComboBoxItem>()
-                    .FirstOrDefault(i => i.Content.ToString().Equals(effortName, StringComparison.OrdinalIgnoreCase));
+                Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
+                var app = (App)Application.Current;
 
-                if (item != null)
-                    reasoningEffortControl.SelectedItem = item;
+                var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+                var embeddingsGeneratorComboBox = window.FindControl<ComboBox>("ViewEmbeddingsGenerator");
+                if (!string.IsNullOrEmpty(view.ViewEmbeddingsGenerator))
+                {
+                    var selectedItem = embeddingsGeneratorComboBox.Items
+                        .OfType<ComboBoxItem>()
+                        .FirstOrDefault(item => item.Content.ToString() == view.ViewEmbeddingsGenerator);
+
+                    embeddingsGeneratorComboBox.SelectedItem = selectedItem ?? embeddingsGeneratorComboBox.Items[0];
+                }
                 else
+                {
+                    embeddingsGeneratorComboBox.SelectedIndex = 0;
+                }
+
+                window.FindControl<TextBox>("ViewApiKey").Text = view.ViewApiKey ?? string.Empty;
+                window.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
+                window.FindControl<TextBox>("ViewAccessKey").Text = view.ViewAccessKey ?? string.Empty;
+                window.FindControl<TextBox>("ViewEmbeddingsGeneratorUrl").Text =
+                    view.ViewEmbeddingsGeneratorUrl ?? string.Empty;
+                window.FindControl<TextBox>("ViewModel").Text = view.ViewModel ?? string.Empty;
+                window.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
+                window.FindControl<TextBox>("ViewCompletionProvider").Text =
+                    view.ViewCompletionProvider ?? string.Empty;
+                window.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
+                window.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
+                window.FindControl<TextBox>("ViewTemperature").Text =
+                    view.ViewTemperature.ToString(CultureInfo.InvariantCulture);
+                var viewTopPControl = window.FindControl<NumericUpDown>("ViewTopP");
+                if (viewTopPControl != null) viewTopPControl.Value = (decimal)view.ViewTopP;
+
+                window.FindControl<TextBox>("ViewMaxTokens").Text = view.ViewMaxTokens.ToString();
+
+
+                var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
+                window.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
+                window.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
+                window.FindControl<TextBox>("OpenAICompletionModel").Text =
+                    openAI.OpenAICompletionModel ?? string.Empty;
+                window.FindControl<TextBox>("OpenAIMaxTokens").Text = openAI.OpenAIMaxTokens.ToString();
+                var temperatureControl = window.FindControl<NumericUpDown>("OpenAITemperature");
+                if (openAI.OpenAITemperature.HasValue)
+                    temperatureControl.Value = (decimal)openAI.OpenAITemperature.Value;
+                else
+                    temperatureControl.Value = null;
+                var reasoningEffortControl = window.FindControl<ComboBox>("OpenAIReasoningEffort");
+                var effortLevel = openAI.GetReasoningEffortLevel();
+
+                if (effortLevel == null)
+                {
                     reasoningEffortControl.SelectedIndex = 0;
+                }
+                else
+                {
+                    var effortName = effortLevel.ToString();
+                    var item = reasoningEffortControl.Items
+                        .OfType<ComboBoxItem>()
+                        .FirstOrDefault(
+                            i => i.Content.ToString().Equals(effortName, StringComparison.OrdinalIgnoreCase));
+
+                    if (item != null)
+                        reasoningEffortControl.SelectedItem = item;
+                    else
+                        reasoningEffortControl.SelectedIndex = 0;
+                }
+
+
+                var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
+                window.FindControl<TextBox>("AnthropicCompletionModel").Text =
+                    anthropic.AnthropicCompletionModel ?? string.Empty;
+                window.FindControl<TextBox>("AnthropicApiKey").Text = anthropic.AnthropicApiKey ?? string.Empty;
+                window.FindControl<TextBox>("VoyageApiKey").Text = anthropic.VoyageApiKey ?? string.Empty;
+                window.FindControl<TextBox>("VoyageEmbeddingModel").Text =
+                    anthropic.VoyageEmbeddingModel ?? string.Empty;
+
+                var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+                window.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
+                window.FindControl<TextBox>("OllamaCompletionModel").Text =
+                    ollama.OllamaCompletionModel ?? string.Empty;
+                window.FindControl<TextBox>("OllamaTemperature").Text =
+                    ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
+                window.FindControl<TextBox>("OllamaTopP").Text =
+                    ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
+                window.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
+
+                var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
+                if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
+                {
+                    var selectedItem = comboBox.Items
+                        .OfType<ComboBoxItem>()
+                        .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
+                    comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
+                }
+                else
+                {
+                    comboBox.SelectedIndex = 0;
+                }
+
+                Console.WriteLine("[INFO] Finished loading settings.");
+                MainWindowHelpers.UpdateSettingsVisibility(
+                    window.FindControl<Control>("OpenAISettings"),
+                    window.FindControl<Control>("AnthropicSettings"),
+                    window.FindControl<Control>("ViewSettings"),
+                    window.FindControl<Control>("OllamaSettings"),
+                    app.AppSettings.SelectedProvider ?? "View");
             }
-
-
-            var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
-            window.FindControl<TextBox>("AnthropicCompletionModel").Text =
-                anthropic.AnthropicCompletionModel ?? string.Empty;
-            window.FindControl<TextBox>("AnthropicApiKey").Text = anthropic.AnthropicApiKey ?? string.Empty;
-            window.FindControl<TextBox>("VoyageApiKey").Text = anthropic.VoyageApiKey ?? string.Empty;
-            window.FindControl<TextBox>("VoyageEmbeddingModel").Text = anthropic.VoyageEmbeddingModel ?? string.Empty;
-
-            var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
-            window.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
-            window.FindControl<TextBox>("OllamaCompletionModel").Text = ollama.OllamaCompletionModel ?? string.Empty;
-            window.FindControl<TextBox>("OllamaTemperature").Text =
-                ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("OllamaTopP").Text = ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
-            window.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
-
-            var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-            if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
+            catch (Exception e)
             {
-                var selectedItem = comboBox.Items
-                    .OfType<ComboBoxItem>()
-                    .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
-                comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
+                Console.WriteLine(e);
+                throw;
             }
-            else
-            {
-                comboBox.SelectedIndex = 0;
-            }
-
-            Console.WriteLine("[INFO] Finished loading settings.");
-            MainWindowHelpers.UpdateSettingsVisibility(
-                window.FindControl<Control>("OpenAISettings"),
-                window.FindControl<Control>("AnthropicSettings"),
-                window.FindControl<Control>("ViewSettings"),
-                window.FindControl<Control>("OllamaSettings"),
-                app.AppSettings.SelectedProvider ?? "View");
         }
 
         #endregion
@@ -197,6 +220,14 @@ namespace View.Personal.Helpers
         private static string GetTextBoxValue(Window window, string controlName)
         {
             return window.FindControl<TextBox>(controlName)?.Text ?? string.Empty;
+        }
+
+        private static string GetComboBoxValue(Window window, string controlName)
+        {
+            var comboBox = window.FindControl<ComboBox>(controlName);
+            if (comboBox?.SelectedItem is ComboBoxItem selectedItem)
+                return selectedItem.Content?.ToString() ?? string.Empty;
+            return string.Empty;
         }
 
         /// <summary>
@@ -235,13 +266,12 @@ namespace View.Personal.Helpers
             return null;
         }
 
-        private static float? GetNumericUpDownFloatValueOrNull(Window window, string controlName)
+        private static float GetNumericUpDownFloatValueOrNull(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
-            if (control != null && control.Value.HasValue)
-                // Convert from decimal? to float?
+            if (control.Value.HasValue)
                 return (float)control.Value.Value;
-            return null;
+            return 0.95f;
         }
 
         private static double? GetNumericUpDownValueOrNull(Window window, string controlName)
