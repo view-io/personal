@@ -1,28 +1,59 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:classes="clr-namespace:View.Personal.Classes"
+        xmlns:controls="using:Avalonia.Controls.Notifications"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Background="White"
         Title="View Personal Edition"
         Icon="/Assets/glyph.png">
-    <DockPanel>
-        <!-- Top Bar -->
-        <Grid DockPanel.Dock="Top" Height="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
-                <Image Source="/Assets/logo.png" Height="30" />
-                <TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" Foreground="Black" />
-            </StackPanel>
-            <TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0"
-                       Foreground="Black" />
-            <Border Grid.ColumnSpan="3" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD"
-                    VerticalAlignment="Bottom" />
-        </Grid>
+    <Grid>
+
+        <!-- <Window.Styles> -->
+        <!--     ~1~ Style for DataGrid headers @1@ -->
+        <!--     <Style Selector="DataGridColumnHeader"> -->
+        <!--         <Setter Property="Background" Value="{DynamicResource MaterialPrimaryBrush}" /> -->
+        <!--         <Setter Property="Foreground" Value="{DynamicResource MaterialOnPrimaryBrush}" /> -->
+        <!--         <Setter Property="Padding" Value="10" /> -->
+        <!--     </Style> -->
+        <!--     ~1~ Style for DataGrid rows @1@ -->
+        <!--     <Style Selector="DataGridRow"> -->
+        <!--         <Setter Property="Background" Value="{DynamicResource MaterialBackgroundBrush}" /> -->
+        <!--     </Style> -->
+        <!--     ~1~ Hover effect for DataGrid rows @1@ -->
+        <!--     <Style Selector="DataGridRow:pointerover /template/ ContentPresenter"> -->
+        <!--         <Setter Property="Background" Value="{DynamicResource MaterialPrimaryLightBrush}" /> -->
+        <!--     </Style> -->
+        <!--     ~1~ Padding for DataGrid cells @1@ -->
+        <!--     <Style Selector="DataGridCell"> -->
+        <!--         <Setter Property="Padding" Value="10" /> -->
+        <!--     </Style> -->
+        <!--     <Style Selector="DataGridTemplateColumn Button"> -->
+        <!--         <Setter Property="Background" Value="Transparent" /> -->
+        <!--         <Setter Property="BorderThickness" Value="0" /> -->
+        <!--         <Setter Property="Padding" Value="5" /> -->
+        <!--         <Setter Property="Cursor" Value="Hand" /> -->
+        <!--     </Style> -->
+        <!--     <Style Selector="DataGridTemplateColumn Button:pointerover /template/ ContentPresenter"> -->
+        <!--         <Setter Property="Background" Value="{DynamicResource MaterialPrimaryLightBrush}" /> -->
+        <!--     </Style> -->
+        <!-- </Window.Styles> -->
+        <DockPanel>
+            <!-- Top Bar -->
+            <Grid DockPanel.Dock="Top" Height="50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
+                    <Image Source="/Assets/logo.png" Height="30" />
+                    <TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0" />
+                <Border Grid.ColumnSpan="3" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD"
+                        VerticalAlignment="Bottom" />
+            </Grid>
 
         <!-- Left Navigation Panel with Model Provider Dropdown -->
         <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
@@ -176,74 +207,70 @@
                     <Grid ColumnDefinitions="200,*"
                           RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="EmbeddingsGenerator" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" />
+                            <!-- <TextBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsGenerator" /> -->
+                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsGenerator">
+                                <ComboBoxItem Content="LCProxy" />
+                                <ComboBoxItem Content="OpenAI" />
+                                <ComboBoxItem Content="Ollama" />
+                                <ComboBoxItem Content="VoyageAI" />
+                            </ComboBox>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ApiKey" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" />
+                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="ViewApiKey" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="View Endpoint" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEndpoint" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="View Endpoint" />
+                            <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEndpoint" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Access Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="AccessKey" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Access Key" />
+                            <TextBox Grid.Row="3" Grid.Column="1" x:Name="ViewAccessKey" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Embeddings Url" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="EmbeddingsGeneratorUrl" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Embeddings Url" />
+                            <TextBox Grid.Row="4" Grid.Column="1" x:Name="ViewEmbeddingsGeneratorUrl" />
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="Model" />
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" />
+                            <TextBox Grid.Row="5" Grid.Column="1" x:Name="ViewModel" />
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="6" Grid.Column="1" x:Name="ViewCompletionApiKey" />
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" />
+                            <TextBox Grid.Row="6" Grid.Column="1" x:Name="ViewCompletionApiKey" />
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" />
+                            <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
 
-                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="9" Grid.Column="1" x:Name="ViewCompletionModel" />
+                            <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" />
+                            <TextBox Grid.Row="9" Grid.Column="1" x:Name="ViewCompletionModel" />
 
-                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
+                            <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" />
+                            <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
 
-                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" />
-                        <NumericUpDown Grid.Row="11" Grid.Column="1" x:Name="ViewTemperature"
-                                       Value="0.1"
-                                       Increment="0.1"
-                                       Minimum="0.0"
-                                       Maximum="1.0"
-                                       FormatString="0.00" />
+                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" />
+                            <NumericUpDown Grid.Row="11" Grid.Column="1" x:Name="ViewTemperature"
+                                           Value="0.1"
+                                           Increment="0.1"
+                                           Minimum="0.0"
+                                           Maximum="1.0"
+                                           FormatString="0.00" />
 
-                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" />
-                        <NumericUpDown Grid.Row="12" Grid.Column="1" x:Name="ViewTopP"
-                                       Value="0.95"
-                                       Increment="0.1"
-                                       Minimum="0.0"
-                                       Maximum="1.0"
-                                       FormatString="0.00" />
-                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
-                        <NumericUpDown Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens"
-                                       Value="1000"
-                                       Increment="1"
-                                       Minimum="128"
-                                       Maximum="4096"
-                                       FormatString="0" />
-                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
-                    </Grid>
-                </StackPanel>
-                <!-- Ollama Settings -->
-                <StackPanel x:Name="OllamaSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                    <Grid ColumnDefinitions="200,*"
-                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" />
+                            <NumericUpDown Grid.Row="12" Grid.Column="1" x:Name="ViewTopP"
+                                           Value="0.95"
+                                           Increment="0.1"
+                                           Minimum="0.0"
+                                           Maximum="1.0"
+                                           FormatString="0.00" />
+                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
+                            <NumericUpDown Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens"
+                                           Value="1000"
+                                           Increment="1"
+                                           Minimum="128"
+                                           Maximum="4096"
+                                           FormatString="0" />
+                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
+                        </Grid>
+                    </StackPanel>
+                    <!-- Ollama Settings -->
+                    <StackPanel x:Name="OllamaSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
+                        <Grid ColumnDefinitions="200,*"
+                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" Foreground="Black"
                                    VerticalAlignment="Center" />
