@@ -215,17 +215,23 @@
                                    VerticalAlignment="Center" />
                         <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
 
-                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="11" Grid.Column="1" x:Name="Temperature" />
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" />
+                        <NumericUpDown Grid.Row="11" Grid.Column="1" x:Name="ViewTemperature"
+                                       Value="0.1"
+                                       Increment="0.1"
+                                       Minimum="0.0"
+                                       Maximum="1.0"
+                                       FormatString="0.00" />
 
-                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="12" Grid.Column="1" x:Name="TopP" />
-
-                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" Foreground="Black"
-                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Row="13" Grid.Column="1" x:Name="MaxTokens" />
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" />
+                        <NumericUpDown Grid.Row="12" Grid.Column="1" x:Name="ViewTopP"
+                                       Value="0.95"
+                                       Increment="0.1"
+                                       Minimum="0.0"
+                                       Maximum="1.0"
+                                       FormatString="0.00" />
+                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
+                        <TextBox Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens" />
                     </Grid>
                 </StackPanel>
                 <!-- Ollama Settings -->

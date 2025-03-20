@@ -125,10 +125,10 @@
         /// Temperature setting for View completions. Controls randomness.
         /// Value is clamped between 0.0 and 1.0. Default is 0.1.
         /// </summary>
-        public double ViewTemperature
+        public float ViewTemperature
         {
             get => _ViewTemperature;
-            set => _ViewTemperature = Math.Clamp(value, 0.0, 1.0);
+            set => _ViewTemperature = Math.Clamp(value, 0.0f, 1.0f);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@
         #region Private-Members
 
         private float _ViewTopP = 0.9f;
-        private double _ViewTemperature = 0.1;
+        private float _ViewTemperature = 0.1f;
         private int _ViewMaxTokens = 1000;
 
         #endregion

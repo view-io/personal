@@ -63,7 +63,7 @@ namespace View.Personal.Helpers
                     ViewCompletionProvider = GetTextBoxValue(window, "ViewCompletionProvider"),
                     ViewCompletionModel = GetTextBoxValue(window, "ViewCompletionModel"),
                     ViewCompletionPort = ParseIntOrDefault(window, "ViewCompletionPort", 0),
-                    ViewTemperature = ParseDoubleOrDefault(window, "ViewTemperature", 0.7),
+                    ViewTemperature = GetNumericUpDownFloatValueOrNull(window, "ViewTemperature"),
                     ViewTopP = GetNumericUpDownFloatValueOrNull(window, "ViewTopP"),
                     ViewMaxTokens = ParseIntOrDefault(window, "ViewMaxTokens", 150)
                 },
@@ -119,8 +119,8 @@ namespace View.Personal.Helpers
                     view.ViewCompletionProvider ?? string.Empty;
                 window.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
                 window.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
-                window.FindControl<TextBox>("ViewTemperature").Text =
-                    view.ViewTemperature.ToString(CultureInfo.InvariantCulture);
+                var viewTemperatureControl = window.FindControl<NumericUpDown>("ViewTemperature");
+                if (viewTemperatureControl != null) viewTemperatureControl.Value = (decimal)view.ViewTemperature;
                 var viewTopPControl = window.FindControl<NumericUpDown>("ViewTopP");
                 if (viewTopPControl != null) viewTopPControl.Value = (decimal)view.ViewTopP;
 
