@@ -231,7 +231,13 @@
                                        Maximum="1.0"
                                        FormatString="0.00" />
                         <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
-                        <TextBox Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens" />
+                        <NumericUpDown Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens"
+                                       Value="1000"
+                                       Increment="1"
+                                       Minimum="128"
+                                       Maximum="4096"
+                                       FormatString="0" />
+                        <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
                     </Grid>
                 </StackPanel>
                 <!-- Ollama Settings -->

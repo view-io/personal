@@ -65,7 +65,7 @@ namespace View.Personal.Helpers
                     ViewCompletionPort = ParseIntOrDefault(window, "ViewCompletionPort", 0),
                     ViewTemperature = GetNumericUpDownFloatValueOrNull(window, "ViewTemperature"),
                     ViewTopP = GetNumericUpDownFloatValueOrNull(window, "ViewTopP"),
-                    ViewMaxTokens = ParseIntOrDefault(window, "ViewMaxTokens", 150)
+                    ViewMaxTokens = GetIntUpDownValue(window, "ViewMaxTokens")
                 },
                 ["Ollama"] = () => new CompletionProviderSettings(CompletionProviderTypeEnum.Ollama)
                 {
@@ -123,8 +123,8 @@ namespace View.Personal.Helpers
                 if (viewTemperatureControl != null) viewTemperatureControl.Value = (decimal)view.ViewTemperature;
                 var viewTopPControl = window.FindControl<NumericUpDown>("ViewTopP");
                 if (viewTopPControl != null) viewTopPControl.Value = (decimal)view.ViewTopP;
-
-                window.FindControl<TextBox>("ViewMaxTokens").Text = view.ViewMaxTokens.ToString();
+                var maxTokensControl = window.FindControl<NumericUpDown>("ViewMaxTokens");
+                if (maxTokensControl != null) maxTokensControl.Value = view.ViewMaxTokens;
 
 
                 var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
@@ -279,6 +279,14 @@ namespace View.Personal.Helpers
             var control = window.FindControl<NumericUpDown>(controlName);
             if (control != null && control.Value.HasValue) return (double)control.Value.Value;
             return null;
+        }
+
+        private static int GetIntUpDownValue(Window window, string controlName)
+        {
+            var control = window.FindControl<NumericUpDown>(controlName);
+            if (control.Value.HasValue)
+                return (int)control.Value.Value;
+            return 1000;
         }
 
         private static int? ParseIntOrNullable(Window window, string controlName)
