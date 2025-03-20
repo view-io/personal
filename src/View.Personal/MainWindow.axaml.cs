@@ -97,6 +97,12 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Displays a notification with the specified title, message, and type using the window's notification manager.
+        /// </summary>
+        /// <param name="title">The title of the notification.</param>
+        /// <param name="message">The message to display in the notification.</param>
+        /// <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         public void ShowNotification(string title, string message, NotificationType notificationType)
         {
             var notification = new Notification(

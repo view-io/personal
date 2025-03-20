@@ -377,6 +377,9 @@ namespace View.Personal.Services
 
                         Console.WriteLine($"Updated {voyageValidChunkNodes.Count} chunk nodes with Voyage embeddings.");
                         break;
+
+                    default:
+                        throw new ArgumentException("Unsupported provider");
                 }
 
                 Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
@@ -399,12 +402,25 @@ namespace View.Personal.Services
             }
         }
 
+        /// <summary>
+        /// Displays an error notification using the provided MainWindow instance.
+        /// </summary>
+        /// <param name="mainWindow">The MainWindow instance to use for displaying the notification.</param>
+        /// <param name="title">The title of the error notification.</param>
+        /// <param name="message">The message to display in the error notification.</param>
         private static void ShowErrorNotification(MainWindow mainWindow, string title, string message)
         {
             if (mainWindow != null)
                 mainWindow.ShowNotification(title, message, NotificationType.Error);
         }
 
+        /// <summary>
+        /// Checks the validity of the embeddings result and displays error notifications if issues are found.
+        /// </summary>
+        /// <param name="mainWindow">The MainWindow instance to use for displaying error notifications.</param>
+        /// <param name="result">The EmbeddingsResult object to validate.</param>
+        /// <param name="expectedCount">The expected number of embeddings in the result.</param>
+        /// <returns>True if the embeddings result is valid, false otherwise.</returns>
         private static bool CheckEmbeddingsResult(MainWindow mainWindow, EmbeddingsResult result, int expectedCount)
         {
             if (!result.Success)
