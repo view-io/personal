@@ -11,6 +11,7 @@ namespace View.Personal.UIHandlers
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using Classes;
     using Helpers;
@@ -44,28 +45,35 @@ namespace View.Personal.UIHandlers
 
         public static async void SaveSettings_Click(object sender, RoutedEventArgs e, Window window)
         {
-            Console.WriteLine("[INFO] SaveSettings_Click triggered.");
-            var app = (App)Application.Current;
-            var selectedProvider =
-                (window.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
-                ?.Content.ToString();
-
-            var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
-            if (settings != null)
+            try
             {
-                app.UpdateProviderSettings(settings);
-                app.SaveSelectedProvider(selectedProvider);
+                Console.WriteLine("[INFO] SaveSettings_Click triggered.");
+                var app = (App)Application.Current;
+                var selectedProvider =
+                    (window.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
+                    ?.Content.ToString();
 
-                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
-                        ButtonEnum.Ok, Icon.Success)
-                    .ShowAsync();
-                SettingsHelper.LoadSavedSettings(window);
+                var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
+                if (settings != null)
+                {
+                    app.UpdateProviderSettings(settings);
+                    app.SaveSelectedProvider(selectedProvider);
+
+                    Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
+
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("Settings Saved",
+                            $"{selectedProvider} settings saved successfully!",
+                            NotificationType.Success);
+                    SettingsHelper.LoadSavedSettings(window);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("[WARN] No settings were created because selectedProvider was null or invalid.");
+                Console.WriteLine($"[ERROR] SaveSettings_Click exception: {ex}");
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
             }
         }
 
