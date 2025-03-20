@@ -3,6 +3,7 @@ namespace View.Personal.Services
     using System;
     using System.Threading.Tasks;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
@@ -37,28 +38,21 @@ namespace View.Personal.Services
 
                     if (result != ButtonResult.Yes)
                         return;
-
                     liteGraph.DeleteNode(tenantGuid, graphGuid, file.NodeGuid);
                     Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
 
                     FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
 
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Success",
-                            $"File '{file.Name}' deleted successfully!",
-                            ButtonEnum.Ok,
-                            Icon.Success)
-                        .ShowAsync();
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("File Deleted", "File was deleted successfully!",
+                            NotificationType.Success);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error deleting file '{file.Name}': {ex.Message}");
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Error",
-                            $"Failed to delete file: {ex.Message}",
-                            ButtonEnum.Ok,
-                            Icon.Error)
-                        .ShowAsync();
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
+                            NotificationType.Error);
                 }
         }
     }
