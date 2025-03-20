@@ -44,6 +44,7 @@ namespace View.Personal.Services
         public static async Task IngestFile_ClickAsync(object sender, RoutedEventArgs e, TypeDetector typeDetector,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
+            var mainWindow = window as MainWindow;
             var filePath = window.FindControl<TextBox>("FilePathTextBox").Text;
             var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
             var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
@@ -146,24 +147,9 @@ namespace View.Personal.Services
                         };
 
                         Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
-                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
 
-                        if (!embeddingsResult.Success || embeddingsResult.ContentEmbeddings == null ||
-                            embeddingsResult.ContentEmbeddings.Count != validChunkNodes.Count)
-                        {
-                            Console.WriteLine($"Error generating embeddings: {embeddingsResult.StatusCode}");
-                            if (embeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {embeddingsResult.Error.Message}");
-                            await MsBox.Avalonia.MessageBoxManager
-                                .GetMessageBoxStandard(
-                                    "Ingestion Error",
-                                    "Failed to generate embeddings for chunks.",
-                                    ButtonEnum.Ok,
-                                    Icon.Error
-                                )
-                                .ShowAsync();
-                            break;
-                        }
+                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
+                        if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) break;
 
                         for (var j = 0; j < validChunkNodes.Count; j++)
                         {
@@ -223,14 +209,9 @@ namespace View.Personal.Services
                             Contents = chunkContents
                         };
 
+                        var expectedCount = chunkContents.Count;
                         var viewEmbeddingsResult = await viewEmbeddingsSdk.GenerateEmbeddings(req);
-                        if (!viewEmbeddingsResult.Success)
-                        {
-                            Console.WriteLine($"Embeddings generation failed: {viewEmbeddingsResult.StatusCode}");
-                            if (viewEmbeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {viewEmbeddingsResult.Error.Message}");
-                            break;
-                        }
+                        if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, expectedCount)) break;
 
                         if (viewEmbeddingsResult.ContentEmbeddings != null &&
                             viewEmbeddingsResult.ContentEmbeddings.Any())
@@ -307,40 +288,8 @@ namespace View.Personal.Services
 
                         Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOllamaSdk...");
                         var ollamaEmbeddingsResult = await ollamaSdk.GenerateEmbeddings(embeddingsRequest);
-
-                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
-                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
-                        {
-                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
-                            if (ollamaEmbeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
-                            await MsBox.Avalonia.MessageBoxManager
-                                .GetMessageBoxStandard(
-                                    "Ingestion Error",
-                                    "Failed to generate embeddings for chunks.",
-                                    ButtonEnum.Ok,
-                                    Icon.Error
-                                )
-                                .ShowAsync();
+                        if (!CheckEmbeddingsResult(mainWindow, ollamaEmbeddingsResult, ollamaValidChunkNodes.Count))
                             break;
-                        }
-
-                        if (!ollamaEmbeddingsResult.Success || ollamaEmbeddingsResult.ContentEmbeddings == null ||
-                            ollamaEmbeddingsResult.ContentEmbeddings.Count != ollamaValidChunkNodes.Count)
-                        {
-                            Console.WriteLine($"Error generating embeddings: {ollamaEmbeddingsResult.StatusCode}");
-                            if (ollamaEmbeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {ollamaEmbeddingsResult.Error.Message}");
-                            await MsBox.Avalonia.MessageBoxManager
-                                .GetMessageBoxStandard(
-                                    "Ingestion Error",
-                                    "Failed to generate embeddings for chunks.",
-                                    ButtonEnum.Ok,
-                                    Icon.Error
-                                )
-                                .ShowAsync();
-                            break;
-                        }
 
                         for (var j = 0; j < ollamaValidChunkNodes.Count; j++)
                         {
@@ -402,23 +351,8 @@ namespace View.Personal.Services
 
                         Console.WriteLine("[INFO] Generating embeddings for chunks via VoyageAiSdk...");
                         var voyageEmbeddingsResult = await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
-
-                        if (!voyageEmbeddingsResult.Success || voyageEmbeddingsResult.ContentEmbeddings == null ||
-                            voyageEmbeddingsResult.ContentEmbeddings.Count != voyageValidChunkNodes.Count)
-                        {
-                            Console.WriteLine($"Error generating embeddings: {voyageEmbeddingsResult.StatusCode}");
-                            if (voyageEmbeddingsResult.Error != null)
-                                Console.WriteLine($"Error: {voyageEmbeddingsResult.Error.Message}");
-                            await MsBox.Avalonia.MessageBoxManager
-                                .GetMessageBoxStandard(
-                                    "Ingestion Error",
-                                    "Failed to generate embeddings for chunks.",
-                                    ButtonEnum.Ok,
-                                    Icon.Error
-                                )
-                                .ShowAsync();
+                        if (!CheckEmbeddingsResult(mainWindow, voyageEmbeddingsResult, voyageValidChunkNodes.Count))
                             break;
-                        }
 
                         for (var j = 0; j < voyageValidChunkNodes.Count; j++)
                         {
@@ -451,7 +385,7 @@ namespace View.Personal.Services
                 window.FindControl<TextBox>("FilePathTextBox").Text = "";
                 if (spinner != null) spinner.IsVisible = false;
 
-                if (window is MainWindow mainWindow)
+                if (mainWindow != null)
                     mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
                         NotificationType.Success);
             }
@@ -459,11 +393,46 @@ namespace View.Personal.Services
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
                 if (spinner != null) spinner.IsVisible = false;
-                if (window is MainWindow mainWindow)
+                if (mainWindow != null)
                     mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);
             }
         }
+
+        private static void ShowErrorNotification(MainWindow mainWindow, string title, string message)
+        {
+            if (mainWindow != null)
+                mainWindow.ShowNotification(title, message, NotificationType.Error);
+        }
+
+        private static bool CheckEmbeddingsResult(MainWindow mainWindow, EmbeddingsResult result, int expectedCount)
+        {
+            if (!result.Success)
+            {
+                var errorMessage = $"Failed to generate embeddings for chunks with status {result.StatusCode}";
+                if (result.Error != null)
+                    errorMessage += $" {result.Error.Message}";
+                ShowErrorNotification(mainWindow, "Ingestion Error", errorMessage);
+                return false;
+            }
+
+            if (result.ContentEmbeddings == null)
+            {
+                ShowErrorNotification(mainWindow, "Ingestion Error",
+                    "Failed to generate embeddings for chunks: ContentEmbeddings is null");
+                return false;
+            }
+
+            if (result.ContentEmbeddings.Count != expectedCount)
+            {
+                ShowErrorNotification(mainWindow, "Ingestion Error",
+                    "Failed to generate embeddings for chunks: Incorrect embeddings count");
+                return false;
+            }
+
+            return true;
+        }
+
 #pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
