@@ -14,8 +14,6 @@ namespace View.Personal.UIHandlers
     public static class NavigationUIHandlers
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8604 // Possible null reference argument.
 
         #region Public-Members
 
@@ -42,28 +40,38 @@ namespace View.Personal.UIHandlers
             if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
             {
                 var selectedContent = selectedItem.Content?.ToString();
+                var dashboardPanel = window.FindControl<StackPanel>("DashboardPanel");
+                var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
+                var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
+                var chatPanel = window.FindControl<StackPanel>("ChatPanel");
+                var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
+                var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
 
-                window.FindControl<StackPanel>("DashboardPanel").IsVisible = false;
-                window.FindControl<StackPanel>("SettingsPanel").IsVisible = false;
-                window.FindControl<StackPanel>("MyFilesPanel").IsVisible = false;
-                window.FindControl<StackPanel>("ChatPanel").IsVisible = false;
-                window.FindControl<StackPanel>("ConsolePanel").IsVisible = false;
-                window.FindControl<TextBlock>("WorkspaceText").IsVisible = false;
+                if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null && chatPanel != null &&
+                    consolePanel != null && workspaceText != null)
+                {
+                    dashboardPanel.IsVisible = false;
+                    settingsPanel.IsVisible = false;
+                    myFilesPanel.IsVisible = false;
+                    chatPanel.IsVisible = false;
+                    consolePanel.IsVisible = false;
+                    workspaceText.IsVisible = false;
+                }
 
                 switch (selectedContent)
                 {
                     case "Dashboard":
-                        window.FindControl<StackPanel>("DashboardPanel").IsVisible = true;
+                        if (dashboardPanel != null) dashboardPanel.IsVisible = true;
                         break;
                     case "Settings":
-                        window.FindControl<StackPanel>("SettingsPanel").IsVisible = true;
+                        if (settingsPanel != null) settingsPanel.IsVisible = true;
                         var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-                        var currentProvider = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+                        var currentProvider = (comboBox?.SelectedItem as ComboBoxItem)?.Content?.ToString();
                         if (!string.IsNullOrEmpty(currentProvider))
                             MainWindowUIHandlers.UpdateSettingsVisibility(window, currentProvider);
                         break;
                     case "My Files":
-                        window.FindControl<StackPanel>("MyFilesPanel").IsVisible = true;
+                        if (myFilesPanel != null) myFilesPanel.IsVisible = true;
                         var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
                         if (filesDataGrid != null)
                         {
@@ -74,13 +82,13 @@ namespace View.Personal.UIHandlers
 
                         break;
                     case "Chat":
-                        window.FindControl<StackPanel>("ChatPanel").IsVisible = true;
+                        if (chatPanel != null) chatPanel.IsVisible = true;
                         break;
                     case "Console":
-                        window.FindControl<StackPanel>("ConsolePanel").IsVisible = true;
+                        if (consolePanel != null) consolePanel.IsVisible = true;
                         break;
                     default:
-                        window.FindControl<TextBlock>("WorkspaceText").IsVisible = true;
+                        if (workspaceText != null) workspaceText.IsVisible = true;
                         break;
                 }
             }
@@ -99,11 +107,17 @@ namespace View.Personal.UIHandlers
             if (!windowInitialized) return;
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                var selectedProvider = selectedItem.Content.ToString();
+                var selectedProvider = selectedItem.Content?.ToString();
                 Console.WriteLine($"[INFO] ModelProvider_SelectionChanged: {selectedProvider}");
 
+                if (string.IsNullOrEmpty(selectedProvider))
+                {
+                    Console.WriteLine("[ERROR] Selected provider is null or empty.");
+                    return;
+                }
+
                 var app = (App)Application.Current;
-                app.SaveSelectedProvider(selectedProvider);
+                app?.SaveSelectedProvider(selectedProvider);
                 MainWindowUIHandlers.UpdateProviderSettings(window, selectedProvider);
                 MainWindowUIHandlers.UpdateSettingsVisibility(window, selectedProvider);
             }
@@ -150,7 +164,8 @@ namespace View.Personal.UIHandlers
         public static void NavigateToPanel(Window window, string panelName)
         {
             var navList = window.FindControl<ListBox>("NavList");
-            if (navList.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == panelName) is { } item)
+            if (navList?.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == panelName) is
+                { } item)
                 navList.SelectedItem = item;
         }
 
@@ -161,7 +176,5 @@ namespace View.Personal.UIHandlers
         #endregion
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Possible null reference argument.
     }
 }
