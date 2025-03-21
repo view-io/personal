@@ -128,7 +128,7 @@ namespace View.Personal
 
         private void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.SaveSettings_Click(sender, e, this);
+            MainWindowUIHandlers.SaveSettings_Click(this);
         }
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
