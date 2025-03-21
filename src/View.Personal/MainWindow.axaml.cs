@@ -33,17 +33,12 @@ namespace View.Personal
     /// </summary>
     public partial class MainWindow : Window
     {
-#pragma warning disable CS8618, CS9264
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-#pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
-#pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8604 // Possible null reference argument.
-#pragma warning disable CS8601 // Possible null reference assignment.
+#pragma warning disable CS8603 // Possible null reference return.
+
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         // ReSharper disable PossibleMultipleEnumeration
         // ReSharper disable UnusedParameter.Local
@@ -65,7 +60,7 @@ namespace View.Personal
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
-        private WindowNotificationManager _WindowNotificationManager;
+        private WindowNotificationManager? _WindowNotificationManager;
         private bool _WindowInitialized;
 
         #endregion
@@ -128,7 +123,7 @@ namespace View.Personal
 
         private void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.SaveSettings_Click(sender, e, this);
+            MainWindowUIHandlers.SaveSettings_Click(this);
         }
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
@@ -366,7 +361,7 @@ namespace View.Personal
                 Console.WriteLine($"[ERROR] Prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
                     Console.WriteLine($"[ERROR] {result.Error.Message}");
-                return null;
+                return new List<float>();
             }
 
             return result.ContentEmbeddings[0].Embeddings;
@@ -377,7 +372,7 @@ namespace View.Personal
         /// </summary>
         /// <param name="embeddings">A list of float values representing the embeddings to search with.</param>
         /// <returns>A task that resolves to an enumerable collection of VectorSearchResult objects.</returns>
-        private async Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(List<float> embeddings)
+        private Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(List<float> embeddings)
         {
             var searchRequest = new VectorSearchRequest
             {
@@ -390,7 +385,7 @@ namespace View.Personal
 
             var searchResults = _LiteGraph.SearchVectors(searchRequest);
             Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
-            return searchResults;
+            return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
         /// <summary>
@@ -682,16 +677,10 @@ namespace View.Personal
 
         #endregion
 
-#pragma warning restore CS8618, CS9264
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
-#pragma warning restore CA1822 // Mark members as static
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8601 // Possible null reference assignment.
     }
 }

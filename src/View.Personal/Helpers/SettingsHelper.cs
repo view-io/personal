@@ -13,11 +13,8 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class SettingsHelper
     {
-#pragma warning disable CS8604 // Possible null reference argument.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8603 // Possible null reference return.
-        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
 
         #region Public-Members
@@ -99,111 +96,185 @@ namespace View.Personal.Helpers
                 Console.WriteLine("[INFO] Loading settings from app.AppSettings...");
                 var app = (App)Application.Current;
 
-                var view = app.GetProviderSettings(CompletionProviderTypeEnum.View);
+                var view = app?.GetProviderSettings(CompletionProviderTypeEnum.View);
                 var embeddingsGeneratorComboBox = window.FindControl<ComboBox>("ViewEmbeddingsGenerator");
-                if (!string.IsNullOrEmpty(view.ViewEmbeddingsGenerator))
+                if (!string.IsNullOrEmpty(view?.ViewEmbeddingsGenerator))
                 {
-                    var selectedItem = embeddingsGeneratorComboBox.Items
+                    var selectedItem = embeddingsGeneratorComboBox?.Items
                         .OfType<ComboBoxItem>()
-                        .FirstOrDefault(item => item.Content.ToString() == view.ViewEmbeddingsGenerator);
-
-                    embeddingsGeneratorComboBox.SelectedItem = selectedItem ?? embeddingsGeneratorComboBox.Items[0];
+                        .FirstOrDefault(item => item.Content?.ToString() == view.ViewEmbeddingsGenerator);
+                    if (embeddingsGeneratorComboBox != null)
+                        embeddingsGeneratorComboBox.SelectedItem = selectedItem ?? embeddingsGeneratorComboBox.Items[0];
                 }
                 else
                 {
-                    embeddingsGeneratorComboBox.SelectedIndex = 0;
+                    if (embeddingsGeneratorComboBox != null)
+                        embeddingsGeneratorComboBox.SelectedIndex = 0;
                 }
 
-                window.FindControl<TextBox>("ViewApiKey").Text = view.ViewApiKey ?? string.Empty;
-                window.FindControl<TextBox>("ViewEndpoint").Text = view.ViewEndpoint ?? string.Empty;
-                window.FindControl<TextBox>("ViewAccessKey").Text = view.ViewAccessKey ?? string.Empty;
-                window.FindControl<TextBox>("ViewEmbeddingsGeneratorUrl").Text =
-                    view.ViewEmbeddingsGeneratorUrl ?? string.Empty;
-                window.FindControl<TextBox>("ViewModel").Text = view.ViewModel ?? string.Empty;
-                window.FindControl<TextBox>("ViewCompletionApiKey").Text = view.ViewCompletionApiKey ?? string.Empty;
-                window.FindControl<TextBox>("ViewCompletionProvider").Text =
-                    view.ViewCompletionProvider ?? string.Empty;
-                window.FindControl<TextBox>("ViewCompletionModel").Text = view.ViewCompletionModel ?? string.Empty;
-                window.FindControl<TextBox>("ViewCompletionPort").Text = view.ViewCompletionPort.ToString();
+                var viewApiKeyTextBox = window.FindControl<TextBox>("ViewApiKey");
+                if (viewApiKeyTextBox != null) viewApiKeyTextBox.Text = view?.ViewApiKey ?? string.Empty;
+
+                var viewEndpointTextBox = window.FindControl<TextBox>("ViewEndpoint");
+                if (viewEndpointTextBox != null) viewEndpointTextBox.Text = view?.ViewEndpoint ?? string.Empty;
+
+                var viewAccessKeyTextBox = window.FindControl<TextBox>("ViewAccessKey");
+                if (viewAccessKeyTextBox != null) viewAccessKeyTextBox.Text = view?.ViewAccessKey ?? string.Empty;
+
+                var viewEmbeddingsGeneratorUrlTextBox = window.FindControl<TextBox>("ViewEmbeddingsGeneratorUrl");
+                if (viewEmbeddingsGeneratorUrlTextBox != null)
+                    viewEmbeddingsGeneratorUrlTextBox.Text = view?.ViewEmbeddingsGeneratorUrl ?? string.Empty;
+
+                var viewModelTextBox = window.FindControl<TextBox>("ViewModel");
+                if (viewModelTextBox != null) viewModelTextBox.Text = view?.ViewModel ?? string.Empty;
+
+                var viewCompletionApiKeyTextBox = window.FindControl<TextBox>("ViewCompletionApiKey");
+                if (viewCompletionApiKeyTextBox != null)
+                    viewCompletionApiKeyTextBox.Text = view?.ViewCompletionApiKey ?? string.Empty;
+
+                var viewCompletionProviderTextBox = window.FindControl<TextBox>("ViewCompletionProvider");
+                if (viewCompletionProviderTextBox != null)
+                    viewCompletionProviderTextBox.Text = view?.ViewCompletionProvider ?? string.Empty;
+
+                var viewCompletionModelTextBox = window.FindControl<TextBox>("ViewCompletionModel");
+                if (viewCompletionModelTextBox != null)
+                    viewCompletionModelTextBox.Text = view?.ViewCompletionModel ?? string.Empty;
+
+                var viewCompletionPortTextBox = window.FindControl<TextBox>("ViewCompletionPort");
+                if (viewCompletionPortTextBox != null)
+                    viewCompletionPortTextBox.Text = view?.ViewCompletionPort.ToString();
+
                 var viewTemperatureControl = window.FindControl<NumericUpDown>("ViewTemperature");
-                if (viewTemperatureControl != null) viewTemperatureControl.Value = (decimal)view.ViewTemperature;
+                if (viewTemperatureControl != null && view != null)
+                    viewTemperatureControl.Value = (decimal)view.ViewTemperature;
+
                 var viewTopPControl = window.FindControl<NumericUpDown>("ViewTopP");
-                if (viewTopPControl != null) viewTopPControl.Value = (decimal)view.ViewTopP;
+                if (viewTopPControl != null && view != null) viewTopPControl.Value = (decimal)view.ViewTopP;
+
                 var maxTokensControl = window.FindControl<NumericUpDown>("ViewMaxTokens");
-                if (maxTokensControl != null) maxTokensControl.Value = view.ViewMaxTokens;
+                if (maxTokensControl != null) maxTokensControl.Value = view?.ViewMaxTokens;
 
+                var openAI = app?.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
 
-                var openAI = app.GetProviderSettings(CompletionProviderTypeEnum.OpenAI);
-                window.FindControl<TextBox>("OpenAIKey").Text = openAI.OpenAICompletionApiKey ?? string.Empty;
-                window.FindControl<TextBox>("OpenAIEmbeddingModel").Text = openAI.OpenAIEmbeddingModel ?? string.Empty;
-                window.FindControl<TextBox>("OpenAICompletionModel").Text =
-                    openAI.OpenAICompletionModel ?? string.Empty;
-                window.FindControl<TextBox>("OpenAIMaxTokens").Text = openAI.OpenAIMaxTokens.ToString();
+                if (openAI != null)
+                {
+                    var openAIKeyTextBox = window.FindControl<TextBox>("OpenAIKey");
+                    if (openAIKeyTextBox != null) openAIKeyTextBox.Text = openAI.OpenAICompletionApiKey;
+
+                    var openAIEmbeddingModelTextBox = window.FindControl<TextBox>("OpenAIEmbeddingModel");
+                    if (openAIEmbeddingModelTextBox != null)
+                        openAIEmbeddingModelTextBox.Text = openAI.OpenAIEmbeddingModel;
+
+                    var openAICompletionModelTextBox = window.FindControl<TextBox>("OpenAICompletionModel");
+                    if (openAICompletionModelTextBox != null)
+                        openAICompletionModelTextBox.Text = openAI.OpenAICompletionModel;
+
+                    var openAIMaxTokensTextBox = window.FindControl<TextBox>("OpenAIMaxTokens");
+                    if (openAIMaxTokensTextBox != null) openAIMaxTokensTextBox.Text = openAI.OpenAIMaxTokens.ToString();
+                }
+
                 var temperatureControl = window.FindControl<NumericUpDown>("OpenAITemperature");
-                if (openAI.OpenAITemperature.HasValue)
-                    temperatureControl.Value = (decimal)openAI.OpenAITemperature.Value;
-                else
-                    temperatureControl.Value = null;
-                var reasoningEffortControl = window.FindControl<ComboBox>("OpenAIReasoningEffort");
-                var effortLevel = openAI.GetReasoningEffortLevel();
-
-                if (effortLevel == null)
+                if (temperatureControl != null)
                 {
-                    reasoningEffortControl.SelectedIndex = 0;
-                }
-                else
-                {
-                    var effortName = effortLevel.ToString();
-                    var item = reasoningEffortControl.Items
-                        .OfType<ComboBoxItem>()
-                        .FirstOrDefault(
-                            i => i.Content.ToString().Equals(effortName, StringComparison.OrdinalIgnoreCase));
-
-                    if (item != null)
-                        reasoningEffortControl.SelectedItem = item;
+                    if (openAI != null && openAI.OpenAITemperature.HasValue)
+                        temperatureControl.Value = (decimal)openAI.OpenAITemperature.Value;
                     else
-                        reasoningEffortControl.SelectedIndex = 0;
+                        temperatureControl.Value = null;
                 }
 
+                var reasoningEffortControl = window.FindControl<ComboBox>("OpenAIReasoningEffort");
+                if (reasoningEffortControl != null)
+                {
+                    var effortLevel = openAI?.GetReasoningEffortLevel();
+                    if (effortLevel == null)
+                    {
+                        reasoningEffortControl.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        var effortName = effortLevel.ToString();
+                        var item = reasoningEffortControl.Items
+                            .OfType<ComboBoxItem>()
+                            .FirstOrDefault(i =>
+                                i.Content != null && i.Content.ToString()
+                                    ?.Equals(effortName, StringComparison.OrdinalIgnoreCase) == true);
+                        if (item != null)
+                            reasoningEffortControl.SelectedItem = item;
+                        else
+                            reasoningEffortControl.SelectedIndex = 0;
+                    }
+                }
 
-                var anthropic = app.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
-                window.FindControl<TextBox>("AnthropicCompletionModel").Text =
-                    anthropic.AnthropicCompletionModel ?? string.Empty;
-                window.FindControl<TextBox>("AnthropicApiKey").Text = anthropic.AnthropicApiKey ?? string.Empty;
-                window.FindControl<TextBox>("VoyageApiKey").Text = anthropic.VoyageApiKey ?? string.Empty;
-                window.FindControl<TextBox>("VoyageEmbeddingModel").Text =
-                    anthropic.VoyageEmbeddingModel ?? string.Empty;
+                var anthropic = app?.GetProviderSettings(CompletionProviderTypeEnum.Anthropic);
 
-                var ollama = app.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
-                window.FindControl<TextBox>("OllamaModel").Text = ollama.OllamaModel ?? string.Empty;
-                window.FindControl<TextBox>("OllamaCompletionModel").Text =
-                    ollama.OllamaCompletionModel ?? string.Empty;
-                window.FindControl<TextBox>("OllamaTemperature").Text =
-                    ollama.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
-                window.FindControl<TextBox>("OllamaTopP").Text =
-                    ollama.OllamaTopP.ToString(CultureInfo.InvariantCulture);
-                window.FindControl<TextBox>("OllamaMaxTokens").Text = ollama.OllamaMaxTokens.ToString();
+                var anthropicCompletionModelTextBox = window.FindControl<TextBox>("AnthropicCompletionModel");
+                if (anthropicCompletionModelTextBox != null)
+                    anthropicCompletionModelTextBox.Text = anthropic?.AnthropicCompletionModel ?? string.Empty;
+
+                var anthropicApiKeyTextBox = window.FindControl<TextBox>("AnthropicApiKey");
+                if (anthropicApiKeyTextBox != null)
+                    anthropicApiKeyTextBox.Text = anthropic?.AnthropicApiKey ?? string.Empty;
+
+                var voyageApiKeyTextBox = window.FindControl<TextBox>("VoyageApiKey");
+                if (voyageApiKeyTextBox != null) voyageApiKeyTextBox.Text = anthropic?.VoyageApiKey ?? string.Empty;
+
+                var voyageEmbeddingModelTextBox = window.FindControl<TextBox>("VoyageEmbeddingModel");
+                if (voyageEmbeddingModelTextBox != null)
+                    voyageEmbeddingModelTextBox.Text = anthropic?.VoyageEmbeddingModel ?? string.Empty;
+
+                var ollama = app?.GetProviderSettings(CompletionProviderTypeEnum.Ollama);
+
+                var ollamaModelTextBox = window.FindControl<TextBox>("OllamaModel");
+                if (ollamaModelTextBox != null) ollamaModelTextBox.Text = ollama?.OllamaModel ?? string.Empty;
+
+                var ollamaCompletionModelTextBox = window.FindControl<TextBox>("OllamaCompletionModel");
+                if (ollamaCompletionModelTextBox != null)
+                    ollamaCompletionModelTextBox.Text = ollama?.OllamaCompletionModel ?? string.Empty;
+
+                var ollamaTemperatureTextBox = window.FindControl<TextBox>("OllamaTemperature");
+                if (ollamaTemperatureTextBox != null)
+                    ollamaTemperatureTextBox.Text = ollama?.OllamaTemperature.ToString(CultureInfo.InvariantCulture);
+
+                var ollamaTopPTextBox = window.FindControl<TextBox>("OllamaTopP");
+                if (ollamaTopPTextBox != null)
+                    ollamaTopPTextBox.Text = ollama?.OllamaTopP.ToString(CultureInfo.InvariantCulture);
+
+                var ollamaMaxTokensTextBox = window.FindControl<TextBox>("OllamaMaxTokens");
+                if (ollamaMaxTokensTextBox != null) ollamaMaxTokensTextBox.Text = ollama?.OllamaMaxTokens.ToString();
 
                 var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-                if (!string.IsNullOrEmpty(app.AppSettings.SelectedProvider))
+                if (comboBox != null)
                 {
-                    var selectedItem = comboBox.Items
-                        .OfType<ComboBoxItem>()
-                        .FirstOrDefault(item => item.Content.ToString() == app.AppSettings.SelectedProvider);
-                    comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
-                }
-                else
-                {
-                    comboBox.SelectedIndex = 0;
+                    if (!string.IsNullOrEmpty(app?.AppSettings.SelectedProvider))
+                    {
+                        var selectedItem = comboBox.Items
+                            .OfType<ComboBoxItem>()
+                            .FirstOrDefault(item => item.Content?.ToString() == app.AppSettings.SelectedProvider);
+                        comboBox.SelectedItem = selectedItem ?? comboBox.Items[0];
+                    }
+                    else
+                    {
+                        comboBox.SelectedIndex = 0;
+                    }
                 }
 
                 Console.WriteLine("[INFO] Finished loading settings.");
-                MainWindowHelpers.UpdateSettingsVisibility(
-                    window.FindControl<Control>("OpenAISettings"),
-                    window.FindControl<Control>("AnthropicSettings"),
-                    window.FindControl<Control>("ViewSettings"),
-                    window.FindControl<Control>("OllamaSettings"),
-                    app.AppSettings.SelectedProvider ?? "View");
+
+                var openAISettings = window.FindControl<Control>("OpenAISettings");
+                var anthropicSettings = window.FindControl<Control>("AnthropicSettings");
+                var viewSettings = window.FindControl<Control>("ViewSettings");
+                var ollamaSettings = window.FindControl<Control>("OllamaSettings");
+
+                if (openAISettings != null && anthropicSettings != null && viewSettings != null &&
+                    ollamaSettings != null)
+                    MainWindowHelpers.UpdateSettingsVisibility(
+                        openAISettings,
+                        anthropicSettings,
+                        viewSettings,
+                        ollamaSettings,
+                        app?.AppSettings.SelectedProvider ?? "View");
+                else
+                    Console.WriteLine("[ERROR] One or more settings controls are null.");
             }
             catch (Exception e)
             {
@@ -277,7 +348,7 @@ namespace View.Personal.Helpers
         private static float GetNumericUpDownFloatValueOrNull(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
-            if (control.Value.HasValue)
+            if (control != null && control.Value.HasValue)
                 return (float)control.Value.Value;
             return 0.95f;
         }
@@ -304,7 +375,7 @@ namespace View.Personal.Helpers
         private static int GetIntUpDownValue(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
-            if (control.Value.HasValue)
+            if (control != null && control.Value.HasValue)
                 return (int)control.Value.Value;
             return 1000;
         }
@@ -336,9 +407,7 @@ namespace View.Personal.Helpers
 
         #endregion
 
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }

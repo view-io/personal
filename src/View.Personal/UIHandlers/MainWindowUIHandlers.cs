@@ -17,12 +17,7 @@ namespace View.Personal.UIHandlers
     /// </summary>
     public static class MainWindowUIHandlers
     {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8604 // Possible null reference argument.
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-
 
         #region Public-Members
 
@@ -52,33 +47,31 @@ namespace View.Personal.UIHandlers
         /// <summary>
         /// Handles the click event for saving settings, updating the application with user-provided settings.
         /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
         /// <param name="window">The window containing the settings controls.</param>
-        public static void SaveSettings_Click(object sender, RoutedEventArgs e, Window window)
+        public static void SaveSettings_Click(Window window)
         {
             try
             {
                 Console.WriteLine("[INFO] SaveSettings_Click triggered.");
                 var app = (App)Application.Current;
                 var selectedProvider =
-                    (window.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
-                    ?.Content.ToString();
+                    (window.FindControl<ComboBox>("NavModelProviderComboBox")?.SelectedItem as ComboBoxItem)
+                    ?.Content?.ToString();
+
+                if (string.IsNullOrEmpty(selectedProvider))
+                    throw new InvalidOperationException("Selected provider is null or empty.");
 
                 var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
-                if (settings != null)
-                {
-                    app.UpdateProviderSettings(settings);
-                    app.SaveSelectedProvider(selectedProvider);
+                app?.UpdateProviderSettings(settings);
+                app?.SaveSelectedProvider(selectedProvider);
 
-                    Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
+                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
 
-                    if (window is MainWindow mainWindow)
-                        mainWindow.ShowNotification("Settings Saved",
-                            $"{selectedProvider} settings saved successfully!",
-                            NotificationType.Success);
-                    SettingsHelper.LoadSavedSettings(window);
-                }
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Settings Saved",
+                        $"{selectedProvider} settings saved successfully!",
+                        NotificationType.Success);
+                SettingsHelper.LoadSavedSettings(window);
             }
             catch (Exception ex)
             {
@@ -238,11 +231,23 @@ namespace View.Personal.UIHandlers
         public static void UpdateSettingsVisibility(Window window, string selectedProvider)
         {
             Console.WriteLine($"[INFO] Updating settings visibility for provider: {selectedProvider}");
+
+            var openAISettings = window.FindControl<Control>("OpenAISettings");
+            var anthropicSettings = window.FindControl<Control>("AnthropicSettings");
+            var viewSettings = window.FindControl<Control>("ViewSettings");
+            var ollamaSettings = window.FindControl<Control>("OllamaSettings");
+
+            if (openAISettings == null || anthropicSettings == null || viewSettings == null || ollamaSettings == null)
+            {
+                Console.WriteLine("[ERROR] One or more settings controls are null.");
+                return;
+            }
+
             MainWindowHelpers.UpdateSettingsVisibility(
-                window.FindControl<Control>("OpenAISettings"),
-                window.FindControl<Control>("AnthropicSettings"),
-                window.FindControl<Control>("ViewSettings"),
-                window.FindControl<Control>("OllamaSettings"),
+                openAISettings,
+                anthropicSettings,
+                viewSettings,
+                ollamaSettings,
                 selectedProvider);
         }
 
@@ -256,11 +261,8 @@ namespace View.Personal.UIHandlers
             var app = (App)Application.Current;
             var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
 
-            if (settings != null)
-            {
-                app.UpdateProviderSettings(settings);
-                Console.WriteLine($"[INFO] {selectedProvider} settings updated due to provider change.");
-            }
+            app?.UpdateProviderSettings(settings);
+            Console.WriteLine($"[INFO] {selectedProvider} settings updated due to provider change.");
         }
 
         #endregion
@@ -269,10 +271,6 @@ namespace View.Personal.UIHandlers
 
         #endregion
 
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

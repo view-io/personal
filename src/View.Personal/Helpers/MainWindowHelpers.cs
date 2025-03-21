@@ -16,11 +16,6 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class MainWindowHelpers
     {
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        // ReSharper disable PossibleMultipleEnumeration
-        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-
-
         #region Public-Members
 
         #endregion
@@ -44,14 +39,10 @@ namespace View.Personal.Helpers
         public static void UpdateSettingsVisibility(Control openAISettings,
             Control anthropicSettings, Control viewSettings, Control ollamaSettings, string selectedProvider)
         {
-            if (openAISettings != null)
-                openAISettings.IsVisible = selectedProvider == "OpenAI";
-            if (anthropicSettings != null)
-                anthropicSettings.IsVisible = selectedProvider == "Anthropic";
-            if (viewSettings != null)
-                viewSettings.IsVisible = selectedProvider == "View";
-            if (ollamaSettings != null)
-                ollamaSettings.IsVisible = selectedProvider == "Ollama";
+            openAISettings.IsVisible = selectedProvider == "OpenAI";
+            anthropicSettings.IsVisible = selectedProvider == "Anthropic";
+            viewSettings.IsVisible = selectedProvider == "View";
+            ollamaSettings.IsVisible = selectedProvider == "Ollama";
         }
 
         /// <summary>
@@ -64,7 +55,7 @@ namespace View.Personal.Helpers
         /// </summary>
         public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
-            var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" });
+            var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" })?.ToList();
             var uniqueFiles = new List<FileViewModel>();
 
             if (documentNodes != null && documentNodes.Any())
@@ -72,7 +63,7 @@ namespace View.Personal.Helpers
                 {
                     var filePath = node.Tags?["FilePath"] ?? "Unknown";
                     var name = node.Name ?? "Unnamed";
-                    var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
+                    var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC");
                     var documentType = node.Tags?["DocumentType"] ?? "Unknown";
                     var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
 
@@ -141,7 +132,7 @@ namespace View.Personal.Helpers
 
             foreach (var atom in atoms)
             {
-                if (atom == null || string.IsNullOrWhiteSpace(atom.Text))
+                if (string.IsNullOrWhiteSpace(atom.Text))
                 {
                     Console.WriteLine($"Skipping empty atom at index {atomIndex}");
                     atomIndex++;

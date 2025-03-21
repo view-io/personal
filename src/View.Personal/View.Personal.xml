@@ -841,12 +841,10 @@
             </summary>
             <param name="window">The main window that has been opened.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings_Click(Avalonia.Controls.Window)">
             <summary>
             Handles the click event for saving settings, updating the application with user-provided settings.
             </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
             <param name="window">The window containing the settings controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.DeleteFile_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">

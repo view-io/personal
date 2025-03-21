@@ -18,10 +18,6 @@ namespace View.Personal.UIHandlers
     /// </summary>
     public static class ChatUIHandlers
     {
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8604 // Possible null reference argument.
-
         #region Public-Members
 
         #endregion
@@ -90,7 +86,7 @@ namespace View.Personal.UIHandlers
                 scrollViewer?.ScrollToEnd();
 
                 // 5) Call the getAIResponse function
-                var aiFullResponse = await getAIResponse(userText, (tokenChunk) =>
+                await getAIResponse(userText, (tokenChunk) =>
                 {
                     // This callback fires for each chunk from the SSE/stream
                     assistantMsg.Content += tokenChunk;
@@ -216,9 +212,5 @@ namespace View.Personal.UIHandlers
         #region Private-Methods
 
         #endregion
-
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

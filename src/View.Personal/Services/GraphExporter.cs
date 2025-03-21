@@ -12,8 +12,6 @@ namespace View.Personal.Services
     /// </summary>
     public static class GraphExporter
     {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-
         /// <summary>
         /// Exports a graph from LiteGraph to a GEXF file based on the provided file path
         /// <param name="sender">The object triggering the event (expected to be a control)</param>
@@ -37,16 +35,28 @@ namespace View.Personal.Services
 
             try
             {
-                var exportFilePath = window.FindControl<TextBox>("ExportFilePathTextBox")?.Text;
+                var exportFilePathTextBox = window.FindControl<TextBox>("ExportFilePathTextBox");
 
-                liteGraph.ExportGraphToGexfFile(tenantGuid, graphGuid, exportFilePath, true);
+                if (exportFilePathTextBox != null && !string.IsNullOrEmpty(exportFilePathTextBox.Text))
+                {
+                    var exportFilePath = exportFilePathTextBox.Text;
+                    liteGraph.ExportGraphToGexfFile(tenantGuid, graphGuid, exportFilePath, true);
 
-                Console.WriteLine($"Graph {graphGuid} exported to {exportFilePath} successfully!");
-                window.FindControl<TextBox>("ExportFilePathTextBox").Text = "";
-                if (spinner != null) spinner.IsVisible = false;
-                if (window is MainWindow mainWindow)
-                    mainWindow.ShowNotification("File Exported", "File was exported successfully!",
-                        NotificationType.Success);
+                    Console.WriteLine($"Graph {graphGuid} exported to {exportFilePath} successfully!");
+                    exportFilePathTextBox.Text = "";
+                    if (spinner != null) spinner.IsVisible = false;
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("File Exported", "File was exported successfully!",
+                            NotificationType.Success);
+                }
+                else
+                {
+                    Console.WriteLine("Export file path is null or empty.");
+                    if (spinner != null) spinner.IsVisible = false;
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("Export error", "Export file path is null or empty.",
+                            NotificationType.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -59,7 +69,5 @@ namespace View.Personal.Services
 
             return Task.CompletedTask;
         }
-
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }
