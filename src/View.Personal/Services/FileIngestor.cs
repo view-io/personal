@@ -28,9 +28,7 @@ namespace View.Personal.Services
     /// </summary>
     public static class FileIngester
     {
-#pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 
@@ -50,9 +48,16 @@ namespace View.Personal.Services
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
             var mainWindow = window as MainWindow;
-            var filePath = window.FindControl<TextBox>("FilePathTextBox").Text;
+
+            if (mainWindow == null)
+            {
+                Console.WriteLine("Main window is null.");
+                return;
+            }
+
+            var filePath = window.FindControl<TextBox>("FilePathTextBox")?.Text;
             var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
-            var selectedProvider = (providerCombo.SelectedItem as ComboBoxItem)?.Content.ToString();
+            var selectedProvider = (providerCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString();
 
             var spinner = window.FindControl<ProgressBar>("IngestSpinner");
             if (spinner != null)
@@ -73,7 +78,7 @@ namespace View.Personal.Services
 
                 var app = (App)Application.Current;
                 var providerSettings =
-                    app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
+                    app?.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
                 string contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
@@ -100,6 +105,12 @@ namespace View.Personal.Services
                 //     foreach (Atom atom in processor.Extract(filename))
                 //         Console.WriteLine(_Serializer.SerializeJson(atom, true));
                 // }
+                if (filePath == null)
+                {
+                    Console.WriteLine("File path is null.");
+                    return;
+                }
+
                 var atoms = pdfProcessor.Extract(filePath).ToList();
                 Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
 
@@ -119,7 +130,7 @@ namespace View.Personal.Services
                 switch (selectedProvider)
                 {
                     case "OpenAI":
-                        if (string.IsNullOrEmpty(providerSettings.OpenAICompletionApiKey) ||
+                        if (string.IsNullOrEmpty(providerSettings?.OpenAICompletionApiKey) ||
                             string.IsNullOrEmpty(providerSettings.OpenAIEmbeddingModel))
                         {
                             Console.WriteLine("OpenAI API key or embedding model not configured.");
@@ -131,7 +142,7 @@ namespace View.Personal.Services
                             .ToList();
 
                         var chunkTexts = validChunkNodes
-                            .Select(x => (x.Data as Atom).Text)
+                            .Select(x => (x.Data as Atom)?.Text)
                             .ToList();
 
                         if (!chunkTexts.Any())
@@ -152,8 +163,8 @@ namespace View.Personal.Services
                         };
 
                         Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
-
                         var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
+
                         if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) break;
 
                         for (var j = 0; j < validChunkNodes.Count; j++)
@@ -171,7 +182,7 @@ namespace View.Personal.Services
                                     Model = providerSettings.OpenAIEmbeddingModel,
                                     Dimensionality = vectorArray.Count,
                                     Vectors = vectorArray,
-                                    Content = (chunkNode.Data as Atom).Text
+                                    Content = (chunkNode.Data as Atom)?.Text
                                 }
                             };
                             liteGraph.UpdateNode(chunkNode);
@@ -182,19 +193,29 @@ namespace View.Personal.Services
 
                     case "View":
                         var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
-                            providerSettings.ViewEndpoint,
-                            providerSettings.ViewAccessKey);
+                            providerSettings?.ViewEndpoint,
+                            providerSettings?.ViewAccessKey);
 
                         var chunkContents = chunkNodes
                             .Select(x => x.Data as Atom)
                             .Where(atom => atom != null && !string.IsNullOrWhiteSpace(atom.Text))
-                            .Select(atom => atom.Text)
+                            .Select(atom => atom?.Text)
                             .ToList();
 
                         if (!chunkContents.Any())
                         {
                             Console.WriteLine("No valid text content found in atoms for embedding.");
                             break;
+                        }
+
+                        if (providerSettings == null ||
+                            string.IsNullOrEmpty(providerSettings.ViewEmbeddingsGenerator) ||
+                            string.IsNullOrEmpty(providerSettings.ViewEmbeddingsGeneratorUrl) ||
+                            string.IsNullOrEmpty(providerSettings.ViewApiKey) ||
+                            string.IsNullOrEmpty(providerSettings.ViewModel))
+                        {
+                            Console.WriteLine("Provider settings are not properly configured.");
+                            return;
                         }
 
                         var req = new EmbeddingsRequest
@@ -241,7 +262,7 @@ namespace View.Personal.Services
                                             Model = providerSettings.ViewModel,
                                             Dimensionality = item.Embedding.Embeddings?.Count ?? 0,
                                             Vectors = item.Embedding.Embeddings,
-                                            Content = atom.Text
+                                            Content = atom?.Text
                                         }
                                     };
                                     liteGraph.UpdateNode(item.ChunkNode);
@@ -260,7 +281,7 @@ namespace View.Personal.Services
                         break;
 
                     case "Ollama":
-                        if (string.IsNullOrEmpty(providerSettings.OllamaModel))
+                        if (string.IsNullOrEmpty(providerSettings?.OllamaModel))
                         {
                             Console.WriteLine("Ollama model not configured.");
                             break;
@@ -271,7 +292,7 @@ namespace View.Personal.Services
                             .ToList();
 
                         var ollamaChunkTexts = ollamaValidChunkNodes
-                            .Select(x => (x.Data as Atom).Text)
+                            .Select(x => (x.Data as Atom)?.Text)
                             .ToList();
 
                         if (!ollamaChunkTexts.Any())
@@ -311,7 +332,7 @@ namespace View.Personal.Services
                                     Model = providerSettings.OllamaCompletionModel,
                                     Dimensionality = vectorArray.Count,
                                     Vectors = vectorArray,
-                                    Content = (chunkNode.Data as Atom).Text
+                                    Content = (chunkNode.Data as Atom)?.Text
                                 }
                             };
                             liteGraph.UpdateNode(chunkNode);
@@ -322,7 +343,7 @@ namespace View.Personal.Services
                         break;
 
                     case "Anthropic":
-                        if (string.IsNullOrEmpty(providerSettings.VoyageApiKey) ||
+                        if (string.IsNullOrEmpty(providerSettings?.VoyageApiKey) ||
                             string.IsNullOrEmpty(providerSettings.VoyageEmbeddingModel))
                         {
                             Console.WriteLine("Voyage API key or embedding model not configured.");
@@ -334,7 +355,7 @@ namespace View.Personal.Services
                             .ToList();
 
                         var voyageChunkTexts = voyageValidChunkNodes
-                            .Select(x => (x.Data as Atom).Text)
+                            .Select(x => (x.Data as Atom)?.Text)
                             .ToList();
 
                         if (!voyageChunkTexts.Any())
@@ -374,7 +395,7 @@ namespace View.Personal.Services
                                     Model = providerSettings.VoyageEmbeddingModel,
                                     Dimensionality = vectorArray.Count,
                                     Vectors = vectorArray,
-                                    Content = (chunkNode.Data as Atom).Text
+                                    Content = (chunkNode.Data as Atom)?.Text
                                 }
                             };
                             liteGraph.UpdateNode(chunkNode);
@@ -387,23 +408,25 @@ namespace View.Personal.Services
                         throw new ArgumentException("Unsupported provider");
                 }
 
-                Console.WriteLine($"All chunk nodes updated with {providerSettings.ProviderType} embeddings.");
+                Console.WriteLine($"All chunk nodes updated with {providerSettings?.ProviderType} embeddings.");
                 Console.WriteLine($"File {filePath} ingested successfully!");
                 FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-                window.FindControl<TextBox>("FilePathTextBox").Text = "";
+                var fileNodeWindow = window.FindControl<TextBox>("FilePathTextBox");
+
+                if (fileNodeWindow != null)
+                    fileNodeWindow.Text = "";
+
                 if (spinner != null) spinner.IsVisible = false;
 
-                if (mainWindow != null)
-                    mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
-                        NotificationType.Success);
+                mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
+                    NotificationType.Success);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
                 if (spinner != null) spinner.IsVisible = false;
-                if (mainWindow != null)
-                    mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
-                        NotificationType.Error);
+                mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
+                    NotificationType.Error);
             }
         }
 
@@ -454,7 +477,6 @@ namespace View.Personal.Services
             return true;
         }
 
-#pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
