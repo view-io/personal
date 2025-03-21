@@ -12,9 +12,6 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class FileListHelper
     {
-        // ReSharper disable PossibleMultipleEnumeration
-        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-
         /// <summary>
         /// Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
         /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
@@ -29,25 +26,29 @@ namespace View.Personal.Helpers
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" });
             var ingestedFiles = new List<FileViewModel>();
 
-            if (documentNodes != null && documentNodes.Any())
-                foreach (var node in documentNodes)
-                {
-                    var filePath = node.Tags?["FilePath"] ?? "Unknown";
-                    var name = node.Name ?? "Unnamed";
-                    var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown";
-                    var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-                    var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
-
-                    ingestedFiles.Add(new FileViewModel
+            if (documentNodes != null)
+            {
+                var documentNodesList = documentNodes.ToList();
+                if (documentNodesList.Any())
+                    foreach (var node in documentNodesList)
                     {
-                        Name = name,
-                        CreatedUtc = createdUtc,
-                        FilePath = filePath,
-                        DocumentType = documentType,
-                        ContentLength = contentLength,
-                        NodeGuid = node.GUID
-                    });
-                }
+                        var filePath = node.Tags?["FilePath"] ?? "Unknown";
+                        var name = node.Name ?? "Unnamed";
+                        var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC");
+                        var documentType = node.Tags?["DocumentType"] ?? "Unknown";
+                        var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
+
+                        ingestedFiles.Add(new FileViewModel
+                        {
+                            Name = name,
+                            CreatedUtc = createdUtc,
+                            FilePath = filePath,
+                            DocumentType = documentType,
+                            ContentLength = contentLength,
+                            NodeGuid = node.GUID
+                        });
+                    }
+            }
 
             var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
             if (filesDataGrid != null)
