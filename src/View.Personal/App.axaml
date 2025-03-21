@@ -1,83 +1,138 @@
 <Application
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
+    xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
     x:Class="View.Personal.App"
-    RequestedThemeVariant="Default">
+    RequestedThemeVariant="Light">
+
     <Application.Styles>
-        <FluentTheme />
-        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <themes:CustomMaterialTheme
+            PrimaryColor="#0472EF"
+            SecondaryColor="#F5F5F5" />
 
-        <Style Selector="TextBox">
-            <Setter Property="MinWidth" Value="400" />
-            <Setter Property="MaxWidth" Value="800" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-        </Style>
-        <Style Selector="TextBlock">
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-        <Style Selector="Button">
-            <Setter Property="Background" Value="#007BFF" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Padding" Value="20,10" />
-            <Setter Property="MinWidth" Value="120" />
-        </Style>
-        <Style Selector="Button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#0056b3" />
-            <Setter Property="Foreground" Value="White" />
-        </Style>
-        <Style Selector="Button.link">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-        <Style Selector="Button.link > TextBlock">
-            <Setter Property="Foreground" Value="#007BFF" />
-        </Style>
-        <Style Selector="Button.link:pointerover > TextBlock">
-            <Setter Property="Foreground" Value="#0056b3" />
-        </Style>
-        <Style Selector="Button.nav-link:not(.link)">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MaxWidth" Value="100" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-        <Style Selector="Button.nav-link:not(.link) > TextBlock">
-            <Setter Property="Foreground" Value="#007BFF" />
-        </Style>
-        <Style Selector="Button.nav-link:not(.link):pointerover > TextBlock">
-            <Setter Property="Foreground" Value="#0056b3" />
-            <Setter Property="Background" Value="White" />
-        </Style>
+        <Styles>
+            <Styles.Resources>
+                <Color x:Key="MaterialOutlineColor">#C8C8C8</Color>
+                <SolidColorBrush x:Key="MaterialOutlineBrush" Color="{StaticResource MaterialOutlineColor}" />
+                <!-- Link color -->
+                <Color x:Key="MaterialLinkColor">#0472EF</Color>
+                <SolidColorBrush x:Key="MaterialLinkBrush" Color="{StaticResource MaterialLinkColor}" />
 
+                <!-- Warning color -->
+                <Color x:Key="MaterialWarningColor">#F08A24</Color>
+                <SolidColorBrush x:Key="MaterialWarningBrush" Color="{StaticResource MaterialWarningColor}" />
 
-        <Style Selector="Button.delete">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MaxWidth" Value="100" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Foreground" Value="rgba(106, 107, 111, 1)" />
+                <!-- Destructive color -->
+                <Color x:Key="MaterialDestructiveColor">#D94242</Color>
+                <SolidColorBrush x:Key="MaterialDestructiveBrush" Color="{StaticResource MaterialDestructiveColor}" />
 
-        </Style>
-        <Style Selector="Button.delete:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MaxWidth" Value="100" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Foreground" Value="rgba(26, 28, 30, 1)" />
+                <!-- Success color -->
+                <Color x:Key="MaterialSuccessColor">#3DA35A</Color>
+                <SolidColorBrush x:Key="MaterialSuccessBrush" Color="{StaticResource MaterialSuccessColor}" />
 
-        </Style>
+                <!-- Hover variants -->
+                <Color x:Key="MaterialPrimaryHoverColor">#005AD6</Color>
+                <SolidColorBrush x:Key="MaterialPrimaryHoverBrush" Color="{StaticResource MaterialPrimaryHoverColor}" />
 
+                <Color x:Key="MaterialWarningHoverColor">#D97A22</Color>
+                <SolidColorBrush x:Key="MaterialWarningHoverBrush" Color="{StaticResource MaterialWarningHoverColor}" />
+
+                <Color x:Key="MaterialDestructiveHoverColor">#C73737</Color>
+                <SolidColorBrush x:Key="MaterialDestructiveHoverBrush"
+                                 Color="{StaticResource MaterialDestructiveHoverColor}" />
+
+                <Color x:Key="MaterialSuccessHoverColor">#38924F</Color>
+                <SolidColorBrush x:Key="MaterialSuccessHoverBrush" Color="{StaticResource MaterialSuccessHoverColor}" />
+            </Styles.Resources>
+            <!-- Default button -->
+            <Style Selector="Button.default">
+                <Setter Property="Background" Value="#0472EF" />
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+            <Style Selector="Button.default:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#1F8FFF" />
+            </Style>
+            <Style Selector="Button.default:disabled /template/ ContentPresenter">
+                <Setter Property="Background" Value="#9ACCFE" />
+                <Setter Property="Foreground" Value="#F5F5F5" />
+            </Style>
+
+            <!-- Secondary (light) button -->
+            <Style Selector="Button.secondary">
+                <Setter Property="Background" Value="#F5F5F5" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+            <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#EDEDED" />
+                <Setter Property="Foreground" Value="Black" />
+
+            </Style>
+            <Style Selector="Button.secondary:disabled /template/ ContentPresenter">
+                <Setter Property="Background" Value="#DBDBDB" />
+                <Setter Property="Foreground" Value="#FFFFFF" />
+            </Style>
+
+            <!-- Outline button -->
+            <Style Selector="Button.outline">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="#1A1C1E" />
+            </Style>
+            <Style Selector="Button.outline:pointerover /template/ ContentPresenter">
+                <Setter Property="BorderBrush" Value="#1A1C1E" />
+                <Setter Property="Foreground" Value="#1A1C1E" />
+            </Style>
+            <Style Selector="Button.outline:disabled /template/ ContentPresenter">
+                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                <Setter Property="Background" Value="#DBDBDB" />
+                <Setter Property="Foreground" Value="#A6A6A8" />
+            </Style>
+
+            <!-- Link button -->
+            <Style Selector="Button.link">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Foreground" Value="#0472EF" />
+            </Style>
+            <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="#0472EF" />
+                <Setter Property="Background" Value="#E6F6FF" />
+            </Style>
+            <Style Selector="Button.link:disabled /template/ ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="#9ACCFE" />
+            </Style>
+
+            <!-- Warning button -->
+            <Style Selector="Button.warning">
+                <Setter Property="Background" Value="#FFECA8" />
+                <Setter Property="Foreground" Value="#BF6904" />
+            </Style>
+            <Style Selector="Button.warning:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#EF8F06" />
+                <Setter Property="Foreground" Value="#FFFFFF" />
+            </Style>
+
+            <!-- Destructive button -->
+            <Style Selector="Button.destructive">
+                <Setter Property="Background" Value="#FFDCD1" />
+                <Setter Property="Foreground" Value="#B93C16" />
+            </Style>
+            <Style Selector="Button.destructive:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#C84620" />
+                <Setter Property="Foreground" Value="#FFFFFF" />
+            </Style>
+
+            <!-- Success button -->
+            <Style Selector="Button.success">
+                <Setter Property="Background" Value="#009E61" />
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+            <Style Selector="Button.success:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#088C59" />
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+        </Styles>
     </Application.Styles>
 </Application>

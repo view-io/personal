@@ -1,4 +1,3 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 namespace View.Personal
 {
     using Avalonia;
@@ -23,6 +22,8 @@ namespace View.Personal
     /// </summary>
     public partial class App : Application
     {
+        // ReSharper disable RedundantDefaultMemberInitializer
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8629 // Nullable value type may be null.
 
@@ -34,7 +35,6 @@ namespace View.Personal
 
         internal string _Header = "[ViewPersonal] ";
         internal Serializer _Serializer = new();
-
         internal LiteGraphClient _LiteGraph = null;
         internal GraphRepositoryBase _GraphDriver = null;
         internal LiteGraph.LoggingSettings _LoggingSettings = null;
@@ -236,12 +236,20 @@ namespace View.Personal
             SaveSettings();
         }
 
+        /// <summary>
+        /// Saves the selected provider to the application settings and persists the changes.
+        /// </summary>
+        /// <param name="provider">The name of the provider to save as the selected provider.</param>
         public void SaveSelectedProvider(string provider)
         {
             _AppSettings.SelectedProvider = provider;
             SaveSettings();
         }
 
+        /// <summary>
+        /// Gets the application settings object.
+        /// </summary>
+        /// <returns>The Settings object containing the application's configuration.</returns>
         public Settings AppSettings => _AppSettings;
 
         #endregion
@@ -281,7 +289,8 @@ namespace View.Personal
         #endregion
     }
 
-
+// ReSharper disable RedundantDefaultMemberInitializer
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #pragma warning restore CS8629 // Nullable value type may be null.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 }

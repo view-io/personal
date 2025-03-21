@@ -6,6 +6,8 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>View.Personal.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,6 +25,9 @@
         <PackageReference Include="DocumentAtom.Pdf" Version="1.0.26"/>
         <PackageReference Include="DocumentAtom.TypeDetection" Version="1.0.26"/>
         <PackageReference Include="LiteGraph" Version="3.1.7"/>
+        <PackageReference Include="Material.Avalonia" Version="3.9.3-nightly.0.2"/>
+        <PackageReference Include="Material.Avalonia.DataGrid" Version="3.9.3-nightly.0.2"/>
+        <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1"/>
         <PackageReference Include="MessageBox.Avalonia" Version="3.2.0"/>
         <PackageReference Include="RestWrapper" Version="3.1.5"/>
         <PackageReference Include="SerializationHelper" Version="2.0.3"/>

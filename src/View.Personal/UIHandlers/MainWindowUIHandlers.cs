@@ -1,26 +1,29 @@
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8604 // Possible null reference argument.
-
 namespace View.Personal.UIHandlers
 {
     using System;
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using Classes;
     using Helpers;
-    using MsBox.Avalonia.Enums;
     using Services;
     using LiteGraph;
     using DocumentAtom.TypeDetection;
 
+    /// <summary>
+    /// Provides event handlers and utility methods for managing the main window user interface.
+    /// </summary>
     public static class MainWindowUIHandlers
     {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+
+
         #region Public-Members
 
         #endregion
@@ -29,12 +32,12 @@ namespace View.Personal.UIHandlers
 
         #endregion
 
-        #region Constructors-and-Factories
-
-        #endregion
-
         #region Public-Methods
 
+        /// <summary>
+        /// Handles the opened event of the main window, initializing settings and console output.
+        /// </summary>
+        /// <param name="window">The main window that has been opened.</param>
         public static void MainWindow_Opened(Window window)
         {
             Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
@@ -46,33 +49,55 @@ namespace View.Personal.UIHandlers
                 Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
         }
 
-        public static async void SaveSettings_Click(object sender, RoutedEventArgs e, Window window)
+        /// <summary>
+        /// Handles the click event for saving settings, updating the application with user-provided settings.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the settings controls.</param>
+        public static void SaveSettings_Click(object sender, RoutedEventArgs e, Window window)
         {
-            Console.WriteLine("[INFO] SaveSettings_Click triggered.");
-            var app = (App)Application.Current;
-            var selectedProvider =
-                (window.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
-                ?.Content.ToString();
-
-            var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
-            if (settings != null)
+            try
             {
-                app.UpdateProviderSettings(settings);
-                app.SaveSelectedProvider(selectedProvider);
+                Console.WriteLine("[INFO] SaveSettings_Click triggered.");
+                var app = (App)Application.Current;
+                var selectedProvider =
+                    (window.FindControl<ComboBox>("NavModelProviderComboBox").SelectedItem as ComboBoxItem)
+                    ?.Content.ToString();
 
-                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Settings Saved", $"{selectedProvider} settings saved successfully!",
-                        ButtonEnum.Ok, Icon.Success)
-                    .ShowAsync();
-                SettingsHelper.LoadSavedSettings(window);
+                var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
+                if (settings != null)
+                {
+                    app.UpdateProviderSettings(settings);
+                    app.SaveSelectedProvider(selectedProvider);
+
+                    Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
+
+                    if (window is MainWindow mainWindow)
+                        mainWindow.ShowNotification("Settings Saved",
+                            $"{selectedProvider} settings saved successfully!",
+                            NotificationType.Success);
+                    SettingsHelper.LoadSavedSettings(window);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("[WARN] No settings were created because selectedProvider was null or invalid.");
+                Console.WriteLine($"[ERROR] SaveSettings_Click exception: {ex}");
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
             }
         }
 
+        /// <summary>
+        /// Handles the click event for deleting a file, delegating to an asynchronous file deletion method.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
+        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
+        /// <param name="graphGuid">The GUID identifying the graph.</param>
+        /// <param name="window">The window where the delete action is initiated.</param>
         public static async void DeleteFile_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -80,6 +105,16 @@ namespace View.Personal.UIHandlers
             await FileDeleter.DeleteFile_ClickAsync(sender, e, liteGraph, tenantGuid, graphGuid, window);
         }
 
+        /// <summary>
+        /// Handles the click event for ingesting a file, delegating to an asynchronous file ingestion method.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="typeDetector">The type detector used to identify file types (assumed from context).</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
+        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
+        /// <param name="graphGuid">The GUID identifying the graph.</param>
+        /// <param name="window">The window where the ingest action is initiated.</param>
         public static async void IngestFile_Click(object sender, RoutedEventArgs e, TypeDetector typeDetector,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -87,6 +122,15 @@ namespace View.Personal.UIHandlers
             await FileIngester.IngestFile_ClickAsync(sender, e, typeDetector, liteGraph, tenantGuid, graphGuid, window);
         }
 
+        /// <summary>
+        /// Handles the click event for exporting a graph, delegating to a graph export method.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
+        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
+        /// <param name="graphGuid">The GUID identifying the graph.</param>
+        /// <param name="window">The window where the export action is initiated.</param>
         public static void ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -94,6 +138,13 @@ namespace View.Personal.UIHandlers
             GraphExporter.ExportGraph_Click(sender, e, liteGraph, tenantGuid, graphGuid, window);
         }
 
+        /// <summary>
+        /// Asynchronously browses for a file or directory and updates the specified textbox with the selected path.
+        /// </summary>
+        /// <param name="window">The window containing the textbox to update.</param>
+        /// <param name="textBoxName">The name of the textbox control to update.</param>
+        /// <param name="browseFunc">A function that performs the browsing operation and returns the selected path.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task BrowseAndUpdateTextBoxAsync(Window window, string textBoxName,
             Func<Window, Task<string>> browseFunc)
         {
@@ -109,6 +160,13 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event for a browse button, triggering a file browse operation to update a textbox.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the textbox to update.</param>
+        /// <param name="fileBrowserService">The service used to browse for an export location.</param>
         public static async void BrowseButton_Click(object sender, RoutedEventArgs e, Window window,
             FileBrowserService fileBrowserService)
         {
@@ -116,6 +174,13 @@ namespace View.Personal.UIHandlers
                 w => fileBrowserService.BrowseForExportLocation(w));
         }
 
+        /// <summary>
+        /// Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the textbox to update.</param>
+        /// <param name="fileBrowserService">The service used to browse for a file to ingest.</param>
         public static async void IngestBrowseButton_Click(object sender, RoutedEventArgs e, Window window,
             FileBrowserService fileBrowserService)
         {
@@ -123,6 +188,13 @@ namespace View.Personal.UIHandlers
                 w => fileBrowserService.BrowseForFileToIngest(w));
         }
 
+        /// <summary>
+        /// Updates the enabled state of a button based on text changes in a textbox.
+        /// </summary>
+        /// <param name="sender">The object (textbox) that triggered the property change event.</param>
+        /// <param name="e">The property changed event arguments.</param>
+        /// <param name="window">The window containing the button to update.</param>
+        /// <param name="buttonName">The name of the button control to enable or disable.</param>
         public static void UpdateButtonEnabledOnTextChange(object sender, AvaloniaPropertyChangedEventArgs e,
             Window window, string buttonName)
         {
@@ -134,18 +206,35 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the property changed event for the file path textbox, updating the ingest button's enabled state.
+        /// </summary>
+        /// <param name="sender">The textbox whose property changed.</param>
+        /// <param name="e">The property changed event arguments.</param>
+        /// <param name="window">The window containing the ingest button.</param>
         public static void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e,
             Window window)
         {
             UpdateButtonEnabledOnTextChange(sender, e, window, "IngestButton");
         }
 
+        /// <summary>
+        /// Handles the property changed event for the export file path textbox, updating the export button's enabled state.
+        /// </summary>
+        /// <param name="sender">The textbox whose property changed.</param>
+        /// <param name="e">The property changed event arguments.</param>
+        /// <param name="window">The window containing the export button.</param>
         public static void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e,
             Window window)
         {
             UpdateButtonEnabledOnTextChange(sender, e, window, "ExportButton");
         }
 
+        /// <summary>
+        /// Updates the visibility of settings controls based on the selected provider.
+        /// </summary>
+        /// <param name="window">The window containing the settings controls.</param>
+        /// <param name="selectedProvider">The name of the currently selected provider.</param>
         public static void UpdateSettingsVisibility(Window window, string selectedProvider)
         {
             Console.WriteLine($"[INFO] Updating settings visibility for provider: {selectedProvider}");
@@ -157,6 +246,11 @@ namespace View.Personal.UIHandlers
                 selectedProvider);
         }
 
+        /// <summary>
+        /// Updates the provider settings in the application based on the UI inputs for the selected provider.
+        /// </summary>
+        /// <param name="window">The window containing the settings controls.</param>
+        /// <param name="selectedProvider">The name of the currently selected provider.</param>
         public static void UpdateProviderSettings(Window window, string selectedProvider)
         {
             var app = (App)Application.Current;
@@ -174,5 +268,11 @@ namespace View.Personal.UIHandlers
         #region Private-Methods
 
         #endregion
+
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

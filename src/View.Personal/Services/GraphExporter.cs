@@ -1,28 +1,31 @@
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
 namespace View.Personal.Services
 {
     using System;
     using Avalonia.Controls;
+    using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides methods for exporting graph data from LiteGraph to external formats.
+    /// </summary>
     public static class GraphExporter
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
         /// <summary>
         /// Exports a graph from LiteGraph to a GEXF file based on the provided file path
-        /// Params:
-        /// sender — The object triggering the event (expected to be a control)
-        /// e — Routed event arguments
-        /// liteGraph — The LiteGraphClient instance for graph operations
-        /// tenantGuid — The unique identifier for the tenant
-        /// graphGuid — The unique identifier for the graph
-        /// window — The parent window for UI interactions and dialogs
+        /// <param name="sender">The object triggering the event (expected to be a control)</param>
+        /// <param name="e">Routed event arguments</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="window">The parent window for UI interactions and dialogs</param>
         /// Returns:
         /// Task representing the asynchronous operation; no direct return value
         /// </summary>
-        public static async Task ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
+        public static Task ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             var spinner = window.FindControl<ProgressBar>("ExportProgressBar");
@@ -41,29 +44,22 @@ namespace View.Personal.Services
                 Console.WriteLine($"Graph {graphGuid} exported to {exportFilePath} successfully!");
                 window.FindControl<TextBox>("ExportFilePathTextBox").Text = "";
                 if (spinner != null) spinner.IsVisible = false;
-
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Export Success",
-                        "Graph was exported successfully!",
-                        ButtonEnum.Ok,
-                        Icon.Success
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("File Exported", "File was exported successfully!",
+                        NotificationType.Success);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error exporting graph to GEXF: {ex.Message}");
                 if (spinner != null) spinner.IsVisible = false;
-                await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard(
-                        "Export Error",
-                        $"Something went wrong: {ex.Message}",
-                        ButtonEnum.Ok,
-                        Icon.Error
-                    )
-                    .ShowAsync();
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Export error", $"Error exporting graph to GEXF: {ex.Message}",
+                        NotificationType.Error);
             }
+
+            return Task.CompletedTask;
         }
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }
