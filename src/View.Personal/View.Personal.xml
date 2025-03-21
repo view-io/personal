@@ -1,0 +1,496 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>View.Personal</name>
+    </assembly>
+    <members>
+        <member name="T:View.Personal.App">
+            <summary>
+            Main application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.Initialize">
+            <summary>
+            Initialize.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.OnFrameworkInitializationCompleted">
+            <summary>
+            Fired upon framework initialization completion.  Primary method executed to instantiate class members and initialize properties after the framework is loaded.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.SaveSettings">
+            <summary>
+            Saves the current application settings to a JSON file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.GetProviderSettings(View.Personal.Classes.CompletionProviderTypeEnum)">
+            <summary>
+            Retrieves the settings for a specified provider type, creating new defaults if none exist.
+            </summary>
+            <param name="providerType">The type of completion provider to get settings for.</param>
+            <returns>The settings for the specified provider.</returns>
+        </member>
+        <member name="M:View.Personal.App.UpdateProviderSettings(View.Personal.Classes.CompletionProviderSettings)">
+            <summary>
+            Updates the settings for a specific provider and saves the changes.
+            </summary>
+            <param name="settings">The updated provider settings to save.</param>
+        </member>
+        <member name="M:View.Personal.App.LoadSettings">
+            <summary>
+            Loads application settings from a JSON file or initializes defaults if the file doesn't exist.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AvaloniaConsoleWriter">
+            <summary>
+            A custom TextWriter implementation that redirects console output to an Avalonia TextBox control.
+            This allows console output to be displayed within the UI of an Avalonia application.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AvaloniaConsoleWriter.Encoding">
+            <summary>
+            Gets the character encoding in which the output is written.
+            This implementation returns UTF-8 encoding.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.#ctor(Avalonia.Controls.TextBox)">
+            <summary>
+            Initializes a new instance of the AvaloniaConsoleWriter class with the specified TextBox.
+            </summary>
+            <param name="textBox">The TextBox control where console output will be displayed.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when textBox is null.</exception>
+        </member>
+        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.WriteLine(System.String)">
+            <summary>
+            Writes a string followed by a line terminator to the text box on the UI thread.
+            This method safely updates the UI by dispatching the update operation to the UI thread.
+            </summary>
+            <param name="value">The string to write to the text box.</param>
+        </member>
+        <member name="T:View.Personal.Classes.CompletionProviderSettings">
+            <summary>
+            Settings for various AI completion providers.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ProviderType">
+            <summary>
+            The type of completion provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionApiKey">
+            <summary>
+            API key for OpenAI completion API.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIEmbeddingModel">
+            <summary>
+            Model name for OpenAI embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionModel">
+            <summary>
+            Model name for OpenAI completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIMaxTokens">
+            <summary>
+            Maximum number of tokens for OpenAI completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIReasoningEffort">
+            <summary>
+            Reasoning effort level for OpenAI completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAITemperature">
+            <summary>
+            Temperature setting for OpenAI completions. Controls randomness.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.VoyageEmbeddingModel">
+            <summary>
+            Model name for Voyage embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.VoyageApiKey">
+            <summary>
+            API key for Voyage AI.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicCompletionModel">
+            <summary>
+            Model name for Anthropic completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicApiKey">
+            <summary>
+            API key for Anthropic.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEmbeddingsGenerator">
+            <summary>
+            Embeddings generator type for View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewApiKey">
+            <summary>
+            API key for View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEndpoint">
+            <summary>
+            Endpoint URL for View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewAccessKey">
+            <summary>
+            Access key for View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEmbeddingsGeneratorUrl">
+            <summary>
+            URL for embeddings generator in View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewModel">
+            <summary>
+            Model name for View provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionApiKey">
+            <summary>
+            API key for View completion provider.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionProvider">
+            <summary>
+            Completion provider name for View.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionModel">
+            <summary>
+            Completion model name for View.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionPort">
+            <summary>
+            Port number for View completion service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewTemperature">
+            <summary>
+            Temperature setting for View completions. Controls randomness.
+            Value is clamped between 0.0 and 1.0. Default is 0.1.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewTopP">
+            <summary>
+            Top-p (nucleus sampling) setting for View completions.
+            Value is clamped between 0.0 and 1.0. Default is 0.9.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewMaxTokens">
+            <summary>
+            Maximum number of tokens for View completions.
+            Value is clamped between 128 and 4095. Default is 1000.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaModel">
+            <summary>
+            Model name for Ollama embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaCompletionModel">
+            <summary>
+            Model name for Ollama completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaTemperature">
+            <summary>
+            Temperature setting for Ollama completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaTopP">
+            <summary>
+            Top-p setting for Ollama completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaMaxTokens">
+            <summary>
+            Maximum number of tokens for Ollama completions.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.CompletionProviderSettings.#ctor(View.Personal.Classes.CompletionProviderTypeEnum)">
+            <summary>
+            Initializes a new instance of CompletionProviderSettings.
+            </summary>
+            <param name="providerType">The type of completion provider.</param>
+        </member>
+        <member name="M:View.Personal.Classes.CompletionProviderSettings.SetReasoningEffort(View.Personal.Classes.OpenAIReasoningEffortEnum)">
+            <summary>
+            Sets the reasoning effort level for OpenAI.
+            </summary>
+            <param name="level">The reasoning effort enumeration value.</param>
+        </member>
+        <member name="M:View.Personal.Classes.CompletionProviderSettings.GetReasoningEffortLevel">
+            <summary>
+            Gets the reasoning effort level as an enum.
+            </summary>
+            <returns>The reasoning effort enum value if it can be parsed, otherwise null.</returns>
+        </member>
+        <member name="T:View.Personal.Classes.CompletionProviderTypeEnum">
+            <summary>
+            Completion provider type.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.Settings">
+            <summary>
+            Settings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.Settings.DatabaseFilename">
+            <summary>
+            Database filename.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.Settings.Logging">
+            <summary>
+            Logging settings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.Settings.ProviderSettings">
+            <summary>
+            List of provider settings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.Settings.SelectedProvider">
+            <summary>
+            Currently selected provider (e.g., "OpenAI", "Voyage", "Anthropic", "View").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.Settings.CompletionSettings">
+            <summary>
+            Completion settings (not used in this context, retained for compatibility).
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.Settings.#ctor">
+            <summary>
+            Settings.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.FileListHelper.RefreshFileList(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="window">The parent window containing the DataGrid to refresh</param>
+            Returns:
+            None; updates the DataGrid's ItemsSource directly
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.UpdateSettingsVisibility(Avalonia.Controls.Control,Avalonia.Controls.Control,Avalonia.Controls.Control,Avalonia.Controls.Control,System.String)">
+            <summary>
+            Updates the visibility of provider-specific settings controls based on the selected provider
+            <param name="openAISettings">The control containing OpenAI-specific settings</param>
+            <param name="anthropicSettings">The control containing Anthropic-specific settings</param>
+            <param name="viewSettings">The control containing View-specific settings</param>
+            <param name="ollamaSettings">The control containing Ollama-specific settings</param>
+            <param name="selectedProvider">The string indicating the currently selected provider</param>
+            Returns:
+            None; modifies the visibility of the provided controls directly
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            Returns:
+            A List of FileViewModel objects representing the document nodes; empty if no nodes are found
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.CreateDocumentNode(System.Guid,System.Guid,System.String,System.Collections.Generic.List{DocumentAtom.Core.Atoms.Atom},DocumentAtom.TypeDetection.TypeResult)">
+            <summary>
+            Creates a document node for LiteGraph with metadata and content from a file and its extracted atoms
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="filePath">The path to the file being represented</param>
+            <param name="atoms">The list of Atom objects extracted from the file</param>
+            <param name="typeResult">The TypeResult object containing file type information</param>
+            Returns:
+            A Node object configured as a document node with the specified properties
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.CreateChunkNodes(System.Guid,System.Guid,System.Collections.Generic.List{DocumentAtom.Core.Atoms.Atom})">
+            <summary>
+            Creates a list of chunk nodes for LiteGraph from a list of Atom objects, each representing a content segment
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="atoms">The list of Atom objects to convert into chunk nodes</param>
+            Returns:
+            A List of Node objects configured as chunk nodes; empty if no valid atoms are provided
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.CreateDocumentChunkEdges(System.Guid,System.Guid,System.Guid,System.Collections.Generic.List{LiteGraph.Node})">
+            <summary>
+            Creates a list of edges connecting a document node to its chunk nodes in LiteGraph
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="fileNodeGuid">The GUID of the document node</param>
+            <param name="chunkNodes">The list of chunk nodes to connect to the document node</param>
+            Returns:
+            A List of Edge objects representing the relationships between the document node and its chunks
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.SettingsHelper.ExtractSettingsFromUI(Avalonia.Controls.Window,System.String)">
+            <summary>
+            Extracts provider-specific settings from UI controls in the specified window based on the selected provider
+            <param name="window">The window containing the UI controls with settings data</param>
+            <param name="selectedProvider">The string indicating the currently selected provider (e.g., "OpenAI", "Anthropic", "View", "Ollama")</param>
+            Returns:
+            A CompletionProviderSettings object populated with values from the UI, or null if the provider is not supported
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.SettingsHelper.LoadSavedSettings(Avalonia.Controls.Window)">
+            <summary>
+            Loads saved provider settings from the application and populates the corresponding UI controls
+            <param name="window">The window</param>
+            Returns:
+            None; updates UI controls with loaded settings directly
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.SettingsHelper.GetTextBoxValue(Avalonia.Controls.Window,System.String)">
+            <summary>
+            Retrieves the text value from a TextBox control in the specified window, returning an empty string if not found
+            <param name="window">The window containing the TextBox control</param>
+            <param name="controlName">The name of the TextBox control to query</param>
+            Returns:
+            The text content of the TextBox, or an empty string if the control is not found or has no text
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.SettingsHelper.ParseIntOrDefault(Avalonia.Controls.Window,System.String,System.Int32)">
+            <summary>
+            Parses the text value from a TextBox control into an integer, returning a default value if parsing fails
+            <param name="window">The window containing the TextBox control</param>
+            <param name="controlName">The name of the TextBox control to query</param>
+            <param name="defaultValue">The default integer value to return if parsing is unsuccessful</param>
+            Returns:
+            The parsed integer value from the TextBox, or the defaultValue if the text is not a valid integer
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.SettingsHelper.ParseDoubleOrDefault(Avalonia.Controls.Window,System.String,System.Double)">
+            <summary>
+            Parses the text value from a TextBox control into a double, returning a default value if parsing fails
+            <param name="window">The window containing the TextBox control</param>
+            <param name="controlName">The name of the TextBox control to query</param>
+            <param name="defaultValue">The default double value to return if parsing is unsuccessful</param>
+            Returns:
+            The parsed double value from the TextBox, or the defaultValue if the text is not a valid double
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.ShowNotification(System.String,System.String,Avalonia.Controls.Notifications.NotificationType)">
+            <summary>
+            Displays a notification with the specified title, message, and type using the window's notification manager.
+            </summary>
+            <param name="title">The title of the notification.</param>
+            <param name="message">The message to display in the notification.</param>
+            <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
+        </member>
+        <member name="T:View.Personal.Services.FileBrowserService">
+            <summary>
+            Service class that handles file browsing operations
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForExportLocation(Avalonia.Controls.Window,System.String,System.String)">
+            <summary>
+            Opens a file save dialog to select an export location
+            </summary>
+            <param name="window">The parent window</param>
+            <param name="defaultFileName">The default file name</param>
+            <param name="fileExtension">The default file extension</param>
+            <returns>The selected file path or null if canceled</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.String)">
+            <summary>
+            Opens a file picker dialog to select a file to ingest
+            </summary>
+            <param name="window">The parent window</param>
+            <param name="fileType">The file type to filter (e.g., "pdf")</param>
+            <returns>The selected file path or null if canceled</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForChatHistorySaveLocation(Avalonia.Controls.Window)">
+            <summary>
+            Opens a file save dialog to save chat history
+            </summary>
+            <param name="window">The parent window</param>
+            <returns>The selected file path or null if canceled</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileDeleter.DeleteFile_ClickAsync(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Handles the deletion of a file from LiteGraph
+            <param name="sender">The object triggering the event (expected to be a Button)</param>
+            <param name="e">Routed event arguments</param>
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="window">The parent window for displaying dialogs</param>
+            Returns:
+            Task representing the asynchronous operation; no direct return value
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.IngestFile_ClickAsync(System.Object,Avalonia.Interactivity.RoutedEventArgs,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
+            <param name="sender">The object triggering the event (expected to be a control)</param>
+            <param name="e">Routed event arguments</param>
+            <param name="typeDetector">The TypeDetector instance for identifying file types</param>
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="window">The parent window for UI interactions and dialogs</param>
+            Returns:
+            Task representing the asynchronous operation; no direct return value
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
+            <summary>
+            Displays an error notification using the provided MainWindow instance.
+            </summary>
+            <param name="mainWindow">The MainWindow instance to use for displaying the notification.</param>
+            <param name="title">The title of the error notification.</param>
+            <param name="message">The message to display in the error notification.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.CheckEmbeddingsResult(View.Personal.MainWindow,View.Sdk.Embeddings.EmbeddingsResult,System.Int32)">
+            <summary>
+            Checks the validity of the embeddings result and displays error notifications if issues are found.
+            </summary>
+            <param name="mainWindow">The MainWindow instance to use for displaying error notifications.</param>
+            <param name="result">The EmbeddingsResult object to validate.</param>
+            <param name="expectedCount">The expected number of embeddings in the result.</param>
+            <returns>True if the embeddings result is valid, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.GraphExporter.ExportGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Exports a graph from LiteGraph to a GEXF file based on the provided file path
+            <param name="sender">The object triggering the event (expected to be a control)</param>
+            <param name="e">Routed event arguments</param>
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="window">The parent window for UI interactions and dialogs</param>
+            Returns:
+            Task representing the asynchronous operation; no direct return value
+            </summary>
+        </member>
+    </members>
+</doc>
