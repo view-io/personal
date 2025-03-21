@@ -1,7 +1,3 @@
-#pragma warning disable CS8604 // Possible null reference argument.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8603 // Possible null reference return.
 namespace View.Personal.Helpers
 {
     using System;
@@ -12,8 +8,18 @@ namespace View.Personal.Helpers
     using System.Linq;
     using Avalonia;
 
+    /// <summary>
+    /// Provides helper methods for managing settings extraction and loading within the application UI.
+    /// </summary>
     public static class SettingsHelper
     {
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8603 // Possible null reference return.
+        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+
+
         #region Public-Members
 
         #endregion
@@ -222,6 +228,12 @@ namespace View.Personal.Helpers
             return window.FindControl<TextBox>(controlName)?.Text ?? string.Empty;
         }
 
+        /// <summary>
+        /// Retrieves the selected value from a ComboBox control within a specified window.
+        /// </summary>
+        /// <param name="window">The window containing the ComboBox control.</param>
+        /// <param name="controlName">The name of the ComboBox control to retrieve the value from.</param>
+        /// <returns>The string content of the selected ComboBox item, or an empty string if no item is selected or the control is not found.</returns>
         private static string GetComboBoxValue(Window window, string controlName)
         {
             var comboBox = window.FindControl<ComboBox>(controlName);
@@ -256,16 +268,12 @@ namespace View.Personal.Helpers
             return double.TryParse(GetTextBoxValue(window, controlName), out var value) ? value : defaultValue;
         }
 
-        private static float? ParseFloatOrNullable(Window window, string controlName)
-        {
-            var text = GetTextBoxValue(window, controlName);
-            if (string.IsNullOrWhiteSpace(text)) return null;
-
-            if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value)) return value;
-
-            return null;
-        }
-
+        /// <summary>
+        /// Retrieves the float value from a NumericUpDown control within a specified window, or a default value if none is set.
+        /// </summary>
+        /// <param name="window">The window containing the NumericUpDown control.</param>
+        /// <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
+        /// <returns>The float value of the NumericUpDown control if it has a value; otherwise, returns 0.95f as a default.</returns>
         private static float GetNumericUpDownFloatValueOrNull(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
@@ -274,6 +282,12 @@ namespace View.Personal.Helpers
             return 0.95f;
         }
 
+        /// <summary>
+        /// Retrieves the double value from a NumericUpDown control within a specified window, or null if no value is set or the control is not found.
+        /// </summary>
+        /// <param name="window">The window containing the NumericUpDown control.</param>
+        /// <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
+        /// <returns>The double value of the NumericUpDown control if it exists and has a value; otherwise, returns null.</returns>
         private static double? GetNumericUpDownValueOrNull(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
@@ -281,6 +295,12 @@ namespace View.Personal.Helpers
             return null;
         }
 
+        /// <summary>
+        /// Retrieves the integer value from a NumericUpDown control within a specified window, or a default value if none is set.
+        /// </summary>
+        /// <param name="window">The window containing the NumericUpDown control.</param>
+        /// <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
+        /// <returns>The integer value of the NumericUpDown control if it has a value; otherwise, returns 1000 as a default.</returns>
         private static int GetIntUpDownValue(Window window, string controlName)
         {
             var control = window.FindControl<NumericUpDown>(controlName);
@@ -289,16 +309,12 @@ namespace View.Personal.Helpers
             return 1000;
         }
 
-        private static int? ParseIntOrNullable(Window window, string controlName)
-        {
-            var text = GetTextBoxValue(window, controlName);
-            if (string.IsNullOrWhiteSpace(text)) return null;
-
-            if (int.TryParse(text, out var value)) return value;
-
-            return null;
-        }
-
+        /// <summary>
+        /// Retrieves the reasoning effort value from a ComboBox control within a specified window, converting it to a lowercase string or null for specific cases.
+        /// </summary>
+        /// <param name="window">The window containing the ComboBox control.</param>
+        /// <param name="controlName">The name of the ComboBox control to retrieve the value from.</param>
+        /// <returns>A lowercase string representation of the selected reasoning effort level, or null if the selection is "Default" or invalid.</returns>
         private static string? GetReasoningEffortValue(Window window, string controlName)
         {
             var comboBox = window.FindControl<ComboBox>(controlName);
@@ -319,5 +335,10 @@ namespace View.Personal.Helpers
         }
 
         #endregion
+
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8603 // Possible null reference return.
     }
 }

@@ -10,6 +10,9 @@ namespace View.Personal.Services
     using Classes;
     using Helpers;
 
+    /// <summary>
+    /// Provides methods for handling file deletion operations within the application.
+    /// </summary>
     public static class FileDeleter
     {
         /// <summary>

@@ -13,6 +13,9 @@ namespace View.Personal.UIHandlers
     using Classes;
     using Services;
 
+    /// <summary>
+    /// Provides event handlers and utility methods for managing the chat user interface.
+    /// </summary>
     public static class ChatUIHandlers
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -29,6 +32,14 @@ namespace View.Personal.UIHandlers
 
         #region Public-Methods
 
+        /// <summary>
+        /// Handles the click event for sending a message, processing user input, updating the UI, and retrieving an AI response.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the chat controls.</param>
+        /// <param name="conversationHistory">The list of ChatMessage objects representing the conversation history.</param>
+        /// <param name="getAIResponse">A function that retrieves the AI response given user input and a token callback.</param>
         public static async void SendMessage_Click(
             object sender,
             RoutedEventArgs e,
@@ -97,7 +108,14 @@ namespace View.Personal.UIHandlers
             }
         }
 
-
+        /// <summary>
+        /// Handles the key down event for the chat input box, triggering message sending on Enter key press.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The key event arguments.</param>
+        /// <param name="window">The window containing the chat controls.</param>
+        /// <param name="conversationHistory">The list of ChatMessage objects representing the conversation history.</param>
+        /// <param name="getAIResponse">A function that retrieves the AI response given user input and a token callback.</param>
         public static void ChatInputBox_KeyDown(object sender, KeyEventArgs e, Window window,
             List<ChatMessage> conversationHistory, Func<string, Action<string>, Task<string>> getAIResponse)
         {
@@ -108,6 +126,13 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event for clearing the chat, resetting the conversation history and UI.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the chat controls.</param>
+        /// <param name="conversationHistory">The list of ChatMessage objects representing the conversation history to clear.</param>
         public static void ClearChat_Click(object sender, RoutedEventArgs e, Window window,
             List<ChatMessage> conversationHistory)
         {
@@ -117,6 +142,14 @@ namespace View.Personal.UIHandlers
             conversationContainer?.Children.Clear();
         }
 
+        /// <summary>
+        /// Handles the click event for downloading the chat history to a file selected by the user.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the chat controls.</param>
+        /// <param name="conversationHistory">The list of ChatMessage objects representing the conversation history to save.</param>
+        /// <param name="fileBrowserService">The service used to browse for a file save location.</param>
         public static async void DownloadChat_Click(object sender, RoutedEventArgs e, Window window,
             List<ChatMessage> conversationHistory, FileBrowserService fileBrowserService)
         {
@@ -138,6 +171,11 @@ namespace View.Personal.UIHandlers
                 Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
+        /// <summary>
+        /// Updates the conversation window UI by rendering the chat history with styled message blocks.
+        /// </summary>
+        /// <param name="conversationContainer">The StackPanel control where chat messages are displayed.</param>
+        /// <param name="conversationHistory">The list of ChatMessage objects to render in the conversation window.</param>
         public static void UpdateConversationWindow(StackPanel? conversationContainer,
             List<ChatMessage> conversationHistory)
         {

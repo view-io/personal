@@ -5,9 +5,11 @@ namespace View.Personal.Services
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides methods for exporting graph data from LiteGraph to external formats.
+    /// </summary>
     public static class GraphExporter
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -23,7 +25,7 @@ namespace View.Personal.Services
         /// Returns:
         /// Task representing the asynchronous operation; no direct return value
         /// </summary>
-        public static async Task ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
+        public static Task ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             var spinner = window.FindControl<ProgressBar>("ExportProgressBar");
@@ -54,6 +56,8 @@ namespace View.Personal.Services
                     mainWindow.ShowNotification("Export error", $"Error exporting graph to GEXF: {ex.Message}",
                         NotificationType.Error);
             }
+
+            return Task.CompletedTask;
         }
 
 #pragma warning restore CS8602 // Dereference of a possibly null reference.

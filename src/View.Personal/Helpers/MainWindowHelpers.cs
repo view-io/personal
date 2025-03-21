@@ -11,10 +11,15 @@ namespace View.Personal.Helpers
     using System.Collections.Specialized;
     using System.IO;
 
+    /// <summary>
+    /// Provides helper methods for managing UI-related tasks and graph operations in the main window.
+    /// </summary>
     public static class MainWindowHelpers
     {
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         // ReSharper disable PossibleMultipleEnumeration
+        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+
 
         #region Public-Members
 

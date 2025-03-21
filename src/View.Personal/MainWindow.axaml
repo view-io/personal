@@ -23,7 +23,6 @@
                 <Border Grid.ColumnSpan="3" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD"
                         VerticalAlignment="Bottom" />
             </Grid>
-
             <!-- Left Navigation Panel with Model Provider Dropdown -->
             <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
                 <DockPanel LastChildFill="True">
@@ -37,7 +36,6 @@
                         <ListBoxItem Content="Console" />
 
                     </ListBox>
-
                     <!-- Model Provider Dropdown (Bottom) -->
                     <StackPanel DockPanel.Dock="Bottom" Margin="20,10,20,200">
                         <TextBlock Text="A.I. Provider" />
@@ -52,7 +50,6 @@
                     <Panel />
                 </DockPanel>
             </Border>
-
             <!-- Main Content Area -->
             <Grid Name="MainContentArea">
                 <!-- Dashboard View -->
@@ -88,7 +85,6 @@
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
-
                 <!-- Settings View -->
                 <StackPanel Name="SettingsPanel" Orientation="Vertical" IsVisible="False">
                     <TextBlock Text="Settings" />
@@ -126,8 +122,6 @@
                                 <ComboBoxItem Content="Medium" />
                                 <ComboBoxItem Content="High" />
                             </ComboBox>
-
-
                         </Grid>
                     </StackPanel>
                     <!-- Anthropic Settings -->
@@ -142,23 +136,19 @@
                             <TextBox Grid.Row="2" Grid.Column="1" x:Name="VoyageApiKey" />
                             <TextBox Grid.Row="3" Grid.Column="1" x:Name="VoyageEmbeddingModel" />
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Voyage Embedding Model" />
-
                         </Grid>
                     </StackPanel>
                     <!-- View Settings -->
                     <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
                         <Grid ColumnDefinitions="200,*"
                               RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" />
-                            <!-- <TextBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsGenerator" /> -->
                             <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsGenerator">
                                 <ComboBoxItem Content="LCProxy" />
                                 <ComboBoxItem Content="OpenAI" />
                                 <ComboBoxItem Content="Ollama" />
                                 <ComboBoxItem Content="VoyageAI" />
                             </ComboBox>
-
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" />
                             <TextBox Grid.Row="1" Grid.Column="1" x:Name="ViewApiKey" />
 
@@ -176,6 +166,7 @@
 
                             <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" />
                             <TextBox Grid.Row="6" Grid.Column="1" x:Name="ViewCompletionApiKey" />
+
                             <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" />
                             <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
 
@@ -236,13 +227,10 @@
                                 Margin="0,20,0,0"
                                 Classes="default" />
                     </StackPanel>
-
-
                 </StackPanel>
                 <!-- My Files View -->
                 <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                     <TextBlock Text="My Files" />
-
                     <!-- Ingest a File Section -->
                     <StackPanel Orientation="Vertical" Spacing="5">
                         <TextBlock Text="Ingest a File" />
@@ -259,7 +247,6 @@
                             </Grid>
                         </StackPanel>
                     </StackPanel>
-
                     <!-- Export to GEXF Section -->
                     <StackPanel Orientation="Vertical" Spacing="5">
                         <TextBlock Text="Export to GEXF" />

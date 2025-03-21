@@ -7,9 +7,13 @@ namespace View.Personal.Helpers
     using LiteGraph;
     using Classes;
 
+    /// <summary>
+    /// Provides helper methods for managing file lists in the application.
+    /// </summary>
     public static class FileListHelper
     {
         // ReSharper disable PossibleMultipleEnumeration
+        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 
         /// <summary>
         /// Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects

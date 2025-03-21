@@ -23,11 +23,16 @@ namespace View.Personal.Services
     using Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
+    /// <summary>
+    /// Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
+    /// </summary>
     public static class FileIngester
     {
 #pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+
 
         /// <summary>
         /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph

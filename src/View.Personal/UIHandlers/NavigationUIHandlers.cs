@@ -8,6 +8,9 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using LiteGraph;
 
+    /// <summary>
+    /// Provides event handlers and utility methods for managing navigation in the user interface.
+    /// </summary>
     public static class NavigationUIHandlers
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -24,6 +27,15 @@ namespace View.Personal.UIHandlers
 
         #region Public-Methods
 
+        /// <summary>
+        /// Handles the selection changed event for the navigation list, updating the visibility of UI panels accordingly.
+        /// </summary>
+        /// <param name="sender">The ListBox that triggered the selection change event.</param>
+        /// <param name="e">The selection changed event arguments.</param>
+        /// <param name="window">The window containing the navigation panels.</param>
+        /// <param name="liteGraph">The LiteGraphClient instance for interacting with graph data.</param>
+        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
+        /// <param name="graphGuid">The GUID identifying the graph.</param>
         public static void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
@@ -74,6 +86,13 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the selection changed event for the model provider combo box, updating settings and visibility.
+        /// </summary>
+        /// <param name="sender">The ComboBox that triggered the selection change event.</param>
+        /// <param name="e">The selection changed event arguments.</param>
+        /// <param name="window">The window containing the provider selection controls.</param>
+        /// <param name="windowInitialized">A flag indicating whether the window has finished initializing.</param>
         public static void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
             bool windowInitialized)
         {
@@ -90,21 +109,44 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event to navigate to the settings panel in the UI.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the navigation panels.</param>
         public static void NavigateToSettings_Click(object sender, RoutedEventArgs e, Window window)
         {
             NavigateToPanel(window, "Settings");
         }
 
+        /// <summary>
+        /// Handles the click event to navigate to the My Files panel in the UI.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the navigation panels.</param>
         public static void NavigateToMyFiles_Click(object sender, RoutedEventArgs e, Window window)
         {
             NavigateToPanel(window, "My Files");
         }
 
+        /// <summary>
+        /// Handles the click event to navigate to the Chat panel in the UI.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The routed event arguments.</param>
+        /// <param name="window">The window containing the navigation panels.</param>
         public static void NavigateToChat_Click(object sender, RoutedEventArgs e, Window window)
         {
             NavigateToPanel(window, "Chat");
         }
 
+        /// <summary>
+        /// Navigates to a specified panel by selecting the corresponding item in the navigation list.
+        /// </summary>
+        /// <param name="window">The window containing the navigation list.</param>
+        /// <param name="panelName">The name of the panel to navigate to.</param>
         public static void NavigateToPanel(Window window, string panelName)
         {
             var navList = window.FindControl<ListBox>("NavList");
