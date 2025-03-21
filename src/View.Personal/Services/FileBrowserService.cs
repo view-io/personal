@@ -10,7 +10,6 @@ namespace View.Personal.Services
     /// </summary>
     public class FileBrowserService
     {
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 #pragma warning disable CS8603 // Possible null reference return.
 
         #region Public-Members
@@ -57,7 +56,7 @@ namespace View.Personal.Services
                 SuggestedFileName = defaultFileName
             });
 
-            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
+            if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
                 Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
@@ -95,7 +94,7 @@ namespace View.Personal.Services
                 }
             });
 
-            if (files != null && files.Count > 0 && !string.IsNullOrEmpty(files[0].Path?.LocalPath))
+            if (files.Count > 0 && !string.IsNullOrEmpty(files[0].Path.LocalPath))
             {
                 Console.WriteLine($"Selected file path: {files[0].Path.LocalPath}");
                 return files[0].Path.LocalPath;
@@ -133,7 +132,7 @@ namespace View.Personal.Services
                 }
             });
 
-            if (file != null && !string.IsNullOrEmpty(file.Path?.LocalPath))
+            if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
                 Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;

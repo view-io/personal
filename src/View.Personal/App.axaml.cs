@@ -8,7 +8,6 @@ namespace View.Personal
     using LiteGraph.GraphRepositories;
     using MsBox.Avalonia;
     using MsBox.Avalonia.Enums;
-    using SerializationHelper;
     using SyslogLogging;
     using System;
     using System.Collections.Generic;
@@ -20,12 +19,9 @@ namespace View.Personal
     /// <summary>
     /// Main application.
     /// </summary>
-    public partial class App : Application
+    public class App : Application
     {
-        // ReSharper disable RedundantDefaultMemberInitializer
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8629 // Nullable value type may be null.
 
         #region Internal-Members
 
@@ -34,15 +30,14 @@ namespace View.Personal
         #region Private-Members
 
         internal string _Header = "[ViewPersonal] ";
-        internal Serializer _Serializer = new();
-        internal LiteGraphClient _LiteGraph = null;
-        internal GraphRepositoryBase _GraphDriver = null;
-        internal LiteGraph.LoggingSettings _LoggingSettings = null;
+        internal LiteGraphClient _LiteGraph;
+        internal GraphRepositoryBase _GraphDriver;
+        internal LiteGraph.LoggingSettings _LoggingSettings;
         internal Guid _TenantGuid = default;
         internal Guid _GraphGuid = default;
         internal Guid _UserGuid = default;
         internal Guid _CredentialGuid = default;
-        internal LoggingModule _Logging = null;
+        internal LoggingModule _Logging;
         private const string SettingsFilePath = "appsettings.json";
         private Settings _AppSettings;
 
@@ -163,7 +158,7 @@ namespace View.Personal
                         ts.End = DateTime.UtcNow;
                         _Logging.Debug(_Header + "finished initialization at " +
                                        DateTime.UtcNow.ToString(Constants.TimestampFormat) + " after " +
-                                       ts.TotalMs.Value.ToString("0.##") + "ms");
+                                       (ts.TotalMs.HasValue ? ts.TotalMs.Value.ToString("0.##") : "unknown") + "ms");
                     }
 
                     SaveSettings();
@@ -199,11 +194,11 @@ namespace View.Personal
                 };
                 var json = JsonSerializer.Serialize(_AppSettings, options);
                 File.WriteAllText(SettingsFilePath, json);
-                _Logging?.Debug(_Header + $"Settings saved to {SettingsFilePath}");
+                _Logging.Debug(_Header + $"Settings saved to {SettingsFilePath}");
             }
             catch (Exception ex)
             {
-                _Logging?.Error(_Header + $"Failed to save settings: {ex.Message}");
+                _Logging.Error(_Header + $"Failed to save settings: {ex.Message}");
             }
         }
 
@@ -268,19 +263,19 @@ namespace View.Personal
                     var json = File.ReadAllText(SettingsFilePath);
                     _AppSettings = JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
 
-                    if (_AppSettings.Logging != null) _LoggingSettings = _AppSettings.Logging;
-                    _Logging?.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
+                    _LoggingSettings = _AppSettings.Logging;
+                    _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
                 }
                 else
                 {
-                    _Logging?.Debug(_Header + "No settings file found, using defaults");
+                    _Logging.Debug(_Header + "No settings file found, using defaults");
                     _AppSettings = new Settings();
                     SaveSettings(); // Create initial settings file
                 }
             }
             catch (Exception ex)
             {
-                _Logging?.Error(_Header + $"Failed to load settings: {ex.Message}");
+                _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
                 _AppSettings = new Settings();
                 SaveSettings();
             }
@@ -291,6 +286,4 @@ namespace View.Personal
 
 // ReSharper disable RedundantDefaultMemberInitializer
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-#pragma warning restore CS8629 // Nullable value type may be null.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 }

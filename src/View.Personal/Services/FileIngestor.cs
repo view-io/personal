@@ -29,8 +29,6 @@ namespace View.Personal.Services
     public static class FileIngester
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-
 
         /// <summary>
         /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
@@ -80,7 +78,7 @@ namespace View.Personal.Services
                 var providerSettings =
                     app?.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                string contentType = null;
+                string? contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
                 Console.WriteLine($"Detected Type: {typeResult.Type}");
 
@@ -438,8 +436,7 @@ namespace View.Personal.Services
         /// <param name="message">The message to display in the error notification.</param>
         private static void ShowErrorNotification(MainWindow mainWindow, string title, string message)
         {
-            if (mainWindow != null)
-                mainWindow.ShowNotification(title, message, NotificationType.Error);
+            mainWindow.ShowNotification(title, message, NotificationType.Error);
         }
 
         /// <summary>
@@ -478,6 +475,5 @@ namespace View.Personal.Services
         }
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }
