@@ -90,7 +90,8 @@
                     <TextBlock Text="Settings" />
                     <!-- OpenAI Settings -->
                     <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-                        <Grid>
+                        <Grid ColumnDefinitions="200,*"
+                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" />
                             <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey" />
 
