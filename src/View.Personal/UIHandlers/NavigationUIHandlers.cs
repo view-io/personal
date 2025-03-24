@@ -37,10 +37,10 @@ namespace View.Personal.UIHandlers
         public static void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
-            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
+            if (sender is ListBox listBox)
             {
-                var selectedContent = selectedItem.Content?.ToString();
-                var dashboardPanel = window.FindControl<StackPanel>("DashboardPanel");
+                var mainWindow = window as MainWindow;
+                var dashboardPanel = window.FindControl<Border>("DashboardPanel");
                 var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
                 var chatPanel = window.FindControl<StackPanel>("ChatPanel");
@@ -58,38 +58,51 @@ namespace View.Personal.UIHandlers
                     workspaceText.IsVisible = false;
                 }
 
-                switch (selectedContent)
+                if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
-                    case "Dashboard":
-                        if (dashboardPanel != null) dashboardPanel.IsVisible = true;
-                        break;
-                    case "Settings":
-                        if (settingsPanel != null) settingsPanel.IsVisible = true;
-                        var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-                        var currentProvider = (comboBox?.SelectedItem as ComboBoxItem)?.Content?.ToString();
-                        if (!string.IsNullOrEmpty(currentProvider))
-                            MainWindowUIHandlers.UpdateSettingsVisibility(window, currentProvider);
-                        break;
-                    case "My Files":
-                        if (myFilesPanel != null) myFilesPanel.IsVisible = true;
-                        var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid != null)
-                        {
-                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
-                            Console.WriteLine($"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
-                        }
+                    mainWindow.ShowingChat = false;
+                    var selectedTag = selectedItem.Tag?.ToString();
+                    switch (selectedTag)
+                    {
+                        case "Files":
+                            if (myFilesPanel != null)
+                            {
+                                myFilesPanel.IsVisible = true;
+                                var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
+                                if (filesDataGrid != null)
+                                {
+                                    var uniqueFiles =
+                                        MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
+                                    filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
+                                    Console.WriteLine(
+                                        $"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
+                                }
+                            }
 
-                        break;
-                    case "Chat":
-                        if (chatPanel != null) chatPanel.IsVisible = true;
-                        break;
-                    case "Console":
-                        if (consolePanel != null) consolePanel.IsVisible = true;
-                        break;
-                    default:
-                        if (workspaceText != null) workspaceText.IsVisible = true;
-                        break;
+                            break;
+                        case "Settings":
+                            if (settingsPanel != null)
+                            {
+                                settingsPanel.IsVisible = true;
+                                var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
+                                var currentProvider = (comboBox?.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                                if (!string.IsNullOrEmpty(currentProvider))
+                                    MainWindowUIHandlers.UpdateSettingsVisibility(window, currentProvider);
+                            }
+
+                            break;
+                        case "Console":
+                            if (consolePanel != null) consolePanel.IsVisible = true;
+                            break;
+                    }
+                }
+                else
+                {
+                    // No selection in NavList
+                    if (mainWindow != null && mainWindow.ShowingChat)
+                        chatPanel.IsVisible = true; // Keep chat visible if it was shown
+                    else
+                        dashboardPanel.IsVisible = true; // Default to dashboard
                 }
             }
         }

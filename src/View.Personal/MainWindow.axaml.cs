@@ -62,6 +62,7 @@ namespace View.Personal
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
         private bool _WindowInitialized;
+        private bool _ShowingChat = false;
 
         #endregion
 
@@ -85,14 +86,22 @@ namespace View.Personal
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
                     Console.WriteLine("[INFO] MainWindow opened.");
+                    var navList = this.FindControl<ListBox>("NavList");
+                    navList.SelectedIndex = -1;
+                    _ShowingChat = false;
+                    ShowPanel("Dashboard");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
                 NavModelProviderComboBox.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.ModelProvider_SelectionChanged(s, e, this, _WindowInitialized);
-                FilePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
-                ExportFilePathTextBox.PropertyChanged += ExportFilePathTextBox_PropertyChanged;
-                ChatInputBox.KeyDown += ChatInputBox_KeyDown;
+                var filePathTextBox = this.FindControl<TextBox>("FilePathTextBox");
+                var exportFilePathTextBox = this.FindControl<TextBox>("ExportFilePathTextBox");
+                var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
+
+                filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
+                exportFilePathTextBox.PropertyChanged += ExportFilePathTextBox_PropertyChanged;
+                chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
             {
@@ -117,9 +126,43 @@ namespace View.Personal
             _WindowNotificationManager.Show(notification);
         }
 
+        /// <summary>
+        /// Gets or sets whether the chat panel is currently being shown.
+        /// </summary>
+        public bool ShowingChat
+        {
+            get => _ShowingChat;
+            set => _ShowingChat = value;
+        }
+
         #endregion
 
         #region Private-Methods
+
+        private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ShowingChat = true; // Indicate chat is being shown
+            ShowPanel("Chat");
+            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
+            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
+            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var chatPanel = this.FindControl<StackPanel>("ChatPanel");
+            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
+            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
+            var navList = this.FindControl<ListBox>("NavList");
+
+            if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null && chatPanel != null &&
+                consolePanel != null && workspaceText != null && navList != null)
+            {
+                dashboardPanel.IsVisible = false;
+                settingsPanel.IsVisible = false;
+                myFilesPanel.IsVisible = false;
+                chatPanel.IsVisible = true;
+                consolePanel.IsVisible = false;
+                workspaceText.IsVisible = false;
+                navList.SelectedItem = null; // This line triggers the issue
+            }
+        }
 
         private void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -673,6 +716,27 @@ namespace View.Personal
                     : null,
                 _ => null
             };
+        }
+
+        private void ShowPanel(string panelName)
+        {
+            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
+            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
+            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var chatPanel = this.FindControl<StackPanel>("ChatPanel");
+            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
+            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
+
+            if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null &&
+                chatPanel != null && consolePanel != null && workspaceText != null)
+            {
+                dashboardPanel.IsVisible = panelName == "Dashboard";
+                settingsPanel.IsVisible = panelName == "Settings";
+                myFilesPanel.IsVisible = panelName == "MyFiles";
+                chatPanel.IsVisible = panelName == "Chat";
+                consolePanel.IsVisible = panelName == "Console";
+                workspaceText.IsVisible = false;
+            }
         }
 
         #endregion

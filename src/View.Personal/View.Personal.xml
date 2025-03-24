@@ -566,6 +566,11 @@
             <param name="message">The message to display in the notification.</param>
             <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         </member>
+        <member name="P:View.Personal.MainWindow.ShowingChat">
+            <summary>
+            Gets or sets whether the chat panel is currently being shown.
+            </summary>
+        </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
             Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.

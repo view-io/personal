@@ -1,43 +1,63 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:classes="clr-namespace:View.Personal.Classes"
-        xmlns:controls="using:Avalonia.Controls.Notifications"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
-        Title="View Personal Edition"
+        Title=""
         Icon="/Assets/glyph.png">
     <Grid>
         <DockPanel>
-            <!-- Top Bar -->
-            <Grid DockPanel.Dock="Top" Height="50">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0">
-                    <Image Source="/Assets/logo.png" Height="30" />
-                    <TextBlock Text="Personal Edition" VerticalAlignment="Center" Margin="10,0" />
-                </StackPanel>
-                <TextBlock Grid.Column="2" Text="©2025 View Systems Inc" VerticalAlignment="Center" Margin="20,0" />
-                <Border Grid.ColumnSpan="3" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD"
-                        VerticalAlignment="Bottom" />
-            </Grid>
-            <!-- Left Navigation Panel with Model Provider Dropdown -->
-            <Border DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD" Width="200">
-                <DockPanel LastChildFill="True">
-                    <!-- Navigation List (Top) -->
-                    <ListBox DockPanel.Dock="Top" x:Name="NavList"
-                             SelectionChanged="NavList_SelectionChanged" Margin="0,0,0,10">
-                        <ListBoxItem Content="Dashboard" IsSelected="True" />
-                        <ListBoxItem Content="Settings" />
-                        <ListBoxItem Content="My Files" />
-                        <ListBoxItem Content="Chat" />
-                        <ListBoxItem Content="Console" />
+            <!-- Sidebar -->
+            <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
+                    Width="200">
+                <DockPanel>
+                    <!-- Logo and Toggle -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
+                        <Image Source="/Assets/logo.png" Height="30" />
+                    </StackPanel>
 
+                    <!-- Start New Chat Button -->
+                    <Button DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10"
+                            Click="StartNewChatButton_Click"
+                            Background="#E0E0E0" BorderBrush="#CCCCCC" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal">
+                            <!-- <Image Source="/Assets/chat_icon.png" Width="16" Height="16" Margin="0,0,5,0" /> -->
+                            <TextBlock Text="Start New Chat" Foreground="Black" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Navigation List -->
+                    <ListBox DockPanel.Dock="Top" x:Name="NavList" SelectionChanged="NavList_SelectionChanged"
+                             Margin="10">
+                        <ListBoxItem Tag="Files">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <Image Source="/Assets/Frame.png" Width="16" Height="16" Margin="0,0,5,0" /> -->
+                                <TextBlock Text="Files" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Tag="Data Crawler" IsEnabled="False">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <Image Source="/Assets/data_crawler_icon.png Width="16" Height="16" Margin="0,0,5,0" /> -->
+                                <TextBlock Text="Data Crawler" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Tag="Settings">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <Image Source="/Assets/settings_icon.png" Width="16" Height="16" Margin="0,0,5,0" /> -->
+                                <TextBlock Text="Settings" />
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Tag="Console">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <Image Source="/Assets/console_icon.png" Width="16" Height="16" Margin="0,0,5,0" /> -->
+                                <TextBlock Text="Console" />
+                            </StackPanel>
+                        </ListBoxItem>
                     </ListBox>
-                    <!-- Model Provider Dropdown (Bottom) -->
-                    <StackPanel DockPanel.Dock="Bottom" Margin="20,10,20,200">
+
+                    <!-- Model Provider Dropdown -->
+                    <StackPanel DockPanel.Dock="Bottom" Margin="10">
                         <TextBlock Text="A.I. Provider" />
                         <ComboBox x:Name="NavModelProviderComboBox" Width="160" SelectedIndex="0"
                                   SelectionChanged="ModelProvider_SelectionChanged">
@@ -47,45 +67,76 @@
                             <ComboBoxItem Content="Ollama" />
                         </ComboBox>
                     </StackPanel>
-                    <Panel />
+                    <StackPanel />
                 </DockPanel>
             </Border>
+
             <!-- Main Content Area -->
-            <Grid Name="MainContentArea">
+            <Grid Name="MainContentArea" Background="#F5F5F5">
                 <!-- Dashboard View -->
-                <StackPanel Name="DashboardPanel" HorizontalAlignment="Center" Spacing="20"
-                            IsVisible="True">
-                    <TextBlock Text="Welcome to View Personal Edition." />
-                    <StackPanel Spacing="10">
-                        <TextBlock>
-                            <Run Text="Use the" />
-                            <TextBlock>
-                                <Button
-                                    MaxWidth="100" Classes="link" Content="Settings" Margin="0" Padding="0"
-                                    VerticalAlignment="Bottom" Click="NavigateToSettings_Click" />
-                            </TextBlock>
-                            <Run
-                                Text="tab to provide the necessary credentials to access services for vectorization and chat completions." />
-                        </TextBlock>
-                        <TextBlock>
-                            <Run Text="Use the" />
-                            <TextBlock>
-                                <Button Classes="link" Click="NavigateToMyFiles_Click" MaxWidth="100" Margin="0"
-                                        Padding="0" Content="My Files" />
-                            </TextBlock>
-                            <Run Text="tab to manage files stored in your personal store." />
-                        </TextBlock>
-                        <TextBlock>
-                            <Run Text="Use the" />
-                            <TextBlock>
-                                <Button Classes="link" Click="NavigateToMyFiles_Click" MaxWidth="100" Margin="0"
-                                        Padding="0" Content="Chat" />
-                            </TextBlock>
-                            <Run Text="tab to chat with your data." />
-                        </TextBlock>
-                    </StackPanel>
-                </StackPanel>
-                <!-- Settings View -->
+                <Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="True" Width="454"
+                        Height="601" BoxShadow="0 2 4 -2 #1A1C1E 6%, 0 4 8 -2 #1A1C1E 10%">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
+                            <Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
+                                    VerticalAlignment="Top">
+                                <TextBlock Text="OSS" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Foreground="#6A6B6F" FontWeight="500" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Main content -->
+                        <StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <avalonia:MaterialIcon Kind="FileOutline" Foreground="#009E61" VerticalAlignment="Top"
+                                                       Height="24" Width="24" />
+                                <StackPanel>
+                                    <TextBlock Text="Files" Classes="default"
+                                               Margin="0" Padding="0" FontWeight="500" />
+                                    <TextBlock Classes="secondary" Text="Manage the files you want to chat with" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <avalonia:MaterialIcon Kind="CogOutline" Foreground="#0472EF" VerticalAlignment="Top"
+                                                       Height="24" Width="24" />
+                                <StackPanel>
+                                    <TextBlock Text="Settings" Classes="default"
+                                               Margin="0" Padding="0" FontWeight="500" />
+                                    <TextBlock Classes="secondary" Text="Configure your LLM and API keys" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <avalonia:MaterialIcon Kind="MessageOutline" Foreground="#7B45E6"
+                                                       VerticalAlignment="Top" Height="24" Width="24" />
+                                <StackPanel>
+                                    <TextBlock Text="Chat" Classes="default"
+                                               Margin="0" Padding="0" FontWeight="500" />
+                                    <TextBlock Classes="secondary" Text="Chat with your data" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Footer -->
+                        <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
+                            <TextBlock Text="©2025 View Systems Inc." FontSize="12" Foreground="#6A6B6F"
+                                       FontWeight="500" />
+                            <TextBlock Text="Released under the MIT License." FontSize="12" Foreground="#C0C0C1"
+                                       FontWeight="500"
+                                       HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Other Panels (unchanged except for visibility handling) -->
                 <StackPanel Name="SettingsPanel" Orientation="Vertical" IsVisible="False">
                     <TextBlock Text="Settings" />
                     <!-- OpenAI Settings -->
@@ -229,7 +280,6 @@
                                 Classes="default" />
                     </StackPanel>
                 </StackPanel>
-                <!-- My Files View -->
                 <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                     <TextBlock Text="My Files" />
                     <!-- Ingest a File Section -->
@@ -308,7 +358,6 @@
                         </ScrollViewer>
                     </StackPanel>
                 </StackPanel>
-                <!-- Chat View -->
                 <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
                     <TextBlock Text="Chat" />
                     <Border Height="400" Margin="20,0" CornerRadius="5">
@@ -346,7 +395,6 @@
                                      IsVisible="False" />
                     </Grid>
                 </StackPanel>
-                <!-- Console View -->
                 <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
                     <TextBlock Text="Console" />
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">
@@ -358,10 +406,9 @@
                                  TextWrapping="Wrap" />
                     </ScrollViewer>
                 </StackPanel>
-                <!-- Default View -->
-                <TextBlock Name="WorkspaceText" />
+                <TextBlock Name="WorkspaceText" IsVisible="False" />
             </Grid>
         </DockPanel>
-        <controls:WindowNotificationManager x:Name="NotificationManager" />
+        <WindowNotificationManager x:Name="NotificationManager" />
     </Grid>
 </Window>
