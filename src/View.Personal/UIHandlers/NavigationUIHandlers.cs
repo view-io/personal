@@ -69,11 +69,28 @@ namespace View.Personal.UIHandlers
                             {
                                 myFilesPanel.IsVisible = true;
                                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-                                if (filesDataGrid != null)
+                                var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
+                                var fileOperationsPanel = window.FindControl<StackPanel>("FileOperationsPanel");
+
+                                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
                                 {
                                     var uniqueFiles =
                                         MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                                    filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
+
+                                    if (uniqueFiles.Any())
+                                    {
+                                        filesDataGrid.ItemsSource = uniqueFiles;
+                                        uploadFilesPanel.IsVisible = false;
+                                        filesDataGrid.IsVisible = true;
+                                    }
+                                    else
+                                    {
+                                        filesDataGrid.ItemsSource = null;
+                                        filesDataGrid.IsVisible = false;
+                                        fileOperationsPanel.IsVisible = false;
+                                        uploadFilesPanel.IsVisible = true;
+                                    }
+
                                     Console.WriteLine(
                                         $"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
                                 }
@@ -98,11 +115,10 @@ namespace View.Personal.UIHandlers
                 }
                 else
                 {
-                    // No selection in NavList
-                    if (mainWindow != null && mainWindow.ShowingChat)
-                        chatPanel.IsVisible = true; // Keep chat visible if it was shown
-                    else
-                        dashboardPanel.IsVisible = true; // Default to dashboard
+                    if (mainWindow != null && mainWindow.ShowingChat && chatPanel != null)
+                        chatPanel.IsVisible = true;
+                    else if (dashboardPanel != null)
+                        dashboardPanel.IsVisible = true;
                 }
             }
         }
