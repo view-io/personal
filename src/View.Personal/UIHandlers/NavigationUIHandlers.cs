@@ -70,7 +70,7 @@ namespace View.Personal.UIHandlers
                                 myFilesPanel.IsVisible = true;
                                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
                                 var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
-                                var fileOperationsPanel = window.FindControl<StackPanel>("FileOperationsPanel");
+                                var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
 
                                 if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
                                 {

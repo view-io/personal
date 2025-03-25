@@ -783,6 +783,17 @@
             Provides methods for exporting graph data from LiteGraph to external formats.
             </summary>
         </member>
+        <member name="M:View.Personal.Services.GraphExporter.TryExportGraphToGexfFile(LiteGraph.LiteGraphClient,System.Guid,System.Guid,System.String,System.String@)">
+            <summary>
+            Attempts to export a graph from LiteGraph to a GEXF file at the specified file path.
+            </summary>
+            <param name="liteGraph">The LiteGraphClient instance used to perform the export operation.</param>
+            <param name="tenantGuid">The unique identifier for the tenant associated with the graph.</param>
+            <param name="graphGuid">The unique identifier for the graph to be exported.</param>
+            <param name="filePath">The file path where the GEXF file will be saved.</param>
+            <param name="errorMessage">An output parameter that receives the error message if the export fails; null if successful.</param>
+            <returns>True if the export succeeds, false if an exception occurs during the process.</returns>
+        </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing the chat user interface.
@@ -862,6 +873,19 @@
             <param name="graphGuid">The GUID identifying the graph.</param>
             <param name="window">The window where the delete action is initiated.</param>
         </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.ExportGexfButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,View.Personal.MainWindow,View.Personal.Services.FileBrowserService,LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Handles the click event for exporting a graph to a GEXF file, prompting the user for a save location and managing UI feedback.
+            </summary>
+            <param name="sender">The object that triggered the event, typically the export button.</param>
+            <param name="e">The event arguments associated with the button click.</param>
+            <param name="window">The MainWindow instance providing access to UI elements and notification methods.</param>
+            <param name="fileBrowserService">The FileBrowserService instance used to prompt for the export file location.</param>
+            <param name="liteGraph">The LiteGraphClient instance used to perform the graph export operation.</param>
+            <param name="tenantGuid">The unique identifier for the tenant associated with the graph.</param>
+            <param name="graphGuid">The unique identifier for the graph to be exported.</param>
+            <returns>A Task representing the asynchronous operation of browsing for a file location and exporting the graph.</returns>
+        </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.BrowseAndUpdateTextBoxAsync(Avalonia.Controls.Window,System.String,System.Func{Avalonia.Controls.Window,System.Threading.Tasks.Task{System.String}})">
             <summary>
             Asynchronously browses for a file or directory and updates the specified textbox with the selected path.
@@ -870,15 +894,6 @@
             <param name="textBoxName">The name of the textbox control to update.</param>
             <param name="browseFunc">A function that performs the browsing operation and returns the selected path.</param>
             <returns>A task representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.BrowseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,View.Personal.Services.FileBrowserService)">
-            <summary>
-            Handles the click event for a browse button, triggering a file browse operation to update a textbox.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="window">The window containing the textbox to update.</param>
-            <param name="fileBrowserService">The service used to browse for an export location.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IngestBrowseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,View.Personal.Services.FileBrowserService)">
             <summary>
@@ -905,14 +920,6 @@
             <param name="sender">The textbox whose property changed.</param>
             <param name="e">The property changed event arguments.</param>
             <param name="window">The window containing the ingest button.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.ExportFilePathTextBox_PropertyChanged(System.Object,Avalonia.AvaloniaPropertyChangedEventArgs,Avalonia.Controls.Window)">
-            <summary>
-            Handles the property changed event for the export file path textbox, updating the export button's enabled state.
-            </summary>
-            <param name="sender">The textbox whose property changed.</param>
-            <param name="e">The property changed event arguments.</param>
-            <param name="window">The window containing the export button.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.UpdateSettingsVisibility(Avalonia.Controls.Window,System.String)">
             <summary>

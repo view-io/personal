@@ -51,7 +51,7 @@ namespace View.Personal.Helpers
             }
 
             var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-            var fileOperationsPanel = window.FindControl<StackPanel>("FileOperationsPanel");
+            var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
             var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
             if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
             {
