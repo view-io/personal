@@ -381,6 +381,37 @@
             Settings.
             </summary>
         </member>
+        <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
+            <summary>
+            Converts DateTime objects or string date representations to a formatted string with the pattern "M/d/yyyy, h:mm:ss tt".
+            Handles both DateTime objects and string dates in UTC format.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.DateTimeFormatConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a DateTime object or string date representation to a formatted string.
+            </summary>
+            <param name="value">The value to convert, either a DateTime object or a string representation of a date.</param>
+            <param name="targetType">The type of the binding target property (not used).</param>
+            <param name="parameter">Optional parameter (not used).</param>
+            <param name="culture">The culture to use for conversion (not used, always uses InvariantCulture).</param>
+            <returns>
+            A string in the format "M/d/yyyy, h:mm:ss tt" (e.g., "3/25/2025, 7:47:03 PM") if conversion is successful;
+            otherwise, the string representation of the value or an empty string.
+            </returns>
+        </member>
+        <member name="M:View.Personal.Helpers.DateTimeFormatConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a value back to the source type.
+            This method is not implemented and will throw a NotImplementedException if called.
+            </summary>
+            <param name="value">The value to convert back.</param>
+            <param name="targetType">The type to convert to.</param>
+            <param name="parameter">Optional parameter (not used).</param>
+            <param name="culture">The culture to use for conversion.</param>
+            <returns>Nothing, as this method throws an exception.</returns>
+            <exception cref="T:System.NotImplementedException">Always thrown as this method is not implemented.</exception>
+        </member>
         <member name="T:View.Personal.Helpers.FileListHelper">
             <summary>
             Provides helper methods for managing file lists in the application.
