@@ -571,6 +571,15 @@
             Gets or sets whether the chat panel is currently being shown.
             </summary>
         </member>
+        <member name="M:View.Personal.MainWindow.IngestFileAsync(System.String)">
+            <summary>
+            Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
+            It serves as a bridge between the UI event handling in <see cref="T:View.Personal.MainWindow"/> and the file ingestion logic in <see cref="T:View.Personal.Services.FileIngester"/>.
+            </summary>
+            <param name="filePath">The path to the file to be ingested.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of file ingestion.</returns>
+        </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
             Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
@@ -734,6 +743,23 @@
             <summary>
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
             </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Asynchronously ingests a PDF file into the LiteGraph system. The method processes the file into smaller chunks (atoms),
+            creates nodes in the graph for the file and its chunks, generates embeddings for the chunks using the selected provider,
+            and updates the graph with these embeddings. It also handles UI interactions such as showing a spinner during the process
+            and displaying notifications for success or errors. The method expects the <paramref name="window"/> to be an instance of
+            <see cref="T:View.Personal.MainWindow"/>; otherwise, it logs an error and exits early. Only PDF files are supported; other file types will
+            result in an error notification.
+            </summary>
+            <param name="filePath">The path to the PDF file to be ingested.</param>
+            <param name="typeDetector">An instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used to determine the type of the file.</param>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance used to interact with the graph database.</param>
+            <param name="tenantGuid">The GUID representing the tenant in the system.</param>
+            <param name="graphGuid">The GUID representing the graph in the system.</param>
+            <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
             <summary>
