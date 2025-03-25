@@ -735,20 +735,6 @@
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.IngestFile_ClickAsync(System.Object,Avalonia.Interactivity.RoutedEventArgs,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
-            <param name="sender">The object triggering the event (expected to be a control)</param>
-            <param name="e">Routed event arguments</param>
-            <param name="typeDetector">The TypeDetector instance for identifying file types</param>
-            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-            <param name="tenantGuid">The unique identifier for the tenant</param>
-            <param name="graphGuid">The unique identifier for the graph</param>
-            <param name="window">The parent window for UI interactions and dialogs</param>
-            Returns:
-            Task representing the asynchronous operation; no direct return value
-            </summary>
-        </member>
         <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
             <summary>
             Displays an error notification using the provided MainWindow instance.
@@ -862,18 +848,6 @@
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
             <param name="window">The window where the delete action is initiated.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IngestFile_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Handles the click event for ingesting a file, delegating to an asynchronous file ingestion method.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="typeDetector">The type detector used to identify file types (assumed from context).</param>
-            <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
-            <param name="tenantGuid">The GUID identifying the tenant.</param>
-            <param name="graphGuid">The GUID identifying the graph.</param>
-            <param name="window">The window where the ingest action is initiated.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.ExportGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>

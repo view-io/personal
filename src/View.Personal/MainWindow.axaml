@@ -325,8 +325,6 @@
                                             Click="IngestBrowseButton_Click"
 
                                             x:Name="IngestBrowseButton" />
-                                    <Button Grid.Column="2" Content="Ingest" Click="IngestFile_Click"
-                                            x:Name="IngestButton" IsEnabled="False" Classes="default" />
                                 </Grid>
                             </StackPanel>
                         </StackPanel>

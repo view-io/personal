@@ -135,13 +135,25 @@ namespace View.Personal
             set => _ShowingChat = value;
         }
 
+        /// <summary>
+        /// Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="FileIngester.IngestFileAsync"/> method.
+        /// This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
+        /// It serves as a bridge between the UI event handling in <see cref="MainWindow"/> and the file ingestion logic in <see cref="FileIngester"/>.
+        /// </summary>
+        /// <param name="filePath">The path to the file to be ingested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of file ingestion.</returns>
+        public async Task IngestFileAsync(string filePath)
+        {
+            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
+        }
+
         #endregion
 
         #region Private-Methods
 
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
-            _ShowingChat = true; // Indicate chat is being shown
+            _ShowingChat = true;
             ShowPanel("Chat");
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
@@ -172,11 +184,6 @@ namespace View.Personal
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
-        }
-
-        private void IngestFile_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.IngestFile_Click(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
         private void ExportGraph_Click(object sender, RoutedEventArgs e)

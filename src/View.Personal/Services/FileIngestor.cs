@@ -3,7 +3,6 @@ namespace View.Personal.Services
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using Avalonia.Interactivity;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -30,34 +29,45 @@ namespace View.Personal.Services
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Public-Methods
+
         /// <summary>
-        /// Ingests a file into LiteGraph, processes it into chunks, generates embeddings based on the selected provider, and updates the graph
-        /// <param name="sender">The object triggering the event (expected to be a control)</param>
-        /// <param name="e">Routed event arguments</param>
-        /// <param name="typeDetector">The TypeDetector instance for identifying file types</param>
-        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-        /// <param name="tenantGuid">The unique identifier for the tenant</param>
-        /// <param name="graphGuid">The unique identifier for the graph</param>
-        /// <param name="window">The parent window for UI interactions and dialogs</param>
-        /// Returns:
-        /// Task representing the asynchronous operation; no direct return value
+        /// Asynchronously ingests a PDF file into the LiteGraph system. The method processes the file into smaller chunks (atoms),
+        /// creates nodes in the graph for the file and its chunks, generates embeddings for the chunks using the selected provider,
+        /// and updates the graph with these embeddings. It also handles UI interactions such as showing a spinner during the process
+        /// and displaying notifications for success or errors. The method expects the <paramref name="window"/> to be an instance of
+        /// <see cref="MainWindow"/>; otherwise, it logs an error and exits early. Only PDF files are supported; other file types will
+        /// result in an error notification.
         /// </summary>
-        public static async Task IngestFile_ClickAsync(object sender, RoutedEventArgs e, TypeDetector typeDetector,
-            LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
+        /// <param name="filePath">The path to the PDF file to be ingested.</param>
+        /// <param name="typeDetector">An instance of <see cref="TypeDetector"/> used to determine the type of the file.</param>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> instance used to interact with the graph database.</param>
+        /// <param name="tenantGuid">The GUID representing the tenant in the system.</param>
+        /// <param name="graphGuid">The GUID representing the graph in the system.</param>
+        /// <param name="window">The <see cref="Window"/> object, expected to be an instance of <see cref="MainWindow"/>, used for UI interactions.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task IngestFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
+            Guid tenantGuid, Guid graphGuid, Window window)
         {
             var mainWindow = window as MainWindow;
-
             if (mainWindow == null)
             {
-                Console.WriteLine("Main window is null.");
+                Console.WriteLine("[ERROR] Window is not MainWindow.");
                 return;
             }
 
-            var filePath = window.FindControl<TextBox>("FilePathTextBox")?.Text;
             var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
             var selectedProvider = (providerCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString();
-
             var spinner = window.FindControl<ProgressBar>("IngestSpinner");
+
             if (spinner != null)
             {
                 spinner.IsVisible = true;
@@ -66,6 +76,12 @@ namespace View.Personal.Services
 
             try
             {
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    mainWindow.ShowNotification("Ingestion Error", "No file selected.", NotificationType.Error);
+                    return;
+                }
+
                 if (string.IsNullOrEmpty(selectedProvider))
                 {
                     await MsBox.Avalonia.MessageBoxManager
@@ -80,11 +96,13 @@ namespace View.Personal.Services
 
                 string? contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
-                Console.WriteLine($"Detected Type: {typeResult.Type}");
+                Console.WriteLine($"[INFO] Detected Type: {typeResult.Type}");
 
                 if (typeResult.Type != DocumentTypeEnum.Pdf)
                 {
-                    Console.WriteLine($"Unsupported file type: {typeResult.Type} (only PDF is supported).");
+                    Console.WriteLine($"[WARNING] Unsupported file type: {typeResult.Type} (only PDF is supported).");
+                    mainWindow.ShowNotification("Ingestion Error", "Only PDF files are supported.",
+                        NotificationType.Error);
                     return;
                 }
 
@@ -103,27 +121,21 @@ namespace View.Personal.Services
                 //     foreach (Atom atom in processor.Extract(filename))
                 //         Console.WriteLine(_Serializer.SerializeJson(atom, true));
                 // }
-                if (filePath == null)
-                {
-                    Console.WriteLine("File path is null.");
-                    return;
-                }
-
                 var atoms = pdfProcessor.Extract(filePath).ToList();
-                Console.WriteLine($"Extracted {atoms.Count} atoms from PDF");
+                Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from PDF");
 
                 var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
                 liteGraph.CreateNode(fileNode);
-                Console.WriteLine($"Created file document node {fileNode.GUID}");
+                Console.WriteLine($"[INFO] Created file document node {fileNode.GUID}");
 
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, atoms);
                 liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
-                Console.WriteLine($"Created {chunkNodes.Count} chunk nodes.");
+                Console.WriteLine($"[INFO] Created {chunkNodes.Count} chunk nodes.");
 
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.CreateEdges(tenantGuid, graphGuid, edges);
-                Console.WriteLine($"Created {edges.Count} edges from doc -> chunk nodes.");
+                Console.WriteLine($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
 
                 switch (selectedProvider)
                 {
@@ -131,64 +143,64 @@ namespace View.Personal.Services
                         if (string.IsNullOrEmpty(providerSettings?.OpenAICompletionApiKey) ||
                             string.IsNullOrEmpty(providerSettings.OpenAIEmbeddingModel))
                         {
-                            Console.WriteLine("OpenAI API key or embedding model not configured.");
-                            break;
+                            mainWindow.ShowNotification("Ingestion Error", "OpenAI settings incomplete.",
+                                NotificationType.Error);
+                            return;
                         }
 
                         var validChunkNodes = chunkNodes
                             .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                             .ToList();
-
-                        var chunkTexts = validChunkNodes
-                            .Select(x => (x.Data as Atom)?.Text)
-                            .ToList();
+                        var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
 
                         if (!chunkTexts.Any())
                         {
-                            Console.WriteLine("No valid text content found in atoms for embedding.");
+                            Console.WriteLine("[WARNING] No valid text content found in atoms for embedding.");
                             break;
                         }
 
-                        var openAiSdk = new ViewOpenAiSdk(
-                            tenantGuid,
-                            "https://api.openai.com/",
+                        var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
                             providerSettings.OpenAICompletionApiKey);
-
-                        var openAIembeddingsRequest = new EmbeddingsRequest
+                        var openAIEmbeddingsRequest = new EmbeddingsRequest
                         {
                             Model = providerSettings.OpenAIEmbeddingModel,
                             Contents = chunkTexts
                         };
 
-                        Console.WriteLine("[INFO] Generating embeddings for chunks via ViewOpenAiSdk...");
-                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIembeddingsRequest);
-
-                        if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) break;
-
-                        for (var j = 0; j < validChunkNodes.Count; j++)
+                        var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
+                        if (embeddingsResult.Success &&
+                            embeddingsResult.ContentEmbeddings?.Count == validChunkNodes.Count)
                         {
-                            var chunkNode = validChunkNodes[j];
-                            var vectorArray = embeddingsResult.ContentEmbeddings[j].Embeddings;
-
-                            chunkNode.Vectors = new List<VectorMetadata>
+                            for (var j = 0; j < validChunkNodes.Count; j++)
                             {
-                                new()
+                                var chunkNode = validChunkNodes[j];
+                                chunkNode.Vectors = new List<VectorMetadata>
                                 {
-                                    TenantGUID = tenantGuid,
-                                    GraphGUID = graphGuid,
-                                    NodeGUID = chunkNode.GUID,
-                                    Model = providerSettings.OpenAIEmbeddingModel,
-                                    Dimensionality = vectorArray.Count,
-                                    Vectors = vectorArray,
-                                    Content = (chunkNode.Data as Atom)?.Text
-                                }
-                            };
-                            liteGraph.UpdateNode(chunkNode);
+                                    new()
+                                    {
+                                        TenantGUID = tenantGuid,
+                                        GraphGUID = graphGuid,
+                                        NodeGUID = chunkNode.GUID,
+                                        Model = providerSettings.OpenAIEmbeddingModel,
+                                        Dimensionality = embeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                        Vectors = embeddingsResult.ContentEmbeddings[j].Embeddings,
+                                        Content = (chunkNode.Data as Atom)?.Text
+                                    }
+                                };
+                                liteGraph.UpdateNode(chunkNode);
+                            }
+
+                            Console.WriteLine(
+                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                        }
+                        else
+                        {
+                            mainWindow.ShowNotification("Ingestion Error", "Failed to generate embeddings.",
+                                NotificationType.Error);
+                            return;
                         }
 
-                        Console.WriteLine($"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
                         break;
-
                     case "View":
                         var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                             providerSettings?.ViewEndpoint,
@@ -406,27 +418,31 @@ namespace View.Personal.Services
                         throw new ArgumentException("Unsupported provider");
                 }
 
-                Console.WriteLine($"All chunk nodes updated with {providerSettings?.ProviderType} embeddings.");
-                Console.WriteLine($"File {filePath} ingested successfully!");
                 FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-                var fileNodeWindow = window.FindControl<TextBox>("FilePathTextBox");
+                var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
+                if (filePathTextBox != null)
+                    filePathTextBox.Text = "";
 
-                if (fileNodeWindow != null)
-                    fileNodeWindow.Text = "";
-
-                if (spinner != null) spinner.IsVisible = false;
-
+                Console.WriteLine($"[INFO] File {filePath} ingested successfully!");
                 mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
                     NotificationType.Success);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error ingesting file {filePath}: {ex.Message}");
-                if (spinner != null) spinner.IsVisible = false;
+                Console.WriteLine($"[ERROR] Error ingesting file {filePath}: {ex.Message}");
                 mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                     NotificationType.Error);
             }
+            finally
+            {
+                if (spinner != null)
+                    spinner.IsVisible = false;
+            }
         }
+
+        #endregion
+
+        #region Private-Methods
 
         /// <summary>
         /// Displays an error notification using the provided MainWindow instance.
@@ -473,6 +489,9 @@ namespace View.Personal.Services
 
             return true;
         }
+
+        #endregion
+
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }

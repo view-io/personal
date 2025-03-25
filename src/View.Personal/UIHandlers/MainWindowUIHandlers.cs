@@ -103,23 +103,6 @@ namespace View.Personal.UIHandlers
         }
 
         /// <summary>
-        /// Handles the click event for ingesting a file, delegating to an asynchronous file ingestion method.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="typeDetector">The type detector used to identify file types (assumed from context).</param>
-        /// <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
-        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
-        /// <param name="graphGuid">The GUID identifying the graph.</param>
-        /// <param name="window">The window where the ingest action is initiated.</param>
-        public static async void IngestFile_Click(object sender, RoutedEventArgs e, TypeDetector typeDetector,
-            LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
-        {
-            Console.WriteLine("[INFO] IngestFile_Click triggered.");
-            await FileIngester.IngestFile_ClickAsync(sender, e, typeDetector, liteGraph, tenantGuid, graphGuid, window);
-        }
-
-        /// <summary>
         /// Handles the click event for exporting a graph, delegating to a graph export method.
         /// </summary>
         /// <param name="sender">The object that triggered the event.</param>
@@ -181,8 +164,29 @@ namespace View.Personal.UIHandlers
         public static async void IngestBrowseButton_Click(object sender, RoutedEventArgs e, Window window,
             FileBrowserService fileBrowserService)
         {
-            await BrowseAndUpdateTextBoxAsync(window, "FilePathTextBox",
-                w => fileBrowserService.BrowseForFileToIngest(w));
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null)
+            {
+                Console.WriteLine("[ERROR] Window is not MainWindow.");
+                return;
+            }
+
+            // Open file dialog and get the selected file path
+            var filePath = await fileBrowserService.BrowseForFileToIngest(window);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                // Update the TextBox (optional, since ingestion clears it later)
+                var textBox = window.FindControl<TextBox>("FilePathTextBox");
+                if (textBox != null)
+                    textBox.Text = filePath;
+
+                // Trigger ingestion immediately
+                await mainWindow.IngestFileAsync(filePath);
+            }
+            else
+            {
+                Console.WriteLine("[INFO] File selection canceled by user.");
+            }
         }
 
         /// <summary>

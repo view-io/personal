@@ -51,8 +51,15 @@ namespace View.Personal.Helpers
             }
 
             var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-            if (filesDataGrid != null)
+            var fileOperationsPanel = window.FindControl<StackPanel>("FileOperationsPanel");
+            var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
+            if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
+            {
                 filesDataGrid.ItemsSource = ingestedFiles;
+                filesDataGrid.IsVisible = true;
+                fileOperationsPanel.IsVisible = true;
+                uploadFilesPanel.IsVisible = false;
+            }
         }
     }
 }
