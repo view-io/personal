@@ -342,18 +342,6 @@
                     </Border>
 
                     <StackPanel Name="FileOperationsPanel" Spacing="20">
-                        <StackPanel Orientation="Vertical" Spacing="5">
-                            <TextBlock Text="Export to GEXF" />
-                            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0">
-                                <TextBox Grid.Column="0" x:Name="ExportFilePathTextBox" Watermark="Enter file path..."
-                                         PropertyChanged="ExportFilePathTextBox_PropertyChanged" />
-                                <Button Grid.Column="1" Content="Browse" Click="BrowseButton_Click"
-                                        x:Name="ExportBrowseButton" Classes="secondary" />
-                                <Button Grid.Column="2" Content="Export" Click="ExportGraph_Click"
-                                        x:Name="ExportButton"
-                                        IsEnabled="False" Classes="default" />
-                            </Grid>
-                        </StackPanel>
                         <Grid VerticalAlignment="Stretch" Margin="0,5,0,10">
                             <!-- Ingest spinner -->
                             <ProgressBar x:Name="IngestSpinner"
@@ -368,18 +356,28 @@
                         </Grid>
 
                         <!-- IngestBrowseButton -->
-                        <Button Margin="12 0 12 0"
-                                Click="IngestBrowseButton_Click"
-                                Background="#FFFFFF" BorderBrush="#DBDBDB" BorderThickness="1" Width="137" Height="40"
-                                HorizontalAlignment="Right">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <avalonia:MaterialIcon Kind="Plus" Foreground="#1A1C1E"
-                                                       VerticalAlignment="Top"
-                                                       Height="16" Width="16" />
-                                <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
-                            </StackPanel>
-                        </Button>
-
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                            <Button Click="ExportGexfButton_Click" Background="#FFFFFF" BorderBrush="#DBDBDB"
+                                    BorderThickness="1" Width="137" Height="40">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Download" Foreground="#1A1C1E"
+                                                           VerticalAlignment="Top"
+                                                           Height="16" Width="16" />
+                                    <TextBlock Text="Export to GEXF" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="12 0 12 0"
+                                    Click="IngestBrowseButton_Click"
+                                    Background="#FFFFFF" BorderBrush="#DBDBDB" BorderThickness="1" Width="137"
+                                    Height="40">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Plus" Foreground="#1A1C1E"
+                                                           VerticalAlignment="Top"
+                                                           Height="16" Width="16" />
+                                    <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
 
                         <!-- Files Table -->
                         <StackPanel Orientation="Vertical" Spacing="5">
@@ -406,7 +404,6 @@
                                         </Style>
                                     </DataGrid.Styles>
                                     <DataGrid.Columns>
-
 
                                         <!-- Checkbox Column -->
                                         <DataGridTemplateColumn Width="40">

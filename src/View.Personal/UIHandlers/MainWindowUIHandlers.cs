@@ -10,7 +10,6 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using Services;
     using LiteGraph;
-    using DocumentAtom.TypeDetection;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -103,19 +102,45 @@ namespace View.Personal.UIHandlers
         }
 
         /// <summary>
-        /// Handles the click event for exporting a graph, delegating to a graph export method.
+        /// Handles the click event for exporting a graph to a GEXF file, prompting the user for a save location and managing UI feedback.
         /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
-        /// <param name="tenantGuid">The GUID identifying the tenant.</param>
-        /// <param name="graphGuid">The GUID identifying the graph.</param>
-        /// <param name="window">The window where the export action is initiated.</param>
-        public static void ExportGraph_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
-            Guid tenantGuid, Guid graphGuid, Window window)
+        /// <param name="sender">The object that triggered the event, typically the export button.</param>
+        /// <param name="e">The event arguments associated with the button click.</param>
+        /// <param name="window">The MainWindow instance providing access to UI elements and notification methods.</param>
+        /// <param name="fileBrowserService">The FileBrowserService instance used to prompt for the export file location.</param>
+        /// <param name="liteGraph">The LiteGraphClient instance used to perform the graph export operation.</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant associated with the graph.</param>
+        /// <param name="graphGuid">The unique identifier for the graph to be exported.</param>
+        /// <returns>A Task representing the asynchronous operation of browsing for a file location and exporting the graph.</returns>
+        public static async Task ExportGexfButton_Click(object sender, RoutedEventArgs e, MainWindow window,
+            FileBrowserService fileBrowserService, LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
-            Console.WriteLine("[INFO] ExportGraph_Click triggered.");
-            GraphExporter.ExportGraph_Click(sender, e, liteGraph, tenantGuid, graphGuid, window);
+            var filePath = await fileBrowserService.BrowseForExportLocation(window);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var spinner = window.FindControl<ProgressBar>("ExportSpinner");
+                if (spinner != null)
+                {
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+
+                if (GraphExporter.TryExportGraphToGexfFile(liteGraph, tenantGuid, graphGuid, filePath,
+                        out var errorMessage))
+                {
+                    Console.WriteLine($"Graph {graphGuid} exported to {filePath} successfully!");
+                    window.ShowNotification("File Exported", "File was exported successfully!",
+                        NotificationType.Success);
+                }
+                else
+                {
+                    Console.WriteLine($"Error exporting graph to GEXF: {errorMessage}");
+                    window.ShowNotification("Export Error", $"Error exporting graph to GEXF: {errorMessage}",
+                        NotificationType.Error);
+                }
+
+                if (spinner != null) spinner.IsVisible = false;
+            }
         }
 
         /// <summary>
@@ -138,20 +163,6 @@ namespace View.Personal.UIHandlers
                 textBox.Text = filePath;
                 Console.WriteLine($"[INFO] User selected path: {filePath}");
             }
-        }
-
-        /// <summary>
-        /// Handles the click event for a browse button, triggering a file browse operation to update a textbox.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the textbox to update.</param>
-        /// <param name="fileBrowserService">The service used to browse for an export location.</param>
-        public static async void BrowseButton_Click(object sender, RoutedEventArgs e, Window window,
-            FileBrowserService fileBrowserService)
-        {
-            await BrowseAndUpdateTextBoxAsync(window, "ExportFilePathTextBox",
-                w => fileBrowserService.BrowseForExportLocation(w));
         }
 
         /// <summary>
@@ -217,18 +228,6 @@ namespace View.Personal.UIHandlers
             Window window)
         {
             UpdateButtonEnabledOnTextChange(sender, e, window, "IngestButton");
-        }
-
-        /// <summary>
-        /// Handles the property changed event for the export file path textbox, updating the export button's enabled state.
-        /// </summary>
-        /// <param name="sender">The textbox whose property changed.</param>
-        /// <param name="e">The property changed event arguments.</param>
-        /// <param name="window">The window containing the export button.</param>
-        public static void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e,
-            Window window)
-        {
-            UpdateButtonEnabledOnTextChange(sender, e, window, "ExportButton");
         }
 
         /// <summary>

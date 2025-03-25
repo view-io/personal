@@ -96,11 +96,9 @@ namespace View.Personal
                 NavModelProviderComboBox.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.ModelProvider_SelectionChanged(s, e, this, _WindowInitialized);
                 var filePathTextBox = this.FindControl<TextBox>("FilePathTextBox");
-                var exportFilePathTextBox = this.FindControl<TextBox>("ExportFilePathTextBox");
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
 
                 filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
-                exportFilePathTextBox.PropertyChanged += ExportFilePathTextBox_PropertyChanged;
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
@@ -186,35 +184,10 @@ namespace View.Personal
             MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
-        private void ExportGraph_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
-        }
-
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.BrowseButton_Click(sender, e, this, _FileBrowserService);
-        }
-
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.IngestBrowseButton_Click(sender, e, this, _FileBrowserService);
         }
-
-        private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationUIHandlers.NavigateToSettings_Click(sender, e, this);
-        }
-
-        private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationUIHandlers.NavigateToMyFiles_Click(sender, e, this);
-        }
-
-        // private void NavigateToChat_Click(object sender, RoutedEventArgs e)
-        // {
-        //     NavigationUIHandlers.NavigateToChat_Click(sender, e, this);
-        // }
 
         private void SendMessage_Click(object sender, RoutedEventArgs e)
         {
@@ -246,9 +219,10 @@ namespace View.Personal
             MainWindowUIHandlers.FilePathTextBox_PropertyChanged(sender, e, this);
         }
 
-        private void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.ExportFilePathTextBox_PropertyChanged(sender, e, this);
+            await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
+                _TenantGuid, _GraphGuid);
         }
 
         private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)

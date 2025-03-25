@@ -783,19 +783,6 @@
             Provides methods for exporting graph data from LiteGraph to external formats.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.GraphExporter.ExportGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Exports a graph from LiteGraph to a GEXF file based on the provided file path
-            <param name="sender">The object triggering the event (expected to be a control)</param>
-            <param name="e">Routed event arguments</param>
-            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-            <param name="tenantGuid">The unique identifier for the tenant</param>
-            <param name="graphGuid">The unique identifier for the graph</param>
-            <param name="window">The parent window for UI interactions and dialogs</param>
-            Returns:
-            Task representing the asynchronous operation; no direct return value
-            </summary>
-        </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing the chat user interface.
@@ -874,17 +861,6 @@
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
             <param name="window">The window where the delete action is initiated.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.ExportGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Handles the click event for exporting a graph, delegating to a graph export method.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="liteGraph">The LiteGraphClient instance for interacting with the graph data.</param>
-            <param name="tenantGuid">The GUID identifying the tenant.</param>
-            <param name="graphGuid">The GUID identifying the graph.</param>
-            <param name="window">The window where the export action is initiated.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.BrowseAndUpdateTextBoxAsync(Avalonia.Controls.Window,System.String,System.Func{Avalonia.Controls.Window,System.Threading.Tasks.Task{System.String}})">
             <summary>
