@@ -24,12 +24,13 @@
                     <!-- Start New Chat Button -->
                     <Button DockPanel.Dock="Top" Margin="12 0 12 0"
                             Click="StartNewChatButton_Click"
-                            Background="#FFFFFF" BorderBrush="#DBDBDB" BorderThickness="1" Width="149" Height="32">
+                            Classes="flat"
+                            Width="149" Height="32">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <avalonia:MaterialIcon Kind="SquareEditOutline" Foreground="#1A1C1E"
                                                    VerticalAlignment="Top"
                                                    Height="16" Width="16" />
-                            <TextBlock Text="Start New Chat" Foreground="#1A1C1E" FontWeight="400" />
+                            <TextBlock Text="Start New Chat" FontWeight="400" />
                         </StackPanel>
                     </Button>
 
@@ -353,18 +354,16 @@
                         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
                                     Margin="0,0,0,12">
                             <Button Click="IngestBrowseButton_Click"
-                                    Background="#FFFFFF" BorderBrush="#DBDBDB" BorderThickness="1" Width="137"
-                                    Height="40">
+                                    Classes="flat">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <avalonia:MaterialIcon Kind="Plus" Foreground="#1A1C1E"
+                                    <avalonia:MaterialIcon Kind="Plus"
                                                            VerticalAlignment="Top"
                                                            Height="16" Width="16" />
                                     <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
                                 </StackPanel>
                             </Button>
-                            <Button Click="ExportGexfButton_Click" Background="#FFFFFF" BorderBrush="#DBDBDB"
-                                    BorderThickness="1" Width="40" Height="40">
-                                <avalonia:MaterialIcon Kind="TrayArrowDown" Foreground="#1A1C1E" />
+                            <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF">
+                                <avalonia:MaterialIcon Kind="TrayArrowDown" />
                             </Button>
                         </StackPanel>
 

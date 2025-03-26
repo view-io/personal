@@ -46,6 +46,43 @@
                 <Color x:Key="MaterialSuccessHoverColor">#38924F</Color>
                 <SolidColorBrush x:Key="MaterialSuccessHoverBrush" Color="{StaticResource MaterialSuccessHoverColor}" />
             </Styles.Resources>
+
+            <!-- Flat button -->
+            <Style Selector="Button.flat">
+                <Setter Property="Background" Value="#FFFFFF" />
+                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                <Setter Property="BorderThickness" Value=".97" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Foreground" Value="#1A1C1E" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="0"
+                                              Padding="12 8 12 8" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <Style Selector="Button.flat:pointerover">
+                <Setter Property="Background" Value="#F8F8F8" />
+                <Setter Property="BorderBrush" Value="#C8C8C8" />
+            </Style>
+
+            <Style Selector="Button.flat:pressed">
+                <Setter Property="Background" Value="#EEEEEE" />
+                <Setter Property="BorderBrush" Value="#BBBBBB" />
+            </Style>
+
             <!-- Default button -->
             <Style Selector="Button.default">
                 <Setter Property="Background" Value="#0472EF" />
