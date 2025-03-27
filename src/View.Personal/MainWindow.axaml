@@ -435,8 +435,31 @@
                                     </ControlTemplate>
                                 </Setter>
                             </Style>
+                            <Style Selector="RadioButton">
+                                <Setter Property="Width" Value="12" />
+                                <Setter Property="Height" Value="12" />
+                                <Setter Property="VerticalAlignment" Value="Top" />
+                                <Setter Property="BorderBrush" Value="#6A6B6F" />
+                                <Setter Property="Foreground" Value="#1A1C1E" />
+                                <Setter Property="Template">
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <!-- Outer circle -->
+                                            <Ellipse x:Name="PART_OuterCircle"
+                                                     Width="12" Height="12"
+                                                     Stroke="{TemplateBinding BorderBrush}"
+                                                     StrokeThickness="1"
+                                                     Fill="Transparent" />
+                                            <!-- Inner circle (checked state) -->
+                                            <Ellipse x:Name="PART_InnerCircle"
+                                                     Width="6" Height="6"
+                                                     Fill="{TemplateBinding Foreground}"
+                                                     IsVisible="{TemplateBinding IsChecked}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter>
+                            </Style>
                         </TabControl.Styles>
-
                         <TabItem Header="General">
                             <Border Padding="0,20,0,0">
                                 <TextBlock Text="General settings will go here." />
@@ -525,17 +548,15 @@
                                             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" />
-                                                <TextBlock
-                                                    Margin="0, 0, 0, 4"
-                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
+                                                <TextBlock Margin="0, 0, 0, 4" FontSize="12" Foreground="#6A6B6F"
+                                                           TextWrapping="Wrap">
                                                     <Run Text="Select the local or cloud provider" />
                                                     <LineBreak />
                                                     <Run Text="embedding model to be used to" />
                                                     <LineBreak />
                                                     <Run Text="generate vector embeddings." />
                                                 </TextBlock>
-                                                <TextBlock
-                                                    FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
+                                                <TextBlock FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
                                                     <Run Text="WARNING" TextDecorations="Underline" />
                                                     <Run Text=": If you update or change" />
                                                     <LineBreak />
@@ -550,64 +571,70 @@
                                                 <!-- Radio Button Group -->
                                                 <StackPanel Spacing="16">
                                                     <!-- Local Embedding Model -->
-                                                    <StackPanel Orientation="Horizontal" Spacing="16">
-                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="False"
-                                                                     VerticalAlignment="Center"
-                                                                     x:Name="LocalEmbeddingModel" />
-                                                        <StackPanel Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="Local Embedding Model"
-                                                                       VerticalAlignment="Center" />
-                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
-                                                                      Width="300">
-                                                                <ComboBoxItem
-                                                                    Content="sentence-transformers/all-MiniLM-L6-v2" />
-                                                            </ComboBox>
-                                                        </StackPanel>
-                                                    </StackPanel>
+                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                                        <RadioButton Grid.Row="0" Grid.Column="0"
+                                                                     GroupName="EmbeddingModel" IsChecked="False"
+                                                                     x:Name="LocalEmbeddingModel"
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                                   Text="Local Embedding Model"
+                                                                   VerticalAlignment="Center" FontSize="12"
+                                                                   Foreground="#1A1C1E" FontWeight="500" />
+                                                        <TextBox Grid.Row="1" Grid.Column="1"
+                                                                 x:Name="LocalEmbeddingModelTextBox"
+                                                                 Text="sentence-transformers/all-MiniLM-L6-v2"
+                                                                 Margin="0,4,0,0" />
+                                                    </Grid>
 
                                                     <!-- OpenAI Embedding Model -->
-                                                    <StackPanel Orientation="Horizontal" Spacing="16">
-                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="True"
-                                                                     VerticalAlignment="Center"
-                                                                     x:Name="OpenAIEmbeddingModel2" />
-                                                        <StackPanel Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="OpenAI Embedding Model"
-                                                                       VerticalAlignment="Center" />
-                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
-                                                                      Width="300">
-                                                                <ComboBoxItem Content="text-embedding-3-small" />
-                                                            </ComboBox>
-                                                        </StackPanel>
-                                                    </StackPanel>
+                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                                        <RadioButton Grid.Row="0" Grid.Column="0"
+                                                                     GroupName="OpenAIEmbeddingModel" IsChecked="False"
+                                                                     x:Name="OpenAIEmbeddingModel2"
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="OpenAI Model"
+                                                                   VerticalAlignment="Center" FontSize="12"
+                                                                   Foreground="#1A1C1E" FontWeight="500" />
+                                                        <TextBox Grid.Row="1" Grid.Column="1"
+                                                                 x:Name="OpenAIEmbeddingModelTextBox"
+                                                                 Text="sentence-transformers/all-MiniLM-L6-v2"
+                                                                 Margin="0,4,0,0" />
+                                                    </Grid>
 
-                                                    <!-- VoyageAI Embedding Model -->
-                                                    <StackPanel Orientation="Horizontal" Spacing="16">
-                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="False"
-                                                                     VerticalAlignment="Center"
-                                                                     x:Name="VoyageAIEmbeddingModel" />
-                                                        <StackPanel Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="VoyageAI Embedding Model"
-                                                                       VerticalAlignment="Center" />
-                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
-                                                                      Width="300">
-                                                                <ComboBoxItem Content="voyage-law-2" />
-                                                            </ComboBox>
-                                                        </StackPanel>
-                                                    </StackPanel>
+                                                    <!-- Voyage Embedding Model -->
+                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                                        <RadioButton Grid.Row="0" Grid.Column="0"
+                                                                     GroupName="VoyageEmbeddingModel" IsChecked="False"
+                                                                     x:Name="VoyageEmbeddingModel2"
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Voyage Model"
+                                                                   VerticalAlignment="Center" FontSize="12"
+                                                                   Foreground="#1A1C1E" FontWeight="500" />
+                                                        <TextBox Grid.Row="1" Grid.Column="1"
+                                                                 x:Name="VoyageEmbeddingModelTextBox"
+                                                                 Text="sentence-transformers/all-MiniLM-L6-v2"
+                                                                 Margin="0,4,0,0" />
+                                                    </Grid>
                                                 </StackPanel>
 
-                                                <!-- VoyageAI API Settings -->
-                                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto"
-                                                      Margin="0,8,0,0">
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI API Key"
-                                                               VerticalAlignment="Center" Margin="0,0,16,0" />
-                                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageApiKey2"
-                                                             Text="atb2c33d4e5f6g7h8i9jakbtc" Margin="0,0,0,16" />
+                                                <!-- VoyageAI API Settings (API Key and Endpoint on the same row) -->
+                                                <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto"
+                                                      Margin="17,0,0,0">
+                                                    <!-- Labels -->
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage Api Key"
+                                                               VerticalAlignment="Center" FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" Margin="0,0,10,0" />
+                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Voyage Endpoint"
+                                                               VerticalAlignment="Center" FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" Margin="10,0,10,0" />
 
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="VoyageAI Endpoint"
-                                                               VerticalAlignment="Center" Margin="0,0,16,0" />
-                                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageEndpoint"
-                                                             Text="https://api.voyageai.com/v1/embeddings" />
+                                                    <!-- TextBoxes -->
+                                                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                             x:Name="VoyageApiKeyTextBox"
+                                                             Text="Your-API-Key-Here" Margin="0,4,10,0" />
+                                                    <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                                             x:Name="VoyageEndpoint"
+                                                             Text="Your-Endpoint-Here" Margin="10,4,0,0" />
                                                 </Grid>
                                             </StackPanel>
                                         </Grid>

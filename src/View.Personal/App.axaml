@@ -184,7 +184,6 @@
                 <Setter Property="Foreground" Value="#464A4D" />
                 <Setter Property="FontWeight" Value="400" />
             </Style>
-
         </Styles>
     </Application.Styles>
 </Application>
