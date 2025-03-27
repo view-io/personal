@@ -522,15 +522,27 @@
                                         <!-- Embeddings Generation -->
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto">
                                             <!-- Column 1: Text Blocks -->
-                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8">
+                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" />
                                                 <TextBlock
-                                                    Text="Select the local or cloud provider embedding model to be used to generate vector embeddings."
-                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" />
+                                                    Margin="0, 0, 0, 4"
+                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
+                                                    <Run Text="Select the local or cloud provider" />
+                                                    <LineBreak />
+                                                    <Run Text="embedding model to be used to" />
+                                                    <LineBreak />
+                                                    <Run Text="generate vector embeddings." />
+                                                </TextBlock>
                                                 <TextBlock
-                                                    Text="WARNING: If you update or change your embedding model, you will need to re-import all documents."
-                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" />
+                                                    FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
+                                                    <Run Text="WARNING" TextDecorations="Underline" />
+                                                    <Run Text=": If you update or change" />
+                                                    <LineBreak />
+                                                    <Run Text="your embedding model, you will" />
+                                                    <LineBreak />
+                                                    <Run Text="need to re-import all documents." />
+                                                </TextBlock>
                                             </StackPanel>
 
                                             <!-- Column 2: Radio Buttons and VoyageAI Settings -->
