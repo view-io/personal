@@ -314,9 +314,8 @@
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
 
-                    <!-- Tab Strip -->
+                    <!-- Tabs -->
                     <TabControl Margin="0,0,0,0"> <!-- Changed from -20,0,0,0 to 0,0,0,0 -->
-
                         <TabControl.Template>
                             <ControlTemplate TargetType="TabControl">
                                 <DockPanel>
@@ -449,7 +448,7 @@
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,0,0">
                                         <!-- OpenAI Settings -->
-                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                        <Grid ColumnDefinitions="240,340,340" RowDefinitions="Auto,Auto">
                                             <!-- First Column: OpenAI Label and Description -->
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI" FontWeight="500"
                                                        FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -474,7 +473,7 @@
                                         </Grid>
 
                                         <!-- Anthropic Settings -->
-                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                        <Grid ColumnDefinitions="240,340,340" RowDefinitions="Auto,Auto">
                                             <!-- First Column: Anthropic Label and Description -->
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Anthropic" FontWeight="500"
                                                        FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -497,21 +496,24 @@
                                         </Grid>
 
                                         <!-- Ollama Settings -->
-                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto,Auto">
                                             <!-- First Column: Ollama Label and Description -->
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Ollama" FontWeight="500"
                                                        FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
                                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                                       Text="Enter the domain and port of your Ollama instance."
                                                        FontSize="12" Foreground="#6A6B6F" Margin="0,4,0,0"
-                                                       TextWrapping="Wrap" />
+                                                       TextWrapping="Wrap">
+                                                <Run Text="Enter the domain and port" />
+                                                <LineBreak />
+                                                <Run Text="of your Ollama instance." />
+                                            </TextBlock>
 
                                             <!-- Second Column: Ollama Endpoint -->
                                             <TextBlock Grid.Row="0" Grid.Column="1" Text="Ollama Endpoint"
-                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       VerticalAlignment="Center" Margin="0,0,0,0" FontSize="12"
                                                        Foreground="#1A1C1E" FontWeight="500" />
                                             <TextBox Grid.Row="1" Grid.Column="1" x:Name="OllamaEndpoint"
-                                                     Text="http://localhost:11434" Margin="0,4,16,0" />
+                                                     Text="http://localhost:11434" Margin="0,4,0,0" />
                                         </Grid>
 
                                         <!-- Horizontal Border to Divide Sections -->
