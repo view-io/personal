@@ -209,6 +209,12 @@ namespace View.Personal
         /// <returns>The settings for the specified provider.</returns>
         public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
         {
+            if (AppSettings == null)
+            {
+                Console.WriteLine("[WARN] AppSettings is null in GetProviderSettings. Returning default settings.");
+                return new CompletionProviderSettings(providerType);
+            }
+
             var settings = _AppSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == providerType);
             if (settings == null)
             {

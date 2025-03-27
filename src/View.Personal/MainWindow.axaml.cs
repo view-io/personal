@@ -170,7 +170,7 @@ namespace View.Personal
                 chatPanel.IsVisible = true;
                 consolePanel.IsVisible = false;
                 workspaceText.IsVisible = false;
-                navList.SelectedItem = null; // This line triggers the issue
+                navList.SelectedItem = null;
             }
         }
 

@@ -61,6 +61,14 @@
                                 <TextBlock Text="Settings" Foreground="#6A6B6F" />
                             </StackPanel>
                         </ListBoxItem>
+                        <ListBoxItem Tag="Settings2">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
+
+                                                       Height="18" Width="18" />
+                                <TextBlock Text="Settings2" Foreground="#6A6B6F" />
+                            </StackPanel>
+                        </ListBoxItem>
                         <ListBoxItem Tag="Console">
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <avalonia:MaterialIcon Kind="Console" Foreground="#6A6B6F"
@@ -298,18 +306,326 @@
                                 Classes="default" />
                     </StackPanel>
                 </StackPanel>
-                <!-- Files Panel -->
-                <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
+
+                <!-- Settings Panel2 -->
+                <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
+                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+                        <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
 
-                    <!-- Blank Upload Files Section -->
+                    <!-- Tab Strip -->
+                    <TabControl Margin="0,0,0,0"> <!-- Changed from -20,0,0,0 to 0,0,0,0 -->
+
+                        <TabControl.Template>
+                            <ControlTemplate TargetType="TabControl">
+                                <DockPanel>
+                                    <!-- Use a Grid with explicit row definitions to control the layout -->
+                                    <Grid DockPanel.Dock="Top" RowDefinitions="40,*">
+                                        <!-- ItemsPresenter for the tab headers -->
+                                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                                        Grid.Row="0"
+                                                        ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                        Margin="0" />
+                                        <!-- Add a border that aligns with the bottom of the tab headers -->
+                                        <Border Grid.Row="0"
+                                                VerticalAlignment="Bottom"
+                                                Margin="0,0,0,-1"
+                                                BorderThickness="0,0,0,1"
+                                                BorderBrush="#EAECF0" />
+                                    </Grid>
+                                    <ContentPresenter Name="PART_SelectedContentHost"
+                                                      Margin="0,12,0,0"
+                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      Content="{TemplateBinding SelectedContent}"
+                                                      ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                                </DockPanel>
+                            </ControlTemplate>
+                        </TabControl.Template>
+                        <TabControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="18" Margin="0" />
+                            </ItemsPanelTemplate>
+                        </TabControl.ItemsPanel>
+                        <TabControl.Styles>
+                            <Style Selector="TabItem">
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="Height" Value="40" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="MinWidth" Value="0" />
+                                <Setter Property="Margin" Value="0" />
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Template">
+                                    <ControlTemplate>
+                                        <Border Name="PART_Border"
+                                                Height="{TemplateBinding Height}"
+                                                HorizontalAlignment="Left"
+                                                BorderThickness="0,0,0,1"
+                                                BorderBrush="Transparent"
+                                                Background="Transparent">
+                                            <ContentPresenter Name="PART_ContentPresenter"
+                                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                              Content="{TemplateBinding Header}"
+                                                              HorizontalAlignment="Left"
+                                                              VerticalAlignment="Center"
+                                                              Margin="0" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter>
+                            </Style>
+                            <Style Selector="TabItem:selected">
+                                <Setter Property="Foreground" Value="#1A1C1E" />
+                                <Setter Property="FontWeight" Value="500" />
+                                <Setter Property="Template">
+                                    <ControlTemplate>
+                                        <Border Name="PART_SelectedPipe"
+                                                Height="{TemplateBinding Height}"
+                                                HorizontalAlignment="Left"
+                                                BorderThickness="0,0,0,1"
+                                                BorderBrush="#1A1C1E"
+                                                Background="Transparent">
+                                            <ContentPresenter Name="PART_ContentPresenter"
+                                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                              Content="{TemplateBinding Header}"
+                                                              HorizontalAlignment="Left"
+                                                              VerticalAlignment="Center"
+                                                              Margin="0" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter>
+                            </Style>
+                            <Style Selector="TabControl StackPanel">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Margin" Value="0" />
+                            </Style>
+                            <Style Selector="TextBox">
+                                <Setter Property="CornerRadius" Value="8" />
+                                <Setter Property="Height" Value="36" />
+                                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="Background" Value="#FAFAFA" />
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="Foreground" Value="#6A6B6F" />
+                                <Setter Property="Padding" Value="10,8,10,10" />
+                                <!-- Provide a complete ControlTemplate for TextBox -->
+                                <Setter Property="Template">
+                                    <ControlTemplate>
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="{TemplateBinding CornerRadius}">
+                                            <ScrollViewer Name="PART_ContentHost"
+                                                          Padding="{TemplateBinding Padding}"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch">
+                                                <TextPresenter Name="PART_TextPresenter"
+                                                               Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                               CaretIndex="{TemplateBinding CaretIndex, Mode=TwoWay}"
+                                                               SelectionStart="{TemplateBinding SelectionStart, Mode=TwoWay}"
+                                                               SelectionEnd="{TemplateBinding SelectionEnd, Mode=TwoWay}"
+                                                               TextWrapping="{TemplateBinding TextWrapping}"
+                                                               PasswordChar="{TemplateBinding PasswordChar}"
+                                                               RevealPassword="{TemplateBinding RevealPassword}" />
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter>
+                            </Style>
+                        </TabControl.Styles>
+
+                        <TabItem Header="General">
+                            <Border Padding="0,20,0,0">
+                                <TextBlock Text="General settings will go here." />
+                            </Border>
+                        </TabItem>
+
+                        <TabItem Header="Providers" IsSelected="True">
+                            <Border Padding="0,0,0,0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,0,0">
+                                        <!-- OpenAI Settings -->
+                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                            <!-- First Column: OpenAI Label and Description -->
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI" FontWeight="500"
+                                                       FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="OpenAI Credentials"
+                                                       FontSize="12" Foreground="#6A6B6F"
+                                                       Margin="0,4,0,0" />
+
+                                            <!-- Second Column: OpenAI API Key -->
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="OpenAI API Key"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAIKey2"
+                                                     Text="sk-am1RLw7XUWGXGUBaSgsNT3BlbkFJDcGBUbbk5..."
+                                                     Margin="0,4,16,0" />
+
+                                            <!-- Third Column: OpenAI Endpoint -->
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="OpenAI Endpoint"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                            <TextBox Grid.Row="1" Grid.Column="2" x:Name="OpenAIEndpoint"
+                                                     Text="https://api.openai.com/v1/chat/completions" Margin="0,4,0,0" />
+                                        </Grid>
+
+                                        <!-- Anthropic Settings -->
+                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                            <!-- First Column: Anthropic Label and Description -->
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Anthropic" FontWeight="500"
+                                                       FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Anthropic Credentials"
+                                                       FontSize="12" Foreground="#6A6B6F" Margin="0,4,0,0" />
+
+                                            <!-- Second Column: Anthropic API Key -->
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Anthropic API Key"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="AnthropicApiKey2"
+                                                     Text="ff797474-b6b3-4c51-8cf6-6c5b35acef6f" Margin="0,4,16,0" />
+
+                                            <!-- Third Column: Anthropic Endpoint -->
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Anthropic Endpoint"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                            <TextBox Grid.Row="1" Grid.Column="2" x:Name="AnthropicEndpoint"
+                                                     Text="https://api.anthropic.com/v1/messages" Margin="0,4,0,0" />
+                                        </Grid>
+
+                                        <!-- Ollama Settings -->
+                                        <Grid ColumnDefinitions="240,240,*" RowDefinitions="Auto,Auto">
+                                            <!-- First Column: Ollama Label and Description -->
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Ollama" FontWeight="500"
+                                                       FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="Enter the domain and port of your Ollama instance."
+                                                       FontSize="12" Foreground="#6A6B6F" Margin="0,4,0,0"
+                                                       TextWrapping="Wrap" />
+
+                                            <!-- Second Column: Ollama Endpoint -->
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Ollama Endpoint"
+                                                       VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"
+                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="OllamaEndpoint"
+                                                     Text="http://localhost:11434" Margin="0,4,16,0" />
+                                        </Grid>
+
+                                        <!-- Horizontal Border to Divide Sections -->
+                                        <Border BorderBrush="#EAECF0" BorderThickness="1" />
+
+                                        <!-- Embeddings Generation -->
+                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto">
+                                            <!-- Column 1: Text Blocks -->
+                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8">
+                                                <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
+                                                           Foreground="#1A1C1E" />
+                                                <TextBlock
+                                                    Text="Select the local or cloud provider embedding model to be used to generate vector embeddings."
+                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" />
+                                                <TextBlock
+                                                    Text="WARNING: If you update or change your embedding model, you will need to re-import all documents."
+                                                    FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" />
+                                            </StackPanel>
+
+                                            <!-- Column 2: Radio Buttons and VoyageAI Settings -->
+                                            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
+                                                <!-- Radio Button Group -->
+                                                <StackPanel Spacing="16">
+                                                    <!-- Local Embedding Model -->
+                                                    <StackPanel Orientation="Horizontal" Spacing="16">
+                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="False"
+                                                                     VerticalAlignment="Center"
+                                                                     x:Name="LocalEmbeddingModel" />
+                                                        <StackPanel Orientation="Vertical" Spacing="4">
+                                                            <TextBlock Text="Local Embedding Model"
+                                                                       VerticalAlignment="Center" />
+                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
+                                                                      Width="300">
+                                                                <ComboBoxItem
+                                                                    Content="sentence-transformers/all-MiniLM-L6-v2" />
+                                                            </ComboBox>
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <!-- OpenAI Embedding Model -->
+                                                    <StackPanel Orientation="Horizontal" Spacing="16">
+                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="True"
+                                                                     VerticalAlignment="Center"
+                                                                     x:Name="OpenAIEmbeddingModel2" />
+                                                        <StackPanel Orientation="Vertical" Spacing="4">
+                                                            <TextBlock Text="OpenAI Embedding Model"
+                                                                       VerticalAlignment="Center" />
+                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
+                                                                      Width="300">
+                                                                <ComboBoxItem Content="text-embedding-3-small" />
+                                                            </ComboBox>
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <!-- VoyageAI Embedding Model -->
+                                                    <StackPanel Orientation="Horizontal" Spacing="16">
+                                                        <RadioButton GroupName="EmbeddingModel" IsChecked="False"
+                                                                     VerticalAlignment="Center"
+                                                                     x:Name="VoyageAIEmbeddingModel" />
+                                                        <StackPanel Orientation="Vertical" Spacing="4">
+                                                            <TextBlock Text="VoyageAI Embedding Model"
+                                                                       VerticalAlignment="Center" />
+                                                            <ComboBox SelectedIndex="0" HorizontalAlignment="Left"
+                                                                      Width="300">
+                                                                <ComboBoxItem Content="voyage-law-2" />
+                                                            </ComboBox>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                                <!-- VoyageAI API Settings -->
+                                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto"
+                                                      Margin="0,8,0,0">
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI API Key"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0" />
+                                                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="VoyageApiKey2"
+                                                             Text="atb2c33d4e5f6g7h8i9jakbtc" Margin="0,0,0,16" />
+
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="VoyageAI Endpoint"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0" />
+                                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="VoyageEndpoint"
+                                                             Text="https://api.voyageai.com/v1/embeddings" />
+                                                </Grid>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                        </TabItem>
+
+                        <TabItem Header="Local Models">
+                            <Border Padding="0,20,0,0">
+                                <TextBlock Text="Local models settings will go here." />
+                            </Border>
+                        </TabItem>
+                    </TabControl>
+
+                    <!-- Save Button -->
+                    <Button Content="Save Settings"
+                            Click="SaveSettings_Click"
+                            Margin="0,40,0,0"
+                            Classes="default"
+                            HorizontalAlignment="Left"
+                            Padding="12,8" />
+                </StackPanel>
+                <!-- Files Panel -->
+                <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+                        <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
+                    </StackPanel>
                     <Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
                             Margin="0,10,0,20" IsVisible="False">
                         <Panel>
-                            <!-- Inner dotted border - this is a Canvas with a Rectangle -->
                             <Canvas Margin="32">
                                 <Rectangle
                                     Canvas.Left="0" Canvas.Top="0"
@@ -366,7 +682,6 @@
                                 <avalonia:MaterialIcon Kind="TrayArrowDown" />
                             </Button>
                         </StackPanel>
-
                         <!-- Files Table -->
                         <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FilesDataGrid"
@@ -380,7 +695,6 @@
                                       BorderThickness="1"
                                       BorderBrush="#EDEDED"
                                       x:DataType="classes:FileViewModel">
-                                <!-- DataGrid Styles -->
                                 <DataGrid.Styles>
                                     <Style Selector="DataGridColumnHeader">
                                         <Setter Property="Background" Value="#FAFAFA" />
@@ -404,7 +718,6 @@
                                                         Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}}" />
                                     <!-- <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="250" /> -->
 
-                                    <!-- Add Delete Button Column -->
                                     <DataGridTemplateColumn Header="" Width="150">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -462,8 +775,8 @@
                 </StackPanel>
                 <!-- Chat Panel -->
                 <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" />
+                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+                        <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
                     <Border Height="400" Margin="20,0" CornerRadius="5">
@@ -502,8 +815,8 @@
                     </Grid>
                 </StackPanel>
                 <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="Console" Foreground="#1A1C1E" FontWeight="500" />
+                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+                        <TextBlock Text="Console" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">

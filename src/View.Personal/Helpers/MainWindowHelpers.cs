@@ -55,6 +55,13 @@ namespace View.Personal.Helpers
         /// </summary>
         public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
+            if (liteGraph == null)
+            {
+                Console.WriteLine(
+                    "[WARN] LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
+                return new List<FileViewModel>(); // Return empty list to avoid crash
+            }
+
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" })?.ToList();
             var uniqueFiles = new List<FileViewModel>();
 
