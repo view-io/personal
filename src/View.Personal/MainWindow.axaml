@@ -828,16 +828,32 @@
                         </ScrollViewer>
                     </Border>
                     <StackPanel Orientation="Horizontal" Margin="20,10">
-                        <TextBox x:Name="ChatInputBox"
-                                 Width="400"
-                                 Watermark="Type your message here..."
-                                 AcceptsReturn="False"
-                                 KeyDown="ChatInputBox_KeyDown" />
-                        <Button x:Name="SendButton"
-                                Content="Send"
-                                Margin="5,0,0,0"
-                                Classes="default"
-                                Click="SendMessage_Click" />
+                        <Grid Width="610">
+                            <TextBox x:Name="ChatInputBox"
+                                     Classes="no-shadow"
+                                     Watermark="Enter user message..."
+                                     AcceptsReturn="False"
+                                     Background="White"
+                                     BorderBrush="#DBDBDB"
+                                     BorderThickness="1"
+                                     CornerRadius="8"
+                                     Padding="16,5,40,5"
+                                     Height="60"
+                                     KeyDown="ChatInputBox_KeyDown" />
+                            <Button x:Name="InlineSendButton"
+                                    Background="#0472EF"
+                                    BorderThickness="0"
+                                    Margin="0,0,10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Height="28"
+                                    Width="28"
+                                    Click="SendMessage_Click">
+                                <avalonia:MaterialIcon Kind="SendOutline"
+                                                       Foreground="#FFFFFF"
+                                                       Background="#0472EF" />
+                            </Button>
+                        </Grid>
                         <Button x:Name="ClearButton"
                                 Content="Clear"
                                 Classes="destructive"
@@ -849,11 +865,11 @@
                                 Margin="5,0,0,0"
                                 Click="DownloadChat_Click" />
                     </StackPanel>
-                    <Grid VerticalAlignment="Stretch">
-                        <ProgressBar x:Name="ChatSpinner"
-                                     IsIndeterminate="True"
-                                     IsVisible="False" />
-                    </Grid>
+                    <!-- <Grid VerticalAlignment="Stretch"> -->
+                    <!--     <ProgressBar x:Name="ChatSpinner" -->
+                    <!--                  IsIndeterminate="True" -->
+                    <!--                  IsVisible="False" /> -->
+                    <!-- </Grid> -->
                 </StackPanel>
                 <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">

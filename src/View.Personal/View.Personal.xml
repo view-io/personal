@@ -869,7 +869,7 @@
             <param name="conversationHistory">The list of ChatMessage objects representing the conversation history to save.</param>
             <param name="fileBrowserService">The service used to browse for a file save location.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.UpdateConversationWindow(Avalonia.Controls.StackPanel,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.UpdateConversationWindow(Avalonia.Controls.StackPanel,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Boolean)">
             <summary>
             Updates the conversation window UI by rendering the chat history with styled message blocks.
             </summary>

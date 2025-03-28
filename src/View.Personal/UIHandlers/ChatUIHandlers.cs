@@ -9,6 +9,7 @@ namespace View.Personal.UIHandlers
     using Avalonia.Controls;
     using Avalonia.Input;
     using Avalonia.Interactivity;
+    using Avalonia.Layout;
     using Avalonia.Media;
     using Classes;
     using Services;
@@ -23,6 +24,8 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Members
+
+        private static ProgressBar _assistantSpinner;
 
         #endregion
 
@@ -48,7 +51,6 @@ namespace View.Personal.UIHandlers
             var inputBox = window.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
-            var spinner = window.FindControl<ProgressBar>("ChatSpinner");
 
             if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
             {
@@ -56,51 +58,59 @@ namespace View.Personal.UIHandlers
                 return;
             }
 
-            // 1) Move user’s text into local var and clear box
             var userText = inputBox.Text.Trim();
             inputBox.Text = string.Empty;
 
-            // 2) Add the user's new message to conversation history
             conversationHistory.Add(new ChatMessage
             {
                 Role = "user",
                 Content = userText
             });
 
-            // 3) Refresh UI to show the user's message
-            UpdateConversationWindow(conversationContainer, conversationHistory);
+            UpdateConversationWindow(conversationContainer, conversationHistory, false);
             scrollViewer?.ScrollToEnd();
-
-            if (spinner != null) spinner.IsVisible = true;
 
             try
             {
-                // 4) Create an empty assistant message, add to conversation
                 var assistantMsg = new ChatMessage
                 {
                     Role = "assistant",
-                    Content = "" // start empty
+                    Content = ""
                 };
                 conversationHistory.Add(assistantMsg);
-                UpdateConversationWindow(conversationContainer, conversationHistory);
+                UpdateConversationWindow(conversationContainer, conversationHistory, true); // Show spinner
                 scrollViewer?.ScrollToEnd();
 
-                // 5) Call the getAIResponse function
-                await getAIResponse(userText, (tokenChunk) =>
+                Console.WriteLine("[DEBUG] Calling GetAIResponse...");
+                var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
-                    // This callback fires for each chunk from the SSE/stream
+                    Console.WriteLine($"[DEBUG] Received token chunk: '{tokenChunk}'");
                     assistantMsg.Content += tokenChunk;
-                    UpdateConversationWindow(conversationContainer, conversationHistory);
+                    UpdateConversationWindow(conversationContainer, conversationHistory, true);
                     scrollViewer?.ScrollToEnd();
                 });
+
+                Console.WriteLine($"[DEBUG] Final response from GetAIResponse: '{finalResponse}'");
+                if (!string.IsNullOrEmpty(finalResponse) && assistantMsg.Content != finalResponse)
+                {
+                    assistantMsg.Content = finalResponse; // Ensure final response is set
+                }
+                else if (string.IsNullOrEmpty(assistantMsg.Content))
+                {
+                    assistantMsg.Content = "No response received from the AI.";
+                    Console.WriteLine("[WARN] No content accumulated in assistant message.");
+                }
+
+                UpdateConversationWindow(conversationContainer, conversationHistory, false); // Hide spinner
+                scrollViewer?.ScrollToEnd();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Error getting AI response: {ex.Message}");
-            }
-            finally
-            {
-                if (spinner != null) spinner.IsVisible = false;
+                Console.WriteLine($"[ERROR] Exception in SendMessage_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                if (conversationHistory.Last().Role == "assistant")
+                    conversationHistory.Last().Content = $"Error: {ex.Message}";
+                UpdateConversationWindow(conversationContainer, conversationHistory, false);
+                scrollViewer?.ScrollToEnd();
             }
         }
 
@@ -136,6 +146,7 @@ namespace View.Personal.UIHandlers
             conversationHistory.Clear();
             var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
             conversationContainer?.Children.Clear();
+            _assistantSpinner = null; // Reset spinner
         }
 
         /// <summary>
@@ -173,36 +184,54 @@ namespace View.Personal.UIHandlers
         /// <param name="conversationContainer">The StackPanel control where chat messages are displayed.</param>
         /// <param name="conversationHistory">The list of ChatMessage objects to render in the conversation window.</param>
         public static void UpdateConversationWindow(StackPanel? conversationContainer,
-            List<ChatMessage> conversationHistory)
+            List<ChatMessage> conversationHistory, bool showSpinner)
         {
             if (conversationContainer != null)
             {
-                // Clear existing messages
                 conversationContainer.Children.Clear();
 
-                // Add each message with appropriate background color
                 foreach (var msg in conversationHistory)
                 {
+                    var labelBlock = new TextBlock
+                    {
+                        Text = msg.Role == "user" ? "You" : "Assistant",
+                        Foreground = new SolidColorBrush(Color.Parse("#464A4D")),
+                        FontSize = 12,
+                        FontWeight = FontWeight.Normal,
+                        Margin = new Thickness(10, 0, 0, 0)
+                    };
+
                     var messageBlock = new TextBlock
                     {
-                        Text = msg.Content,
+                        Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
                         TextWrapping = TextWrapping.Wrap,
                         Padding = new Thickness(10),
                         FontSize = 14,
-                        Foreground = new SolidColorBrush(Colors.Black)
+                        Foreground = new SolidColorBrush(Color.Parse("#1A1C1E"))
                     };
 
-                    var messageBorder = new Border
+                    var messageContainer = new StackPanel
                     {
-                        Background = msg.Role == "user"
-                            ? new SolidColorBrush(Color.FromArgb(100, 173, 216, 230))
-                            : new SolidColorBrush(Color.FromArgb(100, 144, 238, 144)),
-                        CornerRadius = new CornerRadius(5),
-                        Padding = new Thickness(5, 2, 5, 2),
-                        Child = messageBlock
+                        Orientation = Orientation.Vertical,
+                        Margin = new Thickness(0, 0, 0, 20)
                     };
 
-                    conversationContainer.Children.Add(messageBorder);
+                    messageContainer.Children.Add(labelBlock);
+                    messageContainer.Children.Add(messageBlock);
+
+                    if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
+                    {
+                        var spinner = new ProgressBar
+                        {
+                            IsIndeterminate = true,
+                            Width = 100,
+                            Margin = new Thickness(10, 5, 0, 0),
+                            HorizontalAlignment = HorizontalAlignment.Left
+                        };
+                        messageContainer.Children.Add(spinner);
+                    }
+
+                    conversationContainer.Children.Add(messageContainer);
                 }
             }
         }

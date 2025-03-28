@@ -184,6 +184,43 @@
                 <Setter Property="Foreground" Value="#464A4D" />
                 <Setter Property="FontWeight" Value="400" />
             </Style>
+
+            <!-- No shadow textbox -->
+            <Style Selector="TextBox.no-shadow">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                BoxShadow="0 0 0 0 transparent">
+                            <Panel>
+                                <!-- Watermark TextBlock -->
+                                <TextBlock Text="{TemplateBinding Watermark}"
+                                           Foreground="#6A6B6F"
+                                           Padding="{TemplateBinding Padding}"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding !Text.Length, RelativeSource={RelativeSource TemplatedParent}}"
+                                           Opacity="0.6" />
+                                <!-- Content -->
+                                <ScrollViewer Name="PART_ContentHost"
+                                              Padding="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Stretch">
+                                    <TextPresenter Name="PART_TextPresenter"
+                                                   Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                   CaretIndex="{TemplateBinding CaretIndex, Mode=TwoWay}"
+                                                   SelectionStart="{TemplateBinding SelectionStart, Mode=TwoWay}"
+                                                   SelectionEnd="{TemplateBinding SelectionEnd, Mode=TwoWay}"
+                                                   TextWrapping="{TemplateBinding TextWrapping}"
+                                                   PasswordChar="{TemplateBinding PasswordChar}"
+                                                   RevealPassword="{TemplateBinding RevealPassword}"
+                                                   VerticalAlignment="Center" />
+                                </ScrollViewer>
+                            </Panel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
         </Styles>
     </Application.Styles>
 </Application>
