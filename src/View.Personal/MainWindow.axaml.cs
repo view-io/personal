@@ -156,7 +156,7 @@ namespace View.Personal
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-            var chatPanel = this.FindControl<StackPanel>("ChatPanel");
+            var chatPanel = this.FindControl<Border>("ChatPanel");
             var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
             var navList = this.FindControl<ListBox>("NavList");
@@ -704,7 +704,7 @@ namespace View.Personal
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-            var chatPanel = this.FindControl<StackPanel>("ChatPanel");
+            var chatPanel = this.FindControl<Border>("ChatPanel");
             var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
 
@@ -717,6 +717,13 @@ namespace View.Personal
                 chatPanel.IsVisible = panelName == "Chat";
                 consolePanel.IsVisible = panelName == "Console";
                 workspaceText.IsVisible = false;
+
+                // Ensure chat panel is initialized correctly
+                if (panelName == "Chat")
+                {
+                    var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+                    ChatUIHandlers.UpdateConversationWindow(conversationContainer, _ConversationHistory, false, this);
+                }
             }
         }
 

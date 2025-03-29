@@ -815,62 +815,81 @@
                     </Grid>
                 </StackPanel>
                 <!-- Chat Panel -->
-                <StackPanel x:Name="ChatPanel" Orientation="Vertical" Spacing="20" Margin="20">
-                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
-                    </StackPanel>
-                    <Border Height="400" Margin="20,0" CornerRadius="5">
-                        <ScrollViewer x:Name="ChatScrollViewer" VerticalScrollBarVisibility="Auto">
-                            <Grid VerticalAlignment="Stretch">
-                                <StackPanel x:Name="ConversationContainer" VerticalAlignment="Bottom" Spacing="5" />
-                            </Grid>
-                        </ScrollViewer>
-                    </Border>
-                    <StackPanel Orientation="Horizontal" Margin="20,10">
-                        <Grid Width="610">
-                            <TextBox x:Name="ChatInputBox"
-                                     Classes="no-shadow"
-                                     Watermark="Enter user message..."
-                                     AcceptsReturn="False"
-                                     Background="White"
-                                     BorderBrush="#DBDBDB"
-                                     BorderThickness="1"
-                                     CornerRadius="8"
-                                     Padding="16,5,40,5"
-                                     Height="60"
-                                     KeyDown="ChatInputBox_KeyDown" />
-                            <Button x:Name="InlineSendButton"
-                                    Background="#0472EF"
-                                    BorderThickness="0"
-                                    Margin="0,0,10,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Height="28"
-                                    Width="28"
-                                    Click="SendMessage_Click">
-                                <avalonia:MaterialIcon Kind="SendOutline"
-                                                       Foreground="#FFFFFF"
-                                                       Background="#0472EF" />
-                            </Button>
+                <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
+                    <!-- Header -->
+                    <Grid RowDefinitions="Auto,*">
+                        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,12">
+                            <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+                            <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
+                        </StackPanel>
+
+                        <!-- Chat Content -->
+                        <Grid Grid.Row="1" RowDefinitions="*,Auto">
+                            <!-- Conversation Area -->
+                            <ScrollViewer x:Name="ChatScrollViewer"
+                                          Grid.Row="0"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel x:Name="ConversationContainer"
+                                            Spacing="5"
+                                            VerticalAlignment="Top" />
+                            </ScrollViewer>
+
+                            <!-- Placeholder Overlay -->
+                            <TextBlock x:Name="ChatPlaceholder"
+                                       Grid.Row="0"
+                                       Text="What do you want to chat about?"
+                                       FontSize="16"
+                                       Foreground="#6A6B6F"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding !Children.Count, ElementName=ConversationContainer}" />
+
+                            <!-- Input Area -->
+                            <StackPanel x:Name="ChatInputContainer"
+                                        Grid.Row="1"
+                                        Orientation="Horizontal"
+                                        Margin="0,10,0,0">
+                                <Grid Width="610">
+                                    <TextBox x:Name="ChatInputBox"
+                                             Classes="no-shadow"
+                                             Watermark="Enter user message..."
+                                             AcceptsReturn="False"
+                                             Background="White"
+                                             BorderBrush="#DBDBDB"
+                                             BorderThickness="1"
+                                             CornerRadius="8"
+                                             Padding="16,5,40,5"
+                                             Height="60"
+                                             KeyDown="ChatInputBox_KeyDown" />
+                                    <Button x:Name="InlineSendButton"
+                                            Background="#0472EF"
+                                            BorderThickness="0"
+                                            Margin="0,0,10,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Height="28"
+                                            Width="28"
+                                            Click="SendMessage_Click">
+                                        <avalonia:MaterialIcon Kind="SendOutline"
+                                                               Foreground="#FFFFFF"
+                                                               Background="#0472EF" />
+                                    </Button>
+                                </Grid>
+                                <Button x:Name="ClearButton"
+                                        Content="Clear"
+                                        Classes="destructive"
+                                        Margin="5,0,0,0"
+                                        Click="ClearChat_Click" />
+                                <Button x:Name="DownloadButton"
+                                        Content="Download"
+                                        Classes="secondary"
+                                        Margin="5,0,0,0"
+                                        Click="DownloadChat_Click" />
+                            </StackPanel>
                         </Grid>
-                        <Button x:Name="ClearButton"
-                                Content="Clear"
-                                Classes="destructive"
-                                Margin="5,0,0,0"
-                                Click="ClearChat_Click" />
-                        <Button x:Name="DownloadButton"
-                                Content="Download"
-                                Classes="secondary"
-                                Margin="5,0,0,0"
-                                Click="DownloadChat_Click" />
-                    </StackPanel>
-                    <!-- <Grid VerticalAlignment="Stretch"> -->
-                    <!--     <ProgressBar x:Name="ChatSpinner" -->
-                    <!--                  IsIndeterminate="True" -->
-                    <!--                  IsVisible="False" /> -->
-                    <!-- </Grid> -->
-                </StackPanel>
+                    </Grid>
+                </Border>
                 <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Console" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
