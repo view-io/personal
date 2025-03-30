@@ -194,6 +194,15 @@ namespace View.Personal
             ChatUIHandlers.SendMessage_Click(sender, e, this, _ConversationHistory, GetAIResponse);
         }
 
+        private void ChatOptionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.ContextMenu != null)
+            {
+                Console.WriteLine("[DEBUG] ChatOptionsButton clicked, opening context menu");
+                button.ContextMenu.Open(button);
+            }
+        }
+
         private void ClearChat_Click(object sender, RoutedEventArgs e)
         {
             ChatUIHandlers.ClearChat_Click(sender, e, this, _ConversationHistory);

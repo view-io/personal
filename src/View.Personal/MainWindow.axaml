@@ -818,10 +818,33 @@
                 <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
                     <!-- Header -->
                     <Grid RowDefinitions="Auto,*">
-                        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,40">
-                            <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                            <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
-                        </StackPanel>
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,40">
+                            <!-- Left-aligned Chat Title -->
+                            <StackPanel Grid.Column="0" Spacing="12">
+                                <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+                                <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
+                            </StackPanel>
+
+                            <!-- Right-aligned Ellipsis Button -->
+                            <Button Grid.Column="1"
+                                    x:Name="ChatOptionsButton"
+                                    Content="…"
+                                    Classes="flat"
+                                    FontSize="16"
+                                    Width="32"
+                                    Height="32"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Click="ChatOptionsButton_Click">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Clear" x:Name="ClearMenuItem" Click="ClearChat_Click" />
+                                        <MenuItem Header="Download" x:Name="DownloadMenuItem"
+                                                  Click="DownloadChat_Click" />
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+                        </Grid>
 
                         <!-- Chat Content -->
                         <Grid Grid.Row="1" RowDefinitions="*,Auto">
@@ -850,7 +873,7 @@
                                         Grid.Row="1"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Center"
-                                        Margin="0,10,0, 46">
+                                        Margin="0,10,0,46">
                                 <Grid Width="610">
                                     <TextBox x:Name="ChatInputBox"
                                              Classes="no-shadow"
@@ -877,16 +900,6 @@
                                                                Background="#0472EF" />
                                     </Button>
                                 </Grid>
-                                <Button x:Name="ClearButton"
-                                        Content="Clear"
-                                        Classes="destructive"
-                                        Margin="5,0,0,0"
-                                        Click="ClearChat_Click" />
-                                <Button x:Name="DownloadButton"
-                                        Content="Download"
-                                        Classes="secondary"
-                                        Margin="5,0,0,0"
-                                        Click="DownloadChat_Click" />
                             </StackPanel>
                         </Grid>
                     </Grid>
