@@ -818,7 +818,7 @@
                 <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
                     <!-- Header -->
                     <Grid RowDefinitions="Auto,*">
-                        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,12">
+                        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,40">
                             <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                             <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
                         </StackPanel>

@@ -169,7 +169,7 @@ namespace View.Personal.UIHandlers
                         Foreground = new SolidColorBrush(Color.Parse("#464A4D")),
                         FontSize = 12,
                         FontWeight = FontWeight.Normal,
-                        Margin = new Thickness(180, 0, 0, 6)
+                        Margin = new Thickness(180, 0, 0, 0)
                     };
 
                     var messageBlock = new TextBlock
