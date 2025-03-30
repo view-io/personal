@@ -48,15 +48,8 @@ namespace View.Personal.UIHandlers
             UpdateConversationWindow(conversationContainer, conversationHistory, false, window);
             Console.WriteLine("[DEBUG] Added user message. ConversationContainer children count: " +
                               (conversationContainer?.Children.Count ?? 0));
-            Console.WriteLine("[DEBUG] ScrollViewer Offset: " +
-                              (scrollViewer?.Offset.Y ?? -1) + ", ExtentHeight: " +
-                              (scrollViewer?.Extent.Height ?? -1));
             if (scrollViewer != null)
-                Dispatcher.UIThread.Post(() =>
-                {
-                    scrollViewer.ScrollToEnd();
-                    Console.WriteLine("[DEBUG] After ScrollToEnd - Offset: " + scrollViewer.Offset.Y);
-                }, DispatcherPriority.Background);
+                Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
             try
             {
@@ -66,16 +59,30 @@ namespace View.Personal.UIHandlers
                     Content = ""
                 };
                 conversationHistory.Add(assistantMsg);
-                UpdateConversationWindow(conversationContainer, conversationHistory, true, window);
+                UpdateConversationWindow(conversationContainer, conversationHistory, true,
+                    window); // Show spinner initially
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
                 Console.WriteLine("[DEBUG] Calling GetAIResponse...");
+                var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
                     Console.WriteLine($"[DEBUG] Received token chunk: '{tokenChunk}'");
                     assistantMsg.Content += tokenChunk;
-                    UpdateConversationWindow(conversationContainer, conversationHistory, true, window);
+                    if (!firstTokenReceived)
+                    {
+                        firstTokenReceived = true;
+                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                            window); // Hide spinner on first token
+                        Console.WriteLine("[DEBUG] First token received, hiding spinner");
+                    }
+                    else
+                    {
+                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                            window); // Update without spinner
+                    }
+
                     if (scrollViewer != null)
                         Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
                 });
@@ -91,13 +98,10 @@ namespace View.Personal.UIHandlers
                     Console.WriteLine("[WARN] No content accumulated in assistant message.");
                 }
 
-                UpdateConversationWindow(conversationContainer, conversationHistory, false, window);
+                UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                    window); // Final update without spinner
                 if (scrollViewer != null)
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        scrollViewer.ScrollToEnd();
-                        Console.WriteLine("[DEBUG] Final ScrollToEnd - Offset: " + scrollViewer.Offset.Y);
-                    }, DispatcherPriority.Background);
+                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
             }
             catch (Exception ex)
             {
@@ -165,14 +169,14 @@ namespace View.Personal.UIHandlers
                         Foreground = new SolidColorBrush(Color.Parse("#464A4D")),
                         FontSize = 12,
                         FontWeight = FontWeight.Normal,
-                        Margin = new Thickness(10, 0, 0, 0)
+                        Margin = new Thickness(180, 0, 0, 6)
                     };
 
                     var messageBlock = new TextBlock
                     {
                         Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
                         TextWrapping = TextWrapping.Wrap,
-                        Padding = new Thickness(10),
+                        Margin = new Thickness(10, 0, 0, 0),
                         FontSize = 14,
                         Foreground = new SolidColorBrush(Color.Parse("#1A1C1E"))
                     };
@@ -187,6 +191,11 @@ namespace View.Personal.UIHandlers
                     messageBlock.TextWrapping = TextWrapping.Wrap;
                     messageBlock.MaxWidth = 610; // Match input box width for consistency
                     messageContainer.Children.Add(messageBlock);
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        Console.WriteLine("[DEBUG] LabelBlock Bounds.X: " + labelBlock.Bounds.X);
+                        Console.WriteLine("[DEBUG] MessageBlock Bounds.X: " + messageBlock.Bounds.X);
+                    }, DispatcherPriority.Background);
 
                     if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
                     {
@@ -194,7 +203,7 @@ namespace View.Personal.UIHandlers
                         {
                             IsIndeterminate = true,
                             Width = 100,
-                            Margin = new Thickness(10, 5, 0, 0),
+                            Margin = new Thickness(180, 5, 0, 0),
                             HorizontalAlignment = HorizontalAlignment.Left
                         };
                         messageContainer.Children.Add(spinner);

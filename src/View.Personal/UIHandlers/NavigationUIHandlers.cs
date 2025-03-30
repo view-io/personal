@@ -44,7 +44,7 @@ namespace View.Personal.UIHandlers
                 var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
-                var chatPanel = window.FindControl<StackPanel>("ChatPanel");
+                var chatPanel = window.FindControl<Border>("ChatPanel");
                 var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
 
