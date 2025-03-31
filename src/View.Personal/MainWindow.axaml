@@ -95,7 +95,7 @@
             </Border>
 
             <!-- Main Content Area -->
-            <Grid Name="MainContentArea" Background="#FFFFFF">
+            <Grid Name="MainContentArea" Background="#F5F5F5">
                 <!-- Dashboard View -->
                 <Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
                         HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="True" Width="454"
@@ -818,24 +818,30 @@
                 <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
                     <!-- Header -->
                     <Grid RowDefinitions="Auto,*">
-                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,40">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,40">
                             <!-- Left-aligned Chat Title -->
-                            <StackPanel Grid.Column="0" Spacing="12">
-                                <TextBlock Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                                <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
-                            </StackPanel>
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16"
+                                       VerticalAlignment="Center" />
 
                             <!-- Right-aligned Ellipsis Button -->
-                            <Button Grid.Column="1"
+                            <Button Grid.Row="0" Grid.Column="1"
                                     x:Name="ChatOptionsButton"
-                                    Content="…"
                                     Classes="flat"
                                     FontSize="16"
-                                    Width="32"
-                                    Height="32"
+                                    Width="42"
+                                    Height="42"
                                     HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
+                                    VerticalAlignment="Top"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
                                     Click="ChatOptionsButton_Click">
+                                <avalonia:MaterialIcon Kind="DotsHorizontal"
+                                                       Foreground="#A6A6A8"
+                                                       Background="Transparent"
+                                                       Width="20"
+                                                       Height="20"
+                                                       VerticalAlignment="Top" />
                                 <Button.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Clear" x:Name="ClearMenuItem" Click="ClearChat_Click" />
@@ -844,6 +850,10 @@
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
+
+                            <!-- Border that spans the full width of both columns -->
+                            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                    BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
                         </Grid>
 
                         <!-- Chat Content -->
