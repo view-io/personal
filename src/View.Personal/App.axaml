@@ -13,6 +13,7 @@
         <avalonia:MaterialIconStyles />
 
         <Styles>
+
             <Styles.Resources>
                 <Color x:Key="MaterialOutlineColor">#C8C8C8</Color>
                 <SolidColorBrush x:Key="MaterialOutlineBrush" Color="{StaticResource MaterialOutlineColor}" />

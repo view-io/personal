@@ -13,6 +13,7 @@ namespace View.Personal
     using Avalonia.Controls.Notifications;
     using Avalonia.Input;
     using Avalonia.Interactivity;
+    using Avalonia.Media;
     using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core.Atoms;
@@ -213,9 +214,21 @@ namespace View.Personal
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
 
+        private void UpdateMainContentBackground()
+        {
+            // Check if DashboardPanel is visible
+            if (DashboardPanel.IsVisible)
+                // Set the background to light gray when dashboard is visible
+                MainContentArea.Background = new SolidColorBrush(Color.Parse("#F5F5F5"));
+            else
+                // Set the background to white for other panels
+                MainContentArea.Background = new SolidColorBrush(Color.Parse("#FFFFFF"));
+        }
+
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
+            UpdateMainContentBackground();
         }
 
         private void ModelProvider_SelectionChanged(object sender, SelectionChangedEventArgs e)

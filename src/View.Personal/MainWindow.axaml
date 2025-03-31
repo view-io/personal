@@ -14,7 +14,7 @@
         <DockPanel>
             <!-- Sidebar -->
             <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
-                    Width="200">
+                    Width="200" Background="#FFFFFF">
                 <DockPanel>
                     <!-- Logo and Toggle -->
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24 32 0 24">
@@ -72,7 +72,6 @@
                         <ListBoxItem Tag="Console">
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <avalonia:MaterialIcon Kind="Console" Foreground="#6A6B6F"
-
                                                        Height="18" Width="18" />
                                 <TextBlock Text="Console" Foreground="#6A6B6F" />
                             </StackPanel>
@@ -95,7 +94,7 @@
             </Border>
 
             <!-- Main Content Area -->
-            <Grid Name="MainContentArea" Background="#F5F5F5">
+            <Grid Name="MainContentArea" Background="#FFFFFF">
                 <!-- Dashboard View -->
                 <Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
                         HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="True" Width="454"
@@ -470,12 +469,79 @@
                             <Border Padding="0,0,0,0">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,0,0">
+                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
+                                            <!-- Section Container for View Label and Description -->
+                                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
+                                                <TextBlock Text="View" FontWeight="500"
+                                                           FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
+                                                <TextBlock FontSize="12" Foreground="#6A6B6F"
+                                                           TextWrapping="Wrap">
+                                                    Gain access to View pipeline
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <!-- Expander in Column 1 -->
+                                            <Expander
+                                                Grid.Row="0" Grid.Column="1"
+                                                IsExpanded="False"
+                                                ExpandDirection="Down"
+                                                BorderThickness="0"
+                                                Margin="0,-10,0,0"
+                                                Padding="0"
+                                                Background="#F5F5F5">
+                                                <Expander.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <DockPanel LastChildFill="True" Margin="0">
+                                                            <TextBlock VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Center"
+                                                                       Text="View Credentials"
+                                                                       FontWeight="500"
+                                                                       FontSize="13" />
+                                                        </DockPanel>
+                                                    </DataTemplate>
+                                                </Expander.HeaderTemplate>
+                                                <!-- Hidden content (the API key + endpoint fields) shown when expanded -->
+                                                <StackPanel Margin="0,10,0,10" Spacing="8">
+                                                    <TextBlock Text="Embeddings API Key"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" />
+                                                    <TextBox x:Name="OasdsssfAIEndpoint"
+                                                             Text="https://api.openai.com/v1/chat/completions"
+                                                             Margin="8,0,8,0" />
+                                                    <TextBlock Text="View Endpoint"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" />
+                                                    <TextBox x:Name="OassdfAIEndpoint"
+                                                             Text="https://api.openai.com/v1/chat/completions"
+                                                             Margin="8,0,8,0" />
+                                                    <TextBlock Text="Access Key"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" />
+                                                    <TextBox x:Name="OassssdfAIEndpoint"
+                                                             Text="https://api.openai.com/v1/chat/completions"
+                                                             Margin="8,0,8,0" />
+                                                    <TextBlock Text="Tenant Guid"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center" Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E" FontWeight="500" />
+                                                    <TextBox x:Name="OasdfAIEnddsfsadfpoint"
+                                                             Text="https://api.openai.com/v1/chat/completions"
+                                                             Margin="8,0,8,0" />
+                                                </StackPanel>
+                                            </Expander>
+                                        </Grid>
                                         <!-- OpenAI Settings -->
                                         <Grid ColumnDefinitions="240,340,340" RowDefinitions="Auto,Auto">
                                             <!-- First Column: OpenAI Label and Description -->
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI" FontWeight="500"
                                                        FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="OpenAI Credentials"
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Gain access to OpenAI models"
                                                        FontSize="12" Foreground="#6A6B6F"
                                                        Margin="0,4,0,0" />
 
@@ -500,7 +566,8 @@
                                             <!-- First Column: Anthropic Label and Description -->
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Anthropic" FontWeight="500"
                                                        FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Anthropic Credentials"
+                                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                                       Text="Gain access to Anthropic models"
                                                        FontSize="12" Foreground="#6A6B6F" Margin="0,4,0,0" />
 
                                             <!-- Second Column: Anthropic API Key -->
@@ -538,6 +605,7 @@
                                             <TextBox Grid.Row="1" Grid.Column="1" x:Name="OllamaEndpoint"
                                                      Text="http://localhost:11434" Margin="0,4,0,0" />
                                         </Grid>
+
 
                                         <!-- Horizontal Border to Divide Sections -->
                                         <Border BorderBrush="#EAECF0" BorderThickness="1" />
@@ -592,7 +660,8 @@
                                                                      GroupName="OpenAIEmbeddingModel" IsChecked="False"
                                                                      x:Name="OpenAIEmbeddingModel2"
                                                                      VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="OpenAI Model"
+                                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                                   Text="OpenAI Embedding Model"
                                                                    VerticalAlignment="Center" FontSize="12"
                                                                    Foreground="#1A1C1E" FontWeight="500" />
                                                         <TextBox Grid.Row="1" Grid.Column="1"
@@ -607,7 +676,8 @@
                                                                      GroupName="VoyageEmbeddingModel" IsChecked="False"
                                                                      x:Name="VoyageEmbeddingModel2"
                                                                      VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Voyage Model"
+                                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                                   Text="VoyageAI Embedding Model"
                                                                    VerticalAlignment="Center" FontSize="12"
                                                                    Foreground="#1A1C1E" FontWeight="500" />
                                                         <TextBox Grid.Row="1" Grid.Column="1"
@@ -621,10 +691,10 @@
                                                 <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto"
                                                       Margin="17,0,0,0">
                                                     <!-- Labels -->
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Voyage Api Key"
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI Api Key"
                                                                VerticalAlignment="Center" FontSize="12"
                                                                Foreground="#1A1C1E" FontWeight="500" Margin="0,0,10,0" />
-                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Voyage Endpoint"
+                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="VoyageAI Endpoint"
                                                                VerticalAlignment="Center" FontSize="12"
                                                                Foreground="#1A1C1E" FontWeight="500" Margin="10,0,10,0" />
 
