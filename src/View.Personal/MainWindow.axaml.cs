@@ -93,6 +93,7 @@ namespace View.Personal
                     _ShowingChat = false;
                     ShowPanel("Dashboard");
                     InitializeToggleSwitches();
+                    LoadSettingsFromFile();
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -181,6 +182,79 @@ namespace View.Personal
         {
             MainWindowUIHandlers.SaveSettings_Click(this);
         }
+
+        private void SaveSettings2_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindowUIHandlers.SaveSettings2_Click(this);
+        }
+
+        private void LoadSettingsFromFile()
+        {
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            if (File.Exists(filePath))
+            {
+                var jsonString = File.ReadAllText(filePath);
+                var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
+
+                if (settings == null) return;
+
+                // OpenAI
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
+                this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
+                this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
+                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.OpenAI.EmbeddingModel;
+
+                // Anthropic
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<TextBox>("AnthropicApiKey").Text = settings.Anthropic.ApiKey;
+                this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
+                this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
+                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Anthropic.VoyageApiKey;
+                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Anthropic.VoyageEmbeddingModel;
+
+                // Ollama
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
+                this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
+                this.FindControl<TextBox>("OllamaModel").Text = settings.Ollama.EmbeddingModel;
+
+                // View
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
+                this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
+                this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
+                this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid;
+                this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
+
+                // Embeddings
+                this.FindControl<RadioButton>("LocalEmbeddingModel").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "Local";
+                this.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
+                this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
+                this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.LocalEmbeddingModel;
+                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
+                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
+                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
+                this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
+
+                // Update App instance
+                var app = (App)Application.Current;
+                app._AppSettings = settings;
+            }
+        }
+
+        private string GetActiveProvider(AppSettings settings)
+        {
+            if (settings.OpenAI.IsEnabled) return "OpenAI";
+            if (settings.Anthropic.IsEnabled) return "Anthropic";
+            if (settings.Ollama.IsEnabled) return "Ollama";
+            if (settings.View.IsEnabled) return "View";
+            return "View";
+        }
+
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {

@@ -16,12 +16,9 @@ namespace View.Personal
     using System.Linq;
     using System.Text.Json;
 
-    /// <summary>
-    /// Main application.
-    /// </summary>
     public class App : Application
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
         #region Internal-Members
 
@@ -39,7 +36,7 @@ namespace View.Personal
         internal Guid _CredentialGuid = default;
         internal LoggingModule _Logging;
         private const string SettingsFilePath = "appsettings.json";
-        private Settings _AppSettings;
+        public AppSettings _AppSettings; // Changed from Settings to AppSettings
 
         #endregion
 
@@ -49,21 +46,14 @@ namespace View.Personal
 
         #region Public-Methods
 
-        /// <summary>
-        /// Initialize.
-        /// </summary>
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
         }
 
-        /// <summary>
-        /// Fired upon framework initialization completion.  Primary method executed to instantiate class members and initialize properties after the framework is loaded.
-        /// </summary>
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-
                 try
                 {
                     _Logging = new LoggingModule("127.0.0.1", 514, false);
@@ -77,7 +67,6 @@ namespace View.Personal
 
                     _Logging.Debug(_Header + "Showing MainWindow");
                     desktop.MainWindow.Show();
-
 
                     using (var ts = new Timestamp())
                     {
@@ -111,14 +100,12 @@ namespace View.Personal
                                 GUID = _TenantGuid,
                                 Name = "View Personal"
                             });
-
                             _Logging.Debug(_Header + "created tenant " + _TenantGuid);
                         }
 
                         if (!_LiteGraph.ExistsGraph(_TenantGuid, _GraphGuid))
                         {
                             _LiteGraph.CreateGraph(_TenantGuid, _GraphGuid, "View Personal");
-
                             _Logging.Debug(_Header + "created graph " + _GraphGuid);
                         }
 
@@ -134,7 +121,6 @@ namespace View.Personal
                                 Password = "password",
                                 Active = true
                             });
-
                             _Logging.Debug(_Header + "created user " + _UserGuid + " with email " + user.Email +
                                            " and password " + user.Password);
                         }
@@ -150,7 +136,6 @@ namespace View.Personal
                                 Name = "Default credential",
                                 Active = true
                             });
-
                             _Logging.Debug(_Header + "created credential " + _CredentialGuid + " with bearer token " +
                                            cred.BearerToken);
                         }
@@ -171,7 +156,6 @@ namespace View.Personal
                         Environment.NewLine + e.Message,
                         ButtonEnum.Ok,
                         Icon.Error);
-
                     messageBoxStandardWindow.ShowAsync().Wait();
                     _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
                     Environment.Exit(1);
@@ -180,9 +164,6 @@ namespace View.Personal
             base.OnFrameworkInitializationCompleted();
         }
 
-        /// <summary>
-        /// Saves the current application settings to a JSON file.
-        /// </summary>
         public void SaveSettings()
         {
             try
@@ -202,64 +183,102 @@ namespace View.Personal
             }
         }
 
-        /// <summary>
-        /// Retrieves the settings for a specified provider type, creating new defaults if none exist.
-        /// </summary>
-        /// <param name="providerType">The type of completion provider to get settings for.</param>
-        /// <returns>The settings for the specified provider.</returns>
         public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
         {
-            if (AppSettings == null)
+            if (_AppSettings == null)
             {
                 Console.WriteLine("[WARN] AppSettings is null in GetProviderSettings. Returning default settings.");
                 return new CompletionProviderSettings(providerType);
             }
 
-            var settings = _AppSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == providerType);
-            if (settings == null)
+            return providerType switch
             {
-                settings = new CompletionProviderSettings(providerType);
-                _AppSettings.ProviderSettings.Add(settings);
-            }
-
-            return settings;
+                CompletionProviderTypeEnum.OpenAI => new CompletionProviderSettings(providerType)
+                {
+                    OpenAICompletionApiKey = _AppSettings.OpenAI.ApiKey,
+                    OpenAICompletionModel = _AppSettings.OpenAI.CompletionModel,
+                    OpenAIEmbeddingModel = _AppSettings.OpenAI.EmbeddingModel
+                },
+                CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
+                {
+                    AnthropicApiKey = _AppSettings.Anthropic.ApiKey,
+                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel,
+                    VoyageApiKey = _AppSettings.Anthropic.VoyageApiKey,
+                    VoyageEmbeddingModel = _AppSettings.Anthropic.VoyageEmbeddingModel
+                },
+                CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
+                {
+                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel,
+                    OllamaModel = _AppSettings.Ollama.EmbeddingModel
+                },
+                CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
+                {
+                    ViewApiKey = _AppSettings.View.ApiKey,
+                    ViewAccessKey = _AppSettings.View.AccessKey,
+                    ViewEndpoint = _AppSettings.View.Endpoint,
+                    ViewCompletionModel = _AppSettings.View.CompletionModel
+                    // Add other View-specific fields if needed
+                },
+                _ => new CompletionProviderSettings(providerType)
+            };
         }
 
-        /// <summary>
-        /// Updates the settings for a specific provider and saves the changes.
-        /// </summary>
-        /// <param name="settings">The updated provider settings to save.</param>
         public void UpdateProviderSettings(CompletionProviderSettings settings)
         {
-            var existing = _AppSettings.ProviderSettings.FirstOrDefault(p => p.ProviderType == settings.ProviderType);
-            if (existing != null) _AppSettings.ProviderSettings.Remove(existing);
-            _AppSettings.ProviderSettings.Add(settings);
+            if (_AppSettings == null) _AppSettings = new AppSettings();
+
+            switch (settings.ProviderType)
+            {
+                case CompletionProviderTypeEnum.OpenAI:
+                    _AppSettings.OpenAI.IsEnabled = true; // Assuming enabling when updated
+                    _AppSettings.OpenAI.ApiKey = settings.OpenAICompletionApiKey;
+                    _AppSettings.OpenAI.CompletionModel = settings.OpenAICompletionModel;
+                    _AppSettings.OpenAI.Endpoint = "https://api.openai.com/v1/chat/completions"; // Default if not set
+                    _AppSettings.OpenAI.EmbeddingModel = settings.OpenAIEmbeddingModel;
+                    break;
+                case CompletionProviderTypeEnum.Anthropic:
+                    _AppSettings.Anthropic.IsEnabled = true;
+                    _AppSettings.Anthropic.ApiKey = settings.AnthropicApiKey;
+                    _AppSettings.Anthropic.CompletionModel = settings.AnthropicCompletionModel;
+                    _AppSettings.Anthropic.Endpoint = "https://api.anthropic.com/v1"; // Default if not set
+                    _AppSettings.Anthropic.VoyageApiKey = settings.VoyageApiKey;
+                    _AppSettings.Anthropic.VoyageEmbeddingModel = settings.VoyageEmbeddingModel;
+                    break;
+                case CompletionProviderTypeEnum.Ollama:
+                    _AppSettings.Ollama.IsEnabled = true;
+                    _AppSettings.Ollama.CompletionModel = settings.OllamaCompletionModel;
+                    _AppSettings.Ollama.Endpoint = "http://localhost:11434"; // Default if not set
+                    _AppSettings.Ollama.EmbeddingModel = settings.OllamaModel;
+                    break;
+                case CompletionProviderTypeEnum.View:
+                    _AppSettings.View.IsEnabled = true;
+                    _AppSettings.View.ApiKey = settings.ViewApiKey;
+                    _AppSettings.View.AccessKey = settings.ViewAccessKey;
+                    _AppSettings.View.Endpoint = settings.ViewEndpoint;
+                    _AppSettings.View.CompletionModel = settings.ViewCompletionModel;
+                    // Map other View-specific fields if present in CompletionProviderSettings
+                    break;
+            }
+
             SaveSettings();
         }
 
-        /// <summary>
-        /// Saves the selected provider to the application settings and persists the changes.
-        /// </summary>
-        /// <param name="provider">The name of the provider to save as the selected provider.</param>
         public void SaveSelectedProvider(string provider)
         {
-            _AppSettings.SelectedProvider = provider;
+            // Update IsEnabled based on selected provider
+            _AppSettings.OpenAI.IsEnabled = provider == "OpenAI";
+            _AppSettings.Anthropic.IsEnabled = provider == "Anthropic";
+            _AppSettings.Ollama.IsEnabled = provider == "Ollama";
+            _AppSettings.View.IsEnabled = provider == "View";
             SaveSettings();
         }
 
-        /// <summary>
-        /// Gets the application settings object.
-        /// </summary>
-        /// <returns>The Settings object containing the application's configuration.</returns>
-        public Settings AppSettings => _AppSettings;
+        public AppSettings AppSettings => _AppSettings; // Changed return type to AppSettings
 
         #endregion
 
         #region Private-Methods
 
-        /// <summary>
-        /// Loads application settings from a JSON file or initializes defaults if the file doesn't exist.
-        /// </summary>
         private void LoadSettings()
         {
             try
@@ -267,29 +286,50 @@ namespace View.Personal
                 if (File.Exists(SettingsFilePath))
                 {
                     var json = File.ReadAllText(SettingsFilePath);
-                    _AppSettings = JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
-
-                    _LoggingSettings = _AppSettings.Logging;
+                    _AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
                     _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
                 }
                 else
                 {
                     _Logging.Debug(_Header + "No settings file found, using defaults");
-                    _AppSettings = new Settings();
+                    _AppSettings = new AppSettings
+                    {
+                        OpenAI = new AppSettings.OpenAISettings
+                            { Endpoint = "https://api.openai.com/v1/chat/completions" },
+                        Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
+                        Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
+                        View = new AppSettings.ViewSettings { Endpoint = "https://your-view-endpoint" },
+                        Embeddings = new AppSettings.EmbeddingsSettings()
+                    };
                     SaveSettings(); // Create initial settings file
                 }
+
+                // Set default GUIDs if not loaded
+                _TenantGuid = _TenantGuid == default ? Guid.NewGuid() : _TenantGuid;
+                _GraphGuid = _GraphGuid == default ? Guid.NewGuid() : _GraphGuid;
+                _UserGuid = _UserGuid == default ? Guid.NewGuid() : _UserGuid;
+                _CredentialGuid = _CredentialGuid == default ? Guid.NewGuid() : _CredentialGuid;
             }
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
-                _AppSettings = new Settings();
+                _AppSettings = new AppSettings
+                {
+                    OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
+                    Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
+                    Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
+                    View = new AppSettings.ViewSettings { Endpoint = "https://your-view-endpoint" },
+                    Embeddings = new AppSettings.EmbeddingsSettings()
+                };
+                _TenantGuid = Guid.NewGuid();
+                _GraphGuid = Guid.NewGuid();
+                _UserGuid = Guid.NewGuid();
+                _CredentialGuid = Guid.NewGuid();
                 SaveSettings();
             }
         }
 
         #endregion
     }
-
-// ReSharper disable RedundantDefaultMemberInitializer
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 }

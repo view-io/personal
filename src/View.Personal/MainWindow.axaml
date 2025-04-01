@@ -717,98 +717,98 @@
                                             </StackPanel>
                                             <!-- Expander in Column 1 -->
                                             <Expander
-    x:Name="ViewExpander"
-    Grid.Row="0"
-    Grid.Column="1"
-    IsExpanded="False"
-    ExpandDirection="Down"
-    BorderThickness="0"
-    Margin="0,-10,0,0"
-    Padding="0"
-    Background="#F5F5F5">
+                                                x:Name="ViewExpander"
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                IsExpanded="False"
+                                                ExpandDirection="Down"
+                                                BorderThickness="0"
+                                                Margin="0,-10,0,0"
+                                                Padding="0"
+                                                Background="#F5F5F5">
 
-    <!-- Directly define the Header (not a DataTemplate) -->
-    <Expander.Header>
-        <DockPanel LastChildFill="True" Margin="0">
-            <TextBlock VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       Text="View Credentials"
-                       FontWeight="500"
-                       FontSize="13" />
-        </DockPanel>
-    </Expander.Header>
+                                                <!-- Directly define the Header (not a DataTemplate) -->
+                                                <Expander.Header>
+                                                    <DockPanel LastChildFill="True" Margin="0">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   HorizontalAlignment="Center"
+                                                                   Text="View Credentials"
+                                                                   FontWeight="500"
+                                                                   FontSize="13" />
+                                                    </DockPanel>
+                                                </Expander.Header>
 
-    <!-- The toggle is now in the same scope as the Expander -->
-    <StackPanel Margin="0,10,0,10" Spacing="8">
-        <ToggleSwitch Margin="8,0,0,0"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      OnContent=""
-                      OffContent=""
-                      Width="35"
-                      Height="15"
-                      x:Name="ViewCredentialsToggle"
-                      assists:ToggleSwitchAssist.SwitchThumbOnBackground="White"
-                      assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
-                      assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
-                      assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
+                                                <!-- The toggle is now in the same scope as the Expander -->
+                                                <StackPanel Margin="0,10,0,10" Spacing="8">
+                                                    <ToggleSwitch Margin="8,0,0,0"
+                                                                  HorizontalAlignment="Left"
+                                                                  VerticalAlignment="Center"
+                                                                  OnContent=""
+                                                                  OffContent=""
+                                                                  Width="35"
+                                                                  Height="15"
+                                                                  x:Name="ViewCredentialsToggle"
+                                                                  assists:ToggleSwitchAssist.SwitchThumbOnBackground="White"
+                                                                  assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
+                                                                  assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
+                                                                  assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
 
-        <TextBlock Text="Embeddings API Key"
-                   Padding="8,0,0,0"
-                   VerticalAlignment="Center"
-                   Margin="0,0,16,0"
-                   FontSize="12"
-                   Foreground="#1A1C1E"
-                   FontWeight="500" />
-        <TextBox x:Name="ViewApiKey"
-                 Text="YOUR_EMBEDDINGS_API_KEY"
-                 Margin="8,0,8,0" />
+                                                    <TextBlock Text="Embeddings API Key"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E"
+                                                               FontWeight="500" />
+                                                    <TextBox x:Name="ViewApiKey"
+                                                             Text="YOUR_EMBEDDINGS_API_KEY"
+                                                             Margin="8,0,8,0" />
 
-        <TextBlock Text="View Endpoint"
-                   Padding="8,0,0,0"
-                   VerticalAlignment="Center"
-                   Margin="0,0,16,0"
-                   FontSize="12"
-                   Foreground="#1A1C1E"
-                   FontWeight="500" />
-        <TextBox x:Name="ViewEndpoint"
-                 Text="https://your-view-endpoint"
-                 Margin="8,0,8,0" />
+                                                    <TextBlock Text="View Endpoint"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E"
+                                                               FontWeight="500" />
+                                                    <TextBox x:Name="ViewEndpoint"
+                                                             Text="https://your-view-endpoint"
+                                                             Margin="8,0,8,0" />
 
-        <TextBlock Text="Access Key"
-                   Padding="8,0,0,0"
-                   VerticalAlignment="Center"
-                   Margin="0,0,16,0"
-                   FontSize="12"
-                   Foreground="#1A1C1E"
-                   FontWeight="500" />
-        <TextBox x:Name="ViewAccessKey"
-                 Text="YOUR_VIEW_ACCESS_KEY"
-                 Margin="8,0,8,0" />
+                                                    <TextBlock Text="Access Key"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E"
+                                                               FontWeight="500" />
+                                                    <TextBox x:Name="ViewAccessKey"
+                                                             Text="YOUR_VIEW_ACCESS_KEY"
+                                                             Margin="8,0,8,0" />
 
-        <TextBlock Text="Tenant Guid"
-                   Padding="8,0,0,0"
-                   VerticalAlignment="Center"
-                   Margin="0,0,16,0"
-                   FontSize="12"
-                   Foreground="#1A1C1E"
-                   FontWeight="500" />
-        <TextBox x:Name="ViewTenantGUID"
-                 Text="YOUR_TENANT_GUID"
-                 Margin="8,0,8,0" />
+                                                    <TextBlock Text="Tenant Guid"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E"
+                                                               FontWeight="500" />
+                                                    <TextBox x:Name="ViewTenantGUID"
+                                                             Text="YOUR_TENANT_GUID"
+                                                             Margin="8,0,8,0" />
 
-        <TextBlock Text="Completion Model"
-                   Padding="8,0,0,0"
-                   VerticalAlignment="Center"
-                   Margin="0,0,16,0"
-                   FontSize="12"
-                   Foreground="#1A1C1E"
-                   FontWeight="500" />
-        <TextBox x:Name="ViewCompletionModel"
-                 Text="gpt-3.5-turbo"
-                 Margin="8,0,8,0" />
-    </StackPanel>
-</Expander>
+                                                    <TextBlock Text="Completion Model"
+                                                               Padding="8,0,0,0"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,16,0"
+                                                               FontSize="12"
+                                                               Foreground="#1A1C1E"
+                                                               FontWeight="500" />
+                                                    <TextBox x:Name="ViewCompletionModel"
+                                                             Text="gpt-3.5-turbo"
+                                                             Margin="8,0,8,0" />
+                                                </StackPanel>
+                                            </Expander>
 
                                         </Grid>
                                         <!-- Horizontal Border to Divide Sections -->
@@ -926,6 +926,7 @@
 
                     <!-- Save Button -->
                     <Button Content="Save Settings"
+                            Click="SaveSettings2_Click"
                             Margin="0,40,0,0"
                             Classes="default"
                             HorizontalAlignment="Left"

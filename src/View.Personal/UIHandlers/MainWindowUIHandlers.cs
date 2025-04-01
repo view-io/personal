@@ -10,6 +10,8 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using Services;
     using LiteGraph;
+    using System.IO;
+    using System.Text.Json;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -45,6 +47,15 @@ namespace View.Personal.UIHandlers
             var dashboardPanel = window.FindControl<Border>("DashboardPanel");
             if (sidebarBorder != null) sidebarBorder.IsVisible = true;
             if (dashboardPanel != null) dashboardPanel.IsVisible = true;
+        }
+
+        private static void SaveSettingsToFile(AppSettings settings)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var jsonString = JsonSerializer.Serialize(settings, options);
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            File.WriteAllText(filePath, jsonString);
+            Console.WriteLine($"[INFO] Settings saved to {filePath}");
         }
 
         /// <summary>
@@ -89,32 +100,93 @@ namespace View.Personal.UIHandlers
         {
             try
             {
-                Console.WriteLine("[INFO] SaveSettings_Click triggered.");
+                if (window is not MainWindow mainWindow)
+                {
+                    Console.WriteLine("[ERROR] Window is not MainWindow.");
+                    return;
+                }
+
+                Console.WriteLine("[INFO] SaveSettings2_Click triggered.");
+
+                var appSettings = new AppSettings();
+
+                // OpenAI Settings
+                appSettings.OpenAI.IsEnabled =
+                    mainWindow.FindControl<ToggleSwitch>("OpenAICredentialsToggle")?.IsChecked ?? false;
+                appSettings.OpenAI.ApiKey = mainWindow.FindControl<TextBox>("OpenAIApiKey")?.Text;
+                appSettings.OpenAI.CompletionModel = mainWindow.FindControl<TextBox>("OpenAICompletionModel")?.Text;
+                appSettings.OpenAI.Endpoint = mainWindow.FindControl<TextBox>("OpenAIEndpoint")?.Text;
+                appSettings.OpenAI.EmbeddingModel = mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel")?.Text;
+
+                // Anthropic Settings
+                appSettings.Anthropic.IsEnabled =
+                    mainWindow.FindControl<ToggleSwitch>("AnthropicCredentialsToggle")?.IsChecked ?? false;
+                appSettings.Anthropic.ApiKey = mainWindow.FindControl<TextBox>("AnthropicApiKey")?.Text;
+                appSettings.Anthropic.CompletionModel =
+                    mainWindow.FindControl<TextBox>("AnthropicCompletionModel")?.Text;
+                appSettings.Anthropic.Endpoint = mainWindow.FindControl<TextBox>("AnthropicEndpoint")?.Text;
+                appSettings.Anthropic.VoyageApiKey = mainWindow.FindControl<TextBox>("VoyageApiKey")?.Text;
+                appSettings.Anthropic.VoyageEmbeddingModel =
+                    mainWindow.FindControl<TextBox>("VoyageEmbeddingModel")?.Text;
+
+                // Ollama Settings
+                appSettings.Ollama.IsEnabled =
+                    mainWindow.FindControl<ToggleSwitch>("OllamaCredentialsToggle")?.IsChecked ?? false;
+                appSettings.Ollama.CompletionModel = mainWindow.FindControl<TextBox>("OllamaCompletionModel")?.Text;
+                appSettings.Ollama.Endpoint = mainWindow.FindControl<TextBox>("OllamaEndpoint")?.Text;
+                appSettings.Ollama.EmbeddingModel = mainWindow.FindControl<TextBox>("OllamaModel")?.Text;
+
+                // View Settings
+                appSettings.View.IsEnabled =
+                    mainWindow.FindControl<ToggleSwitch>("ViewCredentialsToggle")?.IsChecked ?? false;
+                appSettings.View.ApiKey = mainWindow.FindControl<TextBox>("ViewApiKey")?.Text;
+                appSettings.View.Endpoint = mainWindow.FindControl<TextBox>("ViewEndpoint")?.Text;
+                appSettings.View.AccessKey = mainWindow.FindControl<TextBox>("ViewAccessKey")?.Text;
+                appSettings.View.TenantGuid = mainWindow.FindControl<TextBox>("ViewTenantGUID")?.Text;
+                appSettings.View.CompletionModel = mainWindow.FindControl<TextBox>("ViewCompletionModel")?.Text;
+
+                // Embeddings Settings
+                appSettings.Embeddings.LocalEmbeddingModel = mainWindow.FindControl<TextBox>("OllamaModel")?.Text;
+                appSettings.Embeddings.OpenAIEmbeddingModel =
+                    mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel")?.Text;
+                appSettings.Embeddings.VoyageEmbeddingModel =
+                    mainWindow.FindControl<TextBox>("VoyageEmbeddingModel")?.Text;
+                appSettings.Embeddings.VoyageApiKey = mainWindow.FindControl<TextBox>("VoyageApiKey")?.Text;
+                appSettings.Embeddings.VoyageEndpoint = mainWindow.FindControl<TextBox>("VoyageEndpoint")?.Text;
+
+                // Determine selected embedding model
+                if (mainWindow.FindControl<RadioButton>("LocalEmbeddingModel")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "Local";
+                else if (mainWindow.FindControl<RadioButton>("OpenAIEmbeddingModel2")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "OpenAI";
+                else if (mainWindow.FindControl<RadioButton>("VoyageEmbeddingModel2")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "VoyageAI";
+
+                // Determine selected provider based on toggle switches
+                if (appSettings.OpenAI.IsEnabled) appSettings.SelectedProvider = "OpenAI";
+                else if (appSettings.Anthropic.IsEnabled) appSettings.SelectedProvider = "Anthropic";
+                else if (appSettings.Ollama.IsEnabled) appSettings.SelectedProvider = "Ollama";
+                else if (appSettings.View.IsEnabled) appSettings.SelectedProvider = "View";
+
+                // Save to appsettings.json
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                var jsonString = JsonSerializer.Serialize(appSettings, options);
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                File.WriteAllText(filePath, jsonString);
+                Console.WriteLine($"[INFO] Settings saved to {filePath}");
+
+                // Update App instance
                 var app = (App)Application.Current;
-                var selectedProvider =
-                    (window.FindControl<ComboBox>("NavModelProviderComboBox")?.SelectedItem as ComboBoxItem)
-                    ?.Content?.ToString();
+                app._AppSettings = appSettings;
+                app.SaveSettings();
 
-                if (string.IsNullOrEmpty(selectedProvider))
-                    throw new InvalidOperationException("Selected provider is null or empty.");
-
-                var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
-                app?.UpdateProviderSettings(settings);
-                app?.SaveSelectedProvider(selectedProvider);
-
-                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
-
-                if (window is MainWindow mainWindow)
-                    mainWindow.ShowNotification("Settings Saved",
-                        $"{selectedProvider} settings saved successfully!",
-                        NotificationType.Success);
-                SettingsHelper.LoadSavedSettings(window);
+                mainWindow.ShowNotification("Success", "Settings saved successfully.", NotificationType.Success);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] SaveSettings_Click exception: {ex}");
+                Console.WriteLine($"[ERROR] SaveSettings2_Click exception: {ex.Message}");
                 if (window is MainWindow mainWindow)
-                    mainWindow.ShowNotification("Error", $"Something went wrong: {ex.Message}",
+                    mainWindow.ShowNotification("Error", $"Failed to save settings: {ex.Message}",
                         NotificationType.Error);
             }
         }

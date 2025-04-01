@@ -4,56 +4,6 @@
         <name>View.Personal</name>
     </assembly>
     <members>
-        <member name="T:View.Personal.App">
-            <summary>
-            Main application.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.Initialize">
-            <summary>
-            Initialize.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.OnFrameworkInitializationCompleted">
-            <summary>
-            Fired upon framework initialization completion.  Primary method executed to instantiate class members and initialize properties after the framework is loaded.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.SaveSettings">
-            <summary>
-            Saves the current application settings to a JSON file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.GetProviderSettings(View.Personal.Classes.CompletionProviderTypeEnum)">
-            <summary>
-            Retrieves the settings for a specified provider type, creating new defaults if none exist.
-            </summary>
-            <param name="providerType">The type of completion provider to get settings for.</param>
-            <returns>The settings for the specified provider.</returns>
-        </member>
-        <member name="M:View.Personal.App.UpdateProviderSettings(View.Personal.Classes.CompletionProviderSettings)">
-            <summary>
-            Updates the settings for a specific provider and saves the changes.
-            </summary>
-            <param name="settings">The updated provider settings to save.</param>
-        </member>
-        <member name="M:View.Personal.App.SaveSelectedProvider(System.String)">
-            <summary>
-            Saves the selected provider to the application settings and persists the changes.
-            </summary>
-            <param name="provider">The name of the provider to save as the selected provider.</param>
-        </member>
-        <member name="P:View.Personal.App.AppSettings">
-            <summary>
-            Gets the application settings object.
-            </summary>
-            <returns>The Settings object containing the application's configuration.</returns>
-        </member>
-        <member name="M:View.Personal.App.LoadSettings">
-            <summary>
-            Loads application settings from a JSON file or initializes defaults if the file doesn't exist.
-            </summary>
-        </member>
         <member name="T:View.Personal.Classes.AvaloniaConsoleWriter">
             <summary>
             A custom TextWriter implementation that redirects console output to an Avalonia TextBox control.
