@@ -64,6 +64,7 @@ namespace View.Personal
         private WindowNotificationManager? _WindowNotificationManager;
         private bool _WindowInitialized;
         private bool _ShowingChat = false;
+        private List<ToggleSwitch> _ToggleSwitches;
 
         #endregion
 
@@ -91,6 +92,7 @@ namespace View.Personal
                     navList.SelectedIndex = -1;
                     _ShowingChat = false;
                     ShowPanel("Dashboard");
+                    InitializeToggleSwitches();
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -746,6 +748,49 @@ namespace View.Personal
                     var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
                     ChatUIHandlers.UpdateConversationWindow(conversationContainer, _ConversationHistory, false, this);
                 }
+            }
+        }
+
+        private void InitializeToggleSwitches()
+        {
+            _ToggleSwitches = new List<ToggleSwitch>
+            {
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle"),
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle"),
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle"),
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle")
+            };
+
+            // Debug to confirm controls are found
+            foreach (var ts in _ToggleSwitches)
+                if (ts == null)
+                {
+                    Console.WriteLine("[ERROR] A ToggleSwitch was not found in the UI.");
+                }
+                else
+                {
+                    Console.WriteLine($"[INFO] Found ToggleSwitch: {ts.Name}");
+                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged; // Remove any existing subscription
+                    ts.PropertyChanged += ToggleSwitch_PropertyChanged; // Add fresh subscription
+                }
+        }
+
+        private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property == ToggleSwitch.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
+            {
+                Console.WriteLine($"[DEBUG] ToggleSwitch {toggleSwitch.Name} changed to {toggleSwitch.IsChecked}");
+                if (toggleSwitch.IsChecked == true)
+                    // Ensure this runs on the UI thread
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        foreach (var ts in _ToggleSwitches)
+                            if (ts != toggleSwitch && ts != null && ts.IsChecked == true)
+                            {
+                                Console.WriteLine($"[DEBUG] Turning off {ts.Name}");
+                                ts.IsChecked = false;
+                            }
+                    });
             }
         }
 

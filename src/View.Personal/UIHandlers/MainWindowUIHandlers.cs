@@ -85,6 +85,40 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        public static void SaveSettings2_Click(Window window)
+        {
+            try
+            {
+                Console.WriteLine("[INFO] SaveSettings_Click triggered.");
+                var app = (App)Application.Current;
+                var selectedProvider =
+                    (window.FindControl<ComboBox>("NavModelProviderComboBox")?.SelectedItem as ComboBoxItem)
+                    ?.Content?.ToString();
+
+                if (string.IsNullOrEmpty(selectedProvider))
+                    throw new InvalidOperationException("Selected provider is null or empty.");
+
+                var settings = SettingsHelper.ExtractSettingsFromUI(window, selectedProvider);
+                app?.UpdateProviderSettings(settings);
+                app?.SaveSelectedProvider(selectedProvider);
+
+                Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
+
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Settings Saved",
+                        $"{selectedProvider} settings saved successfully!",
+                        NotificationType.Success);
+                SettingsHelper.LoadSavedSettings(window);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] SaveSettings_Click exception: {ex}");
+                if (window is MainWindow mainWindow)
+                    mainWindow.ShowNotification("Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
+            }
+        }
+
         /// <summary>
         /// Handles the click event for deleting a file, delegating to an asynchronous file deletion method.
         /// </summary>
