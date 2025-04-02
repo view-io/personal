@@ -110,13 +110,35 @@ namespace View.Personal.UIHandlers
 
                 var appSettings = new AppSettings();
 
+                if (appSettings.Embeddings.SelectedEmbeddingModel == "Ollama")
+                {
+                    var ollamaText = mainWindow.FindControl<TextBox>("OllamaModel").Text.Trim();
+                    appSettings.Embeddings.OllamaEmbeddingModel = ollamaText;
+                }
+                else if (appSettings.Embeddings.SelectedEmbeddingModel == "View")
+                {
+                    var viewText = mainWindow.FindControl<TextBox>("ViewEmbeddingModel").Text.Trim();
+                    appSettings.Embeddings.ViewEmbeddingModel = viewText;
+                }
+                else if (appSettings.Embeddings.SelectedEmbeddingModel == "OpenAI")
+                {
+                    var openAIText = mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel").Text.Trim();
+                    appSettings.Embeddings.OpenAIEmbeddingModel = openAIText;
+                }
+                else if (appSettings.Embeddings.SelectedEmbeddingModel == "VoyageAI")
+                {
+                    var voyageText = mainWindow.FindControl<TextBox>("VoyageEmbeddingModel").Text.Trim();
+                    appSettings.Embeddings.VoyageEmbeddingModel = voyageText;
+                }
+
                 // OpenAI Settings
                 appSettings.OpenAI.IsEnabled =
                     mainWindow.FindControl<ToggleSwitch>("OpenAICredentialsToggle")?.IsChecked ?? false;
                 appSettings.OpenAI.ApiKey = mainWindow.FindControl<TextBox>("OpenAIApiKey")?.Text;
                 appSettings.OpenAI.CompletionModel = mainWindow.FindControl<TextBox>("OpenAICompletionModel")?.Text;
                 appSettings.OpenAI.Endpoint = mainWindow.FindControl<TextBox>("OpenAIEndpoint")?.Text;
-                appSettings.OpenAI.EmbeddingModel = mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel")?.Text;
+                appSettings.Embeddings.OpenAIEmbeddingModel =
+                    mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel")?.Text;
 
                 // Anthropic Settings
                 appSettings.Anthropic.IsEnabled =
@@ -126,7 +148,7 @@ namespace View.Personal.UIHandlers
                     mainWindow.FindControl<TextBox>("AnthropicCompletionModel")?.Text;
                 appSettings.Anthropic.Endpoint = mainWindow.FindControl<TextBox>("AnthropicEndpoint")?.Text;
                 appSettings.Anthropic.VoyageApiKey = mainWindow.FindControl<TextBox>("VoyageApiKey")?.Text;
-                appSettings.Anthropic.VoyageEmbeddingModel =
+                appSettings.Embeddings.VoyageEmbeddingModel =
                     mainWindow.FindControl<TextBox>("VoyageEmbeddingModel")?.Text;
 
                 // Ollama Settings
@@ -134,7 +156,6 @@ namespace View.Personal.UIHandlers
                     mainWindow.FindControl<ToggleSwitch>("OllamaCredentialsToggle")?.IsChecked ?? false;
                 appSettings.Ollama.CompletionModel = mainWindow.FindControl<TextBox>("OllamaCompletionModel")?.Text;
                 appSettings.Ollama.Endpoint = mainWindow.FindControl<TextBox>("OllamaEndpoint")?.Text;
-                appSettings.Ollama.EmbeddingModel = mainWindow.FindControl<TextBox>("OllamaModel")?.Text;
 
                 // View Settings
                 appSettings.View.IsEnabled =
@@ -146,7 +167,8 @@ namespace View.Personal.UIHandlers
                 appSettings.View.CompletionModel = mainWindow.FindControl<TextBox>("ViewCompletionModel")?.Text;
 
                 // Embeddings Settings
-                appSettings.Embeddings.LocalEmbeddingModel = mainWindow.FindControl<TextBox>("OllamaModel")?.Text;
+                appSettings.Embeddings.OllamaEmbeddingModel = mainWindow.FindControl<TextBox>("OllamaModel")?.Text;
+                appSettings.Embeddings.ViewEmbeddingModel = mainWindow.FindControl<TextBox>("ViewEmbeddingModel")?.Text;
                 appSettings.Embeddings.OpenAIEmbeddingModel =
                     mainWindow.FindControl<TextBox>("OpenAIEmbeddingModel")?.Text;
                 appSettings.Embeddings.VoyageEmbeddingModel =
@@ -155,8 +177,8 @@ namespace View.Personal.UIHandlers
                 appSettings.Embeddings.VoyageEndpoint = mainWindow.FindControl<TextBox>("VoyageEndpoint")?.Text;
 
                 // Determine selected embedding model
-                if (mainWindow.FindControl<RadioButton>("LocalEmbeddingModel")?.IsChecked == true)
-                    appSettings.Embeddings.SelectedEmbeddingModel = "Local";
+                if (mainWindow.FindControl<RadioButton>("OllamaEmbeddingModel")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
                 else if (mainWindow.FindControl<RadioButton>("OpenAIEmbeddingModel2")?.IsChecked == true)
                     appSettings.Embeddings.SelectedEmbeddingModel = "OpenAI";
                 else if (mainWindow.FindControl<RadioButton>("VoyageEmbeddingModel2")?.IsChecked == true)
@@ -167,6 +189,16 @@ namespace View.Personal.UIHandlers
                 else if (appSettings.Anthropic.IsEnabled) appSettings.SelectedProvider = "Anthropic";
                 else if (appSettings.Ollama.IsEnabled) appSettings.SelectedProvider = "Ollama";
                 else if (appSettings.View.IsEnabled) appSettings.SelectedProvider = "View";
+
+                // Determine selected embedding model
+                if (mainWindow.FindControl<RadioButton>("OllamaEmbeddingModel")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
+                if (mainWindow.FindControl<RadioButton>("ViewEmbeddingModel2")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "View";
+                else if (mainWindow.FindControl<RadioButton>("OpenAIEmbeddingModel2")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "OpenAI";
+                else if (mainWindow.FindControl<RadioButton>("VoyageEmbeddingModel2")?.IsChecked == true)
+                    appSettings.Embeddings.SelectedEmbeddingModel = "VoyageAI";
 
                 // Save to appsettings.json
                 var options = new JsonSerializerOptions { WriteIndented = true };

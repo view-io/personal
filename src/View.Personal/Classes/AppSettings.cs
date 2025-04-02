@@ -16,8 +16,9 @@ namespace View.Personal
             public bool IsEnabled { get; set; }
             public string ApiKey { get; set; }
             public string CompletionModel { get; set; }
+
             public string Endpoint { get; set; }
-            public string EmbeddingModel { get; set; }
+            // public string EmbeddingModel { get; set; }
         }
 
         public class AnthropicSettings
@@ -26,8 +27,9 @@ namespace View.Personal
             public string ApiKey { get; set; }
             public string CompletionModel { get; set; }
             public string Endpoint { get; set; }
+
             public string VoyageApiKey { get; set; }
-            public string VoyageEmbeddingModel { get; set; }
+            // public string VoyageEmbeddingModel { get; set; }
         }
 
         public class OllamaSettings
@@ -35,7 +37,6 @@ namespace View.Personal
             public bool IsEnabled { get; set; }
             public string CompletionModel { get; set; }
             public string Endpoint { get; set; }
-            public string EmbeddingModel { get; set; }
         }
 
         public class ViewSettings
@@ -50,8 +51,12 @@ namespace View.Personal
 
         public class EmbeddingsSettings
         {
-            public string SelectedEmbeddingModel { get; set; }
-            public string LocalEmbeddingModel { get; set; }
+            public string OllamaEmbeddingModel { get; set; }
+
+            public string ViewEmbeddingModel { get; set; }
+
+            public string SelectedEmbeddingModel { get; set; } = "Ollama";
+
             public string OpenAIEmbeddingModel { get; set; }
             public string VoyageEmbeddingModel { get; set; }
             public string VoyageApiKey { get; set; }

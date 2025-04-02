@@ -841,15 +841,16 @@
                                             <!-- Column 2: Radio Buttons and VoyageAI Settings -->
                                             <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
                                                 <!-- Radio Button Group -->
-                                                <StackPanel Spacing="16">
-                                                    <!-- Local Embedding Model -->
+                                                <StackPanel Spacing="16" x:Name="EmbeddingModelGroup">
+                                                    <!-- Ollama Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
-                                                                     GroupName="EmbeddingModel" IsChecked="False"
-                                                                     x:Name="LocalEmbeddingModel"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                     GroupName="EmbeddingProvider"
+                                                                     x:Name="OllamaEmbeddingModel"
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
+                                                                     Checked="EmbeddingModel_Checked" />
                                                         <TextBlock Grid.Row="0" Grid.Column="1"
-                                                                   Text="Local Embedding Model"
+                                                                   Text="Ollama Embedding Model"
                                                                    VerticalAlignment="Center" FontSize="12"
                                                                    Foreground="#1A1C1E" FontWeight="500" />
                                                         <TextBox Grid.Row="1" Grid.Column="1"
@@ -858,12 +859,31 @@
                                                                  Margin="0,4,0,0" />
                                                     </Grid>
 
+                                                    <!-- View Embedding Model -->
+                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                                                        <RadioButton Grid.Row="0" Grid.Column="0"
+                                                                     GroupName="EmbeddingProvider"
+                                                                     x:Name="ViewEmbeddingModel2"
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
+                                                                     Checked="EmbeddingModel_Checked" />
+                                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                                   Text="View Embedding Model"
+                                                                   VerticalAlignment="Center" FontSize="12"
+                                                                   Foreground="#1A1C1E" FontWeight="500" />
+                                                        <TextBox Grid.Row="1" Grid.Column="1"
+                                                                 x:Name="ViewEmbeddingModel"
+                                                                 Text="sentence-transformers/all-MiniLM-L6-v2"
+                                                                 Margin="0,4,0,0" />
+                                                    </Grid>
+
+
                                                     <!-- OpenAI Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
-                                                                     GroupName="OpenAIEmbeddingModel" IsChecked="False"
+                                                                     GroupName="EmbeddingProvider"
                                                                      x:Name="OpenAIEmbeddingModel2"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
+                                                                     Checked="EmbeddingModel_Checked" />
                                                         <TextBlock Grid.Row="0" Grid.Column="1"
                                                                    Text="OpenAI Embedding Model"
                                                                    VerticalAlignment="Center" FontSize="12"
@@ -877,9 +897,10 @@
                                                     <!-- Voyage Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
-                                                                     GroupName="VoyageEmbeddingModel" IsChecked="False"
+                                                                     GroupName="EmbeddingProvider"
                                                                      x:Name="VoyageEmbeddingModel2"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
+                                                                     Checked="EmbeddingModel_Checked" />
                                                         <TextBlock Grid.Row="0" Grid.Column="1"
                                                                    Text="VoyageAI Embedding Model"
                                                                    VerticalAlignment="Center" FontSize="12"
@@ -891,18 +912,15 @@
                                                     </Grid>
                                                 </StackPanel>
 
-                                                <!-- VoyageAI API Settings (API Key and Endpoint on the same row) -->
+                                                <!-- VoyageAI API Settings -->
                                                 <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto"
                                                       Margin="17,0,0,0">
-                                                    <!-- Labels -->
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI Api Key"
                                                                VerticalAlignment="Center" FontSize="12"
                                                                Foreground="#1A1C1E" FontWeight="500" Margin="0,0,10,0" />
                                                     <TextBlock Grid.Row="0" Grid.Column="2" Text="VoyageAI Endpoint"
                                                                VerticalAlignment="Center" FontSize="12"
                                                                Foreground="#1A1C1E" FontWeight="500" Margin="10,0,10,0" />
-
-                                                    <!-- TextBoxes -->
                                                     <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                                              x:Name="VoyageApiKey"
                                                              Text="Your-API-Key-Here" Margin="0,4,10,0" />

@@ -94,6 +94,7 @@ namespace View.Personal
                     ShowPanel("Dashboard");
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
+                    InitializeEmbeddingRadioButtons();
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -203,7 +204,7 @@ namespace View.Personal
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
-                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.OpenAI.EmbeddingModel;
+                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
 
                 // Anthropic
                 this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
@@ -211,13 +212,13 @@ namespace View.Personal
                 this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
                 this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
                 this.FindControl<TextBox>("VoyageApiKey").Text = settings.Anthropic.VoyageApiKey;
-                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Anthropic.VoyageEmbeddingModel;
+                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
 
                 // Ollama
                 this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
                 this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
                 this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
-                this.FindControl<TextBox>("OllamaModel").Text = settings.Ollama.EmbeddingModel;
+                this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
 
                 // View
                 this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
@@ -226,23 +227,33 @@ namespace View.Personal
                 this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
                 this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid;
                 this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
+                this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
 
                 // Embeddings
-                this.FindControl<RadioButton>("LocalEmbeddingModel").IsChecked =
-                    settings.Embeddings.SelectedEmbeddingModel == "Local";
+                this.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "Ollama";
+                this.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "View";
                 this.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
-                this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.LocalEmbeddingModel;
-                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
-                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
-                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
-                this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
+                // this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
+                // this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
+                // this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
+                // this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
+                // this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
+                // this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
 
                 // Update App instance
                 var app = (App)Application.Current;
                 app._AppSettings = settings;
+            }
+            else
+            {
+                var app = (App)Application.Current;
+                app._AppSettings.Embeddings.SelectedEmbeddingModel = "Local";
+                InitializeEmbeddingRadioButtons();
             }
         }
 
@@ -865,6 +876,61 @@ namespace View.Personal
                                 ts.IsChecked = false;
                             }
                     });
+            }
+        }
+
+        private void InitializeEmbeddingRadioButtons()
+        {
+            var app = (App)Application.Current;
+            var selectedModel =
+                app._AppSettings.Embeddings.SelectedEmbeddingModel ?? "Ollama";
+
+            var ollamaRadio = this.FindControl<RadioButton>("OllamaEmbeddingModel");
+            var openAIRadio = this.FindControl<RadioButton>("OpenAIEmbeddingModel2");
+            var voyageRadio = this.FindControl<RadioButton>("VoyageEmbeddingModel2");
+            var viewRadio = this.FindControl<RadioButton>("ViewEmbeddingModel2");
+
+            // Ensure one is always selected
+            switch (selectedModel)
+            {
+                case "Ollama":
+                    ollamaRadio.IsChecked = true;
+                    break;
+                case "OpenAI":
+                    openAIRadio.IsChecked = true;
+                    break;
+                case "VoyageAI":
+                    voyageRadio.IsChecked = true;
+                    break;
+                case "View":
+                    viewRadio.IsChecked = true;
+                    break;
+                default:
+                    // Fallback if something else is stored
+                    ollamaRadio.IsChecked = true;
+                    app._AppSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
+                    break;
+            }
+        }
+
+        private void EmbeddingModel_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radioButton)
+            {
+                var app = (App)Application.Current;
+                var selectedProvider = radioButton.Name switch
+                {
+                    "OllamaEmbeddingModel" => "Ollama",
+                    "OpenAIEmbeddingModel2" => "OpenAI",
+                    "VoyageEmbeddingModel2" => "VoyageAI",
+                    "ViewEmbeddingModel2" => "View",
+                    _ => "Ollama" // Fallback
+                };
+
+                // This ensures the *radio* is recorded as the "SelectedEmbeddingModel" in your JSON settings
+                app._AppSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
+
+                Console.WriteLine($"[INFO] Embedding provider selected: {selectedProvider}");
             }
         }
 

@@ -197,26 +197,26 @@ namespace View.Personal
                 {
                     OpenAICompletionApiKey = _AppSettings.OpenAI.ApiKey,
                     OpenAICompletionModel = _AppSettings.OpenAI.CompletionModel,
-                    OpenAIEmbeddingModel = _AppSettings.OpenAI.EmbeddingModel
+                    OpenAIEmbeddingModel = _AppSettings.Embeddings.SelectedEmbeddingModel
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
                     AnthropicApiKey = _AppSettings.Anthropic.ApiKey,
                     AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel,
                     VoyageApiKey = _AppSettings.Anthropic.VoyageApiKey,
-                    VoyageEmbeddingModel = _AppSettings.Anthropic.VoyageEmbeddingModel
+                    VoyageEmbeddingModel = _AppSettings.Embeddings.SelectedEmbeddingModel
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
                     OllamaCompletionModel = _AppSettings.Ollama.CompletionModel,
-                    OllamaModel = _AppSettings.Ollama.EmbeddingModel
+                    OllamaModel = _AppSettings.Embeddings.SelectedEmbeddingModel
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
                     ViewApiKey = _AppSettings.View.ApiKey,
                     ViewAccessKey = _AppSettings.View.AccessKey,
                     ViewEndpoint = _AppSettings.View.Endpoint,
-                    ViewCompletionModel = _AppSettings.View.CompletionModel
+                    ViewCompletionModel = _AppSettings.Embeddings.SelectedEmbeddingModel
                     // Add other View-specific fields if needed
                 },
                 _ => new CompletionProviderSettings(providerType)
@@ -234,7 +234,7 @@ namespace View.Personal
                     _AppSettings.OpenAI.ApiKey = settings.OpenAICompletionApiKey;
                     _AppSettings.OpenAI.CompletionModel = settings.OpenAICompletionModel;
                     _AppSettings.OpenAI.Endpoint = "https://api.openai.com/v1/chat/completions"; // Default if not set
-                    _AppSettings.OpenAI.EmbeddingModel = settings.OpenAIEmbeddingModel;
+                    // _AppSettings.Embeddings.OpenAIEmbeddingModel = settings.OpenAIEmbeddingModel;
                     break;
                 case CompletionProviderTypeEnum.Anthropic:
                     _AppSettings.Anthropic.IsEnabled = true;
@@ -242,13 +242,13 @@ namespace View.Personal
                     _AppSettings.Anthropic.CompletionModel = settings.AnthropicCompletionModel;
                     _AppSettings.Anthropic.Endpoint = "https://api.anthropic.com/v1"; // Default if not set
                     _AppSettings.Anthropic.VoyageApiKey = settings.VoyageApiKey;
-                    _AppSettings.Anthropic.VoyageEmbeddingModel = settings.VoyageEmbeddingModel;
+                    // _AppSettings.Anthropic.VoyageEmbeddingModel = settings.VoyageEmbeddingModel;
                     break;
                 case CompletionProviderTypeEnum.Ollama:
                     _AppSettings.Ollama.IsEnabled = true;
                     _AppSettings.Ollama.CompletionModel = settings.OllamaCompletionModel;
                     _AppSettings.Ollama.Endpoint = "http://localhost:11434"; // Default if not set
-                    _AppSettings.Ollama.EmbeddingModel = settings.OllamaModel;
+                    // _AppSettings.Ollama.EmbeddingModel = settings.OllamaModel;
                     break;
                 case CompletionProviderTypeEnum.View:
                     _AppSettings.View.IsEnabled = true;
