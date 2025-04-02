@@ -64,8 +64,15 @@ namespace View.Personal.Services
                 return;
             }
 
-            var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
-            var selectedProvider = (providerCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            var appSettings = ((App)Application.Current).AppSettings;
+            if (appSettings == null)
+            {
+                Console.WriteLine("[ERROR] AppSettings is null.");
+                return;
+            }
+
+            // var providerCombo = window.FindControl<ComboBox>("NavModelProviderComboBox");
+            var selectedProvider = appSettings.SelectedProvider;
             var spinner = window.FindControl<ProgressBar>("IngestSpinner");
 
             if (spinner != null)
