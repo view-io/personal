@@ -1048,7 +1048,7 @@
                                     <DataGridTextColumn Header="Type" Binding="{Binding DocumentType}"
                                                         Width="150" />
                                     <DataGridTextColumn Header="Date Created" Width="190"
-                                                        Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}}" />
+                                                        Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
                                     <!-- <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="250" /> -->
 
                                     <DataGridTemplateColumn Header="" Width="150">

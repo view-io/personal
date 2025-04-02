@@ -288,6 +288,14 @@ namespace View.Personal
                     var json = File.ReadAllText(SettingsFilePath);
                     _AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
                     _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
+
+                    // Sync _TenantGuid with View.TenantGuid if present
+                    if (!string.IsNullOrEmpty(_AppSettings.View?.TenantGuid) &&
+                        Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuidFromSettings))
+                    {
+                        _TenantGuid = tenantGuidFromSettings;
+                        _Logging.Debug(_Header + $"Loaded TenantGuid from settings: {_TenantGuid}");
+                    }
                 }
                 else
                 {
@@ -298,14 +306,23 @@ namespace View.Personal
                             { Endpoint = "https://api.openai.com/v1/chat/completions" },
                         Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
                         Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
-                        View = new AppSettings.ViewSettings { Endpoint = "https://your-view-endpoint" },
+                        View = new AppSettings.ViewSettings
+                        {
+                            Endpoint = "https://your-view-endpoint",
+                            TenantGuid = Guid.Empty.ToString() // Default to all zeros
+                        },
                         Embeddings = new AppSettings.EmbeddingsSettings()
                     };
-                    SaveSettings(); // Create initial settings file
+                    SaveSettings();
                 }
 
-                // Set default GUIDs if not loaded
-                _TenantGuid = _TenantGuid == default ? Guid.NewGuid() : _TenantGuid;
+                // Only set to random GUID if explicitly desired; otherwise keep as Guid.Empty or loaded value
+                if (_TenantGuid == default && string.IsNullOrEmpty(_AppSettings.View?.TenantGuid))
+                {
+                    _TenantGuid = Guid.Empty; // Match old behavior
+                    _Logging.Debug(_Header + $"TenantGuid set to default: {_TenantGuid}");
+                }
+
                 _GraphGuid = _GraphGuid == default ? Guid.NewGuid() : _GraphGuid;
                 _UserGuid = _UserGuid == default ? Guid.NewGuid() : _UserGuid;
                 _CredentialGuid = _CredentialGuid == default ? Guid.NewGuid() : _CredentialGuid;
@@ -318,10 +335,14 @@ namespace View.Personal
                     OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
                     Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
                     Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
-                    View = new AppSettings.ViewSettings { Endpoint = "https://your-view-endpoint" },
+                    View = new AppSettings.ViewSettings
+                    {
+                        Endpoint = "https://your-view-endpoint",
+                        TenantGuid = Guid.Empty.ToString()
+                    },
                     Embeddings = new AppSettings.EmbeddingsSettings()
                 };
-                _TenantGuid = Guid.NewGuid();
+                _TenantGuid = Guid.Empty; // Default to all zeros on error
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();
                 _CredentialGuid = Guid.NewGuid();

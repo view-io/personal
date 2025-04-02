@@ -100,10 +100,14 @@ namespace View.Personal
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
                 NavModelProviderComboBox.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.ModelProvider_SelectionChanged(s, e, this, _WindowInitialized);
-                var filePathTextBox = this.FindControl<TextBox>("FilePathTextBox");
+                // var filePathTextBox = this.FindControl<TextBox>("FilePathTextBox");
+                // if (filePathTextBox == null) throw new Exception("FilePathTextBox not found in XAML");
+                // filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
+                if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
+                chatInputBox.KeyDown += ChatInputBox_KeyDown;
 
-                filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
+                // filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
@@ -225,7 +229,7 @@ namespace View.Personal
                 this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
                 this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
                 this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
-                this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid;
+                this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid ?? Guid.Empty.ToString();
                 this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
                 this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
 
