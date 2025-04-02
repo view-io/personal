@@ -54,20 +54,12 @@
                                 <TextBlock Text="Data Monitor" Foreground="#6A6B6F" />
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="Settings">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
-
-                                                       Height="18" Width="18" />
-                                <TextBlock Text="Settings" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
                         <ListBoxItem Tag="Settings2">
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
 
                                                        Height="18" Width="18" />
-                                <TextBlock Text="Settings2" Foreground="#6A6B6F" />
+                                <TextBlock Text="Settings" Foreground="#6A6B6F" />
                             </StackPanel>
                         </ListBoxItem>
                         <ListBoxItem Tag="Console">
@@ -78,18 +70,6 @@
                             </StackPanel>
                         </ListBoxItem>
                     </ListBox>
-
-                    <!-- Model Provider Dropdown -->
-                    <StackPanel DockPanel.Dock="Bottom" Margin="10">
-                        <TextBlock Text="A.I. Provider" />
-                        <ComboBox x:Name="NavModelProviderComboBox" Width="160" SelectedIndex="0"
-                                  SelectionChanged="ModelProvider_SelectionChanged">
-                            <ComboBoxItem Content="View" />
-                            <ComboBoxItem Content="OpenAI" />
-                            <ComboBoxItem Content="Anthropic" />
-                            <ComboBoxItem Content="Ollama" />
-                        </ComboBox>
-                    </StackPanel>
                     <StackPanel />
                 </DockPanel>
             </Border>
@@ -159,153 +139,8 @@
                         </Grid>
                     </Grid>
                 </Border>
-
-                <StackPanel Name="SettingsPanel" Orientation="Vertical" IsVisible="False">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
-                    </StackPanel>
-                    <!-- OpenAI Settings -->
-                    <StackPanel x:Name="OpenAISettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-                        <Grid ColumnDefinitions="200,*"
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="OpenAI API Key" />
-                            <!-- <TextBox Grid.Row="0" Grid.Column="1" x:Name="OpenAIKey" /> -->
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Embedding Model" />
-                            <!-- <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAIEmbeddingModel" /> -->
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Completion Model" />
-                            <!-- <TextBox Grid.Row="2" Grid.Column="1" x:Name="OpenAICompletionModel" /> -->
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Tokens"
-                                       VerticalAlignment="Center" />
-                            <TextBox Grid.Row="3" Grid.Column="1" x:Name="OpenAIMaxTokens" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Temperature"
-                                       VerticalAlignment="Center" />
-                            <NumericUpDown Grid.Row="4" Grid.Column="1" x:Name="OpenAITemperature" Value="1"
-                                           Increment="0.1" Minimum="0" Maximum="2" />
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Top P"
-                                       VerticalAlignment="Center" />
-                            <NumericUpDown Grid.Row="5" Grid.Column="1" x:Name="OpenAITopP"
-                                           Value="1.0"
-                                           Increment="0.01"
-                                           Minimum="0.0"
-                                           Maximum="1.0"
-                                           FormatString="0.00" />
-                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Reasoning Effort"
-                                       VerticalAlignment="Center" />
-                            <ComboBox Grid.Row="6" Grid.Column="1" x:Name="OpenAIReasoningEffort">
-                                <ComboBoxItem Content="Default" />
-                                <ComboBoxItem Content="Low" />
-                                <ComboBoxItem Content="Medium" />
-                                <ComboBoxItem Content="High" />
-                            </ComboBox>
-                        </Grid>
-                    </StackPanel>
-                    <!-- Anthropic Settings -->
-                    <StackPanel x:Name="AnthropicSettings" Orientation="Vertical" Spacing="10" IsVisible="True">
-                        <Grid ColumnDefinitions="200,*"
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Anthropic Completion Model" />
-                            <!-- <TextBox Grid.Row="0" Grid.Column="1" x:Name="AnthropicCompletionModel" /> -->
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Anthropic Api Key" />
-                            <!-- <TextBox Grid.Row="1" Grid.Column="1" x:Name="AnthropicApiKey" /> -->
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Voyage Api Key" />
-                            <!-- <TextBox Grid.Row="2" Grid.Column="1" x:Name="VoyageApiKey" /> -->
-                            <!-- <TextBox Grid.Row="3" Grid.Column="1" x:Name="VoyageEmbeddingModel" /> -->
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Voyage Embedding Model" />
-                        </Grid>
-                    </StackPanel>
-                    <!-- View Settings -->
-                    <StackPanel x:Name="ViewSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                        <Grid ColumnDefinitions="200,*"
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Embeddings Generator" />
-                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ViewEmbeddingsGenerator">
-                                <ComboBoxItem Content="LCProxy" />
-                                <ComboBoxItem Content="OpenAI" />
-                                <ComboBoxItem Content="Ollama" />
-                                <ComboBoxItem Content="VoyageAI" />
-                            </ComboBox>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Api Key" />
-                            <!-- <TextBox Grid.Row="1" Grid.Column="1" x:Name="ViewApiKey" /> -->
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="View Endpoint" />
-                            <!-- <TextBox Grid.Row="2" Grid.Column="1" x:Name="ViewEndpoint" /> -->
-
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Access Key" />
-                            <!-- <TextBox Grid.Row="3" Grid.Column="1" x:Name="ViewAccessKey" /> -->
-
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Embeddings Url" />
-                            <TextBox Grid.Row="4" Grid.Column="1" x:Name="ViewEmbeddingsGeneratorUrl" />
-
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" />
-                            <TextBox Grid.Row="5" Grid.Column="1" x:Name="ViewModel" />
-
-                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Completion API Key" />
-                            <TextBox Grid.Row="6" Grid.Column="1" x:Name="ViewCompletionApiKey" />
-
-                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Completion Provider" />
-                            <TextBox Grid.Row="8" Grid.Column="1" x:Name="ViewCompletionProvider" />
-
-                            <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" />
-                            <!-- <TextBox Grid.Row="9" Grid.Column="1" x:Name="ViewCompletionModel" /> -->
-
-                            <TextBlock Grid.Row="10" Grid.Column="0" Text="Completion Port" />
-                            <TextBox Grid.Row="10" Grid.Column="1" x:Name="ViewCompletionPort" />
-
-                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" />
-                            <NumericUpDown Grid.Row="11" Grid.Column="1" x:Name="ViewTemperature"
-                                           Value="0.1"
-                                           Increment="0.1"
-                                           Minimum="0.0"
-                                           Maximum="1.0"
-                                           FormatString="0.00" />
-
-                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" />
-                            <NumericUpDown Grid.Row="12" Grid.Column="1" x:Name="ViewTopP"
-                                           Value="0.95"
-                                           Increment="0.1"
-                                           Minimum="0.0"
-                                           Maximum="1.0"
-                                           FormatString="0.00" />
-                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
-                            <NumericUpDown Grid.Row="13" Grid.Column="1" x:Name="ViewMaxTokens"
-                                           Value="1000"
-                                           Increment="1"
-                                           Minimum="128"
-                                           Maximum="4096"
-                                           FormatString="0" />
-                        </Grid>
-                    </StackPanel>
-                    <!-- Ollama Settings -->
-                    <StackPanel x:Name="OllamaSettings" Orientation="Vertical" Spacing="10" IsVisible="False">
-                        <Grid ColumnDefinitions="200,*"
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Embeddings Model" />
-                            <!-- <TextBox Grid.Row="5" Grid.Column="1" x:Name="OllamaModel" /> -->
-
-                            <TextBlock Grid.Row="9" Grid.Column="0" Text="Completion Model" />
-                            <!-- <TextBox Grid.Row="9" Grid.Column="1" x:Name="OllamaCompletionModel" /> -->
-
-                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Temperature" />
-                            <TextBox Grid.Row="11" Grid.Column="1" x:Name="OllamaTemperature" />
-
-                            <TextBlock Grid.Row="12" Grid.Column="0" Text="Top P" />
-                            <TextBox Grid.Row="12" Grid.Column="1" x:Name="OllamaTopP" />
-
-                            <TextBlock Grid.Row="13" Grid.Column="0" Text="Max Tokens" />
-                            <TextBox Grid.Row="13" Grid.Column="1" x:Name="OllamaMaxTokens" />
-                        </Grid>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Content="Save Settings"
-                                Click="SaveSettings_Click"
-                                Margin="0,20,0,0"
-                                Classes="default" />
-                    </StackPanel>
-                </StackPanel>
+                <!-- <StackPanel Name="SettingsPanel" Orientation="Vertical" IsVisible="False"> -->
+                <!-- </StackPanel> -->
 
                 <!-- Settings Panel2 -->
                 <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">

@@ -41,18 +41,17 @@ namespace View.Personal.UIHandlers
             {
                 var mainWindow = window as MainWindow;
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
-                var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
+                // var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
                 var chatPanel = window.FindControl<Border>("ChatPanel");
                 var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
 
-                if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null && chatPanel != null &&
+                if (dashboardPanel != null && myFilesPanel != null && chatPanel != null &&
                     consolePanel != null && workspaceText != null && settingsPanel2 != null)
                 {
                     dashboardPanel.IsVisible = false;
-                    settingsPanel.IsVisible = false;
                     settingsPanel2.IsVisible = false;
                     myFilesPanel.IsVisible = false;
                     chatPanel.IsVisible = false;
@@ -99,20 +98,9 @@ namespace View.Personal.UIHandlers
                             }
 
                             break;
-                        case "Settings":
-                            if (settingsPanel != null)
-                            {
-                                settingsPanel.IsVisible = true;
-                                var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-                                var currentProvider = (comboBox?.SelectedItem as ComboBoxItem)?.Content?.ToString();
-                                if (!string.IsNullOrEmpty(currentProvider))
-                                    MainWindowUIHandlers.UpdateSettingsVisibility(window, currentProvider);
-                            }
-
-                            break;
 
                         case "Settings2":
-                            if (settingsPanel != null) settingsPanel2.IsVisible = true;
+                            if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
 
                             break;
 
@@ -155,8 +143,6 @@ namespace View.Personal.UIHandlers
 
                 var app = (App)Application.Current;
                 app?.SaveSelectedProvider(selectedProvider);
-                MainWindowUIHandlers.UpdateProviderSettings(window, selectedProvider);
-                MainWindowUIHandlers.UpdateSettingsVisibility(window, selectedProvider);
             }
         }
 

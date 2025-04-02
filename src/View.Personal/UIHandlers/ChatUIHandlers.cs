@@ -68,14 +68,12 @@ namespace View.Personal.UIHandlers
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
-                    Console.WriteLine($"[DEBUG] Received token chunk: '{tokenChunk}'");
                     assistantMsg.Content += tokenChunk;
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
                         UpdateConversationWindow(conversationContainer, conversationHistory, false,
                             window); // Hide spinner on first token
-                        Console.WriteLine("[DEBUG] First token received, hiding spinner");
                     }
                     else
                     {

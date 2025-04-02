@@ -45,177 +45,6 @@
             Gets or sets the content of the chat message.
             </summary>
         </member>
-        <member name="T:View.Personal.Classes.CompletionProviderSettings">
-            <summary>
-            Settings for various AI completion providers.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ProviderType">
-            <summary>
-            The type of completion provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionApiKey">
-            <summary>
-            API key for OpenAI completion API.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIEmbeddingModel">
-            <summary>
-            Model name for OpenAI embeddings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionModel">
-            <summary>
-            Model name for OpenAI completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIMaxTokens">
-            <summary>
-            Maximum number of tokens for OpenAI completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIReasoningEffort">
-            <summary>
-            Reasoning effort level for OpenAI completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAITemperature">
-            <summary>
-            Temperature setting for OpenAI completions. Controls randomness.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.VoyageEmbeddingModel">
-            <summary>
-            Model name for Voyage embeddings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.VoyageApiKey">
-            <summary>
-            API key for Voyage AI.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicCompletionModel">
-            <summary>
-            Model name for Anthropic completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicApiKey">
-            <summary>
-            API key for Anthropic.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEmbeddingsGenerator">
-            <summary>
-            Embeddings generator type for View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewApiKey">
-            <summary>
-            API key for View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEndpoint">
-            <summary>
-            Endpoint URL for View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewAccessKey">
-            <summary>
-            Access key for View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEmbeddingsGeneratorUrl">
-            <summary>
-            URL for embeddings generator in View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewModel">
-            <summary>
-            Model name for View provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionApiKey">
-            <summary>
-            API key for View completion provider.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionProvider">
-            <summary>
-            Completion provider name for View.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionModel">
-            <summary>
-            Completion model name for View.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionPort">
-            <summary>
-            Port number for View completion service.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewTemperature">
-            <summary>
-            Temperature setting for View completions. Controls randomness.
-            Value is clamped between 0.0 and 1.0. Default is 0.1.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewTopP">
-            <summary>
-            Top-p (nucleus sampling) setting for View completions.
-            Value is clamped between 0.0 and 1.0. Default is 0.9.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewMaxTokens">
-            <summary>
-            Maximum number of tokens for View completions.
-            Value is clamped between 128 and 4095. Default is 1000.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaModel">
-            <summary>
-            Model name for Ollama embeddings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaCompletionModel">
-            <summary>
-            Model name for Ollama completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaTemperature">
-            <summary>
-            Temperature setting for Ollama completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaTopP">
-            <summary>
-            Top-p setting for Ollama completions.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaMaxTokens">
-            <summary>
-            Maximum number of tokens for Ollama completions.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Classes.CompletionProviderSettings.#ctor(View.Personal.Classes.CompletionProviderTypeEnum)">
-            <summary>
-            Initializes a new instance of CompletionProviderSettings.
-            </summary>
-            <param name="providerType">The type of completion provider.</param>
-        </member>
-        <member name="M:View.Personal.Classes.CompletionProviderSettings.SetReasoningEffort(View.Personal.Classes.OpenAIReasoningEffortEnum)">
-            <summary>
-            Sets the reasoning effort level for OpenAI.
-            </summary>
-            <param name="level">The reasoning effort enumeration value.</param>
-        </member>
-        <member name="M:View.Personal.Classes.CompletionProviderSettings.GetReasoningEffortLevel">
-            <summary>
-            Gets the reasoning effort level as an enum.
-            </summary>
-            <returns>The reasoning effort enum value if it can be parsed, otherwise null.</returns>
-        </member>
         <member name="T:View.Personal.Classes.CompletionProviderTypeEnum">
             <summary>
             Completion provider type.
@@ -438,97 +267,6 @@
             A List of Edge objects representing the relationships between the document node and its chunks
             </summary>
         </member>
-        <member name="T:View.Personal.Helpers.SettingsHelper">
-            <summary>
-            Provides helper methods for managing settings extraction and loading within the application UI.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.ExtractSettingsFromUI(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Extracts provider-specific settings from UI controls in the specified window based on the selected provider
-            <param name="window">The window containing the UI controls with settings data</param>
-            <param name="selectedProvider">The string indicating the currently selected provider (e.g., "OpenAI", "Anthropic", "View", "Ollama")</param>
-            Returns:
-            A CompletionProviderSettings object populated with values from the UI, or null if the provider is not supported
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.LoadSavedSettings(Avalonia.Controls.Window)">
-            <summary>
-            Loads saved provider settings from the application and populates the corresponding UI controls
-            <param name="window">The window</param>
-            Returns:
-            None; updates UI controls with loaded settings directly
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetTextBoxValue(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the text value from a TextBox control in the specified window, returning an empty string if not found
-            <param name="window">The window containing the TextBox control</param>
-            <param name="controlName">The name of the TextBox control to query</param>
-            Returns:
-            The text content of the TextBox, or an empty string if the control is not found or has no text
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetComboBoxValue(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the selected value from a ComboBox control within a specified window.
-            </summary>
-            <param name="window">The window containing the ComboBox control.</param>
-            <param name="controlName">The name of the ComboBox control to retrieve the value from.</param>
-            <returns>The string content of the selected ComboBox item, or an empty string if no item is selected or the control is not found.</returns>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.ParseIntOrDefault(Avalonia.Controls.Window,System.String,System.Int32)">
-            <summary>
-            Parses the text value from a TextBox control into an integer, returning a default value if parsing fails
-            <param name="window">The window containing the TextBox control</param>
-            <param name="controlName">The name of the TextBox control to query</param>
-            <param name="defaultValue">The default integer value to return if parsing is unsuccessful</param>
-            Returns:
-            The parsed integer value from the TextBox, or the defaultValue if the text is not a valid integer
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.ParseDoubleOrDefault(Avalonia.Controls.Window,System.String,System.Double)">
-            <summary>
-            Parses the text value from a TextBox control into a double, returning a default value if parsing fails
-            <param name="window">The window containing the TextBox control</param>
-            <param name="controlName">The name of the TextBox control to query</param>
-            <param name="defaultValue">The default double value to return if parsing is unsuccessful</param>
-            Returns:
-            The parsed double value from the TextBox, or the defaultValue if the text is not a valid double
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetNumericUpDownFloatValueOrNull(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the float value from a NumericUpDown control within a specified window, or a default value if none is set.
-            </summary>
-            <param name="window">The window containing the NumericUpDown control.</param>
-            <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
-            <returns>The float value of the NumericUpDown control if it has a value; otherwise, returns 0.95f as a default.</returns>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetNumericUpDownValueOrNull(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the double value from a NumericUpDown control within a specified window, or null if no value is set or the control is not found.
-            </summary>
-            <param name="window">The window containing the NumericUpDown control.</param>
-            <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
-            <returns>The double value of the NumericUpDown control if it exists and has a value; otherwise, returns null.</returns>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetIntUpDownValue(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the integer value from a NumericUpDown control within a specified window, or a default value if none is set.
-            </summary>
-            <param name="window">The window containing the NumericUpDown control.</param>
-            <param name="controlName">The name of the NumericUpDown control to retrieve the value from.</param>
-            <returns>The integer value of the NumericUpDown control if it has a value; otherwise, returns 1000 as a default.</returns>
-        </member>
-        <member name="M:View.Personal.Helpers.SettingsHelper.GetReasoningEffortValue(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Retrieves the reasoning effort value from a ComboBox control within a specified window, converting it to a lowercase string or null for specific cases.
-            </summary>
-            <param name="window">The window containing the ComboBox control.</param>
-            <param name="controlName">The name of the ComboBox control to retrieve the value from.</param>
-            <returns>A lowercase string representation of the selected reasoning effort level, or null if the selection is "Default" or invalid.</returns>
-        </member>
         <member name="T:View.Personal.MainWindow">
             <summary>
             Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
@@ -575,15 +313,6 @@
             <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
             <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.CreateEmbeddingRequest(System.String,View.Personal.Classes.CompletionProviderSettings,System.String)">
-            <summary>
-            Creates an embedding request and corresponding SDK instance based on the specified provider and settings.
-            </summary>
-            <param name="provider">The name of the completion provider to configure the embedding request for.</param>
-            <param name="settings">The settings object containing provider-specific configuration details.</param>
-            <param name="userInput">The user's input string to be embedded.</param>
-            <returns>A tuple containing the SDK instance and the configured EmbeddingsRequest object.</returns>
-        </member>
         <member name="M:View.Personal.MainWindow.GenerateEmbeddings(System.Object,View.Sdk.Embeddings.EmbeddingsRequest)">
             <summary>
             Asynchronously generates embeddings for a given request using the specified SDK.
@@ -615,7 +344,7 @@
             <param name="conversationSoFar">The existing list of ChatMessage objects from the conversation history.</param>
             <returns>A list of ChatMessage objects including the conversation history, context, and user input.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.CreateRequestBody(System.String,View.Personal.Classes.CompletionProviderSettings,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
+        <member name="M:View.Personal.MainWindow.CreateRequestBody(System.String,CompletionProviderSettings,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
             <summary>
             Creates a request body object tailored to the specified provider using the provided settings and messages.
             </summary>
@@ -624,7 +353,7 @@
             <param name="finalMessages">The list of ChatMessage objects to include in the request body.</param>
             <returns>An object representing the formatted request body for the specified provider.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.SendApiRequest(System.String,View.Personal.Classes.CompletionProviderSettings,System.Object,System.Action{System.String})">
+        <member name="M:View.Personal.MainWindow.SendApiRequest(System.String,CompletionProviderSettings,System.Object,System.Action{System.String})">
             <summary>
             Asynchronously sends an API request to the specified provider and processes the streaming response.
             </summary>
@@ -634,7 +363,7 @@
             <param name="onTokenReceived">An action to handle tokens as they are received from the streaming response.</param>
             <returns>A task that resolves to the final response string from the API.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.ConfigureRequestHeaders(RestWrapper.RestRequest,System.String,View.Personal.Classes.CompletionProviderSettings)">
+        <member name="M:View.Personal.MainWindow.ConfigureRequestHeaders(RestWrapper.RestRequest,System.String,CompletionProviderSettings)">
             <summary>
             Configures the headers for a REST request based on the specified provider and settings.
             </summary>
@@ -786,7 +515,7 @@
             </summary>
             <param name="window">The main window that has been opened.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings_Click(Avalonia.Controls.Window)">
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings2_Click(View.Personal.MainWindow)">
             <summary>
             Handles the click event for saving settings, updating the application with user-provided settings.
             </summary>
@@ -850,20 +579,6 @@
             <param name="sender">The textbox whose property changed.</param>
             <param name="e">The property changed event arguments.</param>
             <param name="window">The window containing the ingest button.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.UpdateSettingsVisibility(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Updates the visibility of settings controls based on the selected provider.
-            </summary>
-            <param name="window">The window containing the settings controls.</param>
-            <param name="selectedProvider">The name of the currently selected provider.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.UpdateProviderSettings(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Updates the provider settings in the application based on the UI inputs for the selected provider.
-            </summary>
-            <param name="window">The window containing the settings controls.</param>
-            <param name="selectedProvider">The name of the currently selected provider.</param>
         </member>
         <member name="T:View.Personal.UIHandlers.NavigationUIHandlers">
             <summary>

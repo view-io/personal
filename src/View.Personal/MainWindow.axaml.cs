@@ -98,16 +98,9 @@ namespace View.Personal
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
-                NavModelProviderComboBox.SelectionChanged += (s, e) =>
-                    NavigationUIHandlers.ModelProvider_SelectionChanged(s, e, this, _WindowInitialized);
-                // var filePathTextBox = this.FindControl<TextBox>("FilePathTextBox");
-                // if (filePathTextBox == null) throw new Exception("FilePathTextBox not found in XAML");
-                // filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
                 if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
-
-                // filePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
@@ -163,7 +156,7 @@ namespace View.Personal
             _ShowingChat = true;
             ShowPanel("Chat");
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
-            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
+            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel2");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
@@ -183,13 +176,9 @@ namespace View.Personal
             }
         }
 
-        private void SaveSettings_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.SaveSettings_Click(this);
-        }
-
         private void SaveSettings2_Click(object sender, RoutedEventArgs e)
         {
+            // Pass the MainWindow instance (this) to the method in the other file
             MainWindowUIHandlers.SaveSettings2_Click(this);
         }
 
@@ -200,6 +189,32 @@ namespace View.Personal
             {
                 var jsonString = File.ReadAllText(filePath);
                 var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
+
+                var app = (App)Application.Current;
+                app._AppSettings = settings ?? new AppSettings();
+
+                // Load completion provider toggles
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+
+                // Sync with SelectedProvider
+                switch (app.AppSettings.SelectedProvider)
+                {
+                    case "OpenAI":
+                        this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = true;
+                        break;
+                    case "Anthropic":
+                        this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = true;
+                        break;
+                    case "Ollama":
+                        this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = true;
+                        break;
+                    case "View":
+                        this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = true;
+                        break;
+                }
 
                 if (settings == null) return;
 
@@ -242,15 +257,8 @@ namespace View.Personal
                     settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
-                // this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
-                // this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
-                // this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
-                // this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
-                // this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
-                // this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
 
                 // Update App instance
-                var app = (App)Application.Current;
                 app._AppSettings = settings;
             }
             else
@@ -388,20 +396,20 @@ namespace View.Personal
         /// <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
         private async Task<string> GetAIResponse(string userInput, Action<string> onTokenReceived = null)
         {
-            Console.WriteLine("[INFO] GetAIResponse called. Checking selected provider...");
             try
             {
                 var app = (App)Application.Current;
-                var selectedProvider = app.AppSettings.SelectedProvider;
+                var selectedProvider = app.AppSettings.SelectedProvider; // Completion provider
+                var embeddingsProvider = app.AppSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                Console.WriteLine($"[INFO] Using {selectedProvider} for chat completion.");
-                var (sdk, embeddingsRequest) = CreateEmbeddingRequest(selectedProvider, settings, userInput);
+                // Generate embeddings with the selected embeddings provider
+                var (sdk, embeddingsRequest) =
+                    GetEmbeddingsSdkAndRequest(embeddingsProvider, app.AppSettings, userInput);
                 var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
 
-                Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
                 var searchResults = await PerformVectorSearch(floatEmbeddings);
                 if (searchResults == null || !searchResults.Any())
@@ -433,47 +441,45 @@ namespace View.Personal
         //     };
         // }
 
-        /// <summary>
-        /// Creates an embedding request and corresponding SDK instance based on the specified provider and settings.
-        /// </summary>
-        /// <param name="provider">The name of the completion provider to configure the embedding request for.</param>
-        /// <param name="settings">The settings object containing provider-specific configuration details.</param>
-        /// <param name="userInput">The user's input string to be embedded.</param>
-        /// <returns>A tuple containing the SDK instance and the configured EmbeddingsRequest object.</returns>
-        private (object sdk, EmbeddingsRequest request) CreateEmbeddingRequest(string provider,
-            CompletionProviderSettings settings, string userInput)
+        private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
+            AppSettings appSettings, string userInput)
         {
-            return provider switch
+            switch (embeddingsProvider)
             {
-                "OpenAI" => (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", settings.OpenAICompletionApiKey),
-                    new EmbeddingsRequest
-                    {
-                        Model = settings.OpenAIEmbeddingModel ?? "text-embedding-ada-002",
-                        Contents = new List<string> { userInput }
-                    }),
-                "Ollama" => (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
-                    new EmbeddingsRequest { Model = settings.OllamaModel, Contents = new List<string> { userInput } }),
-                "View" => (new ViewEmbeddingsServerSdk(_TenantGuid, settings.ViewEndpoint, settings.ViewAccessKey),
-                    new EmbeddingsRequest
-                    {
-                        EmbeddingsRule = new EmbeddingsRule
+                case "OpenAI":
+                    return (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", appSettings.OpenAI.ApiKey),
+                        new EmbeddingsRequest
                         {
-                            EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(settings.ViewEmbeddingsGenerator),
-                            EmbeddingsGeneratorUrl = settings.ViewEmbeddingsGeneratorUrl,
-                            EmbeddingsGeneratorApiKey = settings.ViewApiKey,
-                            BatchSize = 2, MaxGeneratorTasks = 4, MaxRetries = 3, MaxFailures = 3
-                        },
-                        Model = settings.ViewModel,
-                        Contents = new List<string> { userInput }
-                    }),
-                "Anthropic" => (new ViewVoyageAiSdk(_TenantGuid, "https://api.voyageai.com/", settings.VoyageApiKey),
-                    new EmbeddingsRequest
-                    {
-                        Model = settings.VoyageEmbeddingModel ?? "text-embedding-ada-002",
-                        Contents = new List<string> { userInput }
-                    }),
-                _ => throw new ArgumentException("Unsupported provider")
-            };
+                            Model = appSettings.Embeddings.OpenAIEmbeddingModel ?? "text-embedding-ada-002",
+                            Contents = new List<string> { userInput }
+                        });
+                case "Ollama":
+                    return (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
+                        new EmbeddingsRequest
+                        {
+                            Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+                case "View":
+                    return (
+                        new ViewEmbeddingsServerSdk(_TenantGuid, appSettings.View.Endpoint, appSettings.View.AccessKey),
+                        new EmbeddingsRequest
+                        {
+                            Model = appSettings.Embeddings.ViewEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+                case "VoyageAI":
+                    return (
+                        new ViewVoyageAiSdk(_TenantGuid, appSettings.Embeddings.VoyageEndpoint,
+                            appSettings.Embeddings.VoyageApiKey),
+                        new EmbeddingsRequest
+                        {
+                            Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+                default:
+                    throw new ArgumentException("Unsupported embeddings provider");
+            }
         }
 
         /// <summary>
@@ -591,11 +597,6 @@ namespace View.Personal
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        // ToDo: Add these settings and account for different models
-                        // temperature = settings.OpenAITemperature,
-                        // max_completion_tokens = settings.OpenAIMaxTokens,
-                        // top_p = settings.OpenAITopP,
-                        // reasoning_effort = settings.OpenAIReasoningEffort,
                         stream = true
                     };
                 case "Ollama":
@@ -603,8 +604,8 @@ namespace View.Personal
                     {
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        max_tokens = settings.OllamaMaxTokens,
-                        temperature = settings.OllamaTemperature,
+                        max_tokens = 1024, // Add to CompletionProviderSettings if configurable
+                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
                 case "View":
@@ -612,13 +613,13 @@ namespace View.Personal
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = settings.ViewTemperature,
-                        TopP = settings.ViewTopP,
-                        MaxTokens = settings.ViewMaxTokens,
-                        GenerationProvider = settings.ViewCompletionProvider,
-                        GenerationApiKey = settings.ViewCompletionApiKey,
-                        OllamaHostname = "192.168.197.1",
-                        OllamaPort = settings.ViewCompletionPort,
+                        Temperature = 0.7, // Add to CompletionProviderSettings if configurable
+                        TopP = 1.0, // Add to CompletionProviderSettings if configurable
+                        MaxTokens = 1024, // Add to CompletionProviderSettings if configurable
+                        GenerationProvider = "OpenAI", // Adjust or make configurable
+                        GenerationApiKey = settings.ViewApiKey,
+                        OllamaHostname = "localhost",
+                        OllamaPort = 11434,
                         Stream = true
                     };
                 case "Anthropic":
@@ -633,8 +634,8 @@ namespace View.Personal
                         model = settings.AnthropicCompletionModel,
                         system = systemContent,
                         messages = conversationMessages,
-                        max_tokens = 300,
-                        temperature = 0.7,
+                        max_tokens = 300, // Add to CompletionProviderSettings if configurable
+                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
                 default:
@@ -867,20 +868,23 @@ namespace View.Personal
         private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property == ToggleSwitch.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
-            {
-                Console.WriteLine($"[DEBUG] ToggleSwitch {toggleSwitch.Name} changed to {toggleSwitch.IsChecked}");
                 if (toggleSwitch.IsChecked == true)
-                    // Ensure this runs on the UI thread
-                    Dispatcher.UIThread.Post(() =>
+                {
+                    var app = (App)Application.Current;
+                    var provider = toggleSwitch.Name switch
                     {
-                        foreach (var ts in _ToggleSwitches)
-                            if (ts != toggleSwitch && ts != null && ts.IsChecked == true)
-                            {
-                                Console.WriteLine($"[DEBUG] Turning off {ts.Name}");
-                                ts.IsChecked = false;
-                            }
-                    });
-            }
+                        "OpenAICredentialsToggle" => "OpenAI",
+                        "AnthropicCredentialsToggle" => "Anthropic",
+                        "OllamaCredentialsToggle" => "Ollama",
+                        "ViewCredentialsToggle" => "View",
+                        _ => "View"
+                    };
+                    app.AppSettings.SelectedProvider = provider;
+
+                    foreach (var ts in _ToggleSwitches)
+                        if (ts != toggleSwitch && ts.IsChecked == true)
+                            ts.IsChecked = false;
+                }
         }
 
         private void InitializeEmbeddingRadioButtons()

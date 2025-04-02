@@ -192,39 +192,28 @@ namespace View.Personal
 
         public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
         {
-            if (_AppSettings == null)
-            {
-                Console.WriteLine("[WARN] AppSettings is null in GetProviderSettings. Returning default settings.");
-                return new CompletionProviderSettings(providerType);
-            }
-
             return providerType switch
             {
                 CompletionProviderTypeEnum.OpenAI => new CompletionProviderSettings(providerType)
                 {
                     OpenAICompletionApiKey = _AppSettings.OpenAI.ApiKey,
-                    OpenAICompletionModel = _AppSettings.OpenAI.CompletionModel,
-                    OpenAIEmbeddingModel = _AppSettings.Embeddings.SelectedEmbeddingModel
+                    OpenAICompletionModel = _AppSettings.OpenAI.CompletionModel
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
                     AnthropicApiKey = _AppSettings.Anthropic.ApiKey,
-                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel,
-                    VoyageApiKey = _AppSettings.Anthropic.VoyageApiKey,
-                    VoyageEmbeddingModel = _AppSettings.Embeddings.SelectedEmbeddingModel
+                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
-                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel,
-                    OllamaModel = _AppSettings.Embeddings.SelectedEmbeddingModel
+                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
                     ViewApiKey = _AppSettings.View.ApiKey,
                     ViewAccessKey = _AppSettings.View.AccessKey,
                     ViewEndpoint = _AppSettings.View.Endpoint,
-                    ViewCompletionModel = _AppSettings.Embeddings.SelectedEmbeddingModel
-                    // Add other View-specific fields if needed
+                    ViewCompletionModel = _AppSettings.View.CompletionModel
                 },
                 _ => new CompletionProviderSettings(providerType)
             };
@@ -248,7 +237,6 @@ namespace View.Personal
                     _AppSettings.Anthropic.ApiKey = settings.AnthropicApiKey;
                     _AppSettings.Anthropic.CompletionModel = settings.AnthropicCompletionModel;
                     _AppSettings.Anthropic.Endpoint = "https://api.anthropic.com/v1"; // Default if not set
-                    _AppSettings.Anthropic.VoyageApiKey = settings.VoyageApiKey;
                     // _AppSettings.Anthropic.VoyageEmbeddingModel = settings.VoyageEmbeddingModel;
                     break;
                 case CompletionProviderTypeEnum.Ollama:
