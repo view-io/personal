@@ -146,7 +146,7 @@ namespace View.Personal
                                        (ts.TotalMs.HasValue ? ts.TotalMs.Value.ToString("0.##") : "unknown") + "ms");
                     }
 
-                    SaveSettings();
+                    SaveSettings(); // Save after all entities are created or verified
                 }
                 catch (Exception e)
                 {
@@ -168,6 +168,12 @@ namespace View.Personal
         {
             try
             {
+                // Update AppSettings with current GUIDs
+                _AppSettings.View.TenantGuid = _TenantGuid.ToString();
+                _AppSettings.View.GraphGuid = _GraphGuid.ToString();
+                _AppSettings.View.UserGuid = _UserGuid.ToString();
+                _AppSettings.View.CredentialGuid = _CredentialGuid.ToString();
+
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
@@ -175,7 +181,8 @@ namespace View.Personal
                 };
                 var json = JsonSerializer.Serialize(_AppSettings, options);
                 File.WriteAllText(SettingsFilePath, json);
-                _Logging.Debug(_Header + $"Settings saved to {SettingsFilePath}");
+                _Logging.Debug(_Header +
+                               $"Settings saved to {SettingsFilePath} with GUIDs: Tenant={_TenantGuid}, Graph={_GraphGuid}, User={_UserGuid}, Credential={_CredentialGuid}");
             }
             catch (Exception ex)
             {
@@ -289,17 +296,26 @@ namespace View.Personal
                     _AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
                     _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
 
-                    // Sync _TenantGuid with View.TenantGuid if present
-                    if (!string.IsNullOrEmpty(_AppSettings.View?.TenantGuid) &&
-                        Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuidFromSettings))
-                    {
-                        _TenantGuid = tenantGuidFromSettings;
-                        _Logging.Debug(_Header + $"Loaded TenantGuid from settings: {_TenantGuid}");
-                    }
+                    // Load GUIDs from settings
+                    _TenantGuid = Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuid)
+                        ? tenantGuid
+                        : Guid.NewGuid();
+                    _GraphGuid = Guid.TryParse(_AppSettings.View.GraphGuid, out var graphGuid)
+                        ? graphGuid
+                        : Guid.NewGuid();
+                    _UserGuid = Guid.TryParse(_AppSettings.View.UserGuid, out var userGuid) ? userGuid : Guid.NewGuid();
+                    _CredentialGuid = Guid.TryParse(_AppSettings.View.CredentialGuid, out var credGuid)
+                        ? credGuid
+                        : Guid.NewGuid();
                 }
                 else
                 {
                     _Logging.Debug(_Header + "No settings file found, using defaults");
+                    _TenantGuid = Guid.NewGuid();
+                    _GraphGuid = Guid.NewGuid();
+                    _UserGuid = Guid.NewGuid();
+                    _CredentialGuid = Guid.NewGuid();
+
                     _AppSettings = new AppSettings
                     {
                         OpenAI = new AppSettings.OpenAISettings
@@ -309,27 +325,27 @@ namespace View.Personal
                         View = new AppSettings.ViewSettings
                         {
                             Endpoint = "https://your-view-endpoint",
-                            TenantGuid = Guid.Empty.ToString() // Default to all zeros
+                            TenantGuid = _TenantGuid.ToString(),
+                            GraphGuid = _GraphGuid.ToString(),
+                            UserGuid = _UserGuid.ToString(),
+                            CredentialGuid = _CredentialGuid.ToString()
                         },
                         Embeddings = new AppSettings.EmbeddingsSettings()
                     };
                     SaveSettings();
                 }
 
-                // Only set to random GUID if explicitly desired; otherwise keep as Guid.Empty or loaded value
-                if (_TenantGuid == default && string.IsNullOrEmpty(_AppSettings.View?.TenantGuid))
-                {
-                    _TenantGuid = Guid.Empty; // Match old behavior
-                    _Logging.Debug(_Header + $"TenantGuid set to default: {_TenantGuid}");
-                }
-
-                _GraphGuid = _GraphGuid == default ? Guid.NewGuid() : _GraphGuid;
-                _UserGuid = _UserGuid == default ? Guid.NewGuid() : _UserGuid;
-                _CredentialGuid = _CredentialGuid == default ? Guid.NewGuid() : _CredentialGuid;
+                _Logging.Debug(_Header +
+                               $"Loaded/Initialized GUIDs: Tenant={_TenantGuid}, Graph={_GraphGuid}, User={_UserGuid}, Credential={_CredentialGuid}");
             }
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
+                _TenantGuid = Guid.NewGuid();
+                _GraphGuid = Guid.NewGuid();
+                _UserGuid = Guid.NewGuid();
+                _CredentialGuid = Guid.NewGuid();
+
                 _AppSettings = new AppSettings
                 {
                     OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
@@ -338,14 +354,13 @@ namespace View.Personal
                     View = new AppSettings.ViewSettings
                     {
                         Endpoint = "https://your-view-endpoint",
-                        TenantGuid = Guid.Empty.ToString()
+                        TenantGuid = _TenantGuid.ToString(),
+                        GraphGuid = _GraphGuid.ToString(),
+                        UserGuid = _UserGuid.ToString(),
+                        CredentialGuid = _CredentialGuid.ToString()
                     },
                     Embeddings = new AppSettings.EmbeddingsSettings()
                 };
-                _TenantGuid = Guid.Empty; // Default to all zeros on error
-                _GraphGuid = Guid.NewGuid();
-                _UserGuid = Guid.NewGuid();
-                _CredentialGuid = Guid.NewGuid();
                 SaveSettings();
             }
         }

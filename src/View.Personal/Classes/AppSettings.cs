@@ -41,12 +41,15 @@ namespace View.Personal
 
         public class ViewSettings
         {
-            public bool IsEnabled { get; set; }
-            public string ApiKey { get; set; }
             public string Endpoint { get; set; }
-            public string AccessKey { get; set; }
             public string TenantGuid { get; set; }
+            public string GraphGuid { get; set; }
+            public string UserGuid { get; set; }
+            public string CredentialGuid { get; set; }
+            public string ApiKey { get; set; }
+            public string AccessKey { get; set; }
             public string CompletionModel { get; set; }
+            public bool IsEnabled { get; set; }
         }
 
         public class EmbeddingsSettings
