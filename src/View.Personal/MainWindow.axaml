@@ -13,8 +13,8 @@
     </Window.Resources>
     <Window.Styles>
         <Style Selector="#ChatHistoryList > ListBoxItem">
-            <Setter Property="Background" Value="#E6F6FF" />
-            <Setter Property="Foreground" Value="#0472EF" />
+            <Setter Property="Background" Value="#EFF7FF" />
+            <Setter Property="Foreground" Value="#389CFF" />
             <Setter Property="Padding" Value="12" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="BorderThickness" Value="1" />

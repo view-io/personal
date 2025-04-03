@@ -167,7 +167,7 @@ namespace View.Personal.UIHandlers
                 if (chatHistoryList != null)
                 {
                     var chatLabel = mainWindow.FindControl<TextBlock>("ChatHistoryText");
-                    if (chatLabel != null) chatLabel.Foreground = new SolidColorBrush(Color.Parse("#2F3235"));
+                    if (chatLabel != null) chatLabel.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F"));
                     var newItem = new ListBoxItem
                     {
                         Content = mainWindow._CurrentChatSession.Title,
