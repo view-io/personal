@@ -952,21 +952,20 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </ScrollViewer>
-                        <!-- Spinners -->
-                        <ProgressBar x:Name="IngestSpinner"
-                                     Grid.Row="0" Grid.RowSpan="2"
-                                     VerticalAlignment="Center"
-                                     HorizontalAlignment="Stretch"
-                                     IsIndeterminate="True"
-                                     IsVisible="False" />
 
-                        <ProgressBar x:Name="ExportSpinner"
-                                     Grid.Row="0" Grid.RowSpan="2"
-                                     VerticalAlignment="Center"
-                                     HorizontalAlignment="Stretch"
-                                     IsIndeterminate="True"
-                                     IsVisible="False" />
                     </Grid>
+                    <!-- Spinners -->
+                    <ProgressBar x:Name="IngestSpinner"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Stretch"
+                                 IsIndeterminate="True"
+                                 IsVisible="False" />
+
+                    <ProgressBar x:Name="ExportSpinner"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Stretch"
+                                 IsIndeterminate="True"
+                                 IsVisible="False" />
                 </StackPanel>
                 <!-- Chat Panel -->
                 <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
