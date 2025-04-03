@@ -34,8 +34,9 @@
                             <TextBlock Text="Start New Chat" FontWeight="400" />
                         </StackPanel>
                     </Button>
-                    <StackPanel DockPanel.Dock="Top" Margin="12 0 12 0">
-                        <TextBlock Text="Chat History" FontWeight="500" Margin="0 8 0 4" />
+                    <StackPanel DockPanel.Dock="Top" Margin="12 24 12 0">
+                        <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="500" Margin="0 8 0 4"
+                                   Foreground="Transparent" />
                         <ListBox Name="ChatHistoryList" SelectionChanged="ChatHistoryList_SelectionChanged" />
                     </StackPanel>
 

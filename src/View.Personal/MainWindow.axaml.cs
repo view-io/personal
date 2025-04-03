@@ -59,7 +59,7 @@ namespace View.Personal
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static Serializer _Serializer = new();
-        private List<ChatSession> _ChatSessions = new();
+        public List<ChatSession> _ChatSessions = new();
         public ChatSession _CurrentChatSession;
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();

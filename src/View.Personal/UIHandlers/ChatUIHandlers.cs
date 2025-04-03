@@ -119,6 +119,7 @@ namespace View.Personal.UIHandlers
         {
             Console.WriteLine("[INFO] SendMessageTest_Click triggered. Sending user prompt to AI...");
 
+            // Cast the window to MainWindow
             var mainWindow = window as MainWindow;
             if (mainWindow == null)
             {
@@ -126,31 +127,47 @@ namespace View.Personal.UIHandlers
                 return;
             }
 
+            // Ensure there is a current chat session
+            if (mainWindow._CurrentChatSession == null)
+            {
+                mainWindow._CurrentChatSession = new ChatSession();
+                mainWindow._ChatSessions.Add(mainWindow._CurrentChatSession);
+                Console.WriteLine("[DEBUG] Created new chat session.");
+            }
+
+            // Use the current chat session's message list for consistency
+            var currentMessages = mainWindow._CurrentChatSession.Messages;
+
+            // Retrieve UI controls
             var inputBox = mainWindow.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
+
+            // Validate input
             if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
             {
                 Console.WriteLine("[WARN] User tried to send an empty or null message.");
                 return;
             }
 
+            // Process user input
             var userText = inputBox.Text.Trim();
             inputBox.Text = string.Empty;
 
-            Console.WriteLine("[DEBUG] Before adding user message, conversation history count: " +
-                              conversationHistory.Count);
+            Console.WriteLine("[DEBUG] Before adding user message, current messages count: " + currentMessages.Count);
             var userMessage = new ChatMessage { Role = "user", Content = userText };
-            conversationHistory.Add(userMessage);
+            currentMessages.Add(userMessage);
 
-            // Check if this is the first message in the session
-            if (conversationHistory.Count == 1)
+            // Handle first message in the session
+            if (currentMessages.Count == 1)
             {
                 Console.WriteLine("[DEBUG] First message in session, creating chat history item.");
                 mainWindow._CurrentChatSession.Title = GetTitleFromMessage(userText);
                 var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
+                    var chatLabel = mainWindow.FindControl<TextBlock>("ChatHistoryText");
+                    if (chatLabel != null) chatLabel.Foreground = new SolidColorBrush(Color.Parse("#2F3235"));
                     var newItem = new ListBoxItem
                     {
                         Content = mainWindow._CurrentChatSession.Title,
@@ -165,7 +182,8 @@ namespace View.Personal.UIHandlers
                 }
             }
 
-            UpdateConversationWindow(conversationContainer, conversationHistory, false, mainWindow);
+            // Update UI with user message
+            UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
             Console.WriteLine("[DEBUG] Added user message. ConversationContainer children count: " +
                               (conversationContainer?.Children.Count ?? 0));
             if (scrollViewer != null)
@@ -173,10 +191,10 @@ namespace View.Personal.UIHandlers
 
             try
             {
+                // Add placeholder for assistant response
                 var assistantMsg = new ChatMessage { Role = "assistant", Content = "" };
-                conversationHistory.Add(assistantMsg);
-                UpdateConversationWindow(conversationContainer, conversationHistory, true,
-                    mainWindow); // Show spinner initially
+                currentMessages.Add(assistantMsg);
+                UpdateConversationWindow(conversationContainer, currentMessages, true, mainWindow); // Show spinner
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
@@ -188,19 +206,20 @@ namespace View.Personal.UIHandlers
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
-                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                            mainWindow); // Hide spinner on first token
+                        UpdateConversationWindow(conversationContainer, currentMessages, false,
+                            mainWindow); // Hide spinner
                     }
                     else
                     {
-                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                            mainWindow); // Update without spinner
+                        UpdateConversationWindow(conversationContainer, currentMessages, false,
+                            mainWindow); // Update UI
                     }
 
                     if (scrollViewer != null)
                         Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
                 });
 
+                // Finalize assistant response
                 if (!string.IsNullOrEmpty(finalResponse) && assistantMsg.Content != finalResponse)
                 {
                     assistantMsg.Content = finalResponse;
@@ -211,8 +230,8 @@ namespace View.Personal.UIHandlers
                     Console.WriteLine("[WARN] No content accumulated in assistant message.");
                 }
 
-                UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                    mainWindow); // Final update without spinner
+                // Final UI update
+                UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
             }
@@ -220,9 +239,9 @@ namespace View.Personal.UIHandlers
             {
                 Console.WriteLine(
                     $"[ERROR] Exception in SendMessageTest_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
-                if (conversationHistory.Last().Role == "assistant")
-                    conversationHistory.Last().Content = $"Error: {ex.Message}";
-                UpdateConversationWindow(conversationContainer, conversationHistory, false, mainWindow);
+                if (currentMessages.Last().Role == "assistant")
+                    currentMessages.Last().Content = $"Error: {ex.Message}";
+                UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
             }
@@ -272,6 +291,15 @@ namespace View.Personal.UIHandlers
                     {
                         chatHistoryList.Items.Remove(itemToRemove);
                         Console.WriteLine("[DEBUG] Removed chat history button for cleared session.");
+                    }
+
+                    // Check if the chat history list is now empty
+                    if (chatHistoryList.Items.Count == 0)
+                    {
+                        // Find the "Chat History" TextBlock and set its color to transparent
+                        var chatHistoryText = mainWindow.FindControl<TextBlock>("ChatHistoryText");
+                        if (chatHistoryText != null)
+                            chatHistoryText.Foreground = new SolidColorBrush(Color.Parse("Transparent"));
                     }
                 }
 
