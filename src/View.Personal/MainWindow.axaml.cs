@@ -1036,6 +1036,19 @@ namespace View.Personal
             }
         }
 
+        public void RemoveChatSession(ChatSession session)
+        {
+            if (_ChatSessions.Contains(session))
+            {
+                _ChatSessions.Remove(session);
+                Console.WriteLine("[DEBUG] Removed chat session from list.");
+            }
+            else
+            {
+                Console.WriteLine("[WARN] Chat session not found in list.");
+            }
+        }
+
         #endregion
 
 #pragma warning restore CS8603 // Possible null reference return.

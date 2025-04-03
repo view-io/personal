@@ -110,10 +110,6 @@ namespace View.Personal.UIHandlers
                         case "Console":
                             if (consolePanel != null) consolePanel.IsVisible = true;
                             break;
-
-                        case "Chat":
-                            if (chatPanel != null) chatPanel.IsVisible = true;
-                            break;
                     }
                 }
                 else

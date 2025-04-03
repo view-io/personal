@@ -241,7 +241,7 @@ namespace View.Personal.UIHandlers
         {
             if (e.Key == Key.Enter)
             {
-                SendMessage_Click(sender, new RoutedEventArgs(), window, conversationHistory, getAIResponse);
+                SendMessageTest_Click(sender, new RoutedEventArgs(), window, conversationHistory, getAIResponse);
                 e.Handled = true;
             }
         }
@@ -249,10 +249,48 @@ namespace View.Personal.UIHandlers
         public static void ClearChat_Click(object sender, RoutedEventArgs e, Window window,
             List<ChatMessage> conversationHistory)
         {
-            Console.WriteLine("[INFO] Clearing chat history...");
-            conversationHistory.Clear();
-            var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
-            UpdateConversationWindow(conversationContainer, conversationHistory, false, window);
+            // Cast the Window parameter to MainWindow to access its members
+            var mainWindow = window as MainWindow;
+
+            // Check if the cast succeeded and if there’s a current chat session
+            if (mainWindow != null && mainWindow._CurrentChatSession != null)
+            {
+                // Clear the messages in the current chat session
+                mainWindow._CurrentChatSession.Messages.Clear();
+
+                // Find the chat history list control in the UI
+                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                if (chatHistoryList != null)
+                {
+                    // Find the ListBoxItem associated with the current chat session
+                    var itemToRemove = chatHistoryList.Items
+                        .OfType<ListBoxItem>()
+                        .FirstOrDefault(item => item.Tag == mainWindow._CurrentChatSession);
+
+                    // Remove the item if found
+                    if (itemToRemove != null)
+                    {
+                        chatHistoryList.Items.Remove(itemToRemove);
+                        Console.WriteLine("[DEBUG] Removed chat history button for cleared session.");
+                    }
+                }
+
+                // Remove the chat session using the public method
+                mainWindow.RemoveChatSession(mainWindow._CurrentChatSession);
+
+                // Update the conversation window to reflect the cleared state
+                var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
+                if (conversationContainer != null)
+                    UpdateConversationWindow(conversationContainer, new List<ChatMessage>(), false, mainWindow);
+
+                // Set the current chat session to null after clearing
+                mainWindow._CurrentChatSession = null;
+            }
+            else
+            {
+                // Log if there’s no session to clear
+                Console.WriteLine("[INFO] No current chat session to clear.");
+            }
         }
 
         public static async void DownloadChat_Click(object sender, RoutedEventArgs e, Window window,

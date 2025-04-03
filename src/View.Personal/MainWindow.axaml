@@ -73,14 +73,6 @@
                                 <TextBlock Text="Console" Foreground="#6A6B6F" />
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="Chat">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="FileOutline" Foreground="#6A6B6F"
-
-                                                       Height="18" Width="18" />
-                                <TextBlock Text="Chat" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
                     </ListBox>
                     <StackPanel />
                 </DockPanel>
