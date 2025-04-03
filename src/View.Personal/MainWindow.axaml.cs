@@ -590,6 +590,7 @@ namespace View.Personal
         private object CreateRequestBody(string provider, CompletionProviderSettings settings,
             List<ChatMessage> finalMessages)
         {
+            Console.WriteLine($"[INFO] Creating request body for {provider}");
             switch (provider)
             {
                 case "OpenAI":

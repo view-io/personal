@@ -85,7 +85,6 @@ namespace View.Personal.UIHandlers
                         Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
                 });
 
-                Console.WriteLine($"[DEBUG] Final response from GetAIResponse: '{finalResponse}'");
                 if (!string.IsNullOrEmpty(finalResponse) && assistantMsg.Content != finalResponse)
                 {
                     assistantMsg.Content = finalResponse;
@@ -189,11 +188,11 @@ namespace View.Personal.UIHandlers
                     messageBlock.TextWrapping = TextWrapping.Wrap;
                     messageBlock.MaxWidth = 610; // Match input box width for consistency
                     messageContainer.Children.Add(messageBlock);
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        Console.WriteLine("[DEBUG] LabelBlock Bounds.X: " + labelBlock.Bounds.X);
-                        Console.WriteLine("[DEBUG] MessageBlock Bounds.X: " + messageBlock.Bounds.X);
-                    }, DispatcherPriority.Background);
+                    // Dispatcher.UIThread.Post(() =>
+                    // {
+                    //     Console.WriteLine("[DEBUG] LabelBlock Bounds.X: " + labelBlock.Bounds.X);
+                    //     Console.WriteLine("[DEBUG] MessageBlock Bounds.X: " + messageBlock.Bounds.X);
+                    // }, DispatcherPriority.Background);
 
                     if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
                     {
