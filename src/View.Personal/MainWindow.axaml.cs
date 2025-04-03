@@ -127,32 +127,28 @@ namespace View.Personal
         /// <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         public void ShowNotification(string title, string message, NotificationType notificationType)
         {
-            string[] classes = null;
-
-            switch (notificationType)
+            var styleClass = notificationType switch
             {
-                case NotificationType.Success:
-                    classes = new[] { "success" };
-                    break;
-                case NotificationType.Error:
-                    classes = new[] { "error" };
-                    break;
-                case NotificationType.Warning:
-                    classes = new[] { "warning" };
-                    break;
-                case NotificationType.Information:
-                    classes = new[] { "info" };
-                    break;
-            }
+                NotificationType.Success => "success",
+                NotificationType.Error => "error",
+                NotificationType.Warning => "warning",
+                NotificationType.Information => "info",
+                _ => null
+            };
 
-            // Create the content panel for the notification
-            var contentPanel = new StackPanel { Spacing = 4 };
+            var contentPanel = new StackPanel
+            {
+                Spacing = 4,
+                Classes = { "NotificationCard", styleClass } // <-- use the style!
+            };
+
             contentPanel.Children.Add(new TextBlock
             {
                 Text = title,
-                FontWeight = FontWeight.SemiBold,
+                FontWeight = FontWeight.Normal,
                 FontSize = 14
             });
+
             contentPanel.Children.Add(new TextBlock
             {
                 Text = message,
@@ -160,16 +156,16 @@ namespace View.Personal
                 FontSize = 12
             });
 
-            // Use the correct overload of Show
             _WindowNotificationManager.Show(
-                contentPanel, // content object 
-                notificationType, // notification type
-                TimeSpan.FromSeconds(5), // expiration
-                null, // onClick
-                null, // onClose
-                classes // style classes
+                contentPanel,
+                notificationType,
+                TimeSpan.FromSeconds(5),
+                null,
+                null,
+                new[] { "NotificationCard", styleClass }
             );
         }
+
 
         /// <summary>
         /// Gets or sets whether the chat panel is currently being shown.

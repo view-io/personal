@@ -233,8 +233,9 @@
 
             <!-- Success notification -->
             <Style Selector="NotificationCard.success">
-                <Setter Property="Background" Value="#E6F4EA" />
-                <Setter Property="BorderBrush" Value="#009E61" />
+                <Setter Property="Background" Value="#B1FBDF" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Foreground" Value="#6A6B6F" />
             </Style>
 
             <!-- Error notification -->
