@@ -281,6 +281,7 @@ namespace View.Personal
                 this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
                 this.FindControl<TextBox>("VoyageApiKey").Text = settings.Anthropic.VoyageApiKey;
                 this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
+                this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
 
                 // Ollama
                 this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
