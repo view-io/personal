@@ -5,6 +5,7 @@ namespace View.Personal.UIHandlers
     using System.Linq;
     using Avalonia.Controls;
     using Avalonia.Interactivity;
+    using Avalonia.Media;
     using Helpers;
     using LiteGraph;
 
@@ -41,12 +42,15 @@ namespace View.Personal.UIHandlers
             {
                 var mainWindow = window as MainWindow;
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
-                // var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
                 var chatPanel = window.FindControl<Border>("ChatPanel");
                 var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
+                var mainContentArea = window.FindControl<Grid>("MainContentArea");
+
+                if (mainContentArea != null)
+                    mainContentArea.Background = new SolidColorBrush(Colors.White);
 
                 if (dashboardPanel != null && myFilesPanel != null && chatPanel != null &&
                     consolePanel != null && workspaceText != null && settingsPanel2 != null)
@@ -61,7 +65,6 @@ namespace View.Personal.UIHandlers
 
                 if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
-                    mainWindow.ShowingChat = false;
                     var selectedTag = selectedItem.Tag?.ToString();
                     switch (selectedTag)
                     {
@@ -107,11 +110,15 @@ namespace View.Personal.UIHandlers
                         case "Console":
                             if (consolePanel != null) consolePanel.IsVisible = true;
                             break;
+
+                        case "Chat":
+                            if (chatPanel != null) chatPanel.IsVisible = true;
+                            break;
                     }
                 }
                 else
                 {
-                    if (mainWindow != null && mainWindow.ShowingChat && chatPanel != null)
+                    if (mainWindow != null && chatPanel != null)
                         chatPanel.IsVisible = true;
                     else if (dashboardPanel != null)
                         dashboardPanel.IsVisible = true;
@@ -144,17 +151,6 @@ namespace View.Personal.UIHandlers
                 var app = (App)Application.Current;
                 app?.SaveSelectedProvider(selectedProvider);
             }
-        }
-
-        /// <summary>
-        /// Handles the click event to navigate to the settings panel in the UI.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the navigation panels.</param>
-        public static void NavigateToSettings_Click(object sender, RoutedEventArgs e, Window window)
-        {
-            NavigateToPanel(window, "Settings");
         }
 
         /// <summary>

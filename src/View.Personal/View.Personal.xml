@@ -285,11 +285,6 @@
             <param name="message">The message to display in the notification.</param>
             <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         </member>
-        <member name="P:View.Personal.MainWindow.ShowingChat">
-            <summary>
-            Gets or sets whether the chat panel is currently being shown.
-            </summary>
-        </member>
         <member name="M:View.Personal.MainWindow.IngestFileAsync(System.String)">
             <summary>
             Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
@@ -598,14 +593,6 @@
             <param name="e">The selection changed event arguments.</param>
             <param name="window">The window containing the provider selection controls.</param>
             <param name="windowInitialized">A flag indicating whether the window has finished initializing.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.NavigateToSettings_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
-            <summary>
-            Handles the click event to navigate to the settings panel in the UI.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="window">The window containing the navigation panels.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.NavigateToMyFiles_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
             <summary>

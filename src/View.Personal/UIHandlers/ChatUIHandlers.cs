@@ -29,7 +29,6 @@ namespace View.Personal.UIHandlers
             var inputBox = window.FindControl<TextBox>("ChatInputBox");
             var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
-
             if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
             {
                 Console.WriteLine("[WARN] User tried to send an empty or null message.");
@@ -109,6 +108,132 @@ namespace View.Personal.UIHandlers
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
             }
+        }
+
+        public static async void SendMessageTest_Click(
+            object sender,
+            RoutedEventArgs e,
+            Window window,
+            List<ChatMessage> conversationHistory,
+            Func<string, Action<string>, Task<string>> getAIResponse)
+        {
+            Console.WriteLine("[INFO] SendMessageTest_Click triggered. Sending user prompt to AI...");
+
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null)
+            {
+                Console.WriteLine("[ERROR] Window is not of type MainWindow.");
+                return;
+            }
+
+            var inputBox = mainWindow.FindControl<TextBox>("ChatInputBox");
+            var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
+            var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
+            if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
+            {
+                Console.WriteLine("[WARN] User tried to send an empty or null message.");
+                return;
+            }
+
+            var userText = inputBox.Text.Trim();
+            inputBox.Text = string.Empty;
+
+            Console.WriteLine("[DEBUG] Before adding user message, conversation history count: " +
+                              conversationHistory.Count);
+            var userMessage = new ChatMessage { Role = "user", Content = userText };
+            conversationHistory.Add(userMessage);
+
+            // Check if this is the first message in the session
+            if (conversationHistory.Count == 1)
+            {
+                Console.WriteLine("[DEBUG] First message in session, creating chat history item.");
+                mainWindow._CurrentChatSession.Title = GetTitleFromMessage(userText);
+                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                if (chatHistoryList != null)
+                {
+                    var newItem = new ListBoxItem
+                    {
+                        Content = mainWindow._CurrentChatSession.Title,
+                        Tag = mainWindow._CurrentChatSession
+                    };
+                    chatHistoryList.Items.Add(newItem);
+                    Console.WriteLine("[DEBUG] Added chat history item: " + mainWindow._CurrentChatSession.Title);
+                }
+                else
+                {
+                    Console.WriteLine("[ERROR] ChatHistoryList not found.");
+                }
+            }
+
+            UpdateConversationWindow(conversationContainer, conversationHistory, false, mainWindow);
+            Console.WriteLine("[DEBUG] Added user message. ConversationContainer children count: " +
+                              (conversationContainer?.Children.Count ?? 0));
+            if (scrollViewer != null)
+                Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
+
+            try
+            {
+                var assistantMsg = new ChatMessage { Role = "assistant", Content = "" };
+                conversationHistory.Add(assistantMsg);
+                UpdateConversationWindow(conversationContainer, conversationHistory, true,
+                    mainWindow); // Show spinner initially
+                if (scrollViewer != null)
+                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
+
+                Console.WriteLine("[DEBUG] Calling GetAIResponse...");
+                var firstTokenReceived = false;
+                var finalResponse = await getAIResponse(userText, (tokenChunk) =>
+                {
+                    assistantMsg.Content += tokenChunk;
+                    if (!firstTokenReceived)
+                    {
+                        firstTokenReceived = true;
+                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                            mainWindow); // Hide spinner on first token
+                    }
+                    else
+                    {
+                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                            mainWindow); // Update without spinner
+                    }
+
+                    if (scrollViewer != null)
+                        Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
+                });
+
+                if (!string.IsNullOrEmpty(finalResponse) && assistantMsg.Content != finalResponse)
+                {
+                    assistantMsg.Content = finalResponse;
+                }
+                else if (string.IsNullOrEmpty(assistantMsg.Content))
+                {
+                    assistantMsg.Content = "No response received from the AI.";
+                    Console.WriteLine("[WARN] No content accumulated in assistant message.");
+                }
+
+                UpdateConversationWindow(conversationContainer, conversationHistory, false,
+                    mainWindow); // Final update without spinner
+                if (scrollViewer != null)
+                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"[ERROR] Exception in SendMessageTest_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                if (conversationHistory.Last().Role == "assistant")
+                    conversationHistory.Last().Content = $"Error: {ex.Message}";
+                UpdateConversationWindow(conversationContainer, conversationHistory, false, mainWindow);
+                if (scrollViewer != null)
+                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
+            }
+        }
+
+        public static string GetTitleFromMessage(string message, int wordCount = 5)
+        {
+            var words = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length <= wordCount)
+                return message;
+            return string.Join(" ", words.Take(wordCount)) + "...";
         }
 
         public static void ChatInputBox_KeyDown(object sender, KeyEventArgs e, Window window,

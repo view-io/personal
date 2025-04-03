@@ -59,11 +59,16 @@ namespace View.Personal
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static Serializer _Serializer = new();
+        private List<ChatSession> _ChatSessions = new();
+        public ChatSession _CurrentChatSession;
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
+
+
         private bool _WindowInitialized;
-        private bool _ShowingChat = false;
+
+        // private bool _ShowingChat = false;
         private List<ToggleSwitch> _ToggleSwitches;
 
         #endregion
@@ -90,11 +95,16 @@ namespace View.Personal
                     Console.WriteLine("[INFO] MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
-                    _ShowingChat = false;
-                    ShowPanel("Dashboard");
+                    // _ShowingChat = false;
+                    // ShowPanel("Dashboard");
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
+                    var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
+                    if (chatHistoryList == null)
+                        Console.WriteLine("[ERROR] ChatHistoryList not found during initialization.");
+                    else
+                        Console.WriteLine("[DEBUG] ChatHistoryList found during initialization.");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -117,23 +127,58 @@ namespace View.Personal
         /// <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         public void ShowNotification(string title, string message, NotificationType notificationType)
         {
-            var notification = new Notification(
-                title,
-                message,
-                notificationType,
-                TimeSpan.FromSeconds(5)
+            string[] classes = null;
+
+            switch (notificationType)
+            {
+                case NotificationType.Success:
+                    classes = new[] { "success" };
+                    break;
+                case NotificationType.Error:
+                    classes = new[] { "error" };
+                    break;
+                case NotificationType.Warning:
+                    classes = new[] { "warning" };
+                    break;
+                case NotificationType.Information:
+                    classes = new[] { "info" };
+                    break;
+            }
+
+            // Create the content panel for the notification
+            var contentPanel = new StackPanel { Spacing = 4 };
+            contentPanel.Children.Add(new TextBlock
+            {
+                Text = title,
+                FontWeight = FontWeight.SemiBold,
+                FontSize = 14
+            });
+            contentPanel.Children.Add(new TextBlock
+            {
+                Text = message,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 12
+            });
+
+            // Use the correct overload of Show
+            _WindowNotificationManager.Show(
+                contentPanel, // content object 
+                notificationType, // notification type
+                TimeSpan.FromSeconds(5), // expiration
+                null, // onClick
+                null, // onClose
+                classes // style classes
             );
-            _WindowNotificationManager.Show(notification);
         }
 
         /// <summary>
         /// Gets or sets whether the chat panel is currently being shown.
         /// </summary>
-        public bool ShowingChat
-        {
-            get => _ShowingChat;
-            set => _ShowingChat = value;
-        }
+        // public bool ShowingChat
+        // {
+        //     get => _ShowingChat;
+        //     set => _ShowingChat = value;
+        // }
 
         /// <summary>
         /// Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="FileIngester.IngestFileAsync"/> method.
@@ -151,29 +196,30 @@ namespace View.Personal
 
         #region Private-Methods
 
+        // private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
+        // {
+        //     var navList = this.FindControl<ListBox>("NavList");
+        //     if (navList != null) navList.SelectedItem = null; // Deselect navigation item
+        //     ShowPanel("Chat"); // Ensure chat panel is shown
+        // }
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
-            _ShowingChat = true;
-            ShowPanel("Chat");
-            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
-            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel2");
-            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-            var chatPanel = this.FindControl<Border>("ChatPanel");
-            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
-            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
-            var navList = this.FindControl<ListBox>("NavList");
+            _CurrentChatSession = new ChatSession();
+            _ChatSessions.Add(_CurrentChatSession);
+            _ConversationHistory = _CurrentChatSession.Messages; // Should be a new empty list
+            Console.WriteLine("[DEBUG] Starting new chat session. Conversation history count: " +
+                              _ConversationHistory.Count);
 
-            if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null && chatPanel != null &&
-                consolePanel != null && workspaceText != null && navList != null)
-            {
-                dashboardPanel.IsVisible = false;
-                settingsPanel.IsVisible = false;
-                myFilesPanel.IsVisible = false;
-                chatPanel.IsVisible = true;
-                consolePanel.IsVisible = false;
-                workspaceText.IsVisible = false;
-                navList.SelectedItem = null;
-            }
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            if (conversationContainer != null)
+                conversationContainer.Children.Clear();
+
+            ShowPanel("Chat");
+
+            var navList = this.FindControl<ListBox>("NavList");
+            if (navList != null) navList.SelectedIndex = -1;
+            var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
+            if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
         }
 
         private void SaveSettings2_Click(object sender, RoutedEventArgs e)
@@ -294,12 +340,43 @@ namespace View.Personal
             ChatUIHandlers.SendMessage_Click(sender, e, this, _ConversationHistory, GetAIResponse);
         }
 
+        private void SendMessageTest_Click(object sender, RoutedEventArgs e)
+        {
+            ChatUIHandlers.SendMessageTest_Click(sender, e, this, _ConversationHistory, GetAIResponse);
+        }
+
         private void ChatOptionsButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.ContextMenu != null)
             {
                 Console.WriteLine("[DEBUG] ChatOptionsButton clicked, opening context menu");
                 button.ContextMenu.Open(button);
+            }
+        }
+
+        private void ChatHistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem is ListBoxItem selectedItem)
+            {
+                var chatSession = selectedItem.Tag as ChatSession;
+                if (chatSession != null)
+                {
+                    _CurrentChatSession = chatSession;
+                    _ConversationHistory = chatSession.Messages;
+                    var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+                    ChatUIHandlers.UpdateConversationWindow(
+                        conversationContainer,
+                        _ConversationHistory,
+                        false,
+                        this
+                    );
+                    ShowPanel("Chat");
+
+                    // Deselect NavList
+                    var navList = this.FindControl<ListBox>("NavList");
+                    if (navList != null) navList.SelectedIndex = -1;
+                }
             }
         }
 
@@ -313,21 +390,21 @@ namespace View.Personal
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
 
-        private void UpdateMainContentBackground()
-        {
-            // Check if DashboardPanel is visible
-            if (DashboardPanel.IsVisible)
-                // Set the background to light gray when dashboard is visible
-                MainContentArea.Background = new SolidColorBrush(Color.Parse("#F5F5F5"));
-            else
-                // Set the background to white for other panels
-                MainContentArea.Background = new SolidColorBrush(Color.Parse("#FFFFFF"));
-        }
+        // private void UpdateMainContentBackground()
+        // {
+        //     // Check if DashboardPanel is visible
+        //     if (DashboardPanel.IsVisible)
+        //         // Set the background to light gray when dashboard is visible
+        //         MainContentArea.Background = new SolidColorBrush(Color.Parse("#F5F5F5"));
+        //     else
+        //         // Set the background to white for other panels
+        //         MainContentArea.Background = new SolidColorBrush(Color.Parse("#FFFFFF"));
+        // }
 
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
-            UpdateMainContentBackground();
+            // UpdateMainContentBackground();
         }
 
         private void ModelProvider_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -350,6 +427,14 @@ namespace View.Personal
         {
             ChatUIHandlers.ChatInputBox_KeyDown(sender, e, this, _ConversationHistory, GetAIResponse);
         }
+
+        // private string GetTitleFromMessage(string message, int wordCount = 5)
+        // {
+        //     var words = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //     if (words.Length <= wordCount)
+        //         return message;
+        //     return string.Join(" ", words.Take(wordCount)) + "...";
+        // }
 
         /// <summary>
         /// Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
@@ -832,28 +917,21 @@ namespace View.Personal
         private void ShowPanel(string panelName)
         {
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
-            var settingsPanel = this.FindControl<StackPanel>("SettingsPanel");
+            var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2"); // Use SettingsPanel2 as per XAML
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
 
-            if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null &&
+            if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
                 chatPanel != null && consolePanel != null && workspaceText != null)
             {
                 dashboardPanel.IsVisible = panelName == "Dashboard";
-                settingsPanel.IsVisible = panelName == "Settings";
-                myFilesPanel.IsVisible = panelName == "MyFiles";
+                settingsPanel2.IsVisible = panelName == "Settings2"; // Match NavList Tag
+                myFilesPanel.IsVisible = panelName == "Files"; // Match NavList Tag
                 chatPanel.IsVisible = panelName == "Chat";
                 consolePanel.IsVisible = panelName == "Console";
-                workspaceText.IsVisible = false;
-
-                // Ensure chat panel is initialized correctly
-                if (panelName == "Chat")
-                {
-                    var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
-                    ChatUIHandlers.UpdateConversationWindow(conversationContainer, _ConversationHistory, false, this);
-                }
+                workspaceText.IsVisible = false; // Typically hidden unless needed
             }
         }
 
