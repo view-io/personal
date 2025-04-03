@@ -40,6 +40,8 @@ namespace View.Personal.UIHandlers
         {
             if (sender is ListBox listBox)
             {
+                // Retrieve UI controls
+                var chatHistoryList = window.FindControl<ListBox>("ChatHistoryList");
                 var mainWindow = window as MainWindow;
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
@@ -49,19 +51,17 @@ namespace View.Personal.UIHandlers
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
                 var mainContentArea = window.FindControl<Grid>("MainContentArea");
 
+                // Set main content area background to white
                 if (mainContentArea != null)
                     mainContentArea.Background = new SolidColorBrush(Colors.White);
 
-                if (dashboardPanel != null && myFilesPanel != null && chatPanel != null &&
-                    consolePanel != null && workspaceText != null && settingsPanel2 != null)
-                {
-                    dashboardPanel.IsVisible = false;
-                    settingsPanel2.IsVisible = false;
-                    myFilesPanel.IsVisible = false;
-                    chatPanel.IsVisible = false;
-                    consolePanel.IsVisible = false;
-                    workspaceText.IsVisible = false;
-                }
+                // Hide all panels initially
+                if (dashboardPanel != null) dashboardPanel.IsVisible = false;
+                if (settingsPanel2 != null) settingsPanel2.IsVisible = false;
+                if (myFilesPanel != null) myFilesPanel.IsVisible = false;
+                if (chatPanel != null) chatPanel.IsVisible = false;
+                if (consolePanel != null) consolePanel.IsVisible = false;
+                if (workspaceText != null) workspaceText.IsVisible = false;
 
                 if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
@@ -104,20 +104,22 @@ namespace View.Personal.UIHandlers
 
                         case "Settings2":
                             if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
-
                             break;
 
                         case "Console":
                             if (consolePanel != null) consolePanel.IsVisible = true;
                             break;
                     }
+
+                    // Deselect chat history list when a navigation item is selected
+                    if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
                 }
                 else
                 {
+                    // No navigation item selected, show chat panel if possible, otherwise dashboard
                     if (mainWindow != null && chatPanel != null)
                         chatPanel.IsVisible = true;
-                    else if (dashboardPanel != null)
-                        dashboardPanel.IsVisible = true;
+                    else if (dashboardPanel != null) dashboardPanel.IsVisible = true;
                 }
             }
         }
