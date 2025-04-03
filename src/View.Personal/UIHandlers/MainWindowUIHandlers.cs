@@ -56,33 +56,6 @@ namespace View.Personal.UIHandlers
             Console.WriteLine($"[INFO] Settings saved to {filePath}");
         }
 
-        /// <summary>
-        /// Handles the click event for saving settings, updating the application with user-provided settings.
-        /// </summary>
-        /// <param name="window">The window containing the settings controls.</param>
-        // public static void SaveSettings_Click(Window window)
-        // {
-        //     try
-        //     {
-        //         Console.WriteLine("[INFO] SaveSettings_Click triggered.");
-        //         var app = (App)Application.Current;
-        //         var selectedProvider =
-        //             (window.FindControl<ComboBox>("NavModelProviderComboBox")?.SelectedItem as ComboBoxItem)
-        //             ?.Content?.ToString();
-        //
-        //         if (string.IsNullOrEmpty(selectedProvider))
-        //             throw new InvalidOperationException("Selected provider is null or empty.");
-        //
-        //         Console.WriteLine($"[INFO] {selectedProvider} settings saved successfully.");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine($"[ERROR] SaveSettings_Click exception: {ex}");
-        //         if (window is MainWindow mainWindow)
-        //             mainWindow.ShowNotification("Error", $"Something went wrong: {ex.Message}",
-        //                 NotificationType.Error);
-        //     }
-        // }
         public static void SaveSettings2_Click(MainWindow window)
         {
             // Get the current application instance

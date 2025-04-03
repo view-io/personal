@@ -630,7 +630,8 @@ namespace View.Personal
                         MaxTokens = 1024, // Add to CompletionProviderSettings if configurable
                         GenerationProvider = "ollama", // Adjust or make configurable
                         GenerationApiKey = settings.ViewApiKey,
-                        OllamaHostname = "localhost",
+                        //ToDo: need to grab this dynamically
+                        OllamaHostname = "192.168.197.1",
                         OllamaPort = 11434,
                         Stream = true
                     };
@@ -680,6 +681,8 @@ namespace View.Personal
 
             var jsonPayload = _Serializer.SerializeJson(requestBody);
             using var resp = await restRequest.SendAsync(jsonPayload);
+            Console.WriteLine($"[DEBUG] Response Content-Type: {resp.ContentType}");
+            Console.WriteLine($"[DEBUG] ServerSentEvents: {resp.ServerSentEvents}");
 
             if (resp.StatusCode > 299)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
@@ -724,6 +727,7 @@ namespace View.Personal
             var expectedContentType = provider == "Ollama" ? "application/x-ndjson" : "text/event-stream";
             if (resp.ContentType != expectedContentType)
                 throw new InvalidOperationException($"Expected {expectedContentType} but got {resp.ContentType}");
+            ;
         }
 
         /// <summary>

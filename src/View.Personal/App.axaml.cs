@@ -312,7 +312,7 @@ namespace View.Personal
                         Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
                         View = new AppSettings.ViewSettings
                         {
-                            Endpoint = "https://your-view-endpoint",
+                            Endpoint = "http://192.168.197.128:8000/",
                             TenantGuid = _TenantGuid.ToString(),
                             GraphGuid = _GraphGuid.ToString(),
                             UserGuid = _UserGuid.ToString(),

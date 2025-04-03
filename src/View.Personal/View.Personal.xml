@@ -515,12 +515,6 @@
             </summary>
             <param name="window">The main window that has been opened.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings2_Click(View.Personal.MainWindow)">
-            <summary>
-            Handles the click event for saving settings, updating the application with user-provided settings.
-            </summary>
-            <param name="window">The window containing the settings controls.</param>
-        </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.DeleteFile_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
             Handles the click event for deleting a file, delegating to an asynchronous file deletion method.
