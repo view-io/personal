@@ -417,6 +417,43 @@ namespace View.Personal
             MainWindowUIHandlers.FilePathTextBox_PropertyChanged(sender, e, this);
         }
 
+        private string GetCompletionModel(string provider)
+        {
+            var app = (App)Application.Current;
+            switch (provider)
+            {
+                case "OpenAI":
+                    return app.AppSettings.OpenAI.CompletionModel;
+                case "Anthropic":
+                    return app.AppSettings.Anthropic.CompletionModel;
+                case "Ollama":
+                    return app.AppSettings.Ollama.CompletionModel;
+                case "View":
+                    return app.AppSettings.View.CompletionModel;
+                default:
+                    return "Unknown";
+            }
+        }
+
+        public void UpdateChatTitle()
+        {
+            var app = (App)Application.Current;
+            var provider = app.AppSettings.SelectedProvider;
+            var model = GetCompletionModel(provider);
+            var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
+            if (chatTitleTextBlock != null)
+            {
+                // Set the text of the TextBlock
+                chatTitleTextBlock.Text = $"{model}";
+
+                // Set the foreground color based on the provider
+                if (provider == "View")
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
+                else
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F")); // Default color
+            }
+        }
+
         private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
@@ -933,6 +970,8 @@ namespace View.Personal
                 consolePanel.IsVisible = panelName == "Console";
                 workspaceText.IsVisible = false; // Typically hidden unless needed
             }
+
+            if (panelName == "Chat") UpdateChatTitle();
         }
 
         private void InitializeToggleSwitches()

@@ -108,6 +108,9 @@ namespace View.Personal.UIHandlers
             else if (window.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked == true)
                 app.AppSettings.SelectedProvider = "View";
 
+            var chatPanel = window.FindControl<Border>("ChatPanel");
+            if (chatPanel != null && chatPanel.IsVisible) window.UpdateChatTitle();
+
             // Save the updated settings
             app.SaveSettings();
 

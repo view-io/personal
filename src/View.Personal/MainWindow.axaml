@@ -156,8 +156,6 @@
                         </Grid>
                     </Grid>
                 </Border>
-                <!-- <StackPanel Name="SettingsPanel" Orientation="Vertical" IsVisible="False"> -->
-                <!-- </StackPanel> -->
 
                 <!-- Settings Panel2 -->
                 <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
@@ -976,8 +974,8 @@
                     <Grid RowDefinitions="Auto,*">
                         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,40">
                             <!-- Left-aligned Chat Title -->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Chat" Foreground="#1A1C1E" FontWeight="500" FontSize="16"
+                            <TextBlock x:Name="ChatTitleTextBlock" Grid.Row="0" Grid.Column="0"
+                                       Foreground="#6A6B6F" FontWeight="400" FontSize="16"
                                        VerticalAlignment="Center" />
 
                             <!-- Right-aligned Ellipsis Button -->
