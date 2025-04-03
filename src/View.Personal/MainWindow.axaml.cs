@@ -465,9 +465,20 @@ namespace View.Personal
                         new ViewEmbeddingsServerSdk(_TenantGuid, appSettings.View.Endpoint, appSettings.View.AccessKey),
                         new EmbeddingsRequest
                         {
+                            EmbeddingsRule = new EmbeddingsRule
+                            {
+                                EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
+                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
+                                BatchSize = 2,
+                                MaxGeneratorTasks = 4,
+                                MaxRetries = 3,
+                                MaxFailures = 3
+                            },
                             Model = appSettings.Embeddings.ViewEmbeddingModel,
                             Contents = new List<string> { userInput }
                         });
+
                 case "VoyageAI":
                     return (
                         new ViewVoyageAiSdk(_TenantGuid, appSettings.Embeddings.VoyageEndpoint,
@@ -617,7 +628,7 @@ namespace View.Personal
                         Temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         TopP = 1.0, // Add to CompletionProviderSettings if configurable
                         MaxTokens = 1024, // Add to CompletionProviderSettings if configurable
-                        GenerationProvider = "OpenAI", // Adjust or make configurable
+                        GenerationProvider = "ollama", // Adjust or make configurable
                         GenerationApiKey = settings.ViewApiKey,
                         OllamaHostname = "localhost",
                         OllamaPort = 11434,
