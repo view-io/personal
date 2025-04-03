@@ -43,8 +43,8 @@
                             <TextBlock Text="Start New Chat" FontWeight="400" />
                         </StackPanel>
                     </Button>
-                    <StackPanel DockPanel.Dock="Top" Margin="12 24 12 0">
-                        <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="500" Margin="0 8 0 4"
+                    <StackPanel DockPanel.Dock="Top" Margin="24 24 12 0">
+                        <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="400" Margin="0 8 0 4"
                                    Foreground="Transparent" />
                         <ListBox Name="ChatHistoryList" SelectionChanged="ChatHistoryList_SelectionChanged" />
 
@@ -320,8 +320,8 @@
 
                         <TabItem Header="Providers" IsSelected="True">
                             <Border Padding="0,0,0,0">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                    <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,0,0">
+                                <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="600">
+                                    <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,20,0">
 
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
                                             <!-- Section Container for View Label and Description -->
@@ -667,7 +667,7 @@
                                         <Border BorderBrush="#EAECF0" BorderThickness="1" />
 
                                         <!-- Embeddings Generation -->
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto">
+                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,4">
                                             <!-- Column 1: Text Blocks -->
                                             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
@@ -781,7 +781,16 @@
                                                              Text="Your-Endpoint-Here" Margin="10,4,0,0" />
                                                 </Grid>
                                             </StackPanel>
+                                            <StackPanel VerticalAlignment="Bottom">
+                                                <Button Content="Save Settings"
+                                                        Click="SaveSettings2_Click"
+                                                        Classes="default"
+                                                        HorizontalAlignment="Left"
+                                                        Padding="12,8" />
+                                            </StackPanel>
+
                                         </Grid>
+
                                     </StackPanel>
                                 </ScrollViewer>
                             </Border>
@@ -794,13 +803,7 @@
                         </TabItem>
                     </TabControl>
 
-                    <!-- Save Button -->
-                    <Button Content="Save Settings"
-                            Click="SaveSettings2_Click"
-                            Margin="0,40,0,0"
-                            Classes="default"
-                            HorizontalAlignment="Left"
-                            Padding="12,8" />
+
                 </StackPanel>
                 <!-- Files Panel -->
                 <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
