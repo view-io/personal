@@ -11,6 +11,15 @@
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
     </Window.Resources>
+    <Window.Styles>
+        <Style Selector="#ChatHistoryList > ListBoxItem">
+            <Setter Property="Background" Value="#E6F6FF" />
+            <Setter Property="Foreground" Value="#0472EF" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+    </Window.Styles>
     <Grid>
         <DockPanel>
             <!-- Sidebar -->
@@ -38,6 +47,7 @@
                         <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="500" Margin="0 8 0 4"
                                    Foreground="Transparent" />
                         <ListBox Name="ChatHistoryList" SelectionChanged="ChatHistoryList_SelectionChanged" />
+
                     </StackPanel>
 
                     <!-- Navigation List -->

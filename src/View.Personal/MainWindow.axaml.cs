@@ -215,6 +215,9 @@ namespace View.Personal
                 conversationContainer.Children.Clear();
 
             ShowPanel("Chat");
+            var mainContentArea = this.FindControl<Grid>("MainContentArea");
+            if (mainContentArea != null)
+                mainContentArea.Background = new SolidColorBrush(Colors.White);
 
             var navList = this.FindControl<ListBox>("NavList");
             if (navList != null) navList.SelectedIndex = -1;
