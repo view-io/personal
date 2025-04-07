@@ -281,7 +281,6 @@ namespace View.Personal.UIHandlers
             }
         }
 
-
         /// <summary>
         /// Creates a title from a message by taking the first few words and adding an ellipsis if necessary.
         /// </summary>
@@ -295,7 +294,6 @@ namespace View.Personal.UIHandlers
                 return message;
             return string.Join(" ", words.Take(wordCount)) + "...";
         }
-
 
         /// <summary>
         /// Handles key down events for the chat input box, triggering message sending when the Enter key is pressed.
