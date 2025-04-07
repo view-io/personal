@@ -8,6 +8,8 @@
         Width="1200" Height="800"
         Title=""
         Icon="/Assets/glyph.png">
+    <!-- ReSharper disable Xaml.StyleClassNotFound -->
+    <!-- ReSharper disable ObsoleteElement -->
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
     </Window.Resources>
@@ -22,16 +24,12 @@
     </Window.Styles>
     <Grid>
         <DockPanel>
-            <!-- Sidebar -->
             <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
                     Width="200" Background="#FFFFFF">
                 <DockPanel>
-                    <!-- Logo and Toggle -->
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24 32 0 24">
                         <Image Source="/Assets/logo.png" Height="26" Width="97.61" />
                     </StackPanel>
-
-                    <!-- Start New Chat Button -->
                     <Button DockPanel.Dock="Top" Margin="12 0 12 0"
                             Click="StartNewChatButton_Click"
                             Classes="flat"
@@ -47,10 +45,7 @@
                         <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="400" Margin="0 8 0 4"
                                    Foreground="Transparent" />
                         <ListBox Name="ChatHistoryList" SelectionChanged="ChatHistoryList_SelectionChanged" />
-
                     </StackPanel>
-
-                    <!-- Navigation List -->
                     <ListBox DockPanel.Dock="Bottom" x:Name="NavList" SelectionChanged="NavList_SelectionChanged"
                              Margin="16 0 16 32">
                         <ListBoxItem Tag="Files">
@@ -88,12 +83,7 @@
                     <StackPanel />
                 </DockPanel>
             </Border>
-
-            <!-- Main Content Area -->
-            <!-- <Grid Name="MainContentArea" Background="#FFFFFF"> -->
             <Grid Name="MainContentArea" Background="#F5F5F5">
-
-                <!-- Dashboard View -->
                 <Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
                         HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="True" Width="454"
                         Height="601" BoxShadow="0 2 4 -2 #1A1C1E 6%, 0 4 8 -2 #1A1C1E 10%">
@@ -103,8 +93,6 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-
-                        <!-- Header -->
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
                             <TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
                             <Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
@@ -113,8 +101,6 @@
                                            Foreground="#6A6B6F" FontWeight="500" />
                             </Border>
                         </StackPanel>
-
-                        <!-- Main content -->
                         <StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <avalonia:MaterialIcon Kind="FileDocumentOutline" Foreground="#009E61"
@@ -145,8 +131,6 @@
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-
-                        <!-- Footer -->
                         <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
                             <TextBlock Text="©2025 View Systems Inc." FontSize="12" Foreground="#6A6B6F"
                                        FontWeight="500" />
@@ -156,27 +140,20 @@
                         </Grid>
                     </Grid>
                 </Border>
-
-                <!-- Settings Panel2 -->
                 <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
-
-                    <!-- Tabs -->
-                    <TabControl Margin="0,0,0,0"> <!-- Changed from -20,0,0,0 to 0,0,0,0 -->
+                    <TabControl Margin="0,0,0,0">
                         <TabControl.Template>
                             <ControlTemplate TargetType="TabControl">
                                 <DockPanel>
-                                    <!-- Use a Grid with explicit row definitions to control the layout -->
                                     <Grid DockPanel.Dock="Top" RowDefinitions="40,*">
-                                        <!-- ItemsPresenter for the tab headers -->
                                         <ItemsPresenter Name="PART_ItemsPresenter"
                                                         Grid.Row="0"
                                                         ItemsPanel="{TemplateBinding ItemsPanel}"
                                                         Margin="0" />
-                                        <!-- Add a border that aligns with the bottom of the tab headers -->
                                         <Border Grid.Row="0"
                                                 VerticalAlignment="Bottom"
                                                 Margin="0,0,0,-1"
@@ -261,7 +238,6 @@
                                 <Setter Property="FontSize" Value="14" />
                                 <Setter Property="Foreground" Value="#6A6B6F" />
                                 <Setter Property="Padding" Value="10,8,10,10" />
-                                <!-- Provide a complete ControlTemplate for TextBox -->
                                 <Setter Property="Template">
                                     <ControlTemplate>
                                         <Border Background="{TemplateBinding Background}"
@@ -294,13 +270,11 @@
                                 <Setter Property="Template">
                                     <ControlTemplate>
                                         <Grid>
-                                            <!-- Outer circle -->
                                             <Ellipse x:Name="PART_OuterCircle"
                                                      Width="12" Height="12"
                                                      Stroke="{TemplateBinding BorderBrush}"
                                                      StrokeThickness="1"
                                                      Fill="Transparent" />
-                                            <!-- Inner circle (checked state) -->
                                             <Ellipse x:Name="PART_InnerCircle"
                                                      Width="6" Height="6"
                                                      Fill="{TemplateBinding Foreground}"
@@ -315,14 +289,12 @@
                                 <TextBlock Text="General settings will go here." />
                             </Border>
                         </TabItem>
-
                         <TabItem Header="Providers" IsSelected="True">
                             <Border Padding="0,0,0,0">
                                 <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="600">
                                     <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,20,0">
 
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Section Container for View Label and Description -->
                                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="OpenAI" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -331,7 +303,6 @@
                                                     Gain access to OpenAI models
                                                 </TextBlock>
                                             </StackPanel>
-                                            <!-- Expander in Column 1 -->
                                             <Expander
                                                 x:Name="OpenAIExpander"
                                                 Grid.Row="0"
@@ -342,8 +313,6 @@
                                                 Margin="0,-10,0,0"
                                                 Padding="0"
                                                 Background="#F5F5F5">
-
-                                                <!-- Directly define a Header (no DataTemplate) -->
                                                 <Expander.Header>
                                                     <DockPanel LastChildFill="True" Margin="0">
                                                         <TextBlock VerticalAlignment="Center"
@@ -353,8 +322,6 @@
                                                                    FontSize="13" />
                                                     </DockPanel>
                                                 </Expander.Header>
-
-                                                <!-- ToggleSwitch + API fields live in Expander.Content (same namescope) -->
                                                 <StackPanel Margin="0,10,0,10" Spacing="8">
                                                     <ToggleSwitch Margin="8,0,0,0"
                                                                   HorizontalAlignment="Left"
@@ -368,7 +335,6 @@
                                                                   assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
-
                                                     <TextBlock Text="OpenAI API Key"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
@@ -377,7 +343,6 @@
                                                     <TextBox x:Name="OpenAIApiKey"
                                                              Text="https://api.openai.com/v1/chat/completions"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="OpenAI Completion Model"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
@@ -386,7 +351,6 @@
                                                     <TextBox x:Name="OpenAICompletionModel"
                                                              Text="gpt-3.5-turbo"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="OpenAI Endpoint"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
@@ -399,7 +363,6 @@
                                             </Expander>
                                         </Grid>
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Section Container for View Label and Description -->
                                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Anthropic" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -408,7 +371,6 @@
                                                     Gain access to Anthropic models
                                                 </TextBlock>
                                             </StackPanel>
-                                            <!-- Expander in Column 1 -->
                                             <Expander
                                                 x:Name="AnthropicExpander"
                                                 Grid.Row="0"
@@ -419,8 +381,6 @@
                                                 Margin="0,-10,0,0"
                                                 Padding="0"
                                                 Background="#F5F5F5">
-
-                                                <!-- Directly define the Header (no DataTemplate) -->
                                                 <Expander.Header>
                                                     <DockPanel LastChildFill="True" Margin="0">
                                                         <TextBlock VerticalAlignment="Center"
@@ -430,10 +390,7 @@
                                                                    FontSize="13" />
                                                     </DockPanel>
                                                 </Expander.Header>
-
-                                                <!-- Everything below is in the same scope, so the code-behind can find it by name -->
                                                 <StackPanel Margin="0,10,0,10" Spacing="8">
-                                                    <!-- ToggleSwitch moved into Expander.Content -->
                                                     <ToggleSwitch Margin="8,0,0,0"
                                                                   HorizontalAlignment="Left"
                                                                   VerticalAlignment="Center"
@@ -446,7 +403,6 @@
                                                                   assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
-
                                                     <TextBlock Text="Anthropic API Key"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -457,7 +413,6 @@
                                                     <TextBox x:Name="AnthropicApiKey"
                                                              Text="YOUR_API_KEY_HERE"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Anthropic Completion Model"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -468,7 +423,6 @@
                                                     <TextBox x:Name="AnthropicCompletionModel"
                                                              Text="claude-2"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Anthropic Endpoint"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -481,11 +435,9 @@
                                                              Margin="8,0,8,0" />
                                                 </StackPanel>
                                             </Expander>
-
                                         </Grid>
                                         <Border BorderBrush="#EAECF0" BorderThickness="1" />
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Section Container for View Label and Description -->
                                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Local" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -494,7 +446,6 @@
                                                     Gain access to a local model.
                                                 </TextBlock>
                                             </StackPanel>
-                                            <!-- Expander in Column 1 -->
                                             <Expander
                                                 x:Name="OllamaExpander"
                                                 Grid.Row="0"
@@ -505,8 +456,6 @@
                                                 Margin="0,-10,0,0"
                                                 Padding="0"
                                                 Background="#F5F5F5">
-
-                                                <!-- Directly define the Header (not a DataTemplate) -->
                                                 <Expander.Header>
                                                     <DockPanel LastChildFill="True" Margin="0">
                                                         <TextBlock VerticalAlignment="Center"
@@ -516,8 +465,6 @@
                                                                    FontSize="13" />
                                                     </DockPanel>
                                                 </Expander.Header>
-
-                                                <!-- The toggle is now in the same XAML scope as the Expander -->
                                                 <StackPanel Margin="0,10,0,10" Spacing="8">
                                                     <ToggleSwitch Margin="8,0,0,0"
                                                                   HorizontalAlignment="Left"
@@ -531,7 +478,6 @@
                                                                   assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
-
                                                     <TextBlock Text="Ollama Completion Model"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -542,7 +488,6 @@
                                                     <TextBox x:Name="OllamaCompletionModel"
                                                              Text="llama2-7B-q4"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Ollama Endpoint"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -555,17 +500,14 @@
                                                              Margin="8,0,8,0" />
                                                 </StackPanel>
                                             </Expander>
-
                                         </Grid>
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Section Container for View Label and Description -->
                                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
                                                 <TextBlock FontSize="12" Foreground="#6A6B6F"
                                                            TextWrapping="Wrap" />
                                             </StackPanel>
-                                            <!-- Expander in Column 1 -->
                                             <Expander
                                                 x:Name="ViewExpander"
                                                 Grid.Row="0"
@@ -576,8 +518,6 @@
                                                 Margin="0,-10,0,0"
                                                 Padding="0"
                                                 Background="#F5F5F5">
-
-                                                <!-- Directly define the Header (not a DataTemplate) -->
                                                 <Expander.Header>
                                                     <DockPanel LastChildFill="True" Margin="0">
                                                         <TextBlock VerticalAlignment="Center"
@@ -587,8 +527,6 @@
                                                                    FontSize="13" />
                                                     </DockPanel>
                                                 </Expander.Header>
-
-                                                <!-- The toggle is now in the same scope as the Expander -->
                                                 <StackPanel Margin="0,10,0,10" Spacing="8">
                                                     <ToggleSwitch Margin="8,0,0,0"
                                                                   HorizontalAlignment="Left"
@@ -602,7 +540,6 @@
                                                                   assists:ToggleSwitchAssist.SwitchThumbOffBackground="White"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOnBackground="#1F8FFF"
                                                                   assists:ToggleSwitchAssist.SwitchTrackOffBackground="#C0C0C1" />
-
                                                     <TextBlock Text="Embeddings API Key"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -613,7 +550,6 @@
                                                     <TextBox x:Name="ViewApiKey"
                                                              Text="YOUR_EMBEDDINGS_API_KEY"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="View Endpoint"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -624,7 +560,6 @@
                                                     <TextBox x:Name="ViewEndpoint"
                                                              Text="https://your-view-endpoint"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Access Key"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -635,7 +570,6 @@
                                                     <TextBox x:Name="ViewAccessKey"
                                                              Text="YOUR_VIEW_ACCESS_KEY"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Tenant Guid"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -646,7 +580,6 @@
                                                     <TextBox x:Name="ViewTenantGUID"
                                                              Text="YOUR_TENANT_GUID"
                                                              Margin="8,0,8,0" />
-
                                                     <TextBlock Text="Completion Model"
                                                                Padding="8,0,0,0"
                                                                VerticalAlignment="Center"
@@ -659,14 +592,9 @@
                                                              Margin="8,0,8,0" />
                                                 </StackPanel>
                                             </Expander>
-
                                         </Grid>
-                                        <!-- Horizontal Border to Divide Sections -->
                                         <Border BorderBrush="#EAECF0" BorderThickness="1" />
-
-                                        <!-- Embeddings Generation -->
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,4">
-                                            <!-- Column 1: Text Blocks -->
                                             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" />
@@ -687,12 +615,8 @@
                                                     <Run Text="need to re-import all documents." />
                                                 </TextBlock>
                                             </StackPanel>
-
-                                            <!-- Column 2: Radio Buttons and VoyageAI Settings -->
                                             <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
-                                                <!-- Radio Button Group -->
                                                 <StackPanel Spacing="16" x:Name="EmbeddingModelGroup">
-                                                    <!-- Ollama Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
                                                                      GroupName="EmbeddingProvider"
@@ -708,8 +632,6 @@
                                                                  Text="sentence-transformers/all-MiniLM-L6-v2"
                                                                  Margin="0,4,0,0" />
                                                     </Grid>
-
-                                                    <!-- View Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
                                                                      GroupName="EmbeddingProvider"
@@ -725,9 +647,6 @@
                                                                  Text="sentence-transformers/all-MiniLM-L6-v2"
                                                                  Margin="0,4,0,0" />
                                                     </Grid>
-
-
-                                                    <!-- OpenAI Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
                                                                      GroupName="EmbeddingProvider"
@@ -743,8 +662,6 @@
                                                                  Text="sentence-transformers/all-MiniLM-L6-v2"
                                                                  Margin="0,4,0,0" />
                                                     </Grid>
-
-                                                    <!-- Voyage Embedding Model -->
                                                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
                                                         <RadioButton Grid.Row="0" Grid.Column="0"
                                                                      GroupName="EmbeddingProvider"
@@ -761,8 +678,6 @@
                                                                  Margin="0,4,0,0" />
                                                     </Grid>
                                                 </StackPanel>
-
-                                                <!-- VoyageAI API Settings -->
                                                 <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto"
                                                       Margin="17,0,0,0">
                                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI Api Key"
@@ -779,6 +694,7 @@
                                                              Text="Your-Endpoint-Here" Margin="10,4,0,0" />
                                                 </Grid>
                                             </StackPanel>
+                                            <!-- ReSharper disable once Xaml.MissingGridIndex -->
                                             <StackPanel VerticalAlignment="Bottom">
                                                 <Button Content="Save Settings"
                                                         Click="SaveSettings2_Click"
@@ -793,17 +709,13 @@
                                 </ScrollViewer>
                             </Border>
                         </TabItem>
-
                         <TabItem Header="Local Models">
                             <Border Padding="0,20,0,0">
                                 <TextBlock Text="Local models settings will go here." />
                             </Border>
                         </TabItem>
                     </TabControl>
-
-
                 </StackPanel>
-                <!-- Files Panel -->
                 <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
@@ -846,13 +758,11 @@
                             </StackPanel>
                         </Panel>
                     </Border>
-
                     <Grid Name="FileOperationsPanel">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
                         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
                                     Margin="0,0,0,12">
                             <Button Click="IngestBrowseButton_Click"
@@ -868,7 +778,6 @@
                                 <avalonia:MaterialIcon Kind="TrayArrowDown" />
                             </Button>
                         </StackPanel>
-                        <!-- Files Table -->
                         <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FilesDataGrid"
                                       AutoGenerateColumns="False"
@@ -899,7 +808,6 @@
                                         <Setter Property="Height" Value="38" />
                                         <Setter Property="BorderBrush" Value="#EDEDED" />
                                         <Setter Property="BorderThickness" Value="0,0,0,1" />
-                                        <!-- <Setter Property="Padding" Value="6,2,6,2" /> -->
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
@@ -911,7 +819,6 @@
                                                         Width="150" />
                                     <DataGridTextColumn Header="Date Created" Width="190"
                                                         Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
-                                    <!-- <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="250" /> -->
 
                                     <DataGridTemplateColumn Header="" Width="150">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -952,9 +859,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </ScrollViewer>
-
                     </Grid>
-                    <!-- Spinners -->
                     <ProgressBar x:Name="IngestSpinner"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Stretch"
@@ -967,17 +872,12 @@
                                  IsIndeterminate="True"
                                  IsVisible="False" />
                 </StackPanel>
-                <!-- Chat Panel -->
                 <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
-                    <!-- Header -->
                     <Grid RowDefinitions="Auto,*">
                         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,40">
-                            <!-- Left-aligned Chat Title -->
                             <TextBlock x:Name="ChatTitleTextBlock" Grid.Row="0" Grid.Column="0"
                                        Foreground="#6A6B6F" FontWeight="400" FontSize="16"
                                        VerticalAlignment="Center" />
-
-                            <!-- Right-aligned Ellipsis Button -->
                             <Button Grid.Row="0" Grid.Column="1"
                                     x:Name="ChatOptionsButton"
                                     Classes="flat"
@@ -1003,15 +903,10 @@
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
-
-                            <!-- Border that spans the full width of both columns -->
                             <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                     BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
                         </Grid>
-
-                        <!-- Chat Content -->
                         <Grid Grid.Row="1" RowDefinitions="*,Auto">
-                            <!-- Conversation Area -->
                             <ScrollViewer x:Name="ChatScrollViewer"
                                           Grid.Row="0"
                                           VerticalScrollBarVisibility="Auto"
@@ -1020,8 +915,6 @@
                                             Spacing="5"
                                             VerticalAlignment="Top" />
                             </ScrollViewer>
-
-                            <!-- Placeholder Overlay -->
                             <TextBlock x:Name="ChatPlaceholder"
                                        Grid.Row="0"
                                        Text="What do you want to chat about?"
@@ -1030,8 +923,6 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Bottom"
                                        IsVisible="{Binding !Children.Count, ElementName=ConversationContainer}" />
-
-                            <!-- Input Area -->
                             <StackPanel x:Name="ChatInputContainer"
                                         Grid.Row="1"
                                         Orientation="Horizontal"
@@ -1087,4 +978,6 @@
         </DockPanel>
         <WindowNotificationManager x:Name="NotificationManager" />
     </Grid>
+    <!-- ReSharper restore Xaml.StyleClassNotFound -->
+    <!-- ReSharper restore ObsoleteElement -->
 </Window>
