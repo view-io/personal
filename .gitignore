@@ -274,5 +274,3 @@ __pycache__/
 identifier.sqlite
 
 *.jetclient
-
-.view-personal.db
