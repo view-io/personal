@@ -13,14 +13,30 @@ namespace View.Personal
     using System.Collections.Generic;
     using Timestamps;
     using System.IO;
-    using System.Linq;
     using System.Text.Json;
 
+    /// <summary>
+    /// Main application class for View Personal.
+    /// Handles application lifecycle, settings management, and integration with the graph database.
+    /// </summary>
+    /// <remarks>
+    /// This class is responsible for:
+    /// - Application initialization and startup
+    /// - Loading and saving application settings
+    /// - Managing provider configurations (OpenAI, Anthropic, Ollama, View)
+    /// - Initializing and maintaining the graph database connection
+    /// - Creating and managing default application entities (tenant, graph, user, credential)
+    /// </remarks>
     public class App : Application
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
-        #region Internal-Members
+        #region Public-Members
+
+        /// <summary>
+        /// Application settings for the View Personal application.
+        /// </summary>
+        public AppSettings _AppSettings;
 
         #endregion
 
@@ -30,13 +46,12 @@ namespace View.Personal
         internal LiteGraphClient _LiteGraph;
         internal GraphRepositoryBase _GraphDriver;
         internal LiteGraph.LoggingSettings _LoggingSettings;
-        internal Guid _TenantGuid = default;
-        internal Guid _GraphGuid = default;
-        internal Guid _UserGuid = default;
-        internal Guid _CredentialGuid = default;
+        internal Guid _TenantGuid;
+        internal Guid _GraphGuid;
+        internal Guid _UserGuid;
+        internal Guid _CredentialGuid;
         internal LoggingModule _Logging;
         private const string SettingsFilePath = "appsettings.json";
-        public AppSettings _AppSettings; // Changed from Settings to AppSettings
 
         #endregion
 
@@ -46,11 +61,31 @@ namespace View.Personal
 
         #region Public-Methods
 
+        /// <summary>
+        /// Initializes the component by loading its XAML definition.
+        /// </summary>
+        /// <remarks>
+        /// This method is overridden from the base class and uses AvaloniaXamlLoader
+        /// to load and parse the XAML definition associated with this component.
+        /// </remarks>
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
         }
 
+        /// <summary>
+        /// Called when the Avalonia framework has completed initialization.
+        /// Initializes the application by setting up logging, loading settings,
+        /// creating and displaying the main window, and initializing the graph database.
+        /// Creates default tenant, graph, user, and credential entities if they don't exist.
+        /// </summary>
+        /// <remarks>
+        /// This method handles the core application startup sequence, including:
+        /// - Setting up logging infrastructure
+        /// - Initializing the SQLite graph repository
+        /// - Creating default application entities if they don't exist
+        /// - Displaying error messages if initialization fails
+        /// </remarks>
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -164,6 +199,16 @@ namespace View.Personal
             base.OnFrameworkInitializationCompleted();
         }
 
+        /// <summary>
+        /// Persists the application settings to the settings file.
+        /// Updates the application settings with current GUID values for tenant, graph, user, and credential,
+        /// then serializes the settings to JSON and writes them to disk.
+        /// </summary>
+        /// <remarks>
+        /// This method handles error logging if the save operation fails.
+        /// The settings are saved with indented formatting for better readability.
+        /// Default values are excluded from serialization to minimize file size.
+        /// </remarks>
         public void SaveSettings()
         {
             try
@@ -190,6 +235,17 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Retrieves the completion provider settings for the specified provider type.
+        /// Creates and configures a CompletionProviderSettings object with the appropriate 
+        /// credentials and settings based on the provider type.
+        /// </summary>
+        /// <param name="providerType">The type of completion provider to get settings for.</param>
+        /// <returns>A CompletionProviderSettings object configured with the appropriate settings for the specified provider type.</returns>
+        /// <remarks>
+        /// Supports OpenAI, Anthropic, Ollama, and View providers with their respective configuration parameters.
+        /// Returns a default empty settings object for unrecognized provider types.
+        /// </remarks>
         public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
         {
             return providerType switch
@@ -219,45 +275,16 @@ namespace View.Personal
             };
         }
 
-        public void UpdateProviderSettings(CompletionProviderSettings settings)
-        {
-            if (_AppSettings == null) _AppSettings = new AppSettings();
-
-            switch (settings.ProviderType)
-            {
-                case CompletionProviderTypeEnum.OpenAI:
-                    _AppSettings.OpenAI.IsEnabled = true; // Assuming enabling when updated
-                    _AppSettings.OpenAI.ApiKey = settings.OpenAICompletionApiKey;
-                    _AppSettings.OpenAI.CompletionModel = settings.OpenAICompletionModel;
-                    _AppSettings.OpenAI.Endpoint = "https://api.openai.com/v1/chat/completions"; // Default if not set
-                    // _AppSettings.Embeddings.OpenAIEmbeddingModel = settings.OpenAIEmbeddingModel;
-                    break;
-                case CompletionProviderTypeEnum.Anthropic:
-                    _AppSettings.Anthropic.IsEnabled = true;
-                    _AppSettings.Anthropic.ApiKey = settings.AnthropicApiKey;
-                    _AppSettings.Anthropic.CompletionModel = settings.AnthropicCompletionModel;
-                    _AppSettings.Anthropic.Endpoint = "https://api.anthropic.com/v1"; // Default if not set
-                    // _AppSettings.Anthropic.VoyageEmbeddingModel = settings.VoyageEmbeddingModel;
-                    break;
-                case CompletionProviderTypeEnum.Ollama:
-                    _AppSettings.Ollama.IsEnabled = true;
-                    _AppSettings.Ollama.CompletionModel = settings.OllamaCompletionModel;
-                    _AppSettings.Ollama.Endpoint = "http://localhost:11434"; // Default if not set
-                    // _AppSettings.Ollama.EmbeddingModel = settings.OllamaModel;
-                    break;
-                case CompletionProviderTypeEnum.View:
-                    _AppSettings.View.IsEnabled = true;
-                    _AppSettings.View.ApiKey = settings.ViewApiKey;
-                    _AppSettings.View.AccessKey = settings.ViewAccessKey;
-                    _AppSettings.View.Endpoint = settings.ViewEndpoint;
-                    _AppSettings.View.CompletionModel = settings.ViewCompletionModel;
-                    // Map other View-specific fields if present in CompletionProviderSettings
-                    break;
-            }
-
-            SaveSettings();
-        }
-
+        /// <summary>
+        /// Updates the application settings to reflect the newly selected AI provider.
+        /// Sets the IsEnabled property to true for the specified provider and false for all others,
+        /// then persists the updated settings.
+        /// </summary>
+        /// <param name="provider">The name of the provider to be set as active (OpenAI, Anthropic, Ollama, or View).</param>
+        /// <remarks>
+        /// This method ensures that only one provider is enabled at a time.
+        /// After updating the enabled status for all providers, it calls SaveSettings to persist the changes.
+        /// </remarks>
         public void SaveSelectedProvider(string provider)
         {
             // Update IsEnabled based on selected provider
@@ -268,7 +295,11 @@ namespace View.Personal
             SaveSettings();
         }
 
-        public AppSettings AppSettings => _AppSettings; // Changed return type to AppSettings
+        /// <summary>
+        /// Gets the current application settings.
+        /// Provides public read-only access to the internal application settings object.
+        /// </summary>
+        public AppSettings AppSettings => _AppSettings;
 
         #endregion
 

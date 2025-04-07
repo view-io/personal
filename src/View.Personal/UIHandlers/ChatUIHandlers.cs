@@ -15,8 +15,38 @@ namespace View.Personal.UIHandlers
     using Classes;
     using Services;
 
+    /// <summary>
+    /// Provides static event handlers and utility methods for managing the chat user interface.
+    /// Contains methods for sending messages, handling user input, clearing conversations,
+    /// downloading chat history, and updating the conversation display.
+    /// </summary>
     public static class ChatUIHandlers
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Handles the click event for sending a message in a chat interface. 
+        /// Processes the user's input, adds it to the conversation history, 
+        /// requests a response from the AI, and updates the UI accordingly.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Event data associated with the click event.</param>
+        /// <param name="window">The window containing the chat interface controls.</param>
+        /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+        /// <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+        /// <returns>This method doesn't return a value as it's marked async void.</returns>
         public static async void SendMessage_Click(
             object sender,
             RoutedEventArgs e,
@@ -110,6 +140,18 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event for sending a test message in a chat interface.
+        /// Processes the user's input, adds it to the current chat session, 
+        /// manages chat history for the first message in a session,
+        /// requests a response from the AI, and updates the UI accordingly.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Event data associated with the click event.</param>
+        /// <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
+        /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+        /// <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+        /// <returns>This method doesn't return a value as it's marked async void.</returns>
         public static async void SendMessageTest_Click(
             object sender,
             RoutedEventArgs e,
@@ -125,14 +167,6 @@ namespace View.Personal.UIHandlers
             {
                 Console.WriteLine("[ERROR] Window is not of type MainWindow.");
                 return;
-            }
-
-            // Ensure there is a current chat session
-            if (mainWindow._CurrentChatSession == null)
-            {
-                mainWindow._CurrentChatSession = new ChatSession();
-                mainWindow._ChatSessions.Add(mainWindow._CurrentChatSession);
-                Console.WriteLine("[DEBUG] Created new chat session.");
             }
 
             // Use the current chat session's message list for consistency
@@ -247,6 +281,13 @@ namespace View.Personal.UIHandlers
             }
         }
 
+
+        /// <summary>
+        /// Creates a title from a message by taking the first few words and adding an ellipsis if necessary.
+        /// </summary>
+        /// <param name="message">The full message text to extract a title from.</param>
+        /// <param name="wordCount">The maximum number of words to include in the title. Defaults to 5.</param>
+        /// <returns>A string containing the first wordCount words of the message followed by an ellipsis, or the full message if it contains fewer words than wordCount.</returns>
         public static string GetTitleFromMessage(string message, int wordCount = 5)
         {
             var words = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -255,6 +296,15 @@ namespace View.Personal.UIHandlers
             return string.Join(" ", words.Take(wordCount)) + "...";
         }
 
+
+        /// <summary>
+        /// Handles key down events for the chat input box, triggering message sending when the Enter key is pressed.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Key event data associated with the key press.</param>
+        /// <param name="window">The window containing the chat interface controls.</param>
+        /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+        /// <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
         public static void ChatInputBox_KeyDown(object sender, KeyEventArgs e, Window window,
             List<ChatMessage> conversationHistory, Func<string, Action<string>, Task<string>> getAIResponse)
         {
@@ -265,6 +315,15 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event for clearing the current chat session.
+        /// Removes all messages from the current chat session, updates the chat history list,
+        /// removes the session from application state, and updates the UI accordingly.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Event data associated with the click event.</param>
+        /// <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
+        /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
         public static void ClearChat_Click(object sender, RoutedEventArgs e, Window window,
             List<ChatMessage> conversationHistory)
         {
@@ -272,7 +331,7 @@ namespace View.Personal.UIHandlers
             var mainWindow = window as MainWindow;
 
             // Check if the cast succeeded and if there’s a current chat session
-            if (mainWindow != null && mainWindow._CurrentChatSession != null)
+            if (mainWindow != null)
             {
                 // Clear the messages in the current chat session
                 mainWindow._CurrentChatSession.Messages.Clear();
@@ -312,7 +371,8 @@ namespace View.Personal.UIHandlers
                     UpdateConversationWindow(conversationContainer, new List<ChatMessage>(), false, mainWindow);
 
                 // Set the current chat session to null after clearing
-                mainWindow._CurrentChatSession = null;
+                // ToDo: Consider using a more explicit method to clear the session
+                mainWindow._CurrentChatSession = null!;
             }
             else
             {
@@ -321,6 +381,16 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Handles the click event for downloading the current chat conversation.
+        /// Prompts the user to select a save location and saves the conversation history as a text file.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Event data associated with the click event.</param>
+        /// <param name="window">The window containing the chat interface controls.</param>
+        /// <param name="conversationHistory">The list of chat messages representing the conversation history to be saved.</param>
+        /// <param name="fileBrowserService">Service for browsing the file system and selecting save locations.</param>
+        /// <returns>This method doesn't return a value as it's marked async void.</returns>
         public static async void DownloadChat_Click(object sender, RoutedEventArgs e, Window window,
             List<ChatMessage> conversationHistory, FileBrowserService fileBrowserService)
         {
@@ -342,6 +412,16 @@ namespace View.Personal.UIHandlers
                 Console.WriteLine("[WARN] No file path selected for chat history download.");
         }
 
+        /// <summary>
+        /// Updates the conversation window UI with the current chat messages.
+        /// Clears the existing conversation display and recreates it with the current message history,
+        /// applying appropriate styling to user and assistant messages, and optionally showing a spinner
+        /// for the assistant's response in progress.
+        /// </summary>
+        /// <param name="conversationContainer">The StackPanel container that holds the conversation messages.</param>
+        /// <param name="conversationHistory">The list of chat messages to display.</param>
+        /// <param name="showSpinner">Boolean indicating whether to show a loading spinner for the assistant's response.</param>
+        /// <param name="window">The window containing the chat interface controls.</param>
         public static void UpdateConversationWindow(StackPanel? conversationContainer,
             List<ChatMessage> conversationHistory, bool showSpinner, Window window)
         {
@@ -377,13 +457,8 @@ namespace View.Personal.UIHandlers
 
                     messageContainer.Children.Add(labelBlock);
                     messageBlock.TextWrapping = TextWrapping.Wrap;
-                    messageBlock.MaxWidth = 610; // Match input box width for consistency
+                    messageBlock.MaxWidth = 610;
                     messageContainer.Children.Add(messageBlock);
-                    // Dispatcher.UIThread.Post(() =>
-                    // {
-                    //     Console.WriteLine("[DEBUG] LabelBlock Bounds.X: " + labelBlock.Bounds.X);
-                    //     Console.WriteLine("[DEBUG] MessageBlock Bounds.X: " + messageBlock.Bounds.X);
-                    // }, DispatcherPriority.Background);
 
                     if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
                     {
@@ -406,5 +481,11 @@ namespace View.Personal.UIHandlers
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
             }
         }
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }

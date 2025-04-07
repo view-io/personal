@@ -11,6 +11,7 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Controls.Primitives;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
@@ -39,6 +40,8 @@ namespace View.Personal
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8618, CS9264
+#pragma warning disable CS8604 // Possible null reference argument.
 
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         // ReSharper disable PossibleMultipleEnumeration
@@ -48,7 +51,19 @@ namespace View.Personal
         // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
 
-        #region Internal-Members
+        #region Public-Members
+
+        /// <summary>
+        /// List of active chat sessions in the application.
+        /// Stores title and message.
+        /// </summary>
+        public List<ChatSession> _ChatSessions = new();
+
+        /// <summary>
+        /// The currently active chat session.
+        /// References the chat session that is currently being displayed and interacted with in the UI.
+        /// </summary>
+        public ChatSession _CurrentChatSession;
 
         #endregion
 
@@ -59,14 +74,13 @@ namespace View.Personal
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static Serializer _Serializer = new();
-        public List<ChatSession> _ChatSessions = new();
-        public ChatSession _CurrentChatSession;
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
 
-
+#pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
+#pragma warning restore CS0414 // Field is assigned but its value is never used
 
         // private bool _ShowingChat = false;
         private List<ToggleSwitch> _ToggleSwitches;
@@ -95,8 +109,6 @@ namespace View.Personal
                     Console.WriteLine("[INFO] MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
-                    // _ShowingChat = false;
-                    // ShowPanel("Dashboard");
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
@@ -136,45 +148,38 @@ namespace View.Personal
                 _ => null
             };
 
-            var contentPanel = new StackPanel
+            if (styleClass != null)
             {
-                Spacing = 4,
-                Classes = { "NotificationCard", styleClass } // <-- use the style!
-            };
+                var contentPanel = new StackPanel
+                {
+                    Spacing = 4,
+                    Classes = { "NotificationCard", styleClass }
+                };
 
-            contentPanel.Children.Add(new TextBlock
-            {
-                Text = title,
-                FontWeight = FontWeight.Normal,
-                FontSize = 14
-            });
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = title,
+                    FontWeight = FontWeight.Normal,
+                    FontSize = 14
+                });
 
-            contentPanel.Children.Add(new TextBlock
-            {
-                Text = message,
-                TextWrapping = TextWrapping.Wrap,
-                FontSize = 12
-            });
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = message,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12
+                });
 
-            _WindowNotificationManager.Show(
-                contentPanel,
-                notificationType,
-                TimeSpan.FromSeconds(5),
-                null,
-                null,
-                new[] { "NotificationCard", styleClass }
-            );
+                _WindowNotificationManager.Show(
+                    contentPanel,
+                    notificationType,
+                    TimeSpan.FromSeconds(5),
+                    null,
+                    null,
+                    new[] { "NotificationCard", styleClass }
+                );
+            }
         }
-
-
-        /// <summary>
-        /// Gets or sets whether the chat panel is currently being shown.
-        /// </summary>
-        // public bool ShowingChat
-        // {
-        //     get => _ShowingChat;
-        //     set => _ShowingChat = value;
-        // }
 
         /// <summary>
         /// Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="FileIngester.IngestFileAsync"/> method.
@@ -188,16 +193,58 @@ namespace View.Personal
             await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
+        /// <summary>
+        /// Updates the chat interface title with the currently selected AI provider and model.
+        /// </summary>
+        /// <remarks>
+        /// This method retrieves the current AI provider and model from application settings,
+        /// updates the title text to display the model name, and sets the text color based on the provider.
+        /// The View provider uses a specific blue color (#0472EF), while other providers use a default gray color (#6A6B6F).
+        /// </remarks>
+        public void UpdateChatTitle()
+        {
+            var app = (App)Application.Current;
+            var provider = app.AppSettings.SelectedProvider;
+            var model = GetCompletionModel(provider);
+            var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
+            if (chatTitleTextBlock != null)
+            {
+                // Set the text of the TextBlock
+                chatTitleTextBlock.Text = $"{model}";
+
+                // Set the foreground color based on the provider
+                if (provider == "View")
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
+                else
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F")); // Default color
+            }
+        }
+
+        /// <summary>
+        /// Removes a chat session from the list of active sessions.
+        /// </summary>
+        /// <param name="session">The ChatSession object to be removed.</param>
+        /// <remarks>
+        /// This method checks if the specified session exists in the _ChatSessions list before attempting to remove it.
+        /// The operation is logged to the console for debugging purposes.
+        /// </remarks>
+        public void RemoveChatSession(ChatSession session)
+        {
+            if (_ChatSessions.Contains(session))
+            {
+                _ChatSessions.Remove(session);
+                Console.WriteLine("[DEBUG] Removed chat session from list.");
+            }
+            else
+            {
+                Console.WriteLine("[WARN] Chat session not found in list.");
+            }
+        }
+
         #endregion
 
         #region Private-Methods
 
-        // private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
-        // {
-        //     var navList = this.FindControl<ListBox>("NavList");
-        //     if (navList != null) navList.SelectedItem = null; // Deselect navigation item
-        //     ShowPanel("Chat"); // Ensure chat panel is shown
-        // }
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             _CurrentChatSession = new ChatSession();
@@ -223,7 +270,6 @@ namespace View.Personal
 
         private void SaveSettings2_Click(object sender, RoutedEventArgs e)
         {
-            // Pass the MainWindow instance (this) to the method in the other file
             MainWindowUIHandlers.SaveSettings2_Click(this);
         }
 
@@ -261,8 +307,6 @@ namespace View.Personal
                         break;
                 }
 
-                if (settings == null) return;
-
                 // OpenAI
                 this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
@@ -275,7 +319,7 @@ namespace View.Personal
                 this.FindControl<TextBox>("AnthropicApiKey").Text = settings.Anthropic.ApiKey;
                 this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
                 this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
-                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Anthropic.VoyageApiKey;
+                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
                 this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
                 this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
 
@@ -315,16 +359,6 @@ namespace View.Personal
             }
         }
 
-        private string GetActiveProvider(AppSettings settings)
-        {
-            if (settings.OpenAI.IsEnabled) return "OpenAI";
-            if (settings.Anthropic.IsEnabled) return "Anthropic";
-            if (settings.Ollama.IsEnabled) return "Ollama";
-            if (settings.View.IsEnabled) return "View";
-            return "View";
-        }
-
-
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
@@ -333,11 +367,6 @@ namespace View.Personal
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.IngestBrowseButton_Click(sender, e, this, _FileBrowserService);
-        }
-
-        private void SendMessage_Click(object sender, RoutedEventArgs e)
-        {
-            ChatUIHandlers.SendMessage_Click(sender, e, this, _ConversationHistory, GetAIResponse);
         }
 
         private void SendMessageTest_Click(object sender, RoutedEventArgs e)
@@ -390,31 +419,9 @@ namespace View.Personal
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
 
-        // private void UpdateMainContentBackground()
-        // {
-        //     // Check if DashboardPanel is visible
-        //     if (DashboardPanel.IsVisible)
-        //         // Set the background to light gray when dashboard is visible
-        //         MainContentArea.Background = new SolidColorBrush(Color.Parse("#F5F5F5"));
-        //     else
-        //         // Set the background to white for other panels
-        //         MainContentArea.Background = new SolidColorBrush(Color.Parse("#FFFFFF"));
-        // }
-
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
-            // UpdateMainContentBackground();
-        }
-
-        private void ModelProvider_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            NavigationUIHandlers.ModelProvider_SelectionChanged(sender, e, this, _WindowInitialized);
-        }
-
-        private void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            MainWindowUIHandlers.FilePathTextBox_PropertyChanged(sender, e, this);
         }
 
         private string GetCompletionModel(string provider)
@@ -435,24 +442,6 @@ namespace View.Personal
             }
         }
 
-        public void UpdateChatTitle()
-        {
-            var app = (App)Application.Current;
-            var provider = app.AppSettings.SelectedProvider;
-            var model = GetCompletionModel(provider);
-            var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
-            if (chatTitleTextBlock != null)
-            {
-                // Set the text of the TextBlock
-                chatTitleTextBlock.Text = $"{model}";
-
-                // Set the foreground color based on the provider
-                if (provider == "View")
-                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
-                else
-                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F")); // Default color
-            }
-        }
 
         private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
@@ -464,14 +453,6 @@ namespace View.Personal
         {
             ChatUIHandlers.ChatInputBox_KeyDown(sender, e, this, _ConversationHistory, GetAIResponse);
         }
-
-        // private string GetTitleFromMessage(string message, int wordCount = 5)
-        // {
-        //     var words = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        //     if (words.Length <= wordCount)
-        //         return message;
-        //     return string.Join(" ", words.Take(wordCount)) + "...";
-        // }
 
         /// <summary>
         /// Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
@@ -550,18 +531,6 @@ namespace View.Personal
             }
         }
 
-        // ToDo: Remove this method if not needed
-        // private string GetApiKey(CompletionProviderSettings settings, string provider)
-        // {
-        //     return provider switch
-        //     {
-        //         "OpenAI" => settings.OpenAICompletionApiKey,
-        //         "Ollama" => "",
-        //         "View" => settings.ViewAccessKey,
-        //         "Anthropic" => settings.AnthropicApiKey,
-        //         _ => null
-        //     };
-        // }
 
         private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
             AppSettings appSettings, string userInput)
@@ -738,7 +707,7 @@ namespace View.Personal
                     {
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        max_tokens = 1024, // Add to CompletionProviderSettings if configurable
+                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
                         temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
@@ -749,7 +718,7 @@ namespace View.Personal
                         ModelName = settings.ViewCompletionModel,
                         Temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         TopP = 1.0, // Add to CompletionProviderSettings if configurable
-                        MaxTokens = 1024, // Add to CompletionProviderSettings if configurable
+                        MaxTokens = 4000, // Add to CompletionProviderSettings if configurable
                         GenerationProvider = "ollama", // Adjust or make configurable
                         GenerationApiKey = settings.ViewApiKey,
                         //ToDo: need to grab this dynamically
@@ -769,7 +738,7 @@ namespace View.Personal
                         model = settings.AnthropicCompletionModel,
                         system = systemContent,
                         messages = conversationMessages,
-                        max_tokens = 300, // Add to CompletionProviderSettings if configurable
+                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
                         temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
@@ -849,7 +818,6 @@ namespace View.Personal
             var expectedContentType = provider == "Ollama" ? "application/x-ndjson" : "text/event-stream";
             if (resp.ContentType != expectedContentType)
                 throw new InvalidOperationException($"Expected {expectedContentType} but got {resp.ContentType}");
-            ;
         }
 
         /// <summary>
@@ -1000,7 +968,7 @@ namespace View.Personal
 
         private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
-            if (e.Property == ToggleSwitch.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
+            if (e.Property == ToggleButton.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
                 if (toggleSwitch.IsChecked == true)
                 {
                     var app = (App)Application.Current;
@@ -1075,25 +1043,14 @@ namespace View.Personal
             }
         }
 
-        public void RemoveChatSession(ChatSession session)
-        {
-            if (_ChatSessions.Contains(session))
-            {
-                _ChatSessions.Remove(session);
-                Console.WriteLine("[DEBUG] Removed chat session from list.");
-            }
-            else
-            {
-                Console.WriteLine("[WARN] Chat session not found in list.");
-            }
-        }
-
         #endregion
 
-#pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8618, CS9264
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

@@ -7,7 +7,6 @@ namespace View.Personal.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Classes;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
@@ -28,6 +27,7 @@ namespace View.Personal.Services
     public static class FileIngester
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 
         #region Public-Members
 
@@ -65,14 +65,8 @@ namespace View.Personal.Services
             }
 
             var appSettings = ((App)Application.Current).AppSettings;
-            if (appSettings == null)
-            {
-                Console.WriteLine("[ERROR] AppSettings is null.");
-                return;
-            }
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
-            var app = (App)Application.Current;
 
             var spinner = window.FindControl<ProgressBar>("IngestSpinner");
 
@@ -199,7 +193,7 @@ namespace View.Personal.Services
                             }
 
                             var ollamaSdk = new ViewOllamaSdk(tenantGuid,
-                                appSettings.Ollama.Endpoint ?? "http://localhost:11434", "");
+                                appSettings.Ollama.Endpoint, "");
                             var ollamaEmbeddingsRequest = new EmbeddingsRequest
                             {
                                 Model = appSettings.Embeddings.OllamaEmbeddingModel,
@@ -244,7 +238,7 @@ namespace View.Personal.Services
                             }
 
                             var voyageSdk = new ViewVoyageAiSdk(tenantGuid,
-                                appSettings.Embeddings.VoyageEndpoint ?? "https://api.voyageai.com/",
+                                appSettings.Embeddings.VoyageEndpoint,
                                 appSettings.Embeddings.VoyageApiKey);
                             var voyageEmbeddingsRequest = new EmbeddingsRequest
                             {
@@ -297,7 +291,7 @@ namespace View.Personal.Services
                             {
                                 EmbeddingsRule = new EmbeddingsRule
                                 {
-                                    EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy" ?? "OpenAI"),
+                                    EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
                                     EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                     EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
                                     BatchSize = 2,
@@ -416,5 +410,6 @@ namespace View.Personal.Services
 
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

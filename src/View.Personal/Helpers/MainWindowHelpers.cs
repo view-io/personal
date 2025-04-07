@@ -3,7 +3,6 @@ namespace View.Personal.Helpers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Avalonia.Controls;
     using LiteGraph;
     using Classes;
     using DocumentAtom.Core.Atoms;
@@ -16,6 +15,8 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class MainWindowHelpers
     {
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+
         #region Public-Members
 
         #endregion
@@ -25,25 +26,6 @@ namespace View.Personal.Helpers
         #endregion
 
         #region Public-Methods
-
-        /// <summary>
-        /// Updates the visibility of provider-specific settings controls based on the selected provider
-        /// <param name="openAISettings">The control containing OpenAI-specific settings</param>
-        /// <param name="anthropicSettings">The control containing Anthropic-specific settings</param>
-        /// <param name="viewSettings">The control containing View-specific settings</param>
-        /// <param name="ollamaSettings">The control containing Ollama-specific settings</param>
-        /// <param name="selectedProvider">The string indicating the currently selected provider</param>
-        /// Returns:
-        /// None; modifies the visibility of the provided controls directly
-        /// </summary>
-        public static void UpdateSettingsVisibility(Control openAISettings,
-            Control anthropicSettings, Control viewSettings, Control ollamaSettings, string selectedProvider)
-        {
-            openAISettings.IsVisible = selectedProvider == "OpenAI";
-            anthropicSettings.IsVisible = selectedProvider == "Anthropic";
-            viewSettings.IsVisible = selectedProvider == "View";
-            ollamaSettings.IsVisible = selectedProvider == "Ollama";
-        }
 
         /// <summary>
         /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects

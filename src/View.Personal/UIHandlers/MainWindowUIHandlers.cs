@@ -7,11 +7,8 @@ namespace View.Personal.UIHandlers
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
     using Classes;
-    using Helpers;
     using Services;
     using LiteGraph;
-    using System.IO;
-    using System.Text.Json;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -19,6 +16,8 @@ namespace View.Personal.UIHandlers
     public static class MainWindowUIHandlers
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8601 // Possible null reference assignment.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 
         #region Public-Members
 
@@ -47,15 +46,13 @@ namespace View.Personal.UIHandlers
             if (dashboardPanel != null) dashboardPanel.IsVisible = true;
         }
 
-        private static void SaveSettingsToFile(AppSettings settings)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var jsonString = JsonSerializer.Serialize(settings, options);
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-            File.WriteAllText(filePath, jsonString);
-            Console.WriteLine($"[INFO] Settings saved to {filePath}");
-        }
-
+        /// <summary>
+        /// Saves application settings from UI controls to the application configuration.
+        /// Updates and persists settings for various AI providers (OpenAI, Anthropic, Ollama, View),
+        /// embedding models, and determines the selected provider based on toggle states.
+        /// Displays a success notification upon completion.
+        /// </summary>
+        /// <param name="window">The MainWindow instance containing the settings UI controls.</param>
         public static void SaveSettings2_Click(MainWindow window)
         {
             // Get the current application instance
@@ -271,5 +268,7 @@ namespace View.Personal.UIHandlers
         #endregion
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

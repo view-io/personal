@@ -4,6 +4,292 @@
         <name>View.Personal</name>
     </assembly>
     <members>
+        <member name="T:View.Personal.App">
+            <summary>
+            Main application class for View Personal.
+            Handles application lifecycle, settings management, and integration with the graph database.
+            </summary>
+            <remarks>
+            This class is responsible for:
+            - Application initialization and startup
+            - Loading and saving application settings
+            - Managing provider configurations (OpenAI, Anthropic, Ollama, View)
+            - Initializing and maintaining the graph database connection
+            - Creating and managing default application entities (tenant, graph, user, credential)
+            </remarks>
+        </member>
+        <member name="F:View.Personal.App._AppSettings">
+            <summary>
+            Application settings for the View Personal application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.Initialize">
+            <summary>
+            Initializes the component by loading its XAML definition.
+            </summary>
+            <remarks>
+            This method is overridden from the base class and uses AvaloniaXamlLoader
+            to load and parse the XAML definition associated with this component.
+            </remarks>
+        </member>
+        <member name="M:View.Personal.App.OnFrameworkInitializationCompleted">
+            <summary>
+            Called when the Avalonia framework has completed initialization.
+            Initializes the application by setting up logging, loading settings,
+            creating and displaying the main window, and initializing the graph database.
+            Creates default tenant, graph, user, and credential entities if they don't exist.
+            </summary>
+            <remarks>
+            This method handles the core application startup sequence, including:
+            - Setting up logging infrastructure
+            - Initializing the SQLite graph repository
+            - Creating default application entities if they don't exist
+            - Displaying error messages if initialization fails
+            </remarks>
+        </member>
+        <member name="M:View.Personal.App.SaveSettings">
+            <summary>
+            Persists the application settings to the settings file.
+            Updates the application settings with current GUID values for tenant, graph, user, and credential,
+            then serializes the settings to JSON and writes them to disk.
+            </summary>
+            <remarks>
+            This method handles error logging if the save operation fails.
+            The settings are saved with indented formatting for better readability.
+            Default values are excluded from serialization to minimize file size.
+            </remarks>
+        </member>
+        <member name="M:View.Personal.App.GetProviderSettings(View.Personal.Classes.CompletionProviderTypeEnum)">
+            <summary>
+            Retrieves the completion provider settings for the specified provider type.
+            Creates and configures a CompletionProviderSettings object with the appropriate 
+            credentials and settings based on the provider type.
+            </summary>
+            <param name="providerType">The type of completion provider to get settings for.</param>
+            <returns>A CompletionProviderSettings object configured with the appropriate settings for the specified provider type.</returns>
+            <remarks>
+            Supports OpenAI, Anthropic, Ollama, and View providers with their respective configuration parameters.
+            Returns a default empty settings object for unrecognized provider types.
+            </remarks>
+        </member>
+        <member name="M:View.Personal.App.SaveSelectedProvider(System.String)">
+            <summary>
+            Updates the application settings to reflect the newly selected AI provider.
+            Sets the IsEnabled property to true for the specified provider and false for all others,
+            then persists the updated settings.
+            </summary>
+            <param name="provider">The name of the provider to be set as active (OpenAI, Anthropic, Ollama, or View).</param>
+            <remarks>
+            This method ensures that only one provider is enabled at a time.
+            After updating the enabled status for all providers, it calls SaveSettings to persist the changes.
+            </remarks>
+        </member>
+        <member name="P:View.Personal.App.AppSettings">
+            <summary>
+            Gets the current application settings.
+            Provides public read-only access to the internal application settings object.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings">
+            <summary>
+            Contains application configuration settings for various AI providers and view settings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAI">
+            <summary>
+            Settings for the OpenAI API integration.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.Anthropic">
+            <summary>
+            Settings for the Anthropic API integration.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.Ollama">
+            <summary>
+            Settings for the Ollama API integration.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.View">
+            <summary>
+            Settings for the View service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.Embeddings">
+            <summary>
+            Settings for embedding models across different providers.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.SelectedProvider">
+            <summary>
+            The currently selected AI provider. Default is "View".
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.OpenAISettings">
+            <summary>
+            Settings specific to the OpenAI service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.IsEnabled">
+            <summary>
+            Indicates whether the OpenAI provider is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.ApiKey">
+            <summary>
+            The API key used for authenticating with OpenAI services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.CompletionModel">
+            <summary>
+            The model name to use for completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.Endpoint">
+            <summary>
+            The endpoint URL for OpenAI API requests.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.AnthropicSettings">
+            <summary>
+            Settings specific to the Anthropic service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.IsEnabled">
+            <summary>
+            Indicates whether the Anthropic provider is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.ApiKey">
+            <summary>
+            The API key used for authenticating with Anthropic services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.CompletionModel">
+            <summary>
+            The model name to use for completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.Endpoint">
+            <summary>
+            The endpoint URL for Anthropic API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.VoyageApiKey">
+            <summary>
+            The API key used for authenticating with Anthropic Voyage services.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.OllamaSettings">
+            <summary>
+            Settings specific to the Ollama service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.IsEnabled">
+            <summary>
+            Indicates whether the Ollama provider is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.CompletionModel">
+            <summary>
+            The model name to use for completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.Endpoint">
+            <summary>
+            The endpoint URL for Ollama API requests.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.ViewSettings">
+            <summary>
+            Settings specific to the View service.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.Endpoint">
+            <summary>
+            The endpoint URL for View API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.TenantGuid">
+            <summary>
+            The tenant GUID for View service authentication.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.GraphGuid">
+            <summary>
+            The graph GUID for View service operations.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.UserGuid">
+            <summary>
+            The user GUID for View service authentication.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.CredentialGuid">
+            <summary>
+            The credential GUID for View service authentication.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.ApiKey">
+            <summary>
+            The API key used for authenticating with View services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.AccessKey">
+            <summary>
+            The access key used for authenticating with View services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.CompletionModel">
+            <summary>
+            The model name to use for completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.IsEnabled">
+            <summary>
+            Indicates whether the View provider is enabled.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.EmbeddingsSettings">
+            <summary>
+            Settings for embedding models across different providers.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OllamaEmbeddingModel">
+            <summary>
+            The model name to use for Ollama embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.ViewEmbeddingModel">
+            <summary>
+            The model name to use for View embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.SelectedEmbeddingModel">
+            <summary>
+            The currently selected embedding model provider. Default is "Ollama".
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OpenAIEmbeddingModel">
+            <summary>
+            The model name to use for OpenAI embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageEmbeddingModel">
+            <summary>
+            The model name to use for Voyage embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageApiKey">
+            <summary>
+            The API key used for authenticating with Voyage services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageEndpoint">
+            <summary>
+            The endpoint URL for Voyage API requests.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AvaloniaConsoleWriter">
             <summary>
             A custom TextWriter implementation that redirects console output to an Avalonia TextBox control.
@@ -44,6 +330,82 @@
             <summary>
             Gets or sets the content of the chat message.
             </summary>
+        </member>
+        <member name="T:View.Personal.Classes.ChatSession">
+            <summary>
+            Represents a chat conversation session containing messages and metadata.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ChatSession.Title">
+            <summary>
+            Gets or sets the title of the chat session.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ChatSession.Messages">
+            <summary>
+            Gets or sets the collection of messages in this chat session.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.CompletionProviderSettings">
+            <summary>
+            Contains settings for various AI completion providers.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ProviderType">
+            <summary>
+            Gets or sets the type of completion provider to use.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionApiKey">
+            <summary>
+            Gets or sets the API key for OpenAI completion services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionModel">
+            <summary>
+            Gets or sets the model name for OpenAI completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicApiKey">
+            <summary>
+            Gets or sets the API key for Anthropic completion services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicCompletionModel">
+            <summary>
+            Gets or sets the model name for Anthropic completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaCompletionModel">
+            <summary>
+            Gets or sets the model name for Ollama completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewApiKey">
+            <summary>
+            Gets or sets the API key for View completion services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewAccessKey">
+            <summary>
+            Gets or sets the access key for View completion services.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewEndpoint">
+            <summary>
+            Gets or sets the endpoint URL for View API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionModel">
+            <summary>
+            Gets or sets the model name for View completion requests.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.CompletionProviderSettings.#ctor(View.Personal.Classes.CompletionProviderTypeEnum)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Classes.CompletionProviderSettings"/> class with the specified provider type.
+            </summary>
+            <param name="providerType">The type of completion provider to use.</param>
         </member>
         <member name="T:View.Personal.Classes.CompletionProviderTypeEnum">
             <summary>
@@ -103,26 +465,6 @@
         <member name="P:View.Personal.Classes.FileViewModel.NodeGuid">
             <summary>
             Gets or sets the node GUID.
-            </summary>
-        </member>
-        <member name="T:View.Personal.Classes.OpenAIReasoningEffortEnum">
-            <summary>
-            Defines the levels of reasoning effort for OpenAI processing.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Classes.OpenAIReasoningEffortEnum.Low">
-            <summary>
-            Low reasoning effort.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Classes.OpenAIReasoningEffortEnum.Medium">
-            <summary>
-            Medium reasoning effort.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Classes.OpenAIReasoningEffortEnum.High">
-            <summary>
-            Medium reasoning effort.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.Settings">
@@ -212,18 +554,6 @@
             Provides helper methods for managing UI-related tasks and graph operations in the main window.
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.MainWindowHelpers.UpdateSettingsVisibility(Avalonia.Controls.Control,Avalonia.Controls.Control,Avalonia.Controls.Control,Avalonia.Controls.Control,System.String)">
-            <summary>
-            Updates the visibility of provider-specific settings controls based on the selected provider
-            <param name="openAISettings">The control containing OpenAI-specific settings</param>
-            <param name="anthropicSettings">The control containing Anthropic-specific settings</param>
-            <param name="viewSettings">The control containing View-specific settings</param>
-            <param name="ollamaSettings">The control containing Ollama-specific settings</param>
-            <param name="selectedProvider">The string indicating the currently selected provider</param>
-            Returns:
-            None; modifies the visibility of the provided controls directly
-            </summary>
-        </member>
         <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
             <summary>
             Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
@@ -272,6 +602,18 @@
             Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
             </summary>
         </member>
+        <member name="F:View.Personal.MainWindow._ChatSessions">
+            <summary>
+            List of active chat sessions in the application.
+            Stores title and message.
+            </summary>
+        </member>
+        <member name="F:View.Personal.MainWindow._CurrentChatSession">
+            <summary>
+            The currently active chat session.
+            References the chat session that is currently being displayed and interacted with in the UI.
+            </summary>
+        </member>
         <member name="M:View.Personal.MainWindow.#ctor">
             <summary>
             Initializes a new instance of the MainWindow class, setting up event handlers and UI components.
@@ -293,6 +635,26 @@
             </summary>
             <param name="filePath">The path to the file to be ingested.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of file ingestion.</returns>
+        </member>
+        <member name="M:View.Personal.MainWindow.UpdateChatTitle">
+            <summary>
+            Updates the chat interface title with the currently selected AI provider and model.
+            </summary>
+            <remarks>
+            This method retrieves the current AI provider and model from application settings,
+            updates the title text to display the model name, and sets the text color based on the provider.
+            The View provider uses a specific blue color (#0472EF), while other providers use a default gray color (#6A6B6F).
+            </remarks>
+        </member>
+        <member name="M:View.Personal.MainWindow.RemoveChatSession(View.Personal.Classes.ChatSession)">
+            <summary>
+            Removes a chat session from the list of active sessions.
+            </summary>
+            <param name="session">The ChatSession object to be removed.</param>
+            <remarks>
+            This method checks if the specified session exists in the _ChatSessions list before attempting to remove it.
+            The operation is logged to the console for debugging purposes.
+            </remarks>
         </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
@@ -339,7 +701,7 @@
             <param name="conversationSoFar">The existing list of ChatMessage objects from the conversation history.</param>
             <returns>A list of ChatMessage objects including the conversation history, context, and user input.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.CreateRequestBody(System.String,CompletionProviderSettings,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
+        <member name="M:View.Personal.MainWindow.CreateRequestBody(System.String,View.Personal.Classes.CompletionProviderSettings,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
             <summary>
             Creates a request body object tailored to the specified provider using the provided settings and messages.
             </summary>
@@ -348,7 +710,7 @@
             <param name="finalMessages">The list of ChatMessage objects to include in the request body.</param>
             <returns>An object representing the formatted request body for the specified provider.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.SendApiRequest(System.String,CompletionProviderSettings,System.Object,System.Action{System.String})">
+        <member name="M:View.Personal.MainWindow.SendApiRequest(System.String,View.Personal.Classes.CompletionProviderSettings,System.Object,System.Action{System.String})">
             <summary>
             Asynchronously sends an API request to the specified provider and processes the streaming response.
             </summary>
@@ -358,7 +720,7 @@
             <param name="onTokenReceived">An action to handle tokens as they are received from the streaming response.</param>
             <returns>A task that resolves to the final response string from the API.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.ConfigureRequestHeaders(RestWrapper.RestRequest,System.String,CompletionProviderSettings)">
+        <member name="M:View.Personal.MainWindow.ConfigureRequestHeaders(RestWrapper.RestRequest,System.String,View.Personal.Classes.CompletionProviderSettings)">
             <summary>
             Configures the headers for a REST request based on the specified provider and settings.
             </summary>
@@ -499,6 +861,93 @@
             <param name="errorMessage">An output parameter that receives the error message if the export fails; null if successful.</param>
             <returns>True if the export succeeds, false if an exception occurs during the process.</returns>
         </member>
+        <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
+            <summary>
+            Provides static event handlers and utility methods for managing the chat user interface.
+            Contains methods for sending messages, handling user input, clearing conversations,
+            downloading chat history, and updating the conversation display.
+            </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.SendMessage_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
+            <summary>
+            Handles the click event for sending a message in a chat interface. 
+            Processes the user's input, adds it to the conversation history, 
+            requests a response from the AI, and updates the UI accordingly.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Event data associated with the click event.</param>
+            <param name="window">The window containing the chat interface controls.</param>
+            <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+            <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+            <returns>This method doesn't return a value as it's marked async void.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.SendMessageTest_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
+            <summary>
+            Handles the click event for sending a test message in a chat interface.
+            Processes the user's input, adds it to the current chat session, 
+            manages chat history for the first message in a session,
+            requests a response from the AI, and updates the UI accordingly.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Event data associated with the click event.</param>
+            <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
+            <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+            <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+            <returns>This method doesn't return a value as it's marked async void.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.GetTitleFromMessage(System.String,System.Int32)">
+            <summary>
+            Creates a title from a message by taking the first few words and adding an ellipsis if necessary.
+            </summary>
+            <param name="message">The full message text to extract a title from.</param>
+            <param name="wordCount">The maximum number of words to include in the title. Defaults to 5.</param>
+            <returns>A string containing the first wordCount words of the message followed by an ellipsis, or the full message if it contains fewer words than wordCount.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.ChatInputBox_KeyDown(System.Object,Avalonia.Input.KeyEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
+            <summary>
+            Handles key down events for the chat input box, triggering message sending when the Enter key is pressed.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Key event data associated with the key press.</param>
+            <param name="window">The window containing the chat interface controls.</param>
+            <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+            <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.ClearChat_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
+            <summary>
+            Handles the click event for clearing the current chat session.
+            Removes all messages from the current chat session, updates the chat history list,
+            removes the session from application state, and updates the UI accordingly.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Event data associated with the click event.</param>
+            <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
+            <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.DownloadChat_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},View.Personal.Services.FileBrowserService)">
+            <summary>
+            Handles the click event for downloading the current chat conversation.
+            Prompts the user to select a save location and saves the conversation history as a text file.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Event data associated with the click event.</param>
+            <param name="window">The window containing the chat interface controls.</param>
+            <param name="conversationHistory">The list of chat messages representing the conversation history to be saved.</param>
+            <param name="fileBrowserService">Service for browsing the file system and selecting save locations.</param>
+            <returns>This method doesn't return a value as it's marked async void.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.UpdateConversationWindow(Avalonia.Controls.StackPanel,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Boolean,Avalonia.Controls.Window)">
+            <summary>
+            Updates the conversation window UI with the current chat messages.
+            Clears the existing conversation display and recreates it with the current message history,
+            applying appropriate styling to user and assistant messages, and optionally showing a spinner
+            for the assistant's response in progress.
+            </summary>
+            <param name="conversationContainer">The StackPanel container that holds the conversation messages.</param>
+            <param name="conversationHistory">The list of chat messages to display.</param>
+            <param name="showSpinner">Boolean indicating whether to show a loading spinner for the assistant's response.</param>
+            <param name="window">The window containing the chat interface controls.</param>
+        </member>
         <member name="T:View.Personal.UIHandlers.MainWindowUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing the main window user interface.
@@ -509,6 +958,15 @@
             Handles the opened event of the main window, initializing settings and console output.
             </summary>
             <param name="window">The main window that has been opened.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SaveSettings2_Click(View.Personal.MainWindow)">
+            <summary>
+            Saves application settings from UI controls to the application configuration.
+            Updates and persists settings for various AI providers (OpenAI, Anthropic, Ollama, View),
+            embedding models, and determines the selected provider based on toggle states.
+            Displays a success notification upon completion.
+            </summary>
+            <param name="window">The MainWindow instance containing the settings UI controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.DeleteFile_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>

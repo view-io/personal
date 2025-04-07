@@ -1,28 +1,67 @@
-﻿using View.Personal.Classes;
-
-public class CompletionProviderSettings
+﻿namespace View.Personal.Classes
 {
-    public CompletionProviderTypeEnum ProviderType { get; set; }
-
-    // OpenAI Completion Settings
-    public string OpenAICompletionApiKey { get; set; } = string.Empty;
-    public string OpenAICompletionModel { get; set; } = string.Empty;
-
-    // Anthropic Completion Settings
-    public string AnthropicApiKey { get; set; } = string.Empty;
-    public string AnthropicCompletionModel { get; set; } = string.Empty;
-
-    // Ollama Completion Settings
-    public string OllamaCompletionModel { get; set; } = string.Empty;
-
-    // View Completion Settings
-    public string ViewApiKey { get; set; } = string.Empty;
-    public string ViewAccessKey { get; set; } = string.Empty;
-    public string ViewEndpoint { get; set; } = string.Empty;
-    public string ViewCompletionModel { get; set; } = string.Empty;
-
-    public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
+    /// <summary>
+    /// Contains settings for various AI completion providers.
+    /// </summary>
+    public class CompletionProviderSettings
     {
-        ProviderType = providerType;
+        /// <summary>
+        /// Gets or sets the type of completion provider to use.
+        /// </summary>
+        public CompletionProviderTypeEnum ProviderType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the API key for OpenAI completion services.
+        /// </summary>
+        public string OpenAICompletionApiKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the model name for OpenAI completion requests.
+        /// </summary>
+        public string OpenAICompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the API key for Anthropic completion services.
+        /// </summary>
+        public string AnthropicApiKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the model name for Anthropic completion requests.
+        /// </summary>
+        public string AnthropicCompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the model name for Ollama completion requests.
+        /// </summary>
+        public string OllamaCompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the API key for View completion services.
+        /// </summary>
+        public string ViewApiKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the access key for View completion services.
+        /// </summary>
+        public string ViewAccessKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the endpoint URL for View API requests.
+        /// </summary>
+        public string ViewEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the model name for View completion requests.
+        /// </summary>
+        public string ViewCompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompletionProviderSettings"/> class with the specified provider type.
+        /// </summary>
+        /// <param name="providerType">The type of completion provider to use.</param>
+        public CompletionProviderSettings(CompletionProviderTypeEnum providerType)
+        {
+            ProviderType = providerType;
+        }
     }
 }
