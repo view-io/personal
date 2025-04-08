@@ -5,6 +5,7 @@ namespace View.Personal.UIHandlers
     using System.Linq;
     using Avalonia.Controls;
     using Avalonia.Interactivity;
+    using Avalonia.Media;
     using Helpers;
     using LiteGraph;
 
@@ -37,59 +38,88 @@ namespace View.Personal.UIHandlers
         public static void NavList_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
             LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
-            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxItem selectedItem)
+            if (sender is ListBox listBox)
             {
-                var selectedContent = selectedItem.Content?.ToString();
-                var dashboardPanel = window.FindControl<StackPanel>("DashboardPanel");
-                var settingsPanel = window.FindControl<StackPanel>("SettingsPanel");
+                // Retrieve UI controls
+                var chatHistoryList = window.FindControl<ListBox>("ChatHistoryList");
+                var mainWindow = window as MainWindow;
+                var dashboardPanel = window.FindControl<Border>("DashboardPanel");
+                var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
-                var chatPanel = window.FindControl<StackPanel>("ChatPanel");
+                var chatPanel = window.FindControl<Border>("ChatPanel");
                 var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
+                var mainContentArea = window.FindControl<Grid>("MainContentArea");
 
-                if (dashboardPanel != null && settingsPanel != null && myFilesPanel != null && chatPanel != null &&
-                    consolePanel != null && workspaceText != null)
+                // Set main content area background to white
+                if (mainContentArea != null)
+                    mainContentArea.Background = new SolidColorBrush(Colors.White);
+
+                // Hide all panels initially
+                if (dashboardPanel != null) dashboardPanel.IsVisible = false;
+                if (settingsPanel2 != null) settingsPanel2.IsVisible = false;
+                if (myFilesPanel != null) myFilesPanel.IsVisible = false;
+                if (chatPanel != null) chatPanel.IsVisible = false;
+                if (consolePanel != null) consolePanel.IsVisible = false;
+                if (workspaceText != null) workspaceText.IsVisible = false;
+
+                if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
-                    dashboardPanel.IsVisible = false;
-                    settingsPanel.IsVisible = false;
-                    myFilesPanel.IsVisible = false;
-                    chatPanel.IsVisible = false;
-                    consolePanel.IsVisible = false;
-                    workspaceText.IsVisible = false;
+                    var selectedTag = selectedItem.Tag?.ToString();
+                    switch (selectedTag)
+                    {
+                        case "Files":
+                            if (myFilesPanel != null)
+                            {
+                                myFilesPanel.IsVisible = true;
+                                var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
+                                var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
+                                var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
+
+                                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                                {
+                                    var uniqueFiles =
+                                        MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
+
+                                    if (uniqueFiles.Any())
+                                    {
+                                        filesDataGrid.ItemsSource = uniqueFiles;
+                                        uploadFilesPanel.IsVisible = false;
+                                        filesDataGrid.IsVisible = true;
+                                    }
+                                    else
+                                    {
+                                        filesDataGrid.ItemsSource = null;
+                                        filesDataGrid.IsVisible = false;
+                                        fileOperationsPanel.IsVisible = false;
+                                        uploadFilesPanel.IsVisible = true;
+                                    }
+
+                                    Console.WriteLine(
+                                        $"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
+                                }
+                            }
+
+                            break;
+
+                        case "Settings2":
+                            if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
+                            break;
+
+                        case "Console":
+                            if (consolePanel != null) consolePanel.IsVisible = true;
+                            break;
+                    }
+
+                    // Deselect chat history list when a navigation item is selected
+                    if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
                 }
-
-                switch (selectedContent)
+                else
                 {
-                    case "Dashboard":
-                        if (dashboardPanel != null) dashboardPanel.IsVisible = true;
-                        break;
-                    case "Settings":
-                        if (settingsPanel != null) settingsPanel.IsVisible = true;
-                        var comboBox = window.FindControl<ComboBox>("NavModelProviderComboBox");
-                        var currentProvider = (comboBox?.SelectedItem as ComboBoxItem)?.Content?.ToString();
-                        if (!string.IsNullOrEmpty(currentProvider))
-                            MainWindowUIHandlers.UpdateSettingsVisibility(window, currentProvider);
-                        break;
-                    case "My Files":
-                        if (myFilesPanel != null) myFilesPanel.IsVisible = true;
-                        var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid != null)
-                        {
-                            var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                            filesDataGrid.ItemsSource = uniqueFiles.Any() ? uniqueFiles : null;
-                            Console.WriteLine($"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
-                        }
-
-                        break;
-                    case "Chat":
-                        if (chatPanel != null) chatPanel.IsVisible = true;
-                        break;
-                    case "Console":
-                        if (consolePanel != null) consolePanel.IsVisible = true;
-                        break;
-                    default:
-                        if (workspaceText != null) workspaceText.IsVisible = true;
-                        break;
+                    // No navigation item selected, show chat panel if possible, otherwise dashboard
+                    if (mainWindow != null && chatPanel != null)
+                        chatPanel.IsVisible = true;
+                    else if (dashboardPanel != null) dashboardPanel.IsVisible = true;
                 }
             }
         }
@@ -118,20 +148,7 @@ namespace View.Personal.UIHandlers
 
                 var app = (App)Application.Current;
                 app?.SaveSelectedProvider(selectedProvider);
-                MainWindowUIHandlers.UpdateProviderSettings(window, selectedProvider);
-                MainWindowUIHandlers.UpdateSettingsVisibility(window, selectedProvider);
             }
-        }
-
-        /// <summary>
-        /// Handles the click event to navigate to the settings panel in the UI.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the navigation panels.</param>
-        public static void NavigateToSettings_Click(object sender, RoutedEventArgs e, Window window)
-        {
-            NavigateToPanel(window, "Settings");
         }
 
         /// <summary>

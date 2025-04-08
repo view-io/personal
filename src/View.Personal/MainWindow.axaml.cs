@@ -11,8 +11,10 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Controls.Primitives;
     using Avalonia.Input;
     using Avalonia.Interactivity;
+    using Avalonia.Media;
     using Avalonia.Threading;
     using Classes;
     using DocumentAtom.Core.Atoms;
@@ -38,6 +40,8 @@ namespace View.Personal
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8618, CS9264
+#pragma warning disable CS8604 // Possible null reference argument.
 
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         // ReSharper disable PossibleMultipleEnumeration
@@ -47,7 +51,19 @@ namespace View.Personal
         // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
 
-        #region Internal-Members
+        #region Public-Members
+
+        /// <summary>
+        /// List of active chat sessions in the application.
+        /// Stores title and message.
+        /// </summary>
+        public List<ChatSession> _ChatSessions = new();
+
+        /// <summary>
+        /// The currently active chat session.
+        /// References the chat session that is currently being displayed and interacted with in the UI.
+        /// </summary>
+        public ChatSession _CurrentChatSession;
 
         #endregion
 
@@ -61,7 +77,13 @@ namespace View.Personal
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
+
+#pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
+#pragma warning restore CS0414 // Field is assigned but its value is never used
+
+        // private bool _ShowingChat = false;
+        private List<ToggleSwitch> _ToggleSwitches;
 
         #endregion
 
@@ -85,14 +107,23 @@ namespace View.Personal
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
                     Console.WriteLine("[INFO] MainWindow opened.");
+                    var navList = this.FindControl<ListBox>("NavList");
+                    navList.SelectedIndex = -1;
+                    InitializeToggleSwitches();
+                    LoadSettingsFromFile();
+                    InitializeEmbeddingRadioButtons();
+                    var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
+                    if (chatHistoryList == null)
+                        Console.WriteLine("[ERROR] ChatHistoryList not found during initialization.");
+                    else
+                        Console.WriteLine("[DEBUG] ChatHistoryList found during initialization.");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
-                NavModelProviderComboBox.SelectionChanged += (s, e) =>
-                    NavigationUIHandlers.ModelProvider_SelectionChanged(s, e, this, _WindowInitialized);
-                FilePathTextBox.PropertyChanged += FilePathTextBox_PropertyChanged;
-                ExportFilePathTextBox.PropertyChanged += ExportFilePathTextBox_PropertyChanged;
-                ChatInputBox.KeyDown += ChatInputBox_KeyDown;
+                var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
+                if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
+                chatInputBox.KeyDown += ChatInputBox_KeyDown;
+                chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
             {
@@ -108,22 +139,224 @@ namespace View.Personal
         /// <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         public void ShowNotification(string title, string message, NotificationType notificationType)
         {
-            var notification = new Notification(
-                title,
-                message,
-                notificationType,
-                TimeSpan.FromSeconds(5)
-            );
-            _WindowNotificationManager.Show(notification);
+            var styleClass = notificationType switch
+            {
+                NotificationType.Success => "success",
+                NotificationType.Error => "error",
+                NotificationType.Warning => "warning",
+                NotificationType.Information => "info",
+                _ => null
+            };
+
+            if (styleClass != null)
+            {
+                var contentPanel = new StackPanel
+                {
+                    Spacing = 4,
+                    Classes = { "NotificationCard", styleClass }
+                };
+
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = title,
+                    FontWeight = FontWeight.Normal,
+                    FontSize = 14
+                });
+
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = message,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12
+                });
+
+                _WindowNotificationManager.Show(
+                    contentPanel,
+                    notificationType,
+                    TimeSpan.FromSeconds(5),
+                    null,
+                    null,
+                    new[] { "NotificationCard", styleClass }
+                );
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="FileIngester.IngestFileAsync"/> method.
+        /// This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
+        /// It serves as a bridge between the UI event handling in <see cref="MainWindow"/> and the file ingestion logic in <see cref="FileIngester"/>.
+        /// </summary>
+        /// <param name="filePath">The path to the file to be ingested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of file ingestion.</returns>
+        public async Task IngestFileAsync(string filePath)
+        {
+            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
+        }
+
+        /// <summary>
+        /// Updates the chat interface title with the currently selected AI provider and model.
+        /// </summary>
+        /// <remarks>
+        /// This method retrieves the current AI provider and model from application settings,
+        /// updates the title text to display the model name, and sets the text color based on the provider.
+        /// The View provider uses a specific blue color (#0472EF), while other providers use a default gray color (#6A6B6F).
+        /// </remarks>
+        public void UpdateChatTitle()
+        {
+            var app = (App)Application.Current;
+            var provider = app.AppSettings.SelectedProvider;
+            var model = GetCompletionModel(provider);
+            var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
+            if (chatTitleTextBlock != null)
+            {
+                // Set the text of the TextBlock
+                chatTitleTextBlock.Text = $"{model}";
+
+                // Set the foreground color based on the provider
+                if (provider == "View")
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
+                else
+                    chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F")); // Default color
+            }
+        }
+
+        /// <summary>
+        /// Removes a chat session from the list of active sessions.
+        /// </summary>
+        /// <param name="session">The ChatSession object to be removed.</param>
+        /// <remarks>
+        /// This method checks if the specified session exists in the _ChatSessions list before attempting to remove it.
+        /// The operation is logged to the console for debugging purposes.
+        /// </remarks>
+        public void RemoveChatSession(ChatSession session)
+        {
+            if (_ChatSessions.Contains(session))
+            {
+                _ChatSessions.Remove(session);
+                Console.WriteLine("[DEBUG] Removed chat session from list.");
+            }
+            else
+            {
+                Console.WriteLine("[WARN] Chat session not found in list.");
+            }
         }
 
         #endregion
 
         #region Private-Methods
 
-        private void SaveSettings_Click(object sender, RoutedEventArgs e)
+        private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.SaveSettings_Click(this);
+            _CurrentChatSession = new ChatSession();
+            _ChatSessions.Add(_CurrentChatSession);
+            _ConversationHistory = _CurrentChatSession.Messages; // Should be a new empty list
+            Console.WriteLine("[DEBUG] Starting new chat session. Conversation history count: " +
+                              _ConversationHistory.Count);
+
+            var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+            if (conversationContainer != null)
+                conversationContainer.Children.Clear();
+
+            ShowPanel("Chat");
+            var mainContentArea = this.FindControl<Grid>("MainContentArea");
+            if (mainContentArea != null)
+                mainContentArea.Background = new SolidColorBrush(Colors.White);
+
+            var navList = this.FindControl<ListBox>("NavList");
+            if (navList != null) navList.SelectedIndex = -1;
+            var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
+            if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
+        }
+
+        private void SaveSettings2_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindowUIHandlers.SaveSettings2_Click(this);
+        }
+
+        private void LoadSettingsFromFile()
+        {
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            if (File.Exists(filePath))
+            {
+                var jsonString = File.ReadAllText(filePath);
+                var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
+
+                var app = (App)Application.Current;
+                app._AppSettings = settings ?? new AppSettings();
+
+                // Load completion provider toggles
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+
+                // Sync with SelectedProvider
+                switch (app.AppSettings.SelectedProvider)
+                {
+                    case "OpenAI":
+                        this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = true;
+                        break;
+                    case "Anthropic":
+                        this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = true;
+                        break;
+                    case "Ollama":
+                        this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = true;
+                        break;
+                    case "View":
+                        this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = true;
+                        break;
+                }
+
+                // OpenAI
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
+                this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
+                this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
+                this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
+
+                // Anthropic
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<TextBox>("AnthropicApiKey").Text = settings.Anthropic.ApiKey;
+                this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
+                this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
+                this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
+                this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
+                this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
+
+                // Ollama
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
+                this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
+                this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
+
+                // View
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
+                this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
+                this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
+                this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid ?? Guid.Empty.ToString();
+                this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
+                this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
+
+                // Embeddings
+                this.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "Ollama";
+                this.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "View";
+                this.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
+                this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
+                    settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
+
+                // Update App instance
+                app._AppSettings = settings;
+            }
+            else
+            {
+                var app = (App)Application.Current;
+                app._AppSettings.Embeddings.SelectedEmbeddingModel = "Local";
+                InitializeEmbeddingRadioButtons();
+            }
         }
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
@@ -131,44 +364,49 @@ namespace View.Personal
             MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
         }
 
-        private void IngestFile_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.IngestFile_Click(sender, e, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
-        }
-
-        private void ExportGraph_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.ExportGraph_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
-        }
-
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowUIHandlers.BrowseButton_Click(sender, e, this, _FileBrowserService);
-        }
-
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.IngestBrowseButton_Click(sender, e, this, _FileBrowserService);
         }
 
-        private void NavigateToSettings_Click(object sender, RoutedEventArgs e)
+        private void SendMessageTest_Click(object sender, RoutedEventArgs e)
         {
-            NavigationUIHandlers.NavigateToSettings_Click(sender, e, this);
+            ChatUIHandlers.SendMessageTest_Click(sender, e, this, _ConversationHistory, GetAIResponse);
         }
 
-        private void NavigateToMyFiles_Click(object sender, RoutedEventArgs e)
+        private void ChatOptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationUIHandlers.NavigateToMyFiles_Click(sender, e, this);
+            if (sender is Button button && button.ContextMenu != null)
+            {
+                Console.WriteLine("[DEBUG] ChatOptionsButton clicked, opening context menu");
+                button.ContextMenu.Open(button);
+            }
         }
 
-        // private void NavigateToChat_Click(object sender, RoutedEventArgs e)
-        // {
-        //     NavigationUIHandlers.NavigateToChat_Click(sender, e, this);
-        // }
-
-        private void SendMessage_Click(object sender, RoutedEventArgs e)
+        private void ChatHistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ChatUIHandlers.SendMessage_Click(sender, e, this, _ConversationHistory, GetAIResponse);
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem is ListBoxItem selectedItem)
+            {
+                var chatSession = selectedItem.Tag as ChatSession;
+                if (chatSession != null)
+                {
+                    _CurrentChatSession = chatSession;
+                    _ConversationHistory = chatSession.Messages;
+                    var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
+                    ChatUIHandlers.UpdateConversationWindow(
+                        conversationContainer,
+                        _ConversationHistory,
+                        false,
+                        this
+                    );
+                    ShowPanel("Chat");
+
+                    // Deselect NavList
+                    var navList = this.FindControl<ListBox>("NavList");
+                    if (navList != null) navList.SelectedIndex = -1;
+                }
+            }
         }
 
         private void ClearChat_Click(object sender, RoutedEventArgs e)
@@ -186,19 +424,29 @@ namespace View.Personal
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
         }
 
-        private void ModelProvider_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private string GetCompletionModel(string provider)
         {
-            NavigationUIHandlers.ModelProvider_SelectionChanged(sender, e, this, _WindowInitialized);
+            var app = (App)Application.Current;
+            switch (provider)
+            {
+                case "OpenAI":
+                    return app.AppSettings.OpenAI.CompletionModel;
+                case "Anthropic":
+                    return app.AppSettings.Anthropic.CompletionModel;
+                case "Ollama":
+                    return app.AppSettings.Ollama.CompletionModel;
+                case "View":
+                    return app.AppSettings.View.CompletionModel;
+                default:
+                    return "Unknown";
+            }
         }
 
-        private void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            MainWindowUIHandlers.FilePathTextBox_PropertyChanged(sender, e, this);
-        }
 
-        private void ExportFilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.ExportFilePathTextBox_PropertyChanged(sender, e, this);
+            await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
+                _TenantGuid, _GraphGuid);
         }
 
         private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
@@ -251,20 +499,20 @@ namespace View.Personal
         /// <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
         private async Task<string> GetAIResponse(string userInput, Action<string> onTokenReceived = null)
         {
-            Console.WriteLine("[INFO] GetAIResponse called. Checking selected provider...");
             try
             {
                 var app = (App)Application.Current;
-                var selectedProvider = app.AppSettings.SelectedProvider;
+                var selectedProvider = app.AppSettings.SelectedProvider; // Completion provider
+                var embeddingsProvider = app.AppSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                Console.WriteLine($"[INFO] Using {selectedProvider} for chat completion.");
-                var (sdk, embeddingsRequest) = CreateEmbeddingRequest(selectedProvider, settings, userInput);
+                // Generate embeddings with the selected embeddings provider
+                var (sdk, embeddingsRequest) =
+                    GetEmbeddingsSdkAndRequest(embeddingsProvider, app.AppSettings, userInput);
                 var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
 
-                Console.WriteLine($"[INFO] Prompt embeddings generated. Length={promptEmbeddings.Count}");
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
                 var searchResults = await PerformVectorSearch(floatEmbeddings);
                 if (searchResults == null || !searchResults.Any())
@@ -283,60 +531,57 @@ namespace View.Personal
             }
         }
 
-        // ToDo: Remove this method if not needed
-        // private string GetApiKey(CompletionProviderSettings settings, string provider)
-        // {
-        //     return provider switch
-        //     {
-        //         "OpenAI" => settings.OpenAICompletionApiKey,
-        //         "Ollama" => "",
-        //         "View" => settings.ViewAccessKey,
-        //         "Anthropic" => settings.AnthropicApiKey,
-        //         _ => null
-        //     };
-        // }
 
-        /// <summary>
-        /// Creates an embedding request and corresponding SDK instance based on the specified provider and settings.
-        /// </summary>
-        /// <param name="provider">The name of the completion provider to configure the embedding request for.</param>
-        /// <param name="settings">The settings object containing provider-specific configuration details.</param>
-        /// <param name="userInput">The user's input string to be embedded.</param>
-        /// <returns>A tuple containing the SDK instance and the configured EmbeddingsRequest object.</returns>
-        private (object sdk, EmbeddingsRequest request) CreateEmbeddingRequest(string provider,
-            CompletionProviderSettings settings, string userInput)
+        private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
+            AppSettings appSettings, string userInput)
         {
-            return provider switch
+            switch (embeddingsProvider)
             {
-                "OpenAI" => (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", settings.OpenAICompletionApiKey),
-                    new EmbeddingsRequest
-                    {
-                        Model = settings.OpenAIEmbeddingModel ?? "text-embedding-ada-002",
-                        Contents = new List<string> { userInput }
-                    }),
-                "Ollama" => (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
-                    new EmbeddingsRequest { Model = settings.OllamaModel, Contents = new List<string> { userInput } }),
-                "View" => (new ViewEmbeddingsServerSdk(_TenantGuid, settings.ViewEndpoint, settings.ViewAccessKey),
-                    new EmbeddingsRequest
-                    {
-                        EmbeddingsRule = new EmbeddingsRule
+                case "OpenAI":
+                    return (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", appSettings.OpenAI.ApiKey),
+                        new EmbeddingsRequest
                         {
-                            EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>(settings.ViewEmbeddingsGenerator),
-                            EmbeddingsGeneratorUrl = settings.ViewEmbeddingsGeneratorUrl,
-                            EmbeddingsGeneratorApiKey = settings.ViewApiKey,
-                            BatchSize = 2, MaxGeneratorTasks = 4, MaxRetries = 3, MaxFailures = 3
-                        },
-                        Model = settings.ViewModel,
-                        Contents = new List<string> { userInput }
-                    }),
-                "Anthropic" => (new ViewVoyageAiSdk(_TenantGuid, "https://api.voyageai.com/", settings.VoyageApiKey),
-                    new EmbeddingsRequest
-                    {
-                        Model = settings.VoyageEmbeddingModel ?? "text-embedding-ada-002",
-                        Contents = new List<string> { userInput }
-                    }),
-                _ => throw new ArgumentException("Unsupported provider")
-            };
+                            Model = appSettings.Embeddings.OpenAIEmbeddingModel ?? "text-embedding-ada-002",
+                            Contents = new List<string> { userInput }
+                        });
+                case "Ollama":
+                    return (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
+                        new EmbeddingsRequest
+                        {
+                            Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+                case "View":
+                    return (
+                        new ViewEmbeddingsServerSdk(_TenantGuid, appSettings.View.Endpoint, appSettings.View.AccessKey),
+                        new EmbeddingsRequest
+                        {
+                            EmbeddingsRule = new EmbeddingsRule
+                            {
+                                EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
+                                EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
+                                BatchSize = 2,
+                                MaxGeneratorTasks = 4,
+                                MaxRetries = 3,
+                                MaxFailures = 3
+                            },
+                            Model = appSettings.Embeddings.ViewEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+
+                case "VoyageAI":
+                    return (
+                        new ViewVoyageAiSdk(_TenantGuid, appSettings.Embeddings.VoyageEndpoint,
+                            appSettings.Embeddings.VoyageApiKey),
+                        new EmbeddingsRequest
+                        {
+                            Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                            Contents = new List<string> { userInput }
+                        });
+                default:
+                    throw new ArgumentException("Unsupported embeddings provider");
+            }
         }
 
         /// <summary>
@@ -447,6 +692,7 @@ namespace View.Personal
         private object CreateRequestBody(string provider, CompletionProviderSettings settings,
             List<ChatMessage> finalMessages)
         {
+            Console.WriteLine($"[INFO] Creating request body for {provider}");
             switch (provider)
             {
                 case "OpenAI":
@@ -454,11 +700,6 @@ namespace View.Personal
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        // ToDo: Add these settings and account for different models
-                        // temperature = settings.OpenAITemperature,
-                        // max_completion_tokens = settings.OpenAIMaxTokens,
-                        // top_p = settings.OpenAITopP,
-                        // reasoning_effort = settings.OpenAIReasoningEffort,
                         stream = true
                     };
                 case "Ollama":
@@ -466,8 +707,8 @@ namespace View.Personal
                     {
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        max_tokens = settings.OllamaMaxTokens,
-                        temperature = settings.OllamaTemperature,
+                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
+                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
                 case "View":
@@ -475,13 +716,14 @@ namespace View.Personal
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = settings.ViewTemperature,
-                        TopP = settings.ViewTopP,
-                        MaxTokens = settings.ViewMaxTokens,
-                        GenerationProvider = settings.ViewCompletionProvider,
-                        GenerationApiKey = settings.ViewCompletionApiKey,
+                        Temperature = 0.7, // Add to CompletionProviderSettings if configurable
+                        TopP = 1.0, // Add to CompletionProviderSettings if configurable
+                        MaxTokens = 4000, // Add to CompletionProviderSettings if configurable
+                        GenerationProvider = "ollama", // Adjust or make configurable
+                        GenerationApiKey = settings.ViewApiKey,
+                        //ToDo: need to grab this dynamically
                         OllamaHostname = "192.168.197.1",
-                        OllamaPort = settings.ViewCompletionPort,
+                        OllamaPort = 11434,
                         Stream = true
                     };
                 case "Anthropic":
@@ -496,8 +738,8 @@ namespace View.Personal
                         model = settings.AnthropicCompletionModel,
                         system = systemContent,
                         messages = conversationMessages,
-                        max_tokens = 300,
-                        temperature = 0.7,
+                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
+                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
                         stream = true
                     };
                 default:
@@ -530,6 +772,8 @@ namespace View.Personal
 
             var jsonPayload = _Serializer.SerializeJson(requestBody);
             using var resp = await restRequest.SendAsync(jsonPayload);
+            Console.WriteLine($"[DEBUG] Response Content-Type: {resp.ContentType}");
+            Console.WriteLine($"[DEBUG] ServerSentEvents: {resp.ServerSentEvents}");
 
             if (resp.StatusCode > 299)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
@@ -675,12 +919,138 @@ namespace View.Personal
             };
         }
 
+        private void ShowPanel(string panelName)
+        {
+            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
+            var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2"); // Use SettingsPanel2 as per XAML
+            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var chatPanel = this.FindControl<Border>("ChatPanel");
+            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
+            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
+
+            if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
+                chatPanel != null && consolePanel != null && workspaceText != null)
+            {
+                dashboardPanel.IsVisible = panelName == "Dashboard";
+                settingsPanel2.IsVisible = panelName == "Settings2"; // Match NavList Tag
+                myFilesPanel.IsVisible = panelName == "Files"; // Match NavList Tag
+                chatPanel.IsVisible = panelName == "Chat";
+                consolePanel.IsVisible = panelName == "Console";
+                workspaceText.IsVisible = false; // Typically hidden unless needed
+            }
+
+            if (panelName == "Chat") UpdateChatTitle();
+        }
+
+        private void InitializeToggleSwitches()
+        {
+            _ToggleSwitches = new List<ToggleSwitch>
+            {
+                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle"),
+                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle"),
+                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle"),
+                this.FindControl<ToggleSwitch>("ViewCredentialsToggle")
+            };
+
+            // Debug to confirm controls are found
+            foreach (var ts in _ToggleSwitches)
+                if (ts == null)
+                {
+                    Console.WriteLine("[ERROR] A ToggleSwitch was not found in the UI.");
+                }
+                else
+                {
+                    Console.WriteLine($"[INFO] Found ToggleSwitch: {ts.Name}");
+                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged; // Remove any existing subscription
+                    ts.PropertyChanged += ToggleSwitch_PropertyChanged; // Add fresh subscription
+                }
+        }
+
+        private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property == ToggleButton.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
+                if (toggleSwitch.IsChecked == true)
+                {
+                    var app = (App)Application.Current;
+                    var provider = toggleSwitch.Name switch
+                    {
+                        "OpenAICredentialsToggle" => "OpenAI",
+                        "AnthropicCredentialsToggle" => "Anthropic",
+                        "OllamaCredentialsToggle" => "Ollama",
+                        "ViewCredentialsToggle" => "View",
+                        _ => "View"
+                    };
+                    app.AppSettings.SelectedProvider = provider;
+
+                    foreach (var ts in _ToggleSwitches)
+                        if (ts != toggleSwitch && ts.IsChecked == true)
+                            ts.IsChecked = false;
+                }
+        }
+
+        private void InitializeEmbeddingRadioButtons()
+        {
+            var app = (App)Application.Current;
+            var selectedModel =
+                app._AppSettings.Embeddings.SelectedEmbeddingModel ?? "Ollama";
+
+            var ollamaRadio = this.FindControl<RadioButton>("OllamaEmbeddingModel");
+            var openAIRadio = this.FindControl<RadioButton>("OpenAIEmbeddingModel2");
+            var voyageRadio = this.FindControl<RadioButton>("VoyageEmbeddingModel2");
+            var viewRadio = this.FindControl<RadioButton>("ViewEmbeddingModel2");
+
+            // Ensure one is always selected
+            switch (selectedModel)
+            {
+                case "Ollama":
+                    ollamaRadio.IsChecked = true;
+                    break;
+                case "OpenAI":
+                    openAIRadio.IsChecked = true;
+                    break;
+                case "VoyageAI":
+                    voyageRadio.IsChecked = true;
+                    break;
+                case "View":
+                    viewRadio.IsChecked = true;
+                    break;
+                default:
+                    // Fallback if something else is stored
+                    ollamaRadio.IsChecked = true;
+                    app._AppSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
+                    break;
+            }
+        }
+
+        private void EmbeddingModel_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radioButton)
+            {
+                var app = (App)Application.Current;
+                var selectedProvider = radioButton.Name switch
+                {
+                    "OllamaEmbeddingModel" => "Ollama",
+                    "OpenAIEmbeddingModel2" => "OpenAI",
+                    "VoyageEmbeddingModel2" => "VoyageAI",
+                    "ViewEmbeddingModel2" => "View",
+                    _ => "Ollama" // Fallback
+                };
+
+                // This ensures the *radio* is recorded as the "SelectedEmbeddingModel" in your JSON settings
+                app._AppSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
+
+                Console.WriteLine($"[INFO] Embedding provider selected: {selectedProvider}");
+            }
+        }
+
         #endregion
 
-#pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8618, CS9264
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }
