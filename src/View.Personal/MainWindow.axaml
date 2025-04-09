@@ -141,12 +141,14 @@
                     </Grid>
                 </Border>
                 <StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                    <!-- Existing StackPanel for header -->
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Data Monitor - File System" Foreground="#1A1C1E" FontWeight="500"
                                    FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
                     </StackPanel>
                     <Grid RowDefinitions="Auto,*">
+                        <!-- Existing navigation controls -->
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
                             <Button x:Name="NavigateUpButton" Click="NavigateUpButton_Click" Classes="flat">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -168,8 +170,9 @@
                                       BorderThickness="1"
                                       BorderBrush="#EDEDED"
                                       DoubleTapped="FileSystemDataGrid_DoubleTapped"
-                                      x:DataType="classes:FileSystemEntry"> <!-- Add this line -->
+                                      x:DataType="classes:FileSystemEntry">
                                 <DataGrid.Styles>
+                                    <!-- Existing styles unchanged -->
                                     <Style Selector="DataGridColumnHeader">
                                         <Setter Property="Background" Value="#FAFAFA" />
                                         <Setter Property="Foreground" Value="#1A1C1E" />
@@ -187,6 +190,19 @@
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
+                                    <!-- New Checkbox Column -->
+                                    <DataGridTemplateColumn Header="Watch" Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"
+                                                          Checked="WatchCheckBox_Checked"
+                                                          Unchecked="WatchCheckBox_Unchecked" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!-- Existing Columns -->
                                     <DataGridTemplateColumn Header="Icon" Width="50">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>

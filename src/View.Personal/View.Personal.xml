@@ -290,32 +290,6 @@
             The endpoint URL for Voyage API requests.
             </summary>
         </member>
-        <member name="T:View.Personal.Classes.AvaloniaConsoleWriter">
-            <summary>
-            A custom TextWriter implementation that redirects console output to an Avalonia TextBox control.
-            This allows console output to be displayed within the UI of an Avalonia application.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.AvaloniaConsoleWriter.Encoding">
-            <summary>
-            Gets the character encoding in which the output is written.
-            This implementation returns UTF-8 encoding.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.#ctor(Avalonia.Controls.TextBox)">
-            <summary>
-            Initializes a new instance of the AvaloniaConsoleWriter class with the specified TextBox.
-            </summary>
-            <param name="textBox">The TextBox control where console output will be displayed.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when textBox is null.</exception>
-        </member>
-        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.WriteLine(System.String)">
-            <summary>
-            Writes a string followed by a line terminator to the text box on the UI thread.
-            This method safely updates the UI by dispatching the update operation to the UI thread.
-            </summary>
-            <param name="value">The string to write to the text box.</param>
-        </member>
         <member name="T:View.Personal.Classes.ChatMessage">
             <summary>
             Represents a message in a chat conversation, containing a role and content.

@@ -28,6 +28,7 @@ namespace View.Personal
     using Services;
     using RestWrapper;
     using Sdk.Embeddings.Providers.VoyageAI;
+    using System.Timers;
     using UIHandlers;
 
     /// <summary>
@@ -78,6 +79,11 @@ namespace View.Personal
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
         private string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        private List<string> _WatchedPaths = new();
+        private Dictionary<string, FileSystemWatcher> _watchers = new(); // One watcher per directory
+        private Dictionary<string, DateTime> _filesBeingWritten = new(); // Tracks in-progress changes
+        private Timer _changeTimer; // Debounce timer
+        private readonly int FILE_CHANGE_TIMEOUT = 500;
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -113,17 +119,17 @@ namespace View.Personal
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
+                    InitializeFileWatchers();
                     var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
-                    if (chatHistoryList == null)
-                        Console.WriteLine("[ERROR] ChatHistoryList not found during initialization.");
-                    else
-                        Console.WriteLine("[DEBUG] ChatHistoryList found during initialization.");
+                    // if (chatHistoryList == null)
+                    //     Console.WriteLine("[ERROR] ChatHistoryList not found during initialization.");
+                    // else
+                    //     Console.WriteLine("[DEBUG] ChatHistoryList found during initialization.");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
                 if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
-                chatInputBox.KeyDown += ChatInputBox_KeyDown;
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
             }
             catch (Exception e)
@@ -964,7 +970,6 @@ namespace View.Personal
                 }
                 else
                 {
-                    Console.WriteLine($"[INFO] Found ToggleSwitch: {ts.Name}");
                     ts.PropertyChanged -= ToggleSwitch_PropertyChanged; // Remove any existing subscription
                     ts.PropertyChanged += ToggleSwitch_PropertyChanged; // Add fresh subscription
                 }
@@ -1046,6 +1051,8 @@ namespace View.Personal
             }
         }
 
+        #region Data Monitor Logic
+
         private void LoadFileSystem(string path)
         {
             try
@@ -1061,7 +1068,6 @@ namespace View.Personal
 
                 var entries = new List<FileSystemEntry>();
 
-                // Add directories
                 foreach (var dir in Directory.GetDirectories(path))
                 {
                     var dirInfo = new DirectoryInfo(dir);
@@ -1071,11 +1077,11 @@ namespace View.Personal
                         Size = "",
                         LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = dirInfo.FullName,
-                        IsDirectory = true
+                        IsDirectory = true,
+                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName) // Restore checked state
                     });
                 }
 
-                // Add files
                 foreach (var file in Directory.GetFiles(path))
                 {
                     var fileInfo = new FileInfo(file);
@@ -1085,7 +1091,8 @@ namespace View.Personal
                         Size = FormatFileSize(fileInfo.Length),
                         LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = fileInfo.FullName,
-                        IsDirectory = false
+                        IsDirectory = false,
+                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName) // Fix #3: Restore file checked state
                     });
                 }
 
@@ -1099,6 +1106,44 @@ namespace View.Personal
             catch (Exception ex)
             {
                 ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
+            }
+        }
+
+        private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
+                if (!_WatchedPaths.Contains(entry.FullPath))
+                {
+                    _WatchedPaths.Add(entry.FullPath);
+                    LogWatchedPaths();
+                    UpdateFileWatchers();
+                }
+        }
+
+        private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
+                if (_WatchedPaths.Contains(entry.FullPath))
+                {
+                    _WatchedPaths.Remove(entry.FullPath);
+                    LogWatchedPaths();
+                    UpdateFileWatchers();
+                }
+        }
+
+        private void LogWatchedPaths()
+        {
+            var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+            if (consoleOutput != null)
+            {
+                var logMessage = $"[INFO] Watched paths ({_WatchedPaths.Count}):\n" +
+                                 string.Join("\n", _WatchedPaths) + "\n";
+                consoleOutput.Text += logMessage; // Show in UI
+                Console.WriteLine(logMessage);
+            }
+            else
+            {
+                Console.WriteLine("[ERROR] ConsoleOutputTextBox not found for logging.");
             }
         }
 
@@ -1133,6 +1178,159 @@ namespace View.Personal
                     ShowNotification("File Selected", $"Selected file: {entry.Name}", NotificationType.Information);
             }
         }
+
+        private void InitializeFileWatchers()
+        {
+            _changeTimer = new Timer(FILE_CHANGE_TIMEOUT / 2); // Explicit namespace
+            _changeTimer.Elapsed += CheckForCompletedFileOperations;
+            _changeTimer.AutoReset = true;
+            _changeTimer.Enabled = true;
+
+            UpdateFileWatchers();
+        }
+
+        private void UpdateFileWatchers()
+        {
+            foreach (var watcher in _watchers.Values)
+            {
+                watcher.EnableRaisingEvents = false;
+                watcher.Dispose();
+            }
+
+            _watchers.Clear();
+
+            var directoriesToWatch = _WatchedPaths
+                .Where(path => Directory.Exists(path) || File.Exists(path))
+                .Select(path => Directory.Exists(path) ? path : Path.GetDirectoryName(path))
+                .Distinct()
+                .ToList();
+
+            foreach (var dir in directoriesToWatch)
+            {
+                var watcher = new FileSystemWatcher(dir)
+                {
+                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                    EnableRaisingEvents = true
+                };
+                watcher.Changed += OnFileActivity;
+                watcher.Created += OnFileActivity;
+                watcher.Deleted += OnFileActivity;
+                watcher.Renamed += OnRenamed;
+                _watchers[dir] = watcher;
+
+                // Log based on what’s actually being watched
+                var watchedInDir = _WatchedPaths.Where(p => p.StartsWith(dir + Path.DirectorySeparatorChar) || p == dir)
+                    .ToList();
+                if (watchedInDir.Any(p => Directory.Exists(p)))
+                {
+                    // Directory explicitly watched
+                    LogToConsole($"[INFO] Started watching directory: {dir}");
+                }
+                else
+                {
+                    // Only specific files in this directory
+                    var files = watchedInDir.Where(p => File.Exists(p)).Select(Path.GetFileName);
+                    LogToConsole($"[INFO] Started watching file(s) in {dir}: {string.Join(", ", files)}");
+                }
+            }
+        }
+
+        private void OnFileActivity(object source, FileSystemEventArgs e)
+        {
+            var isExplicitlyWatched = _WatchedPaths.Contains(e.FullPath);
+            var isInWatchedDirectory = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                e.FullPath.StartsWith(
+                                                                    dir + Path.DirectorySeparatorChar));
+
+            // Only proceed if explicitly watched or directory is watched
+            if (!isExplicitlyWatched && !isInWatchedDirectory) return;
+
+            // If only a file is watched, ignore events for other files in the directory
+            if (!isInWatchedDirectory && !isExplicitlyWatched) return;
+
+            if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
+                lock (_filesBeingWritten)
+                {
+                    _filesBeingWritten[e.FullPath] = DateTime.Now;
+                }
+            else if (e.ChangeType == WatcherChangeTypes.Deleted)
+                // Only log deletion if the file was explicitly watched
+                if (isExplicitlyWatched)
+                {
+                    LogToConsole($"[INFO] File deleted: {e.Name} ({e.FullPath})");
+                    lock (_filesBeingWritten)
+                    {
+                        _filesBeingWritten.Remove(e.FullPath);
+                    }
+                }
+            // If in a watched directory, we'll catch the rename or change next
+        }
+
+        private void OnRenamed(object source, RenamedEventArgs e)
+        {
+            var wasExplicitlyWatched = _WatchedPaths.Contains(e.OldFullPath);
+            var wasInWatchedDirectory = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                 e.OldFullPath.StartsWith(
+                                                                     dir + Path.DirectorySeparatorChar));
+
+            if (!wasExplicitlyWatched && !wasInWatchedDirectory) return;
+
+            if (wasExplicitlyWatched || wasInWatchedDirectory)
+            {
+                // Log rename only if it affects a watched file or directory
+                LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
+                lock (_filesBeingWritten)
+                {
+                    _filesBeingWritten.Remove(e.OldFullPath);
+                }
+
+                // If the new path is still watched, queue it for change detection
+                if (_WatchedPaths.Contains(e.FullPath))
+                    lock (_filesBeingWritten)
+                    {
+                        _filesBeingWritten[e.FullPath] = DateTime.Now;
+                    }
+            }
+        }
+
+        private void CheckForCompletedFileOperations(object sender, ElapsedEventArgs e)
+        {
+            var now = DateTime.Now;
+            var completedFiles = new List<string>();
+
+            lock (_filesBeingWritten)
+            {
+                foreach (var fileEntry in _filesBeingWritten)
+                    if ((now - fileEntry.Value).TotalMilliseconds >= FILE_CHANGE_TIMEOUT)
+                        completedFiles.Add(fileEntry.Key);
+
+                foreach (var filePath in completedFiles)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    LogToConsole($"[INFO] File changed (operation completed): {fileName} ({filePath})");
+                    _filesBeingWritten.Remove(filePath);
+                }
+            }
+        }
+
+        private void LogToConsole(string message)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+                if (consoleOutput != null) consoleOutput.Text += message + "\n";
+                Console.WriteLine(message);
+            });
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            foreach (var watcher in _watchers.Values) watcher.Dispose();
+            _changeTimer?.Dispose();
+        }
+
+        #endregion
 
         #endregion
 
