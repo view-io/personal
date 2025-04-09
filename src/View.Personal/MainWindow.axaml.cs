@@ -77,6 +77,7 @@ namespace View.Personal
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
+        private string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -919,7 +920,7 @@ namespace View.Personal
             };
         }
 
-        private void ShowPanel(string panelName)
+        public void ShowPanel(string panelName)
         {
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2"); // Use SettingsPanel2 as per XAML
@@ -927,9 +928,10 @@ namespace View.Personal
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
+            var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
 
             if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
-                chatPanel != null && consolePanel != null && workspaceText != null)
+                chatPanel != null && consolePanel != null && workspaceText != null && dataMonitorPanel != null)
             {
                 dashboardPanel.IsVisible = panelName == "Dashboard";
                 settingsPanel2.IsVisible = panelName == "Settings2"; // Match NavList Tag
@@ -937,9 +939,11 @@ namespace View.Personal
                 chatPanel.IsVisible = panelName == "Chat";
                 consolePanel.IsVisible = panelName == "Console";
                 workspaceText.IsVisible = false; // Typically hidden unless needed
+                dataMonitorPanel.IsVisible = panelName == "Data Monitor";
             }
 
             if (panelName == "Chat") UpdateChatTitle();
+            if (panelName == "Data Monitor") LoadFileSystem(_CurrentPath);
         }
 
         private void InitializeToggleSwitches()
@@ -1033,13 +1037,100 @@ namespace View.Personal
                     "OpenAIEmbeddingModel2" => "OpenAI",
                     "VoyageEmbeddingModel2" => "VoyageAI",
                     "ViewEmbeddingModel2" => "View",
-                    _ => "Ollama" // Fallback
+                    _ => "Ollama"
                 };
 
-                // This ensures the *radio* is recorded as the "SelectedEmbeddingModel" in your JSON settings
                 app._AppSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
                 Console.WriteLine($"[INFO] Embedding provider selected: {selectedProvider}");
+            }
+        }
+
+        private void LoadFileSystem(string path)
+        {
+            try
+            {
+                var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
+                var pathTextBox = this.FindControl<TextBox>("CurrentPathTextBox");
+                var navigateUpButton = this.FindControl<Button>("NavigateUpButton");
+
+                if (dataGrid == null || pathTextBox == null || navigateUpButton == null) return;
+
+                _CurrentPath = path;
+                pathTextBox.Text = _CurrentPath;
+
+                var entries = new List<FileSystemEntry>();
+
+                // Add directories
+                foreach (var dir in Directory.GetDirectories(path))
+                {
+                    var dirInfo = new DirectoryInfo(dir);
+                    entries.Add(new FileSystemEntry
+                    {
+                        Name = dirInfo.Name,
+                        Size = "",
+                        LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+                        FullPath = dirInfo.FullName,
+                        IsDirectory = true
+                    });
+                }
+
+                // Add files
+                foreach (var file in Directory.GetFiles(path))
+                {
+                    var fileInfo = new FileInfo(file);
+                    entries.Add(new FileSystemEntry
+                    {
+                        Name = fileInfo.Name,
+                        Size = FormatFileSize(fileInfo.Length),
+                        LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+                        FullPath = fileInfo.FullName,
+                        IsDirectory = false
+                    });
+                }
+
+                dataGrid.ItemsSource = entries;
+                navigateUpButton.IsEnabled = Directory.GetParent(_CurrentPath) != null;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                ShowNotification("Access Denied", $"Cannot access {path}: {ex.Message}", NotificationType.Error);
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
+            }
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+            var counter = 0;
+            decimal number = bytes;
+            while (Math.Round(number / 1024) >= 1)
+            {
+                number = number / 1024;
+                counter++;
+            }
+
+            return $"{number:n1} {suffixes[counter]}";
+        }
+
+        private void NavigateUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var parentDir = Directory.GetParent(_CurrentPath);
+            if (parentDir != null) LoadFileSystem(parentDir.FullName);
+        }
+
+        private void FileSystemDataGrid_DoubleTapped(object sender, RoutedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid && dataGrid.SelectedItem is FileSystemEntry entry)
+            {
+                if (entry.IsDirectory)
+                    LoadFileSystem(entry.FullPath);
+                else
+                    // Optionally handle file opening here
+                    ShowNotification("File Selected", $"Selected file: {entry.Name}", NotificationType.Information);
             }
         }
 

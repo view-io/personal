@@ -140,6 +140,70 @@
                         </Grid>
                     </Grid>
                 </Border>
+                <StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+                        <TextBlock Text="Data Monitor - File System" Foreground="#1A1C1E" FontWeight="500"
+                                   FontSize="16" />
+                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
+                    </StackPanel>
+                    <Grid RowDefinitions="Auto,*">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+                            <Button x:Name="NavigateUpButton" Click="NavigateUpButton_Click" Classes="flat">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="ArrowUp" Height="16" Width="16" />
+                                    <TextBlock Text="Up" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
+                            <TextBox x:Name="CurrentPathTextBox" IsReadOnly="True" Width="400" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <ScrollViewer Grid.Row="1" Height="500" VerticalScrollBarVisibility="Auto">
+                            <DataGrid x:Name="FileSystemDataGrid"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserReorderColumns="False"
+                                      CanUserResizeColumns="True"
+                                      GridLinesVisibility="Horizontal"
+                                      Background="#FFFFFF"
+                                      HorizontalGridLinesBrush="#EDEDED"
+                                      BorderThickness="1"
+                                      BorderBrush="#EDEDED"
+                                      DoubleTapped="FileSystemDataGrid_DoubleTapped"
+                                      x:DataType="classes:FileSystemEntry"> <!-- Add this line -->
+                                <DataGrid.Styles>
+                                    <Style Selector="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#FAFAFA" />
+                                        <Setter Property="Foreground" Value="#1A1C1E" />
+                                        <Setter Property="FontWeight" Value="500" />
+                                        <Setter Property="FontSize" Value="14.5" />
+                                        <Setter Property="Padding" Value="12 0 8 0" />
+                                        <Setter Property="MinHeight" Value="24" />
+                                        <Setter Property="Height" Value="38" />
+                                    </Style>
+                                    <Style Selector="DataGridRow">
+                                        <Setter Property="MinHeight" Value="24" />
+                                        <Setter Property="Height" Value="38" />
+                                        <Setter Property="BorderBrush" Value="#EDEDED" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                    </Style>
+                                </DataGrid.Styles>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Icon" Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
+                                                                       Foreground="#6A6B6F" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
+                                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="100" />
+                                    <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
+                                                        Width="200" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                    </Grid>
+                </StackPanel>
                 <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
