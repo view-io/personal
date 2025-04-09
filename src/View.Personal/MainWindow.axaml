@@ -187,7 +187,7 @@
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
-                                    <!-- New Checkbox Column -->
+                                    <!-- Existing Checkbox Column -->
                                     <DataGridTemplateColumn Header="Sync" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -198,10 +198,10 @@
                                                           Checked="WatchCheckBox_Checked"
                                                           Unchecked="WatchCheckBox_Unchecked"
                                                           Width="16" Height="16" />
-
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
+
                                     <!-- Existing Columns -->
                                     <DataGridTemplateColumn Header="Type" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -215,6 +215,19 @@
                                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="100" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
                                                         Width="200" />
+                                    <DataGridTemplateColumn Header="Sync" Width="55">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <avalonia:MaterialIcon Kind="EyeOutline"
+                                                                       Width="16" Height="16"
+                                                                       Foreground="#0472EF"
+                                                                       IsVisible="{Binding IsWatchedOrInherited}"
+                                                                       VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Center"
+                                                                       ToolTip.Tip="This item is being watched" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </ScrollViewer>

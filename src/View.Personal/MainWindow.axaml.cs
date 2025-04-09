@@ -1080,7 +1080,9 @@ namespace View.Personal
                         LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = dirInfo.FullName,
                         IsDirectory = true,
-                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName),
+                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName), // Explicitly watched
+                        IsWatchedOrInherited = _WatchedPaths.Contains(dirInfo.FullName) ||
+                                               IsWithinWatchedDirectory(dirInfo.FullName), // Explicit or inherited
                         IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
                     });
                 }
@@ -1097,7 +1099,9 @@ namespace View.Personal
                         LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = fileInfo.FullName,
                         IsDirectory = false,
-                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName),
+                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName), // Explicitly watched
+                        IsWatchedOrInherited = _WatchedPaths.Contains(fileInfo.FullName) ||
+                                               IsWithinWatchedDirectory(fileInfo.FullName), // Explicit or inherited
                         IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
                     });
                 }
@@ -1123,6 +1127,7 @@ namespace View.Personal
                     _WatchedPaths.Add(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
+                    LoadFileSystem(_CurrentPath); // Refresh to update IsWatchedOrInherited
                 }
         }
 
@@ -1134,7 +1139,15 @@ namespace View.Personal
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
+                    LoadFileSystem(_CurrentPath); // Refresh to update IsWatchedOrInherited
                 }
+        }
+
+        private bool IsWithinWatchedDirectory(string path)
+        {
+            return _WatchedPaths.Any(watchedPath =>
+                Directory.Exists(watchedPath) &&
+                path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
         }
 
         private void LogWatchedPaths()
