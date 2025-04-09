@@ -195,6 +195,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
+                                                          IsEnabled="{Binding IsCheckBoxEnabled}"
                                                           VerticalAlignment="Center"
                                                           HorizontalAlignment="Center"
                                                           Checked="WatchCheckBox_Checked"

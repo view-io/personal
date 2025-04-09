@@ -1071,6 +1071,8 @@ namespace View.Personal
                 foreach (var dir in Directory.GetDirectories(path))
                 {
                     var dirInfo = new DirectoryInfo(dir);
+                    var parentDir = Directory.GetParent(dirInfo.FullName)?.FullName;
+                    var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
                     entries.Add(new FileSystemEntry
                     {
                         Name = dirInfo.Name,
@@ -1078,13 +1080,16 @@ namespace View.Personal
                         LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = dirInfo.FullName,
                         IsDirectory = true,
-                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName) // Restore checked state
+                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName),
+                        IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
                     });
                 }
 
                 foreach (var file in Directory.GetFiles(path))
                 {
                     var fileInfo = new FileInfo(file);
+                    var parentDir = Path.GetDirectoryName(fileInfo.FullName);
+                    var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
                     entries.Add(new FileSystemEntry
                     {
                         Name = fileInfo.Name,
@@ -1092,7 +1097,8 @@ namespace View.Personal
                         LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = fileInfo.FullName,
                         IsDirectory = false,
-                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName) // Fix #3: Restore file checked state
+                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName),
+                        IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
                     });
                 }
 
@@ -1111,23 +1117,25 @@ namespace View.Personal
 
         private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry && checkBox.IsEnabled)
                 if (!_WatchedPaths.Contains(entry.FullPath))
                 {
                     _WatchedPaths.Add(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
+                    LoadFileSystem(_CurrentPath); // Refresh to update checkbox states
                 }
         }
 
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry && checkBox.IsEnabled)
                 if (_WatchedPaths.Contains(entry.FullPath))
                 {
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
+                    LoadFileSystem(_CurrentPath); // Refresh to update checkbox states
                 }
         }
 

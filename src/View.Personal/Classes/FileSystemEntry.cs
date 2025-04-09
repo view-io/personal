@@ -7,6 +7,7 @@ namespace View.Personal.Classes
     public class FileSystemEntry : INotifyPropertyChanged
     {
         private bool _isWatched;
+        private bool _isCheckBoxEnabled = true; // Default to enabled
 
         public string Name { get; set; }
         public string Size { get; set; }
@@ -22,6 +23,19 @@ namespace View.Personal.Classes
                 if (_isWatched != value)
                 {
                     _isWatched = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsCheckBoxEnabled
+        {
+            get => _isCheckBoxEnabled;
+            set
+            {
+                if (_isCheckBoxEnabled != value)
+                {
+                    _isCheckBoxEnabled = value;
                     OnPropertyChanged();
                 }
             }
