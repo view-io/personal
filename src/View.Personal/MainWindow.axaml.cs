@@ -1117,25 +1117,23 @@ namespace View.Personal
 
         private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry && checkBox.IsEnabled)
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (!_WatchedPaths.Contains(entry.FullPath))
                 {
                     _WatchedPaths.Add(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath); // Refresh to update checkbox states
                 }
         }
 
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry && checkBox.IsEnabled)
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (_WatchedPaths.Contains(entry.FullPath))
                 {
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath); // Refresh to update checkbox states
                 }
         }
 

@@ -42,7 +42,7 @@ namespace View.Personal.Classes
         }
 
         public MaterialIconKind IconKind =>
-            IsDirectory ? MaterialIconKind.Folder : MaterialIconKind.FileOutline;
+            IsDirectory ? MaterialIconKind.FolderOutline : MaterialIconKind.FileOutline;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
