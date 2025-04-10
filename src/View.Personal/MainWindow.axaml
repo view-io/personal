@@ -225,7 +225,7 @@
                                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="100" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
                                                         Width="200" />
-                                    <DataGridTemplateColumn Header="Watching" Width="55">
+                                    <DataGridTemplateColumn Header="Watching" Width="85">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <avalonia:MaterialIcon Kind="EyeOutline"
