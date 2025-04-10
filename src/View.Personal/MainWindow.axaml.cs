@@ -61,6 +61,9 @@ namespace View.Personal
         /// </summary>
         public List<ChatSession> _ChatSessions = new();
 
+        public List<string> _WatchedPaths = new();
+
+
         /// <summary>
         /// The currently active chat session.
         /// References the chat session that is currently being displayed and interacted with in the UI.
@@ -80,7 +83,6 @@ namespace View.Personal
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
         private string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        private List<string> _WatchedPaths = new();
         private Dictionary<string, FileSystemWatcher> _watchers = new(); // One watcher per directory
         private Dictionary<string, DateTime> _filesBeingWritten = new(); // Tracks in-progress changes
         private Timer _changeTimer; // Debounce timer
@@ -1537,7 +1539,7 @@ namespace View.Personal
             }
         }
 
-        private void LogToConsole(string message)
+        public void LogToConsole(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {

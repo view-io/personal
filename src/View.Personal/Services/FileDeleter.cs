@@ -9,6 +9,8 @@ namespace View.Personal.Services
     using MsBox.Avalonia.Enums;
     using Classes;
     using Helpers;
+    using System.IO;
+    using System.Linq;
 
     /// <summary>
     /// Provides methods for handling file deletion operations within the application.
@@ -35,20 +37,41 @@ namespace View.Personal.Services
                     var result = await MsBox.Avalonia.MessageBoxManager
                         .GetMessageBoxStandard("Confirm Deletion",
                             $"Are you sure you want to delete '{file.Name}'?",
-                            ButtonEnum.YesNo,
-                            Icon.Warning)
+                            ButtonEnum.YesNo, Icon.Warning)
                         .ShowAsync();
 
                     if (result != ButtonResult.Yes)
                         return;
+
                     liteGraph.DeleteNode(tenantGuid, graphGuid, file.NodeGuid);
                     Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
 
-                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-
                     if (window is MainWindow mainWindow)
+                    {
+                        // Get the node to retrieve its FilePath
+                        var node = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                            .FirstOrDefault(n => n.GUID == file.NodeGuid);
+                        var filePath =
+                            node?.Tags?.Get("FilePath") ?? file.FilePath; // Fallback to FileViewModel if null
+
+                        // Debug logs
+                        Console.WriteLine($"[DEBUG] FilePath from node: '{filePath}'");
+                        Console.WriteLine($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
+
+                        // Check if the file is explicitly watched or within a watched directory
+                        if (!string.IsNullOrEmpty(filePath) && mainWindow._WatchedPaths.Any(watchedPath =>
+                                watchedPath == filePath || // Exact match
+                                (Directory.Exists(watchedPath) &&
+                                 filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))
+                            mainWindow.LogToConsole(
+                                $"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                        else
+                            Console.WriteLine($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+
+                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
                         mainWindow.ShowNotification("File Deleted", "File was deleted successfully!",
                             NotificationType.Success);
+                    }
                 }
                 catch (Exception ex)
                 {
