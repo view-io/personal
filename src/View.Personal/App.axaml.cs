@@ -326,6 +326,7 @@ namespace View.Personal
                     _CredentialGuid = Guid.TryParse(_AppSettings.View.CredentialGuid, out var credGuid)
                         ? credGuid
                         : Guid.NewGuid();
+                    _AppSettings.WatchedPaths ??= new List<string>();
                 }
                 else
                 {
@@ -349,7 +350,8 @@ namespace View.Personal
                             UserGuid = _UserGuid.ToString(),
                             CredentialGuid = _CredentialGuid.ToString()
                         },
-                        Embeddings = new AppSettings.EmbeddingsSettings()
+                        Embeddings = new AppSettings.EmbeddingsSettings(),
+                        WatchedPaths = new List<string>()
                     };
                     SaveSettings();
                 }
@@ -378,7 +380,8 @@ namespace View.Personal
                         UserGuid = _UserGuid.ToString(),
                         CredentialGuid = _CredentialGuid.ToString()
                     },
-                    Embeddings = new AppSettings.EmbeddingsSettings()
+                    Embeddings = new AppSettings.EmbeddingsSettings(),
+                    WatchedPaths = new List<string>()
                 };
                 SaveSettings();
             }

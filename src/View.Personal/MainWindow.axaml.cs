@@ -119,6 +119,9 @@ namespace View.Personal
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
+                    var app = (App)Application.Current;
+                    _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
+                    LogWatchedPaths(); // Log initial state
                     InitializeFileWatchers();
                     var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
                     // if (chatHistoryList == null)
@@ -1143,7 +1146,45 @@ namespace View.Personal
                     _WatchedPaths.Add(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath); // Refresh to update IsWatchedOrInherited
+                    LoadFileSystem(_CurrentPath);
+
+                    // If it’s a directory, ingest all files initially
+                    if (entry.IsDirectory)
+                        Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
+                                         SearchOption.AllDirectories))
+                                if (!IsTemporaryFile(Path.GetFileName(filePath)))
+                                    try
+                                    {
+                                        await IngestFileAsync(filePath);
+                                        LogToConsole(
+                                            $"[INFO] Initially ingested file: {Path.GetFileName(filePath)} ({filePath})");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogToConsole(
+                                            $"[ERROR] Failed to initially ingest file {Path.GetFileName(filePath)}: {ex.Message}");
+                                    }
+                        });
+                    else
+                        // For single files, ingest immediately
+                        Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            try
+                            {
+                                await IngestFileAsync(entry.FullPath);
+                                LogToConsole($"[INFO] Initially ingested file: {entry.Name} ({entry.FullPath})");
+                            }
+                            catch (Exception ex)
+                            {
+                                LogToConsole($"[ERROR] Failed to initially ingest file {entry.Name}: {ex.Message}");
+                            }
+                        });
+
+                    var app = (App)Application.Current;
+                    app.AppSettings.WatchedPaths = _WatchedPaths;
+                    app.SaveSettings();
                 }
         }
 
@@ -1155,7 +1196,12 @@ namespace View.Personal
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath); // Refresh to update IsWatchedOrInherited
+                    LoadFileSystem(_CurrentPath); // Refresh UI
+
+                    // Save updated watched paths
+                    var app = (App)Application.Current;
+                    app.AppSettings.WatchedPaths = _WatchedPaths;
+                    app.SaveSettings();
                 }
         }
 

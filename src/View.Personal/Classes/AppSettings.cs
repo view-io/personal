@@ -1,6 +1,7 @@
 namespace View.Personal.Classes
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Contains application configuration settings for various AI providers and view settings.
@@ -36,6 +37,8 @@ namespace View.Personal.Classes
         /// The currently selected AI provider. Default is "View".
         /// </summary>
         public string SelectedProvider { get; set; } = "View";
+
+        public List<string> WatchedPaths { get; set; } = new();
 
         /// <summary>
         /// Settings specific to the OpenAI service.
