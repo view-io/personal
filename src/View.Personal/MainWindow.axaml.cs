@@ -20,6 +20,7 @@ namespace View.Personal
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
     using LiteGraph;
+    using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
@@ -1196,9 +1197,37 @@ namespace View.Personal
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath); // Refresh UI
+                    LoadFileSystem(_CurrentPath);
 
-                    // Save updated watched paths
+                    // Optional: Prompt to delete files from LiteGraph if it’s a directory
+                    if (entry.IsDirectory)
+                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
+                        {
+                            var result = await MsBox.Avalonia.MessageBoxManager
+                                .GetMessageBoxStandard("Remove Files?",
+                                    $"Stop watching {entry.Name}. Also remove its files from the database?",
+                                    ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Question)
+                                .ShowAsync(); // No semicolon before ShowAsync, it’s part of the chain
+
+                            if (result == ButtonResult.Yes)
+                            {
+                                foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
+                                             SearchOption.AllDirectories))
+                                {
+                                    var node = FindFileInLiteGraph(filePath);
+                                    if (node != null)
+                                    {
+                                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
+                                        LogToConsole(
+                                            $"[INFO] Deleted node {node.NodeGuid} for file {node.Name} ({filePath})");
+                                    }
+                                }
+
+                                // Refresh UI after deletion
+                                LoadFileSystem(_CurrentPath);
+                            }
+                        });
+
                     var app = (App)Application.Current;
                     app.AppSettings.WatchedPaths = _WatchedPaths;
                     app.SaveSettings();
