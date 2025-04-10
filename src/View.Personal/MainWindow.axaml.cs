@@ -1073,6 +1073,7 @@ namespace View.Personal
                     var dirInfo = new DirectoryInfo(dir);
                     var parentDir = Directory.GetParent(dirInfo.FullName)?.FullName;
                     var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
+                    var isSelectedWatched = _WatchedPaths.Contains(dirInfo.FullName);
                     entries.Add(new FileSystemEntry
                     {
                         Name = dirInfo.Name,
@@ -1080,10 +1081,11 @@ namespace View.Personal
                         LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = dirInfo.FullName,
                         IsDirectory = true,
-                        IsWatched = _WatchedPaths.Contains(dirInfo.FullName), // Explicitly watched
-                        IsWatchedOrInherited = _WatchedPaths.Contains(dirInfo.FullName) ||
-                                               IsWithinWatchedDirectory(dirInfo.FullName), // Explicit or inherited
-                        IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
+                        IsWatched = isSelectedWatched,
+                        IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(dirInfo.FullName),
+                        IsCheckBoxEnabled = !isParentWatched,
+                        ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName), // Still needed for logic
+                        IsSelectedWatchedDirectory = isSelectedWatched
                     });
                 }
 
@@ -1092,6 +1094,7 @@ namespace View.Personal
                     var fileInfo = new FileInfo(file);
                     var parentDir = Path.GetDirectoryName(fileInfo.FullName);
                     var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
+                    var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
                     entries.Add(new FileSystemEntry
                     {
                         Name = fileInfo.Name,
@@ -1099,10 +1102,11 @@ namespace View.Personal
                         LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
                         FullPath = fileInfo.FullName,
                         IsDirectory = false,
-                        IsWatched = _WatchedPaths.Contains(fileInfo.FullName), // Explicitly watched
-                        IsWatchedOrInherited = _WatchedPaths.Contains(fileInfo.FullName) ||
-                                               IsWithinWatchedDirectory(fileInfo.FullName), // Explicit or inherited
-                        IsCheckBoxEnabled = !isParentWatched // Disable if parent is watched
+                        IsWatched = isSelectedWatched,
+                        IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(fileInfo.FullName),
+                        IsCheckBoxEnabled = !isParentWatched,
+                        ContainsWatchedItems = false, // Files don’t contain items
+                        IsSelectedWatchedDirectory = isSelectedWatched
                     });
                 }
 
@@ -1148,6 +1152,17 @@ namespace View.Personal
             return _WatchedPaths.Any(watchedPath =>
                 Directory.Exists(watchedPath) &&
                 path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
+        }
+
+        private bool ContainsWatchedItemsInPath(string path)
+        {
+            // Check if this path is explicitly watched
+            if (_WatchedPaths.Contains(path))
+                return true;
+
+            // Check if any subdirectories or files within this path are watched
+            return _WatchedPaths.Any(watchedPath =>
+                watchedPath.StartsWith(path + Path.DirectorySeparatorChar));
         }
 
         private void LogWatchedPaths()

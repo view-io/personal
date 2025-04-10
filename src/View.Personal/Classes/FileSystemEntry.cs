@@ -7,8 +7,10 @@ namespace View.Personal.Classes
     public class FileSystemEntry : INotifyPropertyChanged
     {
         private bool _isWatched;
-        private bool _isWatchedOrInherited; // New property for eye icon
+        private bool _isWatchedOrInherited;
         private bool _isCheckBoxEnabled = true;
+        private bool _containsWatchedItems;
+        private bool _isSelectedWatchedDirectory; // New property
 
         public string Name { get; set; }
         public string Size { get; set; }
@@ -50,6 +52,32 @@ namespace View.Personal.Classes
                 if (_isCheckBoxEnabled != value)
                 {
                     _isCheckBoxEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool ContainsWatchedItems
+        {
+            get => _containsWatchedItems;
+            set
+            {
+                if (_containsWatchedItems != value)
+                {
+                    _containsWatchedItems = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsSelectedWatchedDirectory
+        {
+            get => _isSelectedWatchedDirectory;
+            set
+            {
+                if (_isSelectedWatchedDirectory != value)
+                {
+                    _isSelectedWatchedDirectory = value;
                     OnPropertyChanged();
                 }
             }

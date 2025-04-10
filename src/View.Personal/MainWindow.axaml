@@ -4,6 +4,7 @@
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:helpers="clr-namespace:View.Personal.Helpers"
         xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+        xmlns:personal="clr-namespace:View.Personal"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Title=""
@@ -12,6 +13,7 @@
     <!-- ReSharper disable ObsoleteElement -->
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
+        <personal:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
     </Window.Resources>
     <Window.Styles>
         <Style Selector="#ChatHistoryList > ListBoxItem">
@@ -187,7 +189,7 @@
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
-                                    <!-- Existing Checkbox Column -->
+
                                     <DataGridTemplateColumn Header="Sync" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -201,13 +203,21 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-
-                                    <!-- Existing Columns -->
                                     <DataGridTemplateColumn Header="Type" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
-                                                                       Foreground="#6A6B6F" />
+                                                <avalonia:MaterialIcon Kind="{Binding IconKind}"
+                                                                       Width="16" Height="16"
+                                                                       VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Center">
+                                                    <avalonia:MaterialIcon.Foreground>
+                                                        <MultiBinding
+                                                            Converter="{StaticResource WatchedColorConverter}">
+                                                            <Binding Path="ContainsWatchedItems" />
+                                                            <Binding Path="IsSelectedWatchedDirectory" />
+                                                        </MultiBinding>
+                                                    </avalonia:MaterialIcon.Foreground>
+                                                </avalonia:MaterialIcon>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -215,7 +225,7 @@
                                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="100" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
                                                         Width="200" />
-                                    <DataGridTemplateColumn Header="Sync" Width="55">
+                                    <DataGridTemplateColumn Header="Watching" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <avalonia:MaterialIcon Kind="EyeOutline"
