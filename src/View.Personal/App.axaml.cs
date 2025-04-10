@@ -318,7 +318,7 @@ namespace View.Personal
                     // Load GUIDs from settings
                     _TenantGuid = Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuid)
                         ? tenantGuid
-                        : Guid.NewGuid();
+                        : Guid.Empty;
                     _GraphGuid = Guid.TryParse(_AppSettings.View.GraphGuid, out var graphGuid)
                         ? graphGuid
                         : Guid.NewGuid();
@@ -330,7 +330,7 @@ namespace View.Personal
                 else
                 {
                     _Logging.Debug(_Header + "No settings file found, using defaults");
-                    _TenantGuid = Guid.NewGuid();
+                    _TenantGuid = Guid.Empty;
                     _GraphGuid = Guid.NewGuid();
                     _UserGuid = Guid.NewGuid();
                     _CredentialGuid = Guid.NewGuid();
@@ -360,7 +360,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
-                _TenantGuid = Guid.NewGuid();
+                _TenantGuid = Guid.Empty;
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();
                 _CredentialGuid = Guid.NewGuid();

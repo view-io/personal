@@ -1357,8 +1357,54 @@ namespace View.Personal
                 {
                     var fileName = Path.GetFileName(filePath);
                     LogToConsole($"[INFO] File changed (operation completed): {fileName} ({filePath})");
+
+                    // Search for the file in LiteGraph
+                    var node = FindFileInLiteGraph(filePath);
+                    if (node != null)
+                        LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.NodeGuid})");
+                    else
+                        LogToConsole($"[WARN] File not found in LiteGraph: {fileName} ({filePath})");
+
                     _filesBeingWritten.Remove(filePath);
                 }
+            }
+        }
+
+        private FileViewModel FindFileInLiteGraph(string filePath)
+        {
+            try
+            {
+                var nodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid);
+                if (nodes == null || !nodes.Any())
+                {
+                    LogToConsole("[WARN] No nodes found in LiteGraph for this tenant/graph.");
+                    return null;
+                }
+
+                foreach (var node in nodes)
+                    if (node.Tags != null)
+                    {
+                        var storedPath = node.Tags.Get("FilePath"); // Get returns null if key doesn't exist
+                        if (storedPath != null && storedPath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
+                            return new FileViewModel
+                            {
+                                Name = node.Tags.Get("FileName") ?? Path.GetFileName(filePath),
+                                FilePath = filePath,
+                                NodeGuid = node.GUID,
+                                DocumentType =
+                                    node.Tags.Get("Extension") ?? Path.GetExtension(filePath)?.TrimStart('.'),
+                                ContentLength = node.Tags.Get("ContentLength") ??
+                                                FormatFileSize(new FileInfo(filePath).Length),
+                                CreatedUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss")
+                            };
+                    }
+
+                return null; // File not found
+            }
+            catch (Exception ex)
+            {
+                LogToConsole($"[ERROR] Failed to search LiteGraph for file {filePath}: {ex.Message}");
+                return null;
             }
         }
 
