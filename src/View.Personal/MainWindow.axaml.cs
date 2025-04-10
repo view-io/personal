@@ -1084,7 +1084,7 @@ namespace View.Personal
                         IsWatched = isSelectedWatched,
                         IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(dirInfo.FullName),
                         IsCheckBoxEnabled = !isParentWatched,
-                        ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName), // Still needed for logic
+                        ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName),
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
                 }
@@ -1092,6 +1092,9 @@ namespace View.Personal
                 foreach (var file in Directory.GetFiles(path))
                 {
                     var fileInfo = new FileInfo(file);
+                    // Skip hidden or system files like .DS_Store
+                    if (IsHiddenOrSystemFile(fileInfo)) continue;
+
                     var parentDir = Path.GetDirectoryName(fileInfo.FullName);
                     var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
                     var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
@@ -1105,7 +1108,7 @@ namespace View.Personal
                         IsWatched = isSelectedWatched,
                         IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(fileInfo.FullName),
                         IsCheckBoxEnabled = !isParentWatched,
-                        ContainsWatchedItems = false, // Files don’t contain items
+                        ContainsWatchedItems = false,
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
                 }
@@ -1121,6 +1124,15 @@ namespace View.Personal
             {
                 ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
             }
+        }
+
+        private bool IsHiddenOrSystemFile(FileInfo fileInfo)
+        {
+            // Check if the file is hidden or has a system attribute (e.g., .DS_Store)
+            return (fileInfo.Attributes & FileAttributes.Hidden) != 0 ||
+                   (fileInfo.Attributes & FileAttributes.System) != 0 ||
+                   fileInfo.Name.StartsWith(".") || // Hidden files on macOS start with a dot
+                   fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
         }
 
         private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
