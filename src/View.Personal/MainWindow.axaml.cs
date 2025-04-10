@@ -1276,10 +1276,13 @@ namespace View.Personal
                                                                 e.FullPath.StartsWith(
                                                                     dir + Path.DirectorySeparatorChar));
 
-            // Only proceed if explicitly watched or directory is watched
+            // Skip if neither explicitly watched nor in a watched directory
             if (!isExplicitlyWatched && !isInWatchedDirectory) return;
 
-            // If only a file is watched, ignore events for other files in the directory
+            // Skip temporary files (e.g., Spotlight or editor temp files)
+            if (IsTemporaryFile(e.Name)) return;
+
+            // If only a file is watched, ignore events for other files in the directory unless explicitly watched
             if (!isInWatchedDirectory && !isExplicitlyWatched) return;
 
             if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
@@ -1288,7 +1291,6 @@ namespace View.Personal
                     _filesBeingWritten[e.FullPath] = DateTime.Now;
                 }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
-                // Only log deletion if the file was explicitly watched
                 if (isExplicitlyWatched)
                 {
                     LogToConsole($"[INFO] File deleted: {e.Name} ({e.FullPath})");
@@ -1297,7 +1299,6 @@ namespace View.Personal
                         _filesBeingWritten.Remove(e.FullPath);
                     }
                 }
-            // If in a watched directory, we'll catch the rename or change next
         }
 
         private void OnRenamed(object source, RenamedEventArgs e)
@@ -1335,7 +1336,8 @@ namespace View.Personal
             lock (_filesBeingWritten)
             {
                 foreach (var fileEntry in _filesBeingWritten)
-                    if ((now - fileEntry.Value).TotalMilliseconds >= FILE_CHANGE_TIMEOUT)
+                    if ((now - fileEntry.Value).TotalMilliseconds >= FILE_CHANGE_TIMEOUT &&
+                        !IsTemporaryFile(Path.GetFileName(fileEntry.Key)))
                         completedFiles.Add(fileEntry.Key);
 
                 foreach (var filePath in completedFiles)
@@ -1355,6 +1357,15 @@ namespace View.Personal
                 if (consoleOutput != null) consoleOutput.Text += message + "\n";
                 Console.WriteLine(message);
             });
+        }
+
+        private bool IsTemporaryFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return true;
+
+            // Common macOS temporary file patterns
+            var tempPatterns = new[] { ".sb-", ".DS_Store", "~$" };
+            return tempPatterns.Any(pattern => fileName.Contains(pattern)) || fileName.StartsWith(".");
         }
 
         protected override void OnClosed(EventArgs e)
