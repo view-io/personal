@@ -1291,7 +1291,7 @@ namespace View.Personal
             // Skip if neither explicitly watched nor in a watched directory
             if (!isExplicitlyWatched && !isInWatchedDirectory) return;
 
-            // Skip temporary files (e.g., Spotlight or editor temp files)
+            // Skip temporary files
             if (IsTemporaryFile(e.Name)) return;
 
             // If only a file is watched, ignore events for other files in the directory unless explicitly watched
@@ -1303,10 +1303,29 @@ namespace View.Personal
                     _filesBeingWritten[e.FullPath] = DateTime.Now;
                 }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
-                // Log deletion if the file was explicitly watched or in a watched directory
+                // Handle file deletion if it’s watched or in a watched directory
                 if (isExplicitlyWatched || isInWatchedDirectory)
                 {
-                    LogToConsole($"[INFO] File moved to Trash or deleted: {e.Name} ({e.FullPath})");
+                    LogToConsole($"[INFO] File deleted on disk: {e.Name} ({e.FullPath})");
+
+                    // Find and delete the node in LiteGraph
+                    var node = FindFileInLiteGraph(e.FullPath);
+                    if (node != null)
+                        try
+                        {
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
+                            LogToConsole($"[INFO] Deleted node {node.NodeGuid} for file {node.Name} ({e.FullPath})");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogToConsole(
+                                $"[ERROR] Failed to delete node {node.NodeGuid} for file {e.Name}: {ex.Message}");
+                        }
+                    // Optional: Refresh UI on the UI thread
+                    // Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
+                    else
+                        LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+
                     lock (_filesBeingWritten)
                     {
                         _filesBeingWritten.Remove(e.FullPath);
