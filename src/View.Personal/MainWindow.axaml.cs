@@ -1325,23 +1325,38 @@ namespace View.Personal
 
             if (wasExplicitlyWatched || wasInWatchedDirectory)
             {
-                // Log rename only if it affects a watched file or directory
+                // Log the rename event
                 LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
-                lock (_filesBeingWritten)
+
+                // Step 1: Find and delete the old file in LiteGraph using the old path
+                var oldNode = FindFileInLiteGraph(e.OldFullPath);
+                if (oldNode != null)
                 {
-                    _filesBeingWritten.Remove(e.OldFullPath);
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, oldNode.NodeGuid);
+                    LogToConsole(
+                        $"[INFO] Deleted node {oldNode.NodeGuid} for old file {oldNode.Name} ({e.OldFullPath})");
+                }
+                else
+                {
+                    LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
                 }
 
-                // If the new path is still watched, queue it for change detection
-                if (_WatchedPaths.Contains(e.FullPath))
-                    lock (_filesBeingWritten)
-                    {
-                        _filesBeingWritten[e.FullPath] = DateTime.Now;
-                    }
+                // Step 2: Queue the new path for ingestion if it’s watched or in a watched directory
+                var isExplicitlyWatchedNew = _WatchedPaths.Contains(e.FullPath);
+                var isInWatchedDirectoryNew = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                       e.FullPath.StartsWith(
+                                                                           dir + Path.DirectorySeparatorChar));
+
+                if (isExplicitlyWatchedNew || isInWatchedDirectoryNew)
+                    if (!IsTemporaryFile(e.Name)) // Skip temporary files
+                        lock (_filesBeingWritten)
+                        {
+                            _filesBeingWritten[e.FullPath] = DateTime.Now; // Queue for ingestion
+                        }
             }
         }
 
-        private void CheckForCompletedFileOperations(object sender, ElapsedEventArgs e)
+        private async void CheckForCompletedFileOperations(object sender, ElapsedEventArgs e)
         {
             var now = DateTime.Now;
             var completedFiles = new List<string>();
@@ -1353,21 +1368,41 @@ namespace View.Personal
                         !IsTemporaryFile(Path.GetFileName(fileEntry.Key)))
                         completedFiles.Add(fileEntry.Key);
 
-                foreach (var filePath in completedFiles)
-                {
-                    var fileName = Path.GetFileName(filePath);
-                    LogToConsole($"[INFO] File changed (operation completed): {fileName} ({filePath})");
-
-                    // Search for the file in LiteGraph
-                    var node = FindFileInLiteGraph(filePath);
-                    if (node != null)
-                        LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.NodeGuid})");
-                    else
-                        LogToConsole($"[WARN] File not found in LiteGraph: {fileName} ({filePath})");
-
-                    _filesBeingWritten.Remove(filePath);
-                }
+                foreach (var filePath in completedFiles) _filesBeingWritten.Remove(filePath);
             }
+
+            var tasks = completedFiles.Select(filePath => Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var fileName = Path.GetFileName(filePath);
+                // Check if this path was recently renamed by looking at recent logs or context
+                // For simplicity, we’ll assume it’s a new ingestion unless you track renames explicitly
+                LogToConsole($"[INFO] Processing file: {fileName} ({filePath})");
+
+                var node = FindFileInLiteGraph(filePath);
+                if (node != null)
+                {
+                    // This shouldn’t happen for renamed files since we deleted the old node,
+                    // but keep it for changed files
+                    LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.NodeGuid})");
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
+                    LogToConsole($"[INFO] Deleted node {node.NodeGuid} for {node.Name}");
+                }
+
+                try
+                {
+                    await IngestFileAsync(filePath);
+                    LogToConsole($"[INFO] Ingested file: {fileName} ({filePath})");
+                }
+                catch (Exception ex)
+                {
+                    LogToConsole($"[ERROR] Failed to ingest file {fileName}: {ex.Message}");
+                }
+            })).ToList();
+
+            await Task.WhenAll(tasks);
+
+            // refresh data monitor
+            // await Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
         }
 
         private FileViewModel FindFileInLiteGraph(string filePath)

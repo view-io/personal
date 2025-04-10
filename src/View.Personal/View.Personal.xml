@@ -747,7 +747,7 @@
             <param name="fileExtension">The default file extension</param>
             <returns>The selected file path or null if canceled</returns>
         </member>
-        <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.String)">
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Opens a file picker dialog to select a file to ingest
             </summary>
