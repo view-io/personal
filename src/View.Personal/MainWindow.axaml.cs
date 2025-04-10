@@ -1291,9 +1291,10 @@ namespace View.Personal
                     _filesBeingWritten[e.FullPath] = DateTime.Now;
                 }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
-                if (isExplicitlyWatched)
+                // Log deletion if the file was explicitly watched or in a watched directory
+                if (isExplicitlyWatched || isInWatchedDirectory)
                 {
-                    LogToConsole($"[INFO] File deleted: {e.Name} ({e.FullPath})");
+                    LogToConsole($"[INFO] File moved to Trash or deleted: {e.Name} ({e.FullPath})");
                     lock (_filesBeingWritten)
                     {
                         _filesBeingWritten.Remove(e.FullPath);
