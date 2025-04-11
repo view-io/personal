@@ -1080,7 +1080,8 @@ namespace View.Personal
                     var dirInfo = new DirectoryInfo(dir);
                     var isSelectedWatched = _WatchedPaths.Contains(dirInfo.FullName);
                     var isImplicitlyWatched =
-                        IsWithinWatchedDirectory(dirInfo.FullName); // Check if within a watched directory
+                        IsWithinWatchedDirectory(dirInfo.FullName) &&
+                        !isSelectedWatched; // Only implicit if not explicitly watched
 
                     entries.Add(new FileSystemEntry
                     {
@@ -1092,7 +1093,9 @@ namespace View.Personal
                         IsWatched = isSelectedWatched,
                         IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
                         IsCheckBoxEnabled =
-                            !isImplicitlyWatched && !isSelectedWatched, // Disable if implicitly or explicitly watched
+                            isSelectedWatched ||
+                            (!isImplicitlyWatched &&
+                             !isSelectedWatched), // Enable if explicitly watched or not watched at all
                         ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName),
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
@@ -1105,9 +1108,8 @@ namespace View.Personal
 
                     var parentDir = Path.GetDirectoryName(fileInfo.FullName);
                     var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
-                    var isImplicitlyWatched =
-                        parentDir != null &&
-                        IsWithinWatchedDirectory(fileInfo.FullName); // Check if within a watched directory
+                    var isImplicitlyWatched = parentDir != null && IsWithinWatchedDirectory(fileInfo.FullName) &&
+                                              !isSelectedWatched;
 
                     entries.Add(new FileSystemEntry
                     {
@@ -1119,7 +1121,9 @@ namespace View.Personal
                         IsWatched = isSelectedWatched,
                         IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
                         IsCheckBoxEnabled =
-                            !isImplicitlyWatched && !isSelectedWatched, // Disable if implicitly or explicitly watched
+                            isSelectedWatched ||
+                            (!isImplicitlyWatched &&
+                             !isSelectedWatched), // Enable if explicitly watched or not watched at all
                         ContainsWatchedItems = false,
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
