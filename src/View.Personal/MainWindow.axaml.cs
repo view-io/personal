@@ -1151,51 +1151,77 @@ namespace View.Personal
                     UpdateFileWatchers();
                     LoadFileSystem(_CurrentPath);
 
-                    // If it’s a directory, ingest all files initially, skipping duplicates
+                    // If it’s a directory, ingest all files initially, updating if changed
                     if (entry.IsDirectory)
-                        Dispatcher.UIThread.InvokeAsync(async () =>
+                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
                         {
                             foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
                                          SearchOption.AllDirectories))
                                 if (!IsTemporaryFile(Path.GetFileName(filePath)))
                                 {
-                                    // Check if the file already exists in LiteGraph
                                     var existingNode = FindFileInLiteGraph(filePath);
-                                    if (existingNode == null)
+                                    var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
+
+                                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                                    {
+                                        if (existingNode != null)
+                                        {
+                                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
+                                            LogToConsole(
+                                                $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
+                                        }
+
                                         try
                                         {
                                             await IngestFileAsync(filePath);
                                             LogToConsole(
-                                                $"[INFO] Initially ingested file: {Path.GetFileName(filePath)} ({filePath})");
+                                                $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
                                         }
                                         catch (Exception ex)
                                         {
                                             LogToConsole(
-                                                $"[ERROR] Failed to initially ingest file {Path.GetFileName(filePath)}: {ex.Message}");
+                                                $"[ERROR] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
                                         }
+                                    }
                                     else
+                                    {
                                         LogToConsole(
-                                            $"[INFO] Skipped ingestion of already existing file: {Path.GetFileName(filePath)} ({filePath})");
+                                            $"[INFO] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
+                                    }
                                 }
                         });
                     else
-                        // For single files, ingest only if not already in LiteGraph
-                        Dispatcher.UIThread.InvokeAsync(async () =>
+                        // For single files, ingest or update if changed
+                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
                         {
                             var existingNode = FindFileInLiteGraph(entry.FullPath);
-                            if (existingNode == null)
+                            var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
+
+                            if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                            {
+                                if (existingNode != null)
+                                {
+                                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
+                                    LogToConsole(
+                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
+                                }
+
                                 try
                                 {
                                     await IngestFileAsync(entry.FullPath);
-                                    LogToConsole($"[INFO] Initially ingested file: {entry.Name} ({entry.FullPath})");
+                                    LogToConsole(
+                                        $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogToConsole($"[ERROR] Failed to initially ingest file {entry.Name}: {ex.Message}");
+                                    LogToConsole($"[ERROR] Failed to ingest file {entry.Name}: {ex.Message}");
                                 }
+                            }
                             else
+                            {
                                 LogToConsole(
-                                    $"[INFO] Skipped ingestion of already existing file: {entry.Name} ({entry.FullPath})");
+                                    $"[INFO] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
+                            }
                         });
 
                     var app = (App)Application.Current;
@@ -1232,9 +1258,9 @@ namespace View.Personal
                                     var node = FindFileInLiteGraph(filePath);
                                     if (node != null)
                                     {
-                                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
+                                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
                                         LogToConsole(
-                                            $"[INFO] Deleted node {node.NodeGuid} for file {node.Name} ({filePath})");
+                                            $"[INFO] Deleted node {node.GUID} for file {node.Name} ({filePath})");
                                     }
                                 }
 
@@ -1403,13 +1429,13 @@ namespace View.Personal
                     if (node != null)
                         try
                         {
-                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
-                            LogToConsole($"[INFO] Deleted node {node.NodeGuid} for file {node.Name} ({e.FullPath})");
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
                         }
                         catch (Exception ex)
                         {
                             LogToConsole(
-                                $"[ERROR] Failed to delete node {node.NodeGuid} for file {e.Name}: {ex.Message}");
+                                $"[ERROR] Failed to delete node {node.GUID} for file {e.Name}: {ex.Message}");
                         }
                     // Optional: Refresh UI on the UI thread
                     // Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
@@ -1441,9 +1467,9 @@ namespace View.Personal
                 var oldNode = FindFileInLiteGraph(e.OldFullPath);
                 if (oldNode != null)
                 {
-                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, oldNode.NodeGuid);
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, oldNode.GUID);
                     LogToConsole(
-                        $"[INFO] Deleted node {oldNode.NodeGuid} for old file {oldNode.Name} ({e.OldFullPath})");
+                        $"[INFO] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
                 }
                 else
                 {
@@ -1492,9 +1518,9 @@ namespace View.Personal
                 {
                     // This shouldn’t happen for renamed files since we deleted the old node,
                     // but keep it for changed files
-                    LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.NodeGuid})");
-                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.NodeGuid);
-                    LogToConsole($"[INFO] Deleted node {node.NodeGuid} for {node.Name}");
+                    LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                    LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
                 }
 
                 try
@@ -1514,7 +1540,7 @@ namespace View.Personal
             // await Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
         }
 
-        private FileViewModel FindFileInLiteGraph(string filePath)
+        private LiteGraph.Node FindFileInLiteGraph(string filePath)
         {
             try
             {
@@ -1528,19 +1554,9 @@ namespace View.Personal
                 foreach (var node in nodes)
                     if (node.Tags != null)
                     {
-                        var storedPath = node.Tags.Get("FilePath"); // Get returns null if key doesn't exist
+                        var storedPath = node.Tags.Get("FilePath");
                         if (storedPath != null && storedPath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
-                            return new FileViewModel
-                            {
-                                Name = node.Tags.Get("FileName") ?? Path.GetFileName(filePath),
-                                FilePath = filePath,
-                                NodeGuid = node.GUID,
-                                DocumentType =
-                                    node.Tags.Get("Extension") ?? Path.GetExtension(filePath)?.TrimStart('.'),
-                                ContentLength = node.Tags.Get("ContentLength") ??
-                                                FormatFileSize(new FileInfo(filePath).Length),
-                                CreatedUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss")
-                            };
+                            return node; // Return the full Node object
                     }
 
                 return null; // File not found
