@@ -22,6 +22,7 @@ namespace View.Personal
     using Helpers;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
+    using MsBox.Avalonia.Models;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
@@ -1267,45 +1268,99 @@ namespace View.Personal
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (_WatchedPaths.Contains(entry.FullPath))
+                    // Delegate to async helper method to avoid blocking UI
+                    Dispatcher.UIThread.Post(async () => await ConfirmAndProcessUnwatchAsync(checkBox, entry));
+        }
+
+        private async Task ConfirmAndProcessUnwatchAsync(CheckBox checkBox, FileSystemEntry entry)
+        {
+            // Count affected files
+            int fileCount;
+            if (entry.IsDirectory)
+                fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
+                    .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
+            else
+                fileCount = 1; // Single file
+
+            // Show custom popup with three options
+            var messageBoxCustom = MsBox.Avalonia.MessageBoxManager.GetMessageBoxCustom(
+                new MsBox.Avalonia.Dto.MessageBoxCustomParams
                 {
+                    ContentTitle = "Confirm Unwatch",
+                    ContentMessage =
+                        $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
+                    ButtonDefinitions = new[]
+                    {
+                        new ButtonDefinition() { Name = "Unwatch Only", IsDefault = true },
+                        new ButtonDefinition() { Name = "Unwatch and Delete" },
+                        new ButtonDefinition() { Name = "Cancel", IsCancel = true }
+                    },
+                    Icon = MsBox.Avalonia.Enums.Icon.Question,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                });
+
+            var result = await messageBoxCustom.ShowAsync();
+
+            switch (result)
+            {
+                case "Unwatch Only":
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
                     LoadFileSystem(_CurrentPath);
+                    LogToConsole($"[INFO] Stopped watching '{entry.Name}' without deleting files.");
+                    break;
 
-                    // Optional: Prompt to delete files from LiteGraph if it’s a directory
+                case "Unwatch and Delete":
+                    _WatchedPaths.Remove(entry.FullPath);
+                    LogWatchedPaths();
+                    UpdateFileWatchers();
+
                     if (entry.IsDirectory)
-                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
+                    {
+                        var nodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid)
+                            .Where(n => n.Tags != null && n.Tags.Get("FilePath")
+                                ?.StartsWith(entry.FullPath + Path.DirectorySeparatorChar) == true)
+                            .ToList();
+
+                        foreach (var node in nodes)
                         {
-                            var result = await MsBox.Avalonia.MessageBoxManager
-                                .GetMessageBoxStandard("Remove Files?",
-                                    $"Stop watching {entry.Name}. Also remove its files from the database?",
-                                    ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Question)
-                                .ShowAsync(); // No semicolon before ShowAsync, it’s part of the chain
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                            LogToConsole(
+                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                        }
+                    }
+                    else
+                    {
+                        var node = FindFileInLiteGraph(entry.FullPath);
+                        if (node != null)
+                        {
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
+                        }
+                    }
 
-                            if (result == ButtonResult.Yes)
-                            {
-                                foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
-                                             SearchOption.AllDirectories))
-                                {
-                                    var node = FindFileInLiteGraph(filePath);
-                                    if (node != null)
-                                    {
-                                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                                        LogToConsole(
-                                            $"[INFO] Deleted node {node.GUID} for file {node.Name} ({filePath})");
-                                    }
-                                }
+                    LoadFileSystem(_CurrentPath);
+                    var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                    if (filesPanel != null && filesPanel.IsVisible)
+                    {
+                        FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                        LogToConsole("[INFO] Refreshed Files panel after unwatch and delete.");
+                    }
 
-                                // Refresh UI after deletion
-                                LoadFileSystem(_CurrentPath);
-                            }
-                        });
+                    LogToConsole(
+                        $"[INFO] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
+                    break;
 
-                    var app = (App)Application.Current;
-                    app.AppSettings.WatchedPaths = _WatchedPaths;
-                    app.SaveSettings();
-                }
+                case "Cancel":
+                    checkBox.IsChecked = true; // Revert to watched state
+                    LogToConsole($"[INFO] Unwatch cancelled for '{entry.Name}' by user.");
+                    return;
+            }
+
+            var app = (App)Application.Current;
+            app.AppSettings.WatchedPaths = _WatchedPaths;
+            app.SaveSettings();
         }
 
         private bool IsWithinWatchedDirectory(string path)
