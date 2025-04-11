@@ -1152,6 +1152,127 @@ namespace View.Personal
                    fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
         }
 
+        // Add this new method in MainWindow.cs
+        private async void SyncButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_WatchedPaths.Count == 0)
+            {
+                ShowNotification("Sync", "No watched paths to sync.", NotificationType.Information);
+                return;
+            }
+
+            LogToConsole("[INFO] Starting sync of watched files...");
+
+            // Step 1: Clean up stale files from LiteGraph
+            var allNodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid)
+                .Where(n => n.Tags != null && !string.IsNullOrEmpty(n.Tags.Get("FilePath")))
+                .ToDictionary(n => n.Tags.Get("FilePath"), n => n.GUID);
+
+            foreach (var node in allNodes)
+            {
+                var filePath = node.Key;
+                var isInWatchedPath = _WatchedPaths.Any(wp => filePath.StartsWith(wp) || filePath == wp);
+                if (isInWatchedPath && !File.Exists(filePath))
+                {
+                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.Value);
+                    LogToConsole(
+                        $"[INFO] Removed stale node {node.Value} for file {Path.GetFileName(filePath)} ({filePath})");
+                }
+            }
+
+            // Step 2: Sync existing files in watched paths
+            foreach (var watchedPath in _WatchedPaths.ToList()) // ToList to avoid collection modification issues
+                if (Directory.Exists(watchedPath))
+                {
+                    foreach (var filePath in Directory.GetFiles(watchedPath, "*", SearchOption.AllDirectories))
+                        if (!IsTemporaryFile(Path.GetFileName(filePath)))
+                        {
+                            var existingNode = FindFileInLiteGraph(filePath);
+                            var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
+
+                            if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                            {
+                                if (existingNode != null)
+                                {
+                                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
+                                    LogToConsole(
+                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
+                                }
+
+                                try
+                                {
+                                    await IngestFileAsync(filePath);
+                                    LogToConsole(
+                                        $"[INFO] {(existingNode == null ? "Synced new" : "Updated and synced")} file: {Path.GetFileName(filePath)} ({filePath})");
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogToConsole(
+                                        $"[ERROR] Failed to sync file {Path.GetFileName(filePath)}: {ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                LogToConsole(
+                                    $"[INFO] Skipped sync of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
+                            }
+                        }
+                }
+                else if (File.Exists(watchedPath))
+                {
+                    var existingNode = FindFileInLiteGraph(watchedPath);
+                    var fileLastWriteTime = File.GetLastWriteTimeUtc(watchedPath);
+
+                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                    {
+                        if (existingNode != null)
+                        {
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
+                            LogToConsole(
+                                $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(watchedPath)}");
+                        }
+
+                        try
+                        {
+                            await IngestFileAsync(watchedPath);
+                            LogToConsole(
+                                $"[INFO] {(existingNode == null ? "Synced new" : "Updated and synced")} file: {Path.GetFileName(watchedPath)} ({watchedPath})");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogToConsole($"[ERROR] Failed to sync file {Path.GetFileName(watchedPath)}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        LogToConsole(
+                            $"[INFO] Skipped sync of unchanged file: {Path.GetFileName(watchedPath)} ({watchedPath})");
+                    }
+                }
+                else
+                {
+                    LogToConsole($"[WARN] Watched path no longer exists: {watchedPath}");
+                    // Optionally remove from _WatchedPaths (commented out for now)
+                    // _WatchedPaths.Remove(watchedPath);
+                }
+
+            // Refresh UI
+            LoadFileSystem(_CurrentPath);
+            var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            if (filesPanel != null && filesPanel.IsVisible)
+            {
+                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                LogToConsole("[INFO] Refreshed Files panel after sync.");
+            }
+
+            LogToConsole("[INFO] Sync of watched files completed.");
+
+            // Optionally save updated _WatchedPaths if paths were removed
+            // var app = (App)Application.Current;
+            // app.AppSettings.WatchedPaths = _WatchedPaths;
+            // app.SaveSettings();
+        }
+
         private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
