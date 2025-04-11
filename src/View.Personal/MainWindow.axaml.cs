@@ -1155,57 +1155,42 @@ namespace View.Personal
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (!_WatchedPaths.Contains(entry.FullPath))
+                    // Delegate the async confirmation and processing to a separate method
+                    Dispatcher.UIThread.Post(async () => await ConfirmAndWatchAsync(checkBox, entry));
+        }
+
+        private async Task ConfirmAndWatchAsync(CheckBox checkBox, FileSystemEntry entry)
+        {
+            // Count files to be ingested
+            int fileCount;
+            if (entry.IsDirectory)
+                fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
+                    .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
+            else
+                fileCount = 1; // Single file
+
+            // Show confirmation popup
+            var result = await MsBox.Avalonia.MessageBoxManager
+                .GetMessageBoxStandard("Confirm Watch",
+                    $"Watch '{entry.Name}'? This will ingest {fileCount} file{(fileCount == 1 ? "" : "s")}.",
+                    ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Question)
+                .ShowAsync();
+
+            if (result == ButtonResult.Yes)
+            {
+                _WatchedPaths.Add(entry.FullPath);
+                LogWatchedPaths();
+                UpdateFileWatchers();
+                LoadFileSystem(_CurrentPath);
+
+                // If it’s a directory, ingest all files initially, updating if changed
+                if (entry.IsDirectory)
                 {
-                    _WatchedPaths.Add(entry.FullPath);
-                    LogWatchedPaths();
-                    UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath);
-
-                    // If it’s a directory, ingest all files initially, updating if changed
-                    if (entry.IsDirectory)
-                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
+                    foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
+                        if (!IsTemporaryFile(Path.GetFileName(filePath)))
                         {
-                            foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
-                                         SearchOption.AllDirectories))
-                                if (!IsTemporaryFile(Path.GetFileName(filePath)))
-                                {
-                                    var existingNode = FindFileInLiteGraph(filePath);
-                                    var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
-
-                                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
-                                    {
-                                        if (existingNode != null)
-                                        {
-                                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
-                                            LogToConsole(
-                                                $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
-                                        }
-
-                                        try
-                                        {
-                                            await IngestFileAsync(filePath);
-                                            LogToConsole(
-                                                $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            LogToConsole(
-                                                $"[ERROR] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        LogToConsole(
-                                            $"[INFO] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
-                                    }
-                                }
-                        });
-                    else
-                        // For single files, ingest or update if changed
-                        Dispatcher.UIThread.InvokeAsync(async Task () => // Explicitly specify Task return type
-                        {
-                            var existingNode = FindFileInLiteGraph(entry.FullPath);
-                            var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
+                            var existingNode = FindFileInLiteGraph(filePath);
+                            var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
 
                             if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
                             {
@@ -1213,31 +1198,69 @@ namespace View.Personal
                                 {
                                     _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
                                     LogToConsole(
-                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
+                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
 
                                 try
                                 {
-                                    await IngestFileAsync(entry.FullPath);
+                                    await IngestFileAsync(filePath);
                                     LogToConsole(
-                                        $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
+                                        $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogToConsole($"[ERROR] Failed to ingest file {entry.Name}: {ex.Message}");
+                                    LogToConsole(
+                                        $"[ERROR] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
                                 }
                             }
                             else
                             {
                                 LogToConsole(
-                                    $"[INFO] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
+                                    $"[INFO] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
                             }
-                        });
-
-                    var app = (App)Application.Current;
-                    app.AppSettings.WatchedPaths = _WatchedPaths;
-                    app.SaveSettings();
+                        }
                 }
+                else
+                {
+                    // For single files, ingest or update if changed
+                    var existingNode = FindFileInLiteGraph(entry.FullPath);
+                    var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
+
+                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                    {
+                        if (existingNode != null)
+                        {
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, existingNode.GUID);
+                            LogToConsole($"[INFO] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
+                        }
+
+                        try
+                        {
+                            await IngestFileAsync(entry.FullPath);
+                            LogToConsole(
+                                $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogToConsole($"[ERROR] Failed to ingest file {entry.Name}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        LogToConsole($"[INFO] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
+                    }
+                }
+
+                var app = (App)Application.Current;
+                app.AppSettings.WatchedPaths = _WatchedPaths;
+                app.SaveSettings();
+            }
+            else
+            {
+                // Cancel the watch operation
+                checkBox.IsChecked = false;
+                LogToConsole($"[INFO] Watch cancelled for '{entry.Name}' by user.");
+            }
         }
 
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
