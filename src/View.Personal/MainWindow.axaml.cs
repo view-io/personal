@@ -1363,7 +1363,7 @@ namespace View.Personal
             _watchers.Clear();
 
             var directoriesToWatch = _WatchedPaths
-                .Where(path => Directory.Exists(path) || File.Exists(path))
+                .Where(path => Directory.Exists(path) || (File.Exists(path) && Path.GetDirectoryName(path) != null))
                 .Select(path => Directory.Exists(path) ? path : Path.GetDirectoryName(path))
                 .Distinct()
                 .ToList();
@@ -1373,6 +1373,7 @@ namespace View.Personal
                 var watcher = new FileSystemWatcher(dir)
                 {
                     NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                    IncludeSubdirectories = true, // Enable recursive watching
                     EnableRaisingEvents = true
                 };
                 watcher.Changed += OnFileActivity;
@@ -1381,20 +1382,8 @@ namespace View.Personal
                 watcher.Renamed += OnRenamed;
                 _watchers[dir] = watcher;
 
-                // Log based on what’s actually being watched
-                var watchedInDir = _WatchedPaths.Where(p => p.StartsWith(dir + Path.DirectorySeparatorChar) || p == dir)
-                    .ToList();
-                if (watchedInDir.Any(p => Directory.Exists(p)))
-                {
-                    // Directory explicitly watched
-                    LogToConsole($"[INFO] Started watching directory: {dir}");
-                }
-                else
-                {
-                    // Only specific files in this directory
-                    var files = watchedInDir.Where(p => File.Exists(p)).Select(Path.GetFileName);
-                    LogToConsole($"[INFO] Started watching file(s) in {dir}: {string.Join(", ", files)}");
-                }
+                // Log the watched directory
+                LogToConsole($"[INFO] Started watching directory (recursive): {dir}");
             }
         }
 
