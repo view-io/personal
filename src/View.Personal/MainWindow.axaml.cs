@@ -1399,18 +1399,12 @@ namespace View.Personal
                                                                 e.FullPath.StartsWith(
                                                                     dir + Path.DirectorySeparatorChar));
 
-            // Skip if neither explicitly watched nor in a watched directory
             if (!isExplicitlyWatched && !isInWatchedDirectory) return;
-
-            // Skip temporary files
             if (IsTemporaryFile(e.Name)) return;
-
-            // If only a file is watched, ignore events for other files in the directory unless explicitly watched
             if (!isInWatchedDirectory && !isExplicitlyWatched) return;
 
             if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
             {
-                // Queue both files and directories
                 if (File.Exists(e.FullPath) || Directory.Exists(e.FullPath))
                 {
                     lock (_filesBeingWritten)
@@ -1426,29 +1420,68 @@ namespace View.Personal
             {
                 if (isExplicitlyWatched || isInWatchedDirectory)
                 {
-                    LogToConsole($"[INFO] File deleted on disk: {e.Name} ({e.FullPath})");
+                    LogToConsole(
+                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
 
-                    var node = FindFileInLiteGraph(e.FullPath);
-                    if (node != null)
+                    if (File.Exists(e.FullPath))
                     {
-                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                        LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
-
-                        // Refresh both Data Monitor and Files panel on the UI thread
-                        Dispatcher.UIThread.InvokeAsync(() =>
+                        // Handle single file deletion
+                        var node = FindFileInLiteGraph(e.FullPath);
+                        if (node != null)
                         {
-                            LoadFileSystem(_CurrentPath); // Refresh Data Monitor
-                            var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                            if (filesPanel != null && filesPanel.IsVisible)
+                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
+
+                            Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                                LogToConsole("[INFO] Refreshed Files panel after file deletion.");
-                            }
-                        });
+                                LoadFileSystem(_CurrentPath);
+                                var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                                if (filesPanel != null && filesPanel.IsVisible)
+                                {
+                                    FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                                    LogToConsole("[INFO] Refreshed Files panel after file deletion.");
+                                }
+                            });
+                        }
+                        else
+                        {
+                            LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+                        }
                     }
                     else
                     {
-                        LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+                        // Handle directory deletion by removing all files within it from LiteGraph
+                        var nodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid)
+                            .Where(n => n.Tags != null &&
+                                        n.Tags.Get("FilePath")?.StartsWith(e.FullPath + Path.DirectorySeparatorChar) ==
+                                        true)
+                            .ToList();
+
+                        if (nodes.Any())
+                        {
+                            foreach (var node in nodes)
+                            {
+                                _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                                LogToConsole(
+                                    $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                            }
+
+                            Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                LoadFileSystem(_CurrentPath);
+                                var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                                if (filesPanel != null && filesPanel.IsVisible)
+                                {
+                                    FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                                    LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
+                                }
+                            });
+                        }
+                        else
+                        {
+                            LogToConsole(
+                                $"[INFO] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
+                        }
                     }
 
                     lock (_filesBeingWritten)
