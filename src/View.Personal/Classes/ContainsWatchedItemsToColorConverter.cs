@@ -13,13 +13,11 @@ namespace View.Personal
             if (values.Count == 2 &&
                 values[0] is bool containsWatchedItems &&
                 values[1] is bool isSelectedWatchedDirectory)
-            {
                 // Blue for parent directories that contain watched items but aren’t selected
-                if (containsWatchedItems && !isSelectedWatchedDirectory)
-                    return SolidColorBrush.Parse("#0472EF");
+                // if (containsWatchedItems && !isSelectedWatchedDirectory)
+                //     return SolidColorBrush.Parse("#0472EF");
                 // Default gray for selected directories and non-parents
                 return SolidColorBrush.Parse("#6A6B6F");
-            }
 
             return SolidColorBrush.Parse("#6A6B6F"); // Fallback
         }

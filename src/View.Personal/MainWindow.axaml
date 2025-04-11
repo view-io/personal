@@ -7,13 +7,14 @@
         xmlns:personal="clr-namespace:View.Personal"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
-        Title=""
+        Title="View Personal"
         Icon="/Assets/glyph.png">
     <!-- ReSharper disable Xaml.StyleClassNotFound -->
     <!-- ReSharper disable ObsoleteElement -->
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
         <personal:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
+        <personal:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
     </Window.Resources>
     <Window.Styles>
         <Style Selector="#ChatHistoryList > ListBoxItem">
@@ -145,52 +146,27 @@
                 <StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
                     <!-- Existing StackPanel for header -->
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500"
-                                   FontSize="16" />
+                        <TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
                     </StackPanel>
 
                     <Grid RowDefinitions="Auto,*">
-                        <Grid Grid.Row="0"
-                              ColumnDefinitions="Auto,*,Auto"
-                              Margin="8,0,0,12"
-                              VerticalAlignment="Center">
-
-                            <!-- Back button on the far left -->
-                            <Button x:Name="NavigateUpButton"
-                                    Grid.Column="0"
-                                    Click="NavigateUpButton_Click"
-                                    Classes="flat"
-                                    Height="30">
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="8,0,0,12" VerticalAlignment="Center">
+                            <Button x:Name="NavigateUpButton" Grid.Column="0" Click="NavigateUpButton_Click"
+                                    Classes="flat" Height="30">
                                 <avalonia:MaterialIcon Kind="ArrowBack" Height="16" Width="16" />
                             </Button>
-
-                            <!-- Path text box in the center, fills space -->
-                            <TextBox x:Name="CurrentPathTextBox"
-                                     Grid.Column="1"
-                                     KeyDown="CurrentPathTextBox_KeyDown"
-                                     Classes="no-shadow"
-                                     Margin="8,0" />
-
-                            <!-- Sync button on the right -->
-                            <Button x:Name="SyncButton"
-                                    Grid.Column="2"
-                                    Content="Sync"
-                                    Click="SyncButton_Click"
+                            <TextBox x:Name="CurrentPathTextBox" Grid.Column="1" KeyDown="CurrentPathTextBox_KeyDown"
+                                     Classes="no-shadow" Margin="8,0" />
+                            <Button x:Name="SyncButton" Grid.Column="2" Content="Sync" Click="SyncButton_Click"
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
 
                         <ScrollViewer Grid.Row="1" Height="500" VerticalScrollBarVisibility="Auto">
-                            <DataGrid x:Name="FileSystemDataGrid"
-                                      AutoGenerateColumns="False"
-                                      IsReadOnly="True"
-                                      CanUserReorderColumns="False"
-                                      CanUserResizeColumns="False"
-                                      GridLinesVisibility="Horizontal"
-                                      Background="#FFFFFF"
-                                      HorizontalGridLinesBrush="#EDEDED"
-                                      BorderThickness="1"
-                                      BorderBrush="#EDEDED"
+                            <DataGrid x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                      CanUserReorderColumns="False" CanUserResizeColumns="False"
+                                      GridLinesVisibility="Horizontal" Background="#FFFFFF"
+                                      HorizontalGridLinesBrush="#EDEDED" BorderThickness="1" BorderBrush="#EDEDED"
                                       DoubleTapped="FileSystemDataGrid_DoubleTapped"
                                       x:DataType="classes:FileSystemEntry">
                                 <DataGrid.Styles>
@@ -208,17 +184,24 @@
                                         <Setter Property="Height" Value="38" />
                                         <Setter Property="BorderBrush" Value="#EDEDED" />
                                         <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <MultiBinding Converter="{StaticResource WatchedBackgroundConverter}">
+                                                    <Binding Path="IsDirectory" />
+                                                    <Binding Path="ContainsWatchedItems" />
+                                                    <Binding Path="IsWatchedOrInherited" />
+                                                </MultiBinding>
+                                            </Setter.Value>
+                                        </Setter>
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
-
                                     <DataGridTemplateColumn Header="Sync" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
                                                           IsEnabled="{Binding IsCheckBoxEnabled}"
-                                                          VerticalAlignment="Center"
-                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center" HorizontalAlignment="Center"
                                                           Checked="WatchCheckBox_Checked"
                                                           Unchecked="WatchCheckBox_Unchecked"
                                                           Width="16" Height="16" />
@@ -228,8 +211,7 @@
                                     <DataGridTemplateColumn Header="Type" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <avalonia:MaterialIcon Kind="{Binding IconKind}"
-                                                                       Width="16" Height="16"
+                                                <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
                                                                        VerticalAlignment="Center"
                                                                        HorizontalAlignment="Center">
                                                     <avalonia:MaterialIcon.Foreground>
@@ -250,8 +232,7 @@
                                     <DataGridTemplateColumn Header="Watching" Width="85">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <avalonia:MaterialIcon Kind="EyeOutline"
-                                                                       Width="16" Height="16"
+                                                <avalonia:MaterialIcon Kind="EyeOutline" Width="16" Height="16"
                                                                        Foreground="#0472EF"
                                                                        IsVisible="{Binding IsWatchedOrInherited}"
                                                                        VerticalAlignment="Center"
