@@ -1151,38 +1151,51 @@ namespace View.Personal
                     UpdateFileWatchers();
                     LoadFileSystem(_CurrentPath);
 
-                    // If it’s a directory, ingest all files initially
+                    // If it’s a directory, ingest all files initially, skipping duplicates
                     if (entry.IsDirectory)
                         Dispatcher.UIThread.InvokeAsync(async () =>
                         {
                             foreach (var filePath in Directory.GetFiles(entry.FullPath, "*",
                                          SearchOption.AllDirectories))
                                 if (!IsTemporaryFile(Path.GetFileName(filePath)))
-                                    try
-                                    {
-                                        await IngestFileAsync(filePath);
+                                {
+                                    // Check if the file already exists in LiteGraph
+                                    var existingNode = FindFileInLiteGraph(filePath);
+                                    if (existingNode == null)
+                                        try
+                                        {
+                                            await IngestFileAsync(filePath);
+                                            LogToConsole(
+                                                $"[INFO] Initially ingested file: {Path.GetFileName(filePath)} ({filePath})");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            LogToConsole(
+                                                $"[ERROR] Failed to initially ingest file {Path.GetFileName(filePath)}: {ex.Message}");
+                                        }
+                                    else
                                         LogToConsole(
-                                            $"[INFO] Initially ingested file: {Path.GetFileName(filePath)} ({filePath})");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogToConsole(
-                                            $"[ERROR] Failed to initially ingest file {Path.GetFileName(filePath)}: {ex.Message}");
-                                    }
+                                            $"[INFO] Skipped ingestion of already existing file: {Path.GetFileName(filePath)} ({filePath})");
+                                }
                         });
                     else
-                        // For single files, ingest immediately
+                        // For single files, ingest only if not already in LiteGraph
                         Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            try
-                            {
-                                await IngestFileAsync(entry.FullPath);
-                                LogToConsole($"[INFO] Initially ingested file: {entry.Name} ({entry.FullPath})");
-                            }
-                            catch (Exception ex)
-                            {
-                                LogToConsole($"[ERROR] Failed to initially ingest file {entry.Name}: {ex.Message}");
-                            }
+                            var existingNode = FindFileInLiteGraph(entry.FullPath);
+                            if (existingNode == null)
+                                try
+                                {
+                                    await IngestFileAsync(entry.FullPath);
+                                    LogToConsole($"[INFO] Initially ingested file: {entry.Name} ({entry.FullPath})");
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogToConsole($"[ERROR] Failed to initially ingest file {entry.Name}: {ex.Message}");
+                                }
+                            else
+                                LogToConsole(
+                                    $"[INFO] Skipped ingestion of already existing file: {entry.Name} ({entry.FullPath})");
                         });
 
                     var app = (App)Application.Current;
