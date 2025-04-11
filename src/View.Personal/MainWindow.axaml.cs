@@ -1078,9 +1078,10 @@ namespace View.Personal
                 foreach (var dir in Directory.GetDirectories(path))
                 {
                     var dirInfo = new DirectoryInfo(dir);
-                    var parentDir = Directory.GetParent(dirInfo.FullName)?.FullName;
-                    var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
                     var isSelectedWatched = _WatchedPaths.Contains(dirInfo.FullName);
+                    var isImplicitlyWatched =
+                        IsWithinWatchedDirectory(dirInfo.FullName); // Check if within a watched directory
+
                     entries.Add(new FileSystemEntry
                     {
                         Name = dirInfo.Name,
@@ -1089,8 +1090,9 @@ namespace View.Personal
                         FullPath = dirInfo.FullName,
                         IsDirectory = true,
                         IsWatched = isSelectedWatched,
-                        IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(dirInfo.FullName),
-                        IsCheckBoxEnabled = !isParentWatched,
+                        IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
+                        IsCheckBoxEnabled =
+                            !isImplicitlyWatched && !isSelectedWatched, // Disable if implicitly or explicitly watched
                         ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName),
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
@@ -1099,12 +1101,14 @@ namespace View.Personal
                 foreach (var file in Directory.GetFiles(path))
                 {
                     var fileInfo = new FileInfo(file);
-                    // Skip hidden or system files like .DS_Store
                     if (IsHiddenOrSystemFile(fileInfo)) continue;
 
                     var parentDir = Path.GetDirectoryName(fileInfo.FullName);
-                    var isParentWatched = parentDir != null && _WatchedPaths.Contains(parentDir);
                     var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
+                    var isImplicitlyWatched =
+                        parentDir != null &&
+                        IsWithinWatchedDirectory(fileInfo.FullName); // Check if within a watched directory
+
                     entries.Add(new FileSystemEntry
                     {
                         Name = fileInfo.Name,
@@ -1113,8 +1117,9 @@ namespace View.Personal
                         FullPath = fileInfo.FullName,
                         IsDirectory = false,
                         IsWatched = isSelectedWatched,
-                        IsWatchedOrInherited = isSelectedWatched || IsWithinWatchedDirectory(fileInfo.FullName),
-                        IsCheckBoxEnabled = !isParentWatched,
+                        IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
+                        IsCheckBoxEnabled =
+                            !isImplicitlyWatched && !isSelectedWatched, // Disable if implicitly or explicitly watched
                         ContainsWatchedItems = false,
                         IsSelectedWatchedDirectory = isSelectedWatched
                     });
