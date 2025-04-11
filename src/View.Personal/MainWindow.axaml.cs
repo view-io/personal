@@ -19,6 +19,7 @@ namespace View.Personal
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using Helpers;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
     using Sdk;
@@ -1414,39 +1415,54 @@ namespace View.Personal
             if (!isInWatchedDirectory && !isExplicitlyWatched) return;
 
             if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
-                lock (_filesBeingWritten)
+            {
+                // Queue both files and directories
+                if (File.Exists(e.FullPath) || Directory.Exists(e.FullPath))
                 {
-                    _filesBeingWritten[e.FullPath] = DateTime.Now;
+                    lock (_filesBeingWritten)
+                    {
+                        _filesBeingWritten[e.FullPath] = DateTime.Now;
+                    }
+
+                    LogToConsole(
+                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
                 }
+            }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
-                // Handle file deletion if it’s watched or in a watched directory
+            {
                 if (isExplicitlyWatched || isInWatchedDirectory)
                 {
                     LogToConsole($"[INFO] File deleted on disk: {e.Name} ({e.FullPath})");
 
-                    // Find and delete the node in LiteGraph
                     var node = FindFileInLiteGraph(e.FullPath);
                     if (node != null)
-                        try
+                    {
+                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                        LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
+
+                        // Refresh both Data Monitor and Files panel on the UI thread
+                        Dispatcher.UIThread.InvokeAsync(() =>
                         {
-                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
-                        }
-                        catch (Exception ex)
-                        {
-                            LogToConsole(
-                                $"[ERROR] Failed to delete node {node.GUID} for file {e.Name}: {ex.Message}");
-                        }
-                    // Optional: Refresh UI on the UI thread
-                    // Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
+                            LoadFileSystem(_CurrentPath); // Refresh Data Monitor
+                            var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                            if (filesPanel != null && filesPanel.IsVisible)
+                            {
+                                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                                LogToConsole("[INFO] Refreshed Files panel after file deletion.");
+                            }
+                        });
+                    }
                     else
+                    {
                         LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+                    }
 
                     lock (_filesBeingWritten)
                     {
                         _filesBeingWritten.Remove(e.FullPath);
                     }
                 }
+            }
         }
 
         private void OnRenamed(object source, RenamedEventArgs e)
@@ -1506,38 +1522,79 @@ namespace View.Personal
                 foreach (var filePath in completedFiles) _filesBeingWritten.Remove(filePath);
             }
 
-            var tasks = completedFiles.Select(filePath => Dispatcher.UIThread.InvokeAsync(async () =>
+            var tasks = completedFiles.Select(filePath => Dispatcher.UIThread.InvokeAsync(async Task () =>
             {
                 var fileName = Path.GetFileName(filePath);
-                // Check if this path was recently renamed by looking at recent logs or context
-                // For simplicity, we’ll assume it’s a new ingestion unless you track renames explicitly
                 LogToConsole($"[INFO] Processing file: {fileName} ({filePath})");
 
-                var node = FindFileInLiteGraph(filePath);
-                if (node != null)
+                if (Directory.Exists(filePath))
                 {
-                    // This shouldn’t happen for renamed files since we deleted the old node,
-                    // but keep it for changed files
-                    LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
-                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                    LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
-                }
+                    // Handle directory by ingesting all files within it
+                    foreach (var subFilePath in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
+                        if (!IsTemporaryFile(Path.GetFileName(subFilePath)))
+                        {
+                            var node = FindFileInLiteGraph(subFilePath);
+                            if (node != null)
+                            {
+                                _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                                LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
+                            }
 
-                try
-                {
-                    await IngestFileAsync(filePath);
-                    LogToConsole($"[INFO] Ingested file: {fileName} ({filePath})");
+                            try
+                            {
+                                await IngestFileAsync(subFilePath);
+                                LogToConsole($"[INFO] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
+                            }
+                            catch (Exception ex)
+                            {
+                                LogToConsole(
+                                    $"[ERROR] Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
+                            }
+                        }
+
+                    // Refresh Files panel if visible
+                    var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                    if (filesPanel != null && filesPanel.IsVisible)
+                    {
+                        FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                        LogToConsole("[INFO] Refreshed Files panel after directory ingestion.");
+                    }
                 }
-                catch (Exception ex)
+                else if (File.Exists(filePath))
                 {
-                    LogToConsole($"[ERROR] Failed to ingest file {fileName}: {ex.Message}");
+                    // Handle single file as before
+                    var node = FindFileInLiteGraph(filePath);
+                    if (node != null)
+                    {
+                        LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
+                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
+                        LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
+                    }
+
+                    try
+                    {
+                        await IngestFileAsync(filePath);
+                        LogToConsole($"[INFO] Ingested file: {fileName} ({filePath})");
+
+                        var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+                        if (filesPanel != null && filesPanel.IsVisible)
+                        {
+                            FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
+                            LogToConsole("[INFO] Refreshed Files panel after file ingestion.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogToConsole($"[ERROR] Failed to ingest file {fileName}: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    LogToConsole($"[WARN] Path no longer exists: {filePath}");
                 }
             })).ToList();
 
             await Task.WhenAll(tasks);
-
-            // refresh data monitor
-            // await Dispatcher.UIThread.InvokeAsync(() => LoadFileSystem(_CurrentPath));
         }
 
         private LiteGraph.Node FindFileInLiteGraph(string filePath)
