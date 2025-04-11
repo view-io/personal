@@ -168,7 +168,7 @@
                             <!-- Path text box in the center, fills space -->
                             <TextBox x:Name="CurrentPathTextBox"
                                      Grid.Column="1"
-                                     IsReadOnly="True"
+                                     KeyDown="CurrentPathTextBox_KeyDown"
                                      Classes="no-shadow"
                                      Margin="8,0" />
 
@@ -177,7 +177,7 @@
                                     Grid.Column="2"
                                     Content="Sync"
                                     Click="SyncButton_Click"
-                                    HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat"/>
+                                    HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
 
                         <ScrollViewer Grid.Row="1" Height="500" VerticalScrollBarVisibility="Auto">

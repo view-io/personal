@@ -128,11 +128,6 @@ namespace View.Personal
                     _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
                     LogWatchedPaths(); // Log initial state
                     InitializeFileWatchers();
-                    var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
-                    // if (chatHistoryList == null)
-                    //     Console.WriteLine("[ERROR] ChatHistoryList not found during initialization.");
-                    // else
-                    //     Console.WriteLine("[DEBUG] ChatHistoryList found during initialization.");
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -1879,6 +1874,47 @@ namespace View.Personal
             base.OnClosed(e);
             foreach (var watcher in _watchers.Values) watcher.Dispose();
             _changeTimer?.Dispose();
+        }
+
+        // Add this new event handler in MainWindow.cs
+        private void CurrentPathTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && sender is TextBox textBox)
+            {
+                var enteredPath = textBox.Text?.Trim();
+                if (string.IsNullOrEmpty(enteredPath))
+                {
+                    ShowNotification("Invalid Path", "Please enter a valid path.", NotificationType.Error);
+                    return;
+                }
+
+                try
+                {
+                    if (Directory.Exists(enteredPath))
+                    {
+                        LoadFileSystem(enteredPath);
+                        LogToConsole($"[INFO] Navigated to path: {enteredPath}");
+                    }
+                    else
+                    {
+                        ShowNotification("Path Not Found", $"The path '{enteredPath}' does not exist.",
+                            NotificationType.Error);
+                        textBox.Text = _CurrentPath; // Revert to current path
+                    }
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    ShowNotification("Access Denied", $"Cannot access '{enteredPath}': {ex.Message}",
+                        NotificationType.Error);
+                    textBox.Text = _CurrentPath;
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification("Error", $"Failed to navigate to '{enteredPath}': {ex.Message}",
+                        NotificationType.Error);
+                    textBox.Text = _CurrentPath;
+                }
+            }
         }
 
         #endregion
