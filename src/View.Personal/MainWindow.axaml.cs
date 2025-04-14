@@ -1272,8 +1272,20 @@ namespace View.Personal
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (!_WatchedPaths.Contains(entry.FullPath))
-                    // Delegate the async confirmation and processing to a separate method
+                {
+                    // Check if this path is already implicitly watched by a parent directory
+                    if (_WatchedPaths.Any(watchedPath =>
+                            Directory.Exists(watchedPath) &&
+                            entry.FullPath.StartsWith(watchedPath + Path.DirectorySeparatorChar)))
+                    {
+                        LogToConsole($"[INFO] '{entry.Name}' is already implicitly watched by a parent directory.");
+                        checkBox.IsChecked = true; // Reflect watched state without adding to _WatchedPaths
+                        return;
+                    }
+
+                    // Delegate to async helper method
                     Dispatcher.UIThread.Post(async () => await ConfirmAndWatchAsync(checkBox, entry));
+                }
         }
 
         private async Task ConfirmAndWatchAsync(CheckBox checkBox, FileSystemEntry entry)
@@ -1284,9 +1296,8 @@ namespace View.Personal
                 fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
                     .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
             else
-                fileCount = 1; // Single file
+                fileCount = 1;
 
-            // Show confirmation popup
             var result = await MsBox.Avalonia.MessageBoxManager
                 .GetMessageBoxStandard("Confirm Watch",
                     $"Watch '{entry.Name}'? This will ingest {fileCount} file{(fileCount == 1 ? "" : "s")}.",
@@ -1295,12 +1306,26 @@ namespace View.Personal
 
             if (result == ButtonResult.Yes)
             {
+                // If this is a directory, remove any explicit watches on its sub-items
+                if (entry.IsDirectory)
+                {
+                    var subItemsToRemove = _WatchedPaths
+                        .Where(wp => wp.StartsWith(entry.FullPath + Path.DirectorySeparatorChar))
+                        .ToList();
+                    foreach (var subItem in subItemsToRemove)
+                    {
+                        _WatchedPaths.Remove(subItem);
+                        LogToConsole(
+                            $"[INFO] Removed explicit watch on '{subItem}' as it's now implicitly watched by '{entry.FullPath}'.");
+                    }
+                }
+
                 _WatchedPaths.Add(entry.FullPath);
                 LogWatchedPaths();
                 UpdateFileWatchers();
                 LoadFileSystem(_CurrentPath);
 
-                // If it’s a directory, ingest all files initially, updating if changed
+                // Ingest files
                 if (entry.IsDirectory)
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
@@ -1339,7 +1364,6 @@ namespace View.Personal
                 }
                 else
                 {
-                    // For single files, ingest or update if changed
                     var existingNode = FindFileInLiteGraph(entry.FullPath);
                     var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
 
@@ -1374,7 +1398,6 @@ namespace View.Personal
             }
             else
             {
-                // Cancel the watch operation
                 checkBox.IsChecked = false;
                 LogToConsole($"[INFO] Watch cancelled for '{entry.Name}' by user.");
             }
@@ -1536,13 +1559,8 @@ namespace View.Personal
         private void FileSystemDataGrid_DoubleTapped(object sender, RoutedEventArgs e)
         {
             if (sender is DataGrid dataGrid && dataGrid.SelectedItem is FileSystemEntry entry)
-            {
                 if (entry.IsDirectory)
                     LoadFileSystem(entry.FullPath);
-                else
-                    // Optionally handle file opening here
-                    ShowNotification("File Selected", $"Selected file: {entry.Name}", NotificationType.Information);
-            }
         }
 
         private void InitializeFileWatchers()
