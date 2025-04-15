@@ -458,6 +458,77 @@
             <returns>Not supported, always throws NotSupportedException.</returns>
             <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
         </member>
+        <member name="T:View.Personal.Classes.FileSystemEntry">
+            <summary>
+            Represents a file system entry in the Data Monitor UI, with properties for display and watch status.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.Name">
+            <summary>
+            Gets or sets the name of the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.Size">
+            <summary>
+            Gets or sets the size of the file system entry, formatted as a string.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.LastModified">
+            <summary>
+            Gets or sets the last modified date of the file system entry, formatted as a string.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.FullPath">
+            <summary>
+            Gets or sets the full path of the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsDirectory">
+            <summary>
+            Gets or sets whether the file system entry is a directory.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsWatched">
+            <summary>
+            Gets or sets whether the file system entry is explicitly watched.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsWatchedOrInherited">
+            <summary>
+            Gets or sets whether the file system entry is watched explicitly or inherited from a parent directory.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsCheckBoxEnabled">
+            <summary>
+            Gets or sets whether the watch checkbox is enabled for the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.ContainsWatchedItems">
+            <summary>
+            Gets or sets whether the file system entry contains watched items.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsSelectedWatchedDirectory">
+            <summary>
+            Gets or sets whether the directory is explicitly selected as watched.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IconKind">
+            <summary>
+            Gets the icon kind for the file system entry, displaying a folder or file icon.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Classes.FileSystemEntry.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.FileSystemEntry.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the PropertyChanged event for a specified property.
+            </summary>
+            <param name="propertyName">The name of the property that changed, automatically inferred if not specified.</param>
+        </member>
         <member name="T:View.Personal.Classes.FileViewModel">
             <summary>
             Represents a view model for a file, containing metadata such as name, creation date, and file properties.
