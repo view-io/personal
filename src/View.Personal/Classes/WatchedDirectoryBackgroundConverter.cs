@@ -1,15 +1,24 @@
-// In Converters.cs
-
-using Avalonia.Data.Converters;
-using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-
-namespace View.Personal
+namespace View.Personal.Classes
 {
+    using Avalonia.Data.Converters;
+    using Avalonia.Media;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+
+    /// <summary>
+    /// Converts directory watch status to a background color for Data Monitor UI elements.
+    /// </summary>
     public class WatchedDirectoryBackgroundConverter : IMultiValueConverter
     {
+        /// <summary>
+        /// Converts directory watch status to a background color based on provided values.
+        /// </summary>
+        /// <param name="values">A list containing directory status, watched items status, and inherited watch status.</param>
+        /// <param name="targetType">The type of the binding target property.</param>
+        /// <param name="parameter">The converter parameter.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        /// <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
         public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
         {
             if (values.Count == 3 &&
@@ -17,11 +26,20 @@ namespace View.Personal
                 values[1] is bool containsWatchedItems &&
                 values[2] is bool isWatchedOrInherited)
                 if (isWatchedOrInherited || (isDirectory && containsWatchedItems))
-                    return new SolidColorBrush(Color.Parse("#E6F6FF")); // Highlight color
+                    return new SolidColorBrush(Color.Parse("#E6F6FF"));
 
-            return Brushes.Transparent; // Default
+            return Brushes.Transparent;
         }
 
+        /// <summary>
+        /// Converts a background color back to directory watch status values (not supported).
+        /// </summary>
+        /// <param name="value">The value produced by the binding target.</param>
+        /// <param name="targetTypes">The types of the binding source properties.</param>
+        /// <param name="parameter">The converter parameter.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        /// <returns>Not supported, always throws NotSupportedException.</returns>
+        /// <exception cref="NotSupportedException">Thrown as conversion back is not supported.</exception>
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();

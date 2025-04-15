@@ -599,6 +599,32 @@
             Settings.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.WatchedDirectoryBackgroundConverter">
+            <summary>
+            Converts directory watch status to a background color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.WatchedDirectoryBackgroundConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts directory watch status to a background color based on provided values.
+            </summary>
+            <param name="values">A list containing directory status, watched items status, and inherited watch status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.WatchedDirectoryBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a background color back to directory watch status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
+        </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>
             Converts DateTime objects or string date representations to a formatted string with the pattern "M/d/yyyy, h:mm:ss tt".

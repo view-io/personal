@@ -4,7 +4,6 @@
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:helpers="clr-namespace:View.Personal.Helpers"
         xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
-        xmlns:personal="clr-namespace:View.Personal"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Title="View Personal"
@@ -14,7 +13,7 @@
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
         <classes:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
-        <personal:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
+        <classes:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
     </Window.Resources>
     <Window.Styles>
         <Style Selector="#ChatHistoryList > ListBoxItem">
