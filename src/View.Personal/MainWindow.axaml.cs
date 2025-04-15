@@ -126,7 +126,7 @@ namespace View.Personal
                     InitializeEmbeddingRadioButtons();
                     var app = (App)Application.Current;
                     _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
-                    LogWatchedPaths(); // Log initial state
+                    DataMonitorUIHandlers.LogWatchedPaths(this); // Log initial state
                     InitializeFileWatchers();
                 };
                 NavList.SelectionChanged += (s, e) =>
@@ -1056,122 +1056,6 @@ namespace View.Personal
 
         #region Data Monitor Logic
 
-        private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
-                if (_WatchedPaths.Contains(entry.FullPath))
-                    // Delegate to async helper method to avoid blocking UI
-                    Dispatcher.UIThread.Post(async () => await ConfirmAndProcessUnwatchAsync(checkBox, entry));
-        }
-
-        private async Task ConfirmAndProcessUnwatchAsync(CheckBox checkBox, FileSystemEntry entry)
-        {
-            // Count affected files
-            int fileCount;
-            if (entry.IsDirectory)
-                fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
-                    .Count(file => !DataMonitorUIHandlers.IsTemporaryFile(Path.GetFileName(file)));
-            else
-                fileCount = 1; // Single file
-
-            // Show custom popup with three options
-            var messageBoxCustom = MsBox.Avalonia.MessageBoxManager.GetMessageBoxCustom(
-                new MsBox.Avalonia.Dto.MessageBoxCustomParams
-                {
-                    ContentTitle = "Confirm Unwatch",
-                    ContentMessage =
-                        $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
-                    ButtonDefinitions = new[]
-                    {
-                        new ButtonDefinition() { Name = "Unwatch Only", IsDefault = true },
-                        new ButtonDefinition() { Name = "Unwatch and Delete" },
-                        new ButtonDefinition() { Name = "Cancel", IsCancel = true }
-                    },
-                    Icon = MsBox.Avalonia.Enums.Icon.Question,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                });
-
-            var result = await messageBoxCustom.ShowWindowAsync(); // Use ShowWindowAsync
-
-            switch (result)
-            {
-                case "Unwatch Only":
-                    _WatchedPaths.Remove(entry.FullPath);
-                    LogWatchedPaths();
-                    DataMonitorUIHandlers.UpdateFileWatchers(this);
-                    DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
-                    LogToConsole($"[INFO] Stopped watching '{entry.Name}' without deleting files.");
-                    break;
-
-                case "Unwatch and Delete":
-                    _WatchedPaths.Remove(entry.FullPath);
-                    LogWatchedPaths();
-                    DataMonitorUIHandlers.UpdateFileWatchers(this);
-
-                    if (entry.IsDirectory)
-                    {
-                        var nodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid)
-                            .Where(n => n.Tags != null && n.Tags.Get("FilePath")
-                                ?.StartsWith(entry.FullPath + Path.DirectorySeparatorChar) == true)
-                            .ToList();
-
-                        foreach (var node in nodes)
-                        {
-                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                            LogToConsole(
-                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
-                        }
-                    }
-                    else
-                    {
-                        var node = DataMonitorUIHandlers.FindFileInLiteGraph(this, entry.FullPath, _LiteGraph,
-                            _TenantGuid, _GraphGuid);
-                        if (node != null)
-                        {
-                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
-                        }
-                    }
-
-                    DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
-                    var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                    if (filesPanel != null && filesPanel.IsVisible)
-                    {
-                        FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                        LogToConsole("[INFO] Refreshed Files panel after unwatch and delete.");
-                    }
-
-                    LogToConsole(
-                        $"[INFO] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
-                    break;
-
-                case "Cancel":
-                    checkBox.IsChecked = true; // Revert to watched state
-                    LogToConsole($"[INFO] Unwatch cancelled for '{entry.Name}' by user.");
-                    return;
-            }
-
-            var app = (App)Application.Current;
-            app.AppSettings.WatchedPaths = _WatchedPaths;
-            app.SaveSettings();
-        }
-
-        public void LogWatchedPaths()
-        {
-            var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
-            if (consoleOutput != null)
-            {
-                var logMessage = $"[INFO] Watched paths ({_WatchedPaths.Count}):\n" +
-                                 string.Join("\n", _WatchedPaths) + "\n";
-                consoleOutput.Text += logMessage; // Show in UI
-                Console.WriteLine(logMessage);
-            }
-            else
-            {
-                Console.WriteLine("[ERROR] ConsoleOutputTextBox not found for logging.");
-            }
-        }
-
         private void InitializeFileWatchers()
         {
             _changeTimer = new Timer(FILE_CHANGE_TIMEOUT / 2); // Explicit namespace
@@ -1417,7 +1301,7 @@ namespace View.Personal
             await Task.WhenAll(tasks);
         }
 
-// Keep LogToConsole in MainWindow.axaml.cs as it's used elsewhere
+        // Keep LogToConsole in MainWindow.axaml.cs as it's used elsewhere
         public void LogToConsole(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
@@ -1458,6 +1342,11 @@ namespace View.Personal
         private void WatchCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             DataMonitorUIHandlers.WatchCheckBox_Checked(this, sender, e);
+        }
+
+        private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
         }
 
         #endregion

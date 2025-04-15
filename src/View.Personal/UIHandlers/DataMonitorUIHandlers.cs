@@ -10,7 +10,9 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using LiteGraph;
     using MsBox.Avalonia;
+    using MsBox.Avalonia.Dto;
     using MsBox.Avalonia.Enums;
+    using MsBox.Avalonia.Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -291,6 +293,15 @@ namespace View.Personal.UIHandlers
                 }
         }
 
+        public static void WatchCheckBox_Unchecked(MainWindow mainWindow, object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
+                if (mainWindow._WatchedPaths.Contains(entry.FullPath))
+                    // Delegate to async helper method to avoid blocking UI
+                    Dispatcher.UIThread.Post(async () =>
+                        await ConfirmAndProcessUnwatchAsync(mainWindow, checkBox, entry));
+        }
+
         public static async Task ConfirmAndWatchAsync(MainWindow mainWindow, CheckBox checkBox, FileSystemEntry entry)
         {
             // Count files to be ingested
@@ -324,7 +335,7 @@ namespace View.Personal.UIHandlers
                 }
 
                 mainWindow._WatchedPaths.Add(entry.FullPath);
-                mainWindow.LogWatchedPaths();
+                LogWatchedPaths(mainWindow);
                 UpdateFileWatchers(mainWindow);
                 LoadFileSystem(mainWindow, mainWindow._CurrentPath);
 
@@ -411,6 +422,119 @@ namespace View.Personal.UIHandlers
             {
                 checkBox.IsChecked = false;
                 mainWindow.LogToConsole($"[INFO] Watch cancelled for '{entry.Name}' by user.");
+            }
+        }
+
+        public static async Task ConfirmAndProcessUnwatchAsync(MainWindow mainWindow, CheckBox checkBox,
+            FileSystemEntry entry)
+        {
+            // Count affected files
+            int fileCount;
+            if (entry.IsDirectory)
+                fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
+                    .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
+            else
+                fileCount = 1; // Single file
+
+            // Show custom popup with three options
+            var messageBoxCustom = MessageBoxManager.GetMessageBoxCustom(
+                new MessageBoxCustomParams
+                {
+                    ContentTitle = "Confirm Unwatch",
+                    ContentMessage =
+                        $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
+                    ButtonDefinitions = new[]
+                    {
+                        new ButtonDefinition { Name = "Unwatch Only", IsDefault = true },
+                        new ButtonDefinition { Name = "Unwatch and Delete" },
+                        new ButtonDefinition { Name = "Cancel", IsCancel = true }
+                    },
+                    Icon = Icon.Question,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                });
+
+            var result = await messageBoxCustom.ShowWindowAsync();
+
+            switch (result)
+            {
+                case "Unwatch Only":
+                    mainWindow._WatchedPaths.Remove(entry.FullPath);
+                    LogWatchedPaths(mainWindow);
+                    UpdateFileWatchers(mainWindow);
+                    LoadFileSystem(mainWindow, mainWindow._CurrentPath);
+                    mainWindow.LogToConsole($"[INFO] Stopped watching '{entry.Name}' without deleting files.");
+                    break;
+
+                case "Unwatch and Delete":
+                    mainWindow._WatchedPaths.Remove(entry.FullPath);
+                    LogWatchedPaths(mainWindow);
+                    UpdateFileWatchers(mainWindow);
+
+                    var liteGraph = ((App)Application.Current)._LiteGraph;
+                    var tenantGuid = ((App)Application.Current)._TenantGuid;
+                    var graphGuid = ((App)Application.Current)._GraphGuid;
+
+                    if (entry.IsDirectory)
+                    {
+                        var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                            .Where(n => n.Tags != null && n.Tags.Get("FilePath")
+                                ?.StartsWith(entry.FullPath + Path.DirectorySeparatorChar) == true)
+                            .ToList();
+
+                        foreach (var node in nodes)
+                        {
+                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            mainWindow.LogToConsole(
+                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                        }
+                    }
+                    else
+                    {
+                        var node = FindFileInLiteGraph(mainWindow, entry.FullPath, liteGraph, tenantGuid, graphGuid);
+                        if (node != null)
+                        {
+                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            mainWindow.LogToConsole(
+                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
+                        }
+                    }
+
+                    LoadFileSystem(mainWindow, mainWindow._CurrentPath);
+                    var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                    if (filesPanel != null && filesPanel.IsVisible)
+                    {
+                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        mainWindow.LogToConsole("[INFO] Refreshed Files panel after unwatch and delete.");
+                    }
+
+                    mainWindow.LogToConsole(
+                        $"[INFO] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
+                    break;
+
+                case "Cancel":
+                    checkBox.IsChecked = true; // Revert to watched state
+                    mainWindow.LogToConsole($"[INFO] Unwatch cancelled for '{entry.Name}' by user.");
+                    return;
+            }
+
+            var app = (App)Application.Current;
+            app.AppSettings.WatchedPaths = mainWindow._WatchedPaths;
+            app.SaveSettings();
+        }
+
+        public static void LogWatchedPaths(MainWindow mainWindow)
+        {
+            var consoleOutput = mainWindow.FindControl<TextBox>("ConsoleOutputTextBox");
+            if (consoleOutput != null)
+            {
+                var logMessage = $"[INFO] Watched paths ({mainWindow._WatchedPaths.Count}):\n" +
+                                 string.Join("\n", mainWindow._WatchedPaths) + "\n";
+                consoleOutput.Text += logMessage; // Show in UI
+                Console.WriteLine(logMessage);
+            }
+            else
+            {
+                Console.WriteLine("[ERROR] ConsoleOutputTextBox not found for logging.");
             }
         }
 
