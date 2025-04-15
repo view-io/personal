@@ -20,12 +20,48 @@ namespace View.Personal.UIHandlers
     using System.Threading.Tasks;
     using System.Timers;
 
+    /// <summary>
+    /// Provides utility methods for handling Data Monitor UI interactions and file system watching.
+    /// </summary>
     public static class DataMonitorUIHandlers
     {
-        private static Timer _changeTimer;
-        internal static readonly Dictionary<string, DateTime> _filesBeingWritten = new(); // Moved from MainWindow
+#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // ReSharper disable PossibleLossOfFraction
+        // ReSharper disable UnusedParameter.Local
+        // ReSharper disable PossibleMultipleEnumeration
+
+
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        private static Timer _ChangeTimer;
+        internal static readonly Dictionary<string, DateTime> _filesBeingWritten = new();
         private const int FILE_CHANGE_TIMEOUT = 500;
 
+        #endregion
+
+        #region Constructors-and-Factories
+
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Populates the Data Monitor UI with file system entries for the specified path.
+        /// Displays directories and files, including their watch status, in a DataGrid.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="path">The file system path to load entries from.</param>
         public static void LoadFileSystem(MainWindow mainWindow, string path)
         {
             try
@@ -35,7 +71,7 @@ namespace View.Personal.UIHandlers
                 var navigateUpButton = mainWindow.FindControl<Button>("NavigateUpButton");
 
                 if (dataGrid == null || pathTextBox == null ||
-                    navigateUpButton == null) return; // Silently exit if controls are not found
+                    navigateUpButton == null) return;
 
                 mainWindow._CurrentPath = path;
                 pathTextBox.Text = mainWindow._CurrentPath;
@@ -104,12 +140,24 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Navigates to the parent directory of the current path in the Data Monitor UI.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the button click.</param>
         public static void NavigateUpButton_Click(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             var parentDir = Directory.GetParent(mainWindow._CurrentPath);
             if (parentDir != null) LoadFileSystem(mainWindow, parentDir.FullName);
         }
 
+        /// <summary>
+        /// Handles double-tap on the DataGrid to navigate into a selected directory.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the double-tap.</param>
         public static void FileSystemDataGrid_DoubleTapped(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (sender is DataGrid dataGrid && dataGrid.SelectedItem is FileSystemEntry entry)
@@ -117,6 +165,12 @@ namespace View.Personal.UIHandlers
                     LoadFileSystem(mainWindow, entry.FullPath);
         }
 
+        /// <summary>
+        /// Handles Enter key press in the path TextBox to navigate to the entered directory path.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the key press.</param>
         public static void CurrentPathTextBox_KeyDown(MainWindow mainWindow, object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && sender is TextBox textBox)
@@ -157,6 +211,12 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Synchronizes watched paths by removing stale nodes from LiteGraph and ingesting updated or new files.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the button click.</param>
         public static async void SyncButton_Click(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (mainWindow._WatchedPaths.Count == 0)
@@ -171,7 +231,6 @@ namespace View.Personal.UIHandlers
             var tenantGuid = ((App)Application.Current)._TenantGuid;
             var graphGuid = ((App)Application.Current)._GraphGuid;
 
-            // Step 1: Clean up stale files from LiteGraph
             var allNodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
                 .Where(n => n.Tags != null && !string.IsNullOrEmpty(n.Tags.Get("FilePath")))
                 .ToDictionary(n => n.Tags.Get("FilePath"), n => n.GUID);
@@ -188,7 +247,6 @@ namespace View.Personal.UIHandlers
                 }
             }
 
-            // Step 2: Sync existing files in watched paths
             foreach (var watchedPath in mainWindow._WatchedPaths.ToList())
                 if (Directory.Exists(watchedPath))
                 {
@@ -264,7 +322,6 @@ namespace View.Personal.UIHandlers
                     mainWindow.LogToConsole($"[WARN] Watched path no longer exists: {watchedPath}");
                 }
 
-            // Refresh UI
             LoadFileSystem(mainWindow, mainWindow._CurrentPath);
             var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
@@ -276,40 +333,55 @@ namespace View.Personal.UIHandlers
             mainWindow.LogToConsole("[INFO] Sync of watched files completed.");
         }
 
+        /// <summary>
+        /// Handles the checked event of the watch checkbox to initiate watching a file or directory.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the checkbox change.</param>
         public static void WatchCheckBox_Checked(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (!mainWindow._WatchedPaths.Contains(entry.FullPath))
                 {
-                    // Check if this path is already implicitly watched by a parent directory
                     if (mainWindow._WatchedPaths.Any(watchedPath =>
                             Directory.Exists(watchedPath) &&
                             entry.FullPath.StartsWith(watchedPath + Path.DirectorySeparatorChar)))
                     {
                         mainWindow.LogToConsole(
                             $"[INFO] '{entry.Name}' is already implicitly watched by a parent directory.");
-                        checkBox.IsChecked = true; // Reflect watched state without adding to _WatchedPaths
+                        checkBox.IsChecked = true;
                         return;
                     }
 
-                    // Delegate to async helper method
-                    Dispatcher.UIThread.Post(async () =>
+                    Dispatcher.UIThread.Post(async void () =>
                         await ConfirmAndWatchAsync(mainWindow, checkBox, entry));
                 }
         }
 
+        /// <summary>
+        /// Handles the unchecked event of the watch checkbox to stop watching a file or directory.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the checkbox change.</param>
         public static void WatchCheckBox_Unchecked(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
                 if (mainWindow._WatchedPaths.Contains(entry.FullPath))
-                    // Delegate to async helper method to avoid blocking UI
-                    Dispatcher.UIThread.Post(async () =>
+                    Dispatcher.UIThread.Post(async void () =>
                         await ConfirmAndProcessUnwatchAsync(mainWindow, checkBox, entry));
         }
 
+        /// <summary>
+        /// Confirms and processes the action to watch a file or directory, ingesting files as needed.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="checkBox">The checkbox triggering the watch action.</param>
+        /// <param name="entry">The file system entry to watch.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ConfirmAndWatchAsync(MainWindow mainWindow, CheckBox checkBox, FileSystemEntry entry)
         {
-            // Count files to be ingested
             int fileCount;
             if (entry.IsDirectory)
                 fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
@@ -325,7 +397,6 @@ namespace View.Personal.UIHandlers
 
             if (result == ButtonResult.Yes)
             {
-                // If this is a directory, remove any explicit watches on its sub-items
                 if (entry.IsDirectory)
                 {
                     var subItemsToRemove = mainWindow._WatchedPaths
@@ -348,7 +419,6 @@ namespace View.Personal.UIHandlers
                 var tenantGuid = ((App)Application.Current)._TenantGuid;
                 var graphGuid = ((App)Application.Current)._GraphGuid;
 
-                // Ingest files
                 if (entry.IsDirectory)
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
@@ -430,18 +500,23 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Confirms and processes the action to stop watching a file or directory, with options to delete associated data.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="checkBox">The checkbox triggering the unwatch action.</param>
+        /// <param name="entry">The file system entry to stop watching.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ConfirmAndProcessUnwatchAsync(MainWindow mainWindow, CheckBox checkBox,
             FileSystemEntry entry)
         {
-            // Count affected files
             int fileCount;
             if (entry.IsDirectory)
                 fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
                     .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
             else
-                fileCount = 1; // Single file
+                fileCount = 1;
 
-            // Show custom popup with three options
             var messageBoxCustom = MessageBoxManager.GetMessageBoxCustom(
                 new MessageBoxCustomParams
                 {
@@ -517,7 +592,7 @@ namespace View.Personal.UIHandlers
                     break;
 
                 case "Cancel":
-                    checkBox.IsChecked = true; // Revert to watched state
+                    checkBox.IsChecked = true;
                     mainWindow.LogToConsole($"[INFO] Unwatch cancelled for '{entry.Name}' by user.");
                     return;
             }
@@ -527,6 +602,10 @@ namespace View.Personal.UIHandlers
             app.SaveSettings();
         }
 
+        /// <summary>
+        /// Logs the list of currently watched paths to the console output in the UI and system console.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
         public static void LogWatchedPaths(MainWindow mainWindow)
         {
             var consoleOutput = mainWindow.FindControl<TextBox>("ConsoleOutputTextBox");
@@ -534,7 +613,7 @@ namespace View.Personal.UIHandlers
             {
                 var logMessage = $"[INFO] Watched paths ({mainWindow._WatchedPaths.Count}):\n" +
                                  string.Join("\n", mainWindow._WatchedPaths) + "\n";
-                consoleOutput.Text += logMessage; // Show in UI
+                consoleOutput.Text += logMessage;
                 Console.WriteLine(logMessage);
             }
             else
@@ -543,26 +622,294 @@ namespace View.Personal.UIHandlers
             }
         }
 
+        /// <summary>
+        /// Initializes the file system watcher timer and updates watchers for monitored paths.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
         public static void InitializeFileWatchers(MainWindow mainWindow)
         {
-            _changeTimer = new Timer(FILE_CHANGE_TIMEOUT / 2);
-            _changeTimer.Elapsed += async (sender, e) => await CheckForCompletedFileOperations(mainWindow, sender, e);
-            _changeTimer.AutoReset = true;
-            _changeTimer.Enabled = true;
+            _ChangeTimer = new Timer(FILE_CHANGE_TIMEOUT / 2);
+            _ChangeTimer.Elapsed += async (sender, e) => await CheckForCompletedFileOperations(mainWindow, sender, e);
+            _ChangeTimer.AutoReset = true;
+            _ChangeTimer.Enabled = true;
 
             UpdateFileWatchers(mainWindow);
         }
 
+        /// <summary>
+        /// Disposes of all file system watchers and the change timer, clearing resources.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
         public static void CleanupFileWatchers(MainWindow mainWindow)
         {
             foreach (var watcher in mainWindow._watchers.Values)
                 watcher.Dispose();
             mainWindow._watchers.Clear();
 
-            _changeTimer?.Dispose();
-            _changeTimer = null;
+            _ChangeTimer.Dispose();
+            _ChangeTimer = null;
         }
 
+        /// <summary>
+        /// Checks if a file is temporary based on its name or specific patterns.
+        /// </summary>
+        /// <param name="fileName">The name of the file to check.</param>
+        /// <returns>True if the file is considered temporary, otherwise false.</returns>
+        public static bool IsTemporaryFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return true;
+
+            var tempPatterns = new[] { ".sb-", ".DS_Store", "~$" };
+            return tempPatterns.Any(pattern => fileName.Contains(pattern)) || fileName.StartsWith(".");
+        }
+
+        /// <summary>
+        /// Searches for a file in LiteGraph by its file path.
+        /// </summary>
+        /// <param name="mainWindow">The main application window for logging.</param>
+        /// <param name="filePath">The file path to search for.</param>
+        /// <param name="liteGraph">The LiteGraph client instance.</param>
+        /// <param name="tenantGuid">The tenant GUID for the graph.</param>
+        /// <param name="graphGuid">The graph GUID to search in.</param>
+        /// <returns>The matching Node if found, otherwise null.</returns>
+        public static Node FindFileInLiteGraph(MainWindow mainWindow, string filePath, LiteGraphClient liteGraph,
+            Guid tenantGuid, Guid graphGuid)
+        {
+            try
+            {
+                var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid);
+                if (nodes == null || !nodes.Any())
+                {
+                    mainWindow.LogToConsole("[WARN] No nodes found in LiteGraph for this tenant/graph.");
+                    return null;
+                }
+
+                foreach (var node in nodes)
+                    if (node.Tags != null)
+                    {
+                        var storedPath = node.Tags.Get("FilePath");
+                        if (storedPath != null && storedPath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
+                            return node;
+                    }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                mainWindow.LogToConsole($"[ERROR] Failed to search LiteGraph for file {filePath}: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Updates file system watchers for all watched paths, disposing of old watchers and creating new ones.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls and watched paths.</param>
+        public static void UpdateFileWatchers(MainWindow mainWindow)
+        {
+            foreach (var watcher in mainWindow._watchers.Values)
+            {
+                watcher.EnableRaisingEvents = false;
+                watcher.Dispose();
+            }
+
+            mainWindow._watchers.Clear();
+
+            var directoriesToWatch = mainWindow._WatchedPaths
+                .Where(path => Directory.Exists(path) || (File.Exists(path) && Path.GetDirectoryName(path) != null))
+                .Select(path => Directory.Exists(path) ? path : Path.GetDirectoryName(path))
+                .Distinct()
+                .ToList();
+
+            foreach (var dir in directoriesToWatch)
+            {
+                var watcher = new FileSystemWatcher(dir)
+                {
+                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = true
+                };
+                watcher.Changed += (s, e) => OnFileActivity(mainWindow, s, e);
+                watcher.Created += (s, e) => OnFileActivity(mainWindow, s, e);
+                watcher.Deleted += (s, e) => OnFileActivity(mainWindow, s, e);
+                watcher.Renamed += (s, e) => OnRenamed(mainWindow, s, e);
+                mainWindow._watchers[dir] = watcher;
+
+                mainWindow.LogToConsole($"[INFO] Started watching directory (recursive): {dir}");
+            }
+        }
+
+        /// <summary>
+        /// Handles file system events (create, change, delete) for watched paths, updating the ingestion queue and UI.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="source">The object that raised the event.</param>
+        /// <param name="e">The event data for the file system change.</param>
+        public static void OnFileActivity(MainWindow mainWindow, object source, FileSystemEventArgs e)
+        {
+            var isExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.FullPath);
+            var isInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                           e.FullPath.StartsWith(
+                                                                               dir + Path.DirectorySeparatorChar));
+
+            if (!isExplicitlyWatched && !isInWatchedDirectory) return;
+            if (IsTemporaryFile(e.Name)) return;
+
+            if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
+            {
+                if (File.Exists(e.FullPath) || Directory.Exists(e.FullPath))
+                {
+                    lock (_filesBeingWritten)
+                    {
+                        _filesBeingWritten[e.FullPath] = DateTime.Now;
+                    }
+
+                    mainWindow.LogToConsole(
+                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
+                }
+            }
+            else if (e.ChangeType == WatcherChangeTypes.Deleted)
+            {
+                if (isExplicitlyWatched || isInWatchedDirectory)
+                {
+                    mainWindow.LogToConsole(
+                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
+
+                    var liteGraph = ((App)Application.Current)._LiteGraph;
+                    var tenantGuid = ((App)Application.Current)._TenantGuid;
+                    var graphGuid = ((App)Application.Current)._GraphGuid;
+
+                    if (File.Exists(e.FullPath))
+                    {
+                        var node = FindFileInLiteGraph(mainWindow, e.FullPath, liteGraph, tenantGuid, graphGuid);
+                        if (node != null)
+                        {
+                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            mainWindow.LogToConsole(
+                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
+
+                            Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                LoadFileSystem(mainWindow, mainWindow._CurrentPath);
+                                var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                                if (filesPanel != null && filesPanel.IsVisible)
+                                {
+                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after file deletion.");
+                                }
+                            });
+                        }
+                        else
+                        {
+                            mainWindow.LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+                        }
+                    }
+                    else
+                    {
+                        var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                            .Where(n => n.Tags != null &&
+                                        n.Tags.Get("FilePath")?.StartsWith(e.FullPath + Path.DirectorySeparatorChar) ==
+                                        true)
+                            .ToList();
+
+                        if (nodes.Any())
+                        {
+                            foreach (var node in nodes)
+                            {
+                                liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                                mainWindow.LogToConsole(
+                                    $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                            }
+
+                            Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                LoadFileSystem(mainWindow, mainWindow._CurrentPath);
+                                var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                                if (filesPanel != null && filesPanel.IsVisible)
+                                {
+                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
+                                }
+                            });
+                        }
+                        else
+                        {
+                            mainWindow.LogToConsole(
+                                $"[INFO] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
+                        }
+                    }
+
+                    lock (_filesBeingWritten)
+                    {
+                        _filesBeingWritten.Remove(e.FullPath);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles file rename events for watched paths, updating LiteGraph and the ingestion queue.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="source">The object that raised the event.</param>
+        /// <param name="e">The event data for the file rename.</param>
+        public static void OnRenamed(MainWindow mainWindow, object source, RenamedEventArgs e)
+        {
+            var wasExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.OldFullPath);
+            var wasInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                            e.OldFullPath.StartsWith(
+                                                                                dir + Path.DirectorySeparatorChar));
+
+            if (!wasExplicitlyWatched && !wasInWatchedDirectory) return;
+
+            if (wasExplicitlyWatched || wasInWatchedDirectory)
+            {
+                mainWindow.LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
+
+                var oldNode =
+                    FindFileInLiteGraph(mainWindow, e.OldFullPath,
+                        ((App)Application.Current)._LiteGraph,
+                        ((App)Application.Current)._TenantGuid,
+                        ((App)Application.Current)._GraphGuid);
+                if (oldNode != null)
+                {
+                    ((App)Application.Current)._LiteGraph.DeleteNode(
+                        ((App)Application.Current)._TenantGuid,
+                        ((App)Application.Current)._GraphGuid,
+                        oldNode.GUID);
+                    mainWindow.LogToConsole(
+                        $"[INFO] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
+                }
+                else
+                {
+                    mainWindow.LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
+                }
+
+                var isExplicitlyWatchedNew = mainWindow._WatchedPaths.Contains(e.FullPath);
+                var isInWatchedDirectoryNew = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                    e.FullPath.StartsWith(
+                        dir + Path.DirectorySeparatorChar));
+
+                if (isExplicitlyWatchedNew || isInWatchedDirectoryNew)
+                    if (!IsTemporaryFile(e.Name))
+                        lock (_filesBeingWritten)
+                        {
+                            _filesBeingWritten[e.FullPath] = DateTime.Now;
+                        }
+            }
+        }
+
+        #endregion
+
+        #region Private-Methods
+
+        /// <summary>
+        /// Processes completed file operations by ingesting changed or new files and updating the UI.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event data for the timer elapsed event.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private static async Task CheckForCompletedFileOperations(MainWindow mainWindow, object sender,
             ElapsedEventArgs e)
         {
@@ -586,7 +933,6 @@ namespace View.Personal.UIHandlers
 
                 if (Directory.Exists(filePath))
                 {
-                    // Handle directory by ingesting all files within it
                     foreach (var subFilePath in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
                         if (!IsTemporaryFile(Path.GetFileName(subFilePath)))
                         {
@@ -616,7 +962,6 @@ namespace View.Personal.UIHandlers
                             }
                         }
 
-                    // Refresh Files panel if visible
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
@@ -630,7 +975,6 @@ namespace View.Personal.UIHandlers
                 }
                 else if (File.Exists(filePath))
                 {
-                    // Handle single file as before
                     var node = FindFileInLiteGraph(mainWindow, filePath,
                         ((App)Application.Current)._LiteGraph,
                         ((App)Application.Current)._TenantGuid,
@@ -675,6 +1019,12 @@ namespace View.Personal.UIHandlers
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Determines if a path is within a watched directory.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing watched paths.</param>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if the path is within a watched directory, otherwise false.</returns>
         private static bool IsWithinWatchedDirectory(MainWindow mainWindow, string path)
         {
             return mainWindow._WatchedPaths.Any(watchedPath =>
@@ -682,6 +1032,12 @@ namespace View.Personal.UIHandlers
                 path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
         }
 
+        /// <summary>
+        /// Checks if a path contains watched items or is itself watched.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing watched paths.</param>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if the path is watched or contains watched items, otherwise false.</returns>
         private static bool ContainsWatchedItemsInPath(MainWindow mainWindow, string path)
         {
             if (mainWindow._WatchedPaths.Contains(path)) return true;
@@ -690,6 +1046,11 @@ namespace View.Personal.UIHandlers
                 watchedPath.StartsWith(path + Path.DirectorySeparatorChar));
         }
 
+        /// <summary>
+        /// Formats a file size in bytes into a human-readable string with appropriate units.
+        /// </summary>
+        /// <param name="bytes">The file size in bytes.</param>
+        /// <returns>A formatted string representing the file size (e.g., "1.2 MB").</returns>
         private static string FormatFileSize(long bytes)
         {
             string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
@@ -704,6 +1065,11 @@ namespace View.Personal.UIHandlers
             return $"{number:n1} {suffixes[counter]}";
         }
 
+        /// <summary>
+        /// Determines if a file is hidden or a system file based on its attributes or name.
+        /// </summary>
+        /// <param name="fileInfo">The file information to check.</param>
+        /// <returns>True if the file is hidden or a system file, otherwise false.</returns>
         private static bool IsHiddenOrSystemFile(FileInfo fileInfo)
         {
             return (fileInfo.Attributes & FileAttributes.Hidden) != 0 ||
@@ -712,228 +1078,14 @@ namespace View.Personal.UIHandlers
                    fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsTemporaryFile(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName)) return true;
+        #endregion
 
-            var tempPatterns = new[] { ".sb-", ".DS_Store", "~$" };
-            return tempPatterns.Any(pattern => fileName.Contains(pattern)) || fileName.StartsWith(".");
-        }
-
-        public static Node FindFileInLiteGraph(MainWindow mainWindow, string filePath, LiteGraphClient liteGraph,
-            Guid tenantGuid, Guid graphGuid)
-        {
-            try
-            {
-                var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid);
-                if (nodes == null || !nodes.Any())
-                {
-                    mainWindow.LogToConsole("[WARN] No nodes found in LiteGraph for this tenant/graph.");
-                    return null;
-                }
-
-                foreach (var node in nodes)
-                    if (node.Tags != null)
-                    {
-                        var storedPath = node.Tags.Get("FilePath");
-                        if (storedPath != null && storedPath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
-                            return node;
-                    }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                mainWindow.LogToConsole($"[ERROR] Failed to search LiteGraph for file {filePath}: {ex.Message}");
-                return null;
-            }
-        }
-
-        public static void UpdateFileWatchers(MainWindow mainWindow)
-        {
-            foreach (var watcher in mainWindow._watchers.Values)
-            {
-                watcher.EnableRaisingEvents = false;
-                watcher.Dispose();
-            }
-
-            mainWindow._watchers.Clear();
-
-            var directoriesToWatch = mainWindow._WatchedPaths
-                .Where(path => Directory.Exists(path) || (File.Exists(path) && Path.GetDirectoryName(path) != null))
-                .Select(path => Directory.Exists(path) ? path : Path.GetDirectoryName(path))
-                .Distinct()
-                .ToList();
-
-            foreach (var dir in directoriesToWatch)
-            {
-                var watcher = new FileSystemWatcher(dir)
-                {
-                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                    IncludeSubdirectories = true,
-                    EnableRaisingEvents = true
-                };
-                watcher.Changed += (s, e) => OnFileActivity(mainWindow, s, e);
-                watcher.Created += (s, e) => OnFileActivity(mainWindow, s, e);
-                watcher.Deleted += (s, e) => OnFileActivity(mainWindow, s, e);
-                watcher.Renamed += (s, e) => OnRenamed(mainWindow, s, e);
-                mainWindow._watchers[dir] = watcher;
-
-                mainWindow.LogToConsole($"[INFO] Started watching directory (recursive): {dir}");
-            }
-        }
-
-        public static void OnFileActivity(MainWindow mainWindow, object source, FileSystemEventArgs e)
-        {
-            var isExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.FullPath);
-            var isInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                           e.FullPath.StartsWith(
-                                                                               dir + Path.DirectorySeparatorChar));
-
-            if (!isExplicitlyWatched && !isInWatchedDirectory) return;
-            if (IsTemporaryFile(e.Name)) return;
-
-            if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
-            {
-                if (File.Exists(e.FullPath) || Directory.Exists(e.FullPath))
-                {
-                    lock (_filesBeingWritten)
-                    {
-                        _filesBeingWritten[e.FullPath] = DateTime.Now;
-                    }
-
-                    mainWindow.LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
-                }
-            }
-            else if (e.ChangeType == WatcherChangeTypes.Deleted)
-            {
-                if (isExplicitlyWatched || isInWatchedDirectory)
-                {
-                    mainWindow.LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
-
-                    var liteGraph = ((App)Application.Current)._LiteGraph;
-                    var tenantGuid = ((App)Application.Current)._TenantGuid;
-                    var graphGuid = ((App)Application.Current)._GraphGuid;
-
-                    if (File.Exists(e.FullPath))
-                    {
-                        // Handle single file deletion
-                        var node = FindFileInLiteGraph(mainWindow, e.FullPath, liteGraph, tenantGuid, graphGuid);
-                        if (node != null)
-                        {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
-                            mainWindow.LogToConsole(
-                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
-
-                            Dispatcher.UIThread.InvokeAsync(() =>
-                            {
-                                LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                                var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
-                                if (filesPanel != null && filesPanel.IsVisible)
-                                {
-                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after file deletion.");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            mainWindow.LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
-                        }
-                    }
-                    else
-                    {
-                        // Handle directory deletion by removing all files within it from LiteGraph
-                        var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
-                            .Where(n => n.Tags != null &&
-                                        n.Tags.Get("FilePath")?.StartsWith(e.FullPath + Path.DirectorySeparatorChar) ==
-                                        true)
-                            .ToList();
-
-                        if (nodes.Any())
-                        {
-                            foreach (var node in nodes)
-                            {
-                                liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
-                                mainWindow.LogToConsole(
-                                    $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
-                            }
-
-                            Dispatcher.UIThread.InvokeAsync(() =>
-                            {
-                                LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                                var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
-                                if (filesPanel != null && filesPanel.IsVisible)
-                                {
-                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            mainWindow.LogToConsole(
-                                $"[INFO] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
-                        }
-                    }
-
-                    lock (_filesBeingWritten)
-                    {
-                        _filesBeingWritten.Remove(e.FullPath);
-                    }
-                }
-            }
-        }
-
-        public static void OnRenamed(MainWindow mainWindow, object source, RenamedEventArgs e)
-        {
-            var wasExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.OldFullPath);
-            var wasInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                            e.OldFullPath.StartsWith(
-                                                                                dir + Path.DirectorySeparatorChar));
-
-            if (!wasExplicitlyWatched && !wasInWatchedDirectory) return;
-
-            if (wasExplicitlyWatched || wasInWatchedDirectory)
-            {
-                // Log the rename event
-                mainWindow.LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
-
-                // Step 1: Find and delete the old file in LiteGraph using the old path
-                var oldNode =
-                    FindFileInLiteGraph(mainWindow, e.OldFullPath,
-                        ((App)Application.Current)._LiteGraph,
-                        ((App)Application.Current)._TenantGuid,
-                        ((App)Application.Current)._GraphGuid);
-                if (oldNode != null)
-                {
-                    ((App)Application.Current)._LiteGraph.DeleteNode(
-                        ((App)Application.Current)._TenantGuid,
-                        ((App)Application.Current)._GraphGuid,
-                        oldNode.GUID);
-                    mainWindow.LogToConsole(
-                        $"[INFO] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
-                }
-                else
-                {
-                    mainWindow.LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
-                }
-
-                // Step 2: Queue the new path for ingestion if it’s watched or in a watched directory
-                var isExplicitlyWatchedNew = mainWindow._WatchedPaths.Contains(e.FullPath);
-                var isInWatchedDirectoryNew = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                    e.FullPath.StartsWith(
-                        dir + Path.DirectorySeparatorChar));
-
-                if (isExplicitlyWatchedNew || isInWatchedDirectoryNew)
-                    if (!IsTemporaryFile(e.Name)) // Skip temporary files
-                        lock (_filesBeingWritten)
-                        {
-                            _filesBeingWritten[e.FullPath] = DateTime.Now; // Queue for ingestion
-                        }
-            }
-        }
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 }

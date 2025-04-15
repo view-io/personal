@@ -922,6 +922,182 @@
             <param name="showSpinner">Boolean indicating whether to show a loading spinner for the assistant's response.</param>
             <param name="window">The window containing the chat interface controls.</param>
         </member>
+        <member name="T:View.Personal.UIHandlers.DataMonitorUIHandlers">
+            <summary>
+            Provides utility methods for handling Data Monitor UI interactions and file system watching.
+            </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LoadFileSystem(View.Personal.MainWindow,System.String)">
+            <summary>
+            Populates the Data Monitor UI with file system entries for the specified path.
+            Displays directories and files, including their watch status, in a DataGrid.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="path">The file system path to load entries from.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.NavigateUpButton_Click(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Navigates to the parent directory of the current path in the Data Monitor UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the button click.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FileSystemDataGrid_DoubleTapped(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles double-tap on the DataGrid to navigate into a selected directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the double-tap.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CurrentPathTextBox_KeyDown(View.Personal.MainWindow,System.Object,Avalonia.Input.KeyEventArgs)">
+            <summary>
+            Handles Enter key press in the path TextBox to navigate to the entered directory path.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the key press.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.SyncButton_Click(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Synchronizes watched paths by removing stale nodes from LiteGraph and ingesting updated or new files.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the button click.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.WatchCheckBox_Checked(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the checked event of the watch checkbox to initiate watching a file or directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the checkbox change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.WatchCheckBox_Unchecked(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the unchecked event of the watch checkbox to stop watching a file or directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the checkbox change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ConfirmAndWatchAsync(View.Personal.MainWindow,Avalonia.Controls.CheckBox,View.Personal.Classes.FileSystemEntry)">
+            <summary>
+            Confirms and processes the action to watch a file or directory, ingesting files as needed.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="checkBox">The checkbox triggering the watch action.</param>
+            <param name="entry">The file system entry to watch.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ConfirmAndProcessUnwatchAsync(View.Personal.MainWindow,Avalonia.Controls.CheckBox,View.Personal.Classes.FileSystemEntry)">
+            <summary>
+            Confirms and processes the action to stop watching a file or directory, with options to delete associated data.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="checkBox">The checkbox triggering the unwatch action.</param>
+            <param name="entry">The file system entry to stop watching.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LogWatchedPaths(View.Personal.MainWindow)">
+            <summary>
+            Logs the list of currently watched paths to the console output in the UI and system console.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.InitializeFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Initializes the file system watcher timer and updates watchers for monitored paths.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CleanupFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Disposes of all file system watchers and the change timer, clearing resources.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckForCompletedFileOperations(View.Personal.MainWindow,System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            Processes completed file operations by ingesting changed or new files and updating the UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the timer elapsed event.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsWithinWatchedDirectory(View.Personal.MainWindow,System.String)">
+            <summary>
+            Determines if a path is within a watched directory.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is within a watched directory, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ContainsWatchedItemsInPath(View.Personal.MainWindow,System.String)">
+            <summary>
+            Checks if a path contains watched items or is itself watched.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is watched or contains watched items, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FormatFileSize(System.Int64)">
+            <summary>
+            Formats a file size in bytes into a human-readable string with appropriate units.
+            </summary>
+            <param name="bytes">The file size in bytes.</param>
+            <returns>A formatted string representing the file size (e.g., "1.2 MB").</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsHiddenOrSystemFile(System.IO.FileInfo)">
+            <summary>
+            Determines if a file is hidden or a system file based on its attributes or name.
+            </summary>
+            <param name="fileInfo">The file information to check.</param>
+            <returns>True if the file is hidden or a system file, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsTemporaryFile(System.String)">
+            <summary>
+            Checks if a file is temporary based on its name or specific patterns.
+            </summary>
+            <param name="fileName">The name of the file to check.</param>
+            <returns>True if the file is considered temporary, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FindFileInLiteGraph(View.Personal.MainWindow,System.String,LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Searches for a file in LiteGraph by its file path.
+            </summary>
+            <param name="mainWindow">The main application window for logging.</param>
+            <param name="filePath">The file path to search for.</param>
+            <param name="liteGraph">The LiteGraph client instance.</param>
+            <param name="tenantGuid">The tenant GUID for the graph.</param>
+            <param name="graphGuid">The graph GUID to search in.</param>
+            <returns>The matching Node if found, otherwise null.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.UpdateFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Updates file system watchers for all watched paths, disposing of old watchers and creating new ones.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls and watched paths.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.OnFileActivity(View.Personal.MainWindow,System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            Handles file system events (create, change, delete) for watched paths, updating the ingestion queue and UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="source">The object that raised the event.</param>
+            <param name="e">The event data for the file system change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.OnRenamed(View.Personal.MainWindow,System.Object,System.IO.RenamedEventArgs)">
+            <summary>
+            Handles file rename events for watched paths, updating LiteGraph and the ingestion queue.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="source">The object that raised the event.</param>
+            <param name="e">The event data for the file rename.</param>
+        </member>
         <member name="T:View.Personal.UIHandlers.MainWindowUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing the main window user interface.

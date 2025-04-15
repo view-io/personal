@@ -1051,9 +1051,8 @@ namespace View.Personal
             }
         }
 
-        #region Data Monitor Logic
+        #region Data Monitor Proxy
 
-        // Keep LogToConsole in MainWindow.axaml.cs as it's used elsewhere
         public void LogToConsole(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
