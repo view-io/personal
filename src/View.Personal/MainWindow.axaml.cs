@@ -19,10 +19,7 @@ namespace View.Personal
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
-    using Helpers;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
-    using MsBox.Avalonia.Models;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
@@ -31,7 +28,6 @@ namespace View.Personal
     using Services;
     using RestWrapper;
     using Sdk.Embeddings.Providers.VoyageAI;
-    using System.Timers;
     using UIHandlers;
 
     /// <summary>
@@ -63,8 +59,10 @@ namespace View.Personal
         /// </summary>
         public List<ChatSession> _ChatSessions = new();
 
+        /// <summary>
+        /// Gets or sets the list of paths being actively watched by the Data Monitor.
+        /// </summary>
         public List<string> _WatchedPaths = new();
-
 
         /// <summary>
         /// The currently active chat session.
@@ -85,13 +83,12 @@ namespace View.Personal
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        internal Dictionary<string, FileSystemWatcher> _watchers = new(); // One watcher per directory
+        internal Dictionary<string, FileSystemWatcher> _Watchers = new();
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
 #pragma warning restore CS0414 // Field is assigned but its value is never used
 
-        // private bool _ShowingChat = false;
         private List<ToggleSwitch> _ToggleSwitches;
 
         #endregion
@@ -216,10 +213,8 @@ namespace View.Personal
             var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
             if (chatTitleTextBlock != null)
             {
-                // Set the text of the TextBlock
                 chatTitleTextBlock.Text = $"{model}";
 
-                // Set the foreground color based on the provider
                 if (provider == "View")
                     chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
                 else
@@ -248,6 +243,50 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Displays the specified panel in the UI, hiding others, and updates relevant panel states.
+        /// </summary>
+        /// <param name="panelName">The name of the panel to display.</param>
+        public void ShowPanel(string panelName)
+        {
+            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
+            var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2");
+            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var chatPanel = this.FindControl<Border>("ChatPanel");
+            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
+            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
+            var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
+
+            if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
+                chatPanel != null && consolePanel != null && workspaceText != null && dataMonitorPanel != null)
+            {
+                dashboardPanel.IsVisible = panelName == "Dashboard";
+                settingsPanel2.IsVisible = panelName == "Settings2";
+                myFilesPanel.IsVisible = panelName == "Files";
+                chatPanel.IsVisible = panelName == "Chat";
+                consolePanel.IsVisible = panelName == "Console";
+                workspaceText.IsVisible = false;
+                dataMonitorPanel.IsVisible = panelName == "Data Monitor";
+            }
+
+            if (panelName == "Chat") UpdateChatTitle();
+            if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
+        }
+
+        /// <summary>
+        /// Logs a message to the console output in the UI and system console.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
+        public void LogToConsole(string message)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+                if (consoleOutput != null) consoleOutput.Text += message + "\n";
+                Console.WriteLine(message);
+            });
+        }
+
         #endregion
 
         #region Private-Methods
@@ -256,7 +295,7 @@ namespace View.Personal
         {
             _CurrentChatSession = new ChatSession();
             _ChatSessions.Add(_CurrentChatSession);
-            _ConversationHistory = _CurrentChatSession.Messages; // Should be a new empty list
+            _ConversationHistory = _CurrentChatSession.Messages;
             Console.WriteLine("[DEBUG] Starting new chat session. Conversation history count: " +
                               _ConversationHistory.Count);
 
@@ -355,7 +394,6 @@ namespace View.Personal
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
 
-                // Update App instance
                 app._AppSettings = settings;
             }
             else
@@ -714,8 +752,8 @@ namespace View.Personal
                     {
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
-                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
-                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
+                        max_tokens = 4000,
+                        temperature = 0.7,
                         stream = true
                     };
                 case "View":
@@ -723,10 +761,10 @@ namespace View.Personal
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = 0.7, // Add to CompletionProviderSettings if configurable
-                        TopP = 1.0, // Add to CompletionProviderSettings if configurable
-                        MaxTokens = 4000, // Add to CompletionProviderSettings if configurable
-                        GenerationProvider = "ollama", // Adjust or make configurable
+                        Temperature = 0.7,
+                        TopP = 1.0,
+                        MaxTokens = 4000,
+                        GenerationProvider = "ollama",
                         GenerationApiKey = settings.ViewApiKey,
                         //ToDo: need to grab this dynamically
                         OllamaHostname = "192.168.197.1",
@@ -926,32 +964,6 @@ namespace View.Personal
             };
         }
 
-        public void ShowPanel(string panelName)
-        {
-            var dashboardPanel = this.FindControl<Border>("DashboardPanel");
-            var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2"); // Use SettingsPanel2 as per XAML
-            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-            var chatPanel = this.FindControl<Border>("ChatPanel");
-            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
-            var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
-            var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
-
-            if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
-                chatPanel != null && consolePanel != null && workspaceText != null && dataMonitorPanel != null)
-            {
-                dashboardPanel.IsVisible = panelName == "Dashboard";
-                settingsPanel2.IsVisible = panelName == "Settings2"; // Match NavList Tag
-                myFilesPanel.IsVisible = panelName == "Files"; // Match NavList Tag
-                chatPanel.IsVisible = panelName == "Chat";
-                consolePanel.IsVisible = panelName == "Console";
-                workspaceText.IsVisible = false; // Typically hidden unless needed
-                dataMonitorPanel.IsVisible = panelName == "Data Monitor";
-            }
-
-            if (panelName == "Chat") UpdateChatTitle();
-            if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
-        }
-
         private void InitializeToggleSwitches()
         {
             _ToggleSwitches = new List<ToggleSwitch>
@@ -962,7 +974,6 @@ namespace View.Personal
                 this.FindControl<ToggleSwitch>("ViewCredentialsToggle")
             };
 
-            // Debug to confirm controls are found
             foreach (var ts in _ToggleSwitches)
                 if (ts == null)
                 {
@@ -970,8 +981,8 @@ namespace View.Personal
                 }
                 else
                 {
-                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged; // Remove any existing subscription
-                    ts.PropertyChanged += ToggleSwitch_PropertyChanged; // Add fresh subscription
+                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged;
+                    ts.PropertyChanged += ToggleSwitch_PropertyChanged;
                 }
         }
 
@@ -1008,7 +1019,6 @@ namespace View.Personal
             var voyageRadio = this.FindControl<RadioButton>("VoyageEmbeddingModel2");
             var viewRadio = this.FindControl<RadioButton>("ViewEmbeddingModel2");
 
-            // Ensure one is always selected
             switch (selectedModel)
             {
                 case "Ollama":
@@ -1024,7 +1034,6 @@ namespace View.Personal
                     viewRadio.IsChecked = true;
                     break;
                 default:
-                    // Fallback if something else is stored
                     ollamaRadio.IsChecked = true;
                     app._AppSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
                     break;
@@ -1053,16 +1062,10 @@ namespace View.Personal
 
         #region Data Monitor Proxy
 
-        public void LogToConsole(string message)
-        {
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
-                if (consoleOutput != null) consoleOutput.Text += message + "\n";
-                Console.WriteLine(message);
-            });
-        }
-
+        /// <summary>
+        /// Handles the window closing event, ensuring Data Monitor resources are cleaned up.
+        /// </summary>
+        /// <param name="e">The event data for the window closing.</param>
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);

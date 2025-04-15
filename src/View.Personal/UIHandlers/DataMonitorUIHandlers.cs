@@ -37,7 +37,6 @@ namespace View.Personal.UIHandlers
         // ReSharper disable UnusedParameter.Local
         // ReSharper disable PossibleMultipleEnumeration
 
-
         #region Public-Members
 
         #endregion
@@ -642,9 +641,9 @@ namespace View.Personal.UIHandlers
         /// <param name="mainWindow">The main application window containing UI controls.</param>
         public static void CleanupFileWatchers(MainWindow mainWindow)
         {
-            foreach (var watcher in mainWindow._watchers.Values)
+            foreach (var watcher in mainWindow._Watchers.Values)
                 watcher.Dispose();
-            mainWindow._watchers.Clear();
+            mainWindow._Watchers.Clear();
 
             _ChangeTimer.Dispose();
             _ChangeTimer = null;
@@ -707,13 +706,13 @@ namespace View.Personal.UIHandlers
         /// <param name="mainWindow">The main application window containing UI controls and watched paths.</param>
         public static void UpdateFileWatchers(MainWindow mainWindow)
         {
-            foreach (var watcher in mainWindow._watchers.Values)
+            foreach (var watcher in mainWindow._Watchers.Values)
             {
                 watcher.EnableRaisingEvents = false;
                 watcher.Dispose();
             }
 
-            mainWindow._watchers.Clear();
+            mainWindow._Watchers.Clear();
 
             var directoriesToWatch = mainWindow._WatchedPaths
                 .Where(path => Directory.Exists(path) || (File.Exists(path) && Path.GetDirectoryName(path) != null))
@@ -733,7 +732,7 @@ namespace View.Personal.UIHandlers
                 watcher.Created += (s, e) => OnFileActivity(mainWindow, s, e);
                 watcher.Deleted += (s, e) => OnFileActivity(mainWindow, s, e);
                 watcher.Renamed += (s, e) => OnRenamed(mainWindow, s, e);
-                mainWindow._watchers[dir] = watcher;
+                mainWindow._Watchers[dir] = watcher;
 
                 mainWindow.LogToConsole($"[INFO] Started watching directory (recursive): {dir}");
             }
