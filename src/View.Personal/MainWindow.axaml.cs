@@ -86,9 +86,6 @@ namespace View.Personal
         private WindowNotificationManager? _WindowNotificationManager;
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _watchers = new(); // One watcher per directory
-        private Dictionary<string, DateTime> _filesBeingWritten = new(); // Tracks in-progress changes
-        private Timer _changeTimer; // Debounce timer
-        private readonly int FILE_CHANGE_TIMEOUT = 500;
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -127,7 +124,7 @@ namespace View.Personal
                     var app = (App)Application.Current;
                     _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
                     DataMonitorUIHandlers.LogWatchedPaths(this); // Log initial state
-                    InitializeFileWatchers();
+                    DataMonitorUIHandlers.InitializeFileWatchers(this);
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -1056,251 +1053,6 @@ namespace View.Personal
 
         #region Data Monitor Logic
 
-        private void InitializeFileWatchers()
-        {
-            _changeTimer = new Timer(FILE_CHANGE_TIMEOUT / 2); // Explicit namespace
-            _changeTimer.Elapsed += CheckForCompletedFileOperations;
-            _changeTimer.AutoReset = true;
-            _changeTimer.Enabled = true;
-
-            DataMonitorUIHandlers.UpdateFileWatchers(this);
-        }
-
-        public void OnFileActivity(object source, FileSystemEventArgs e)
-        {
-            var isExplicitlyWatched = _WatchedPaths.Contains(e.FullPath);
-            var isInWatchedDirectory = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                e.FullPath.StartsWith(
-                                                                    dir + Path.DirectorySeparatorChar));
-
-            if (!isExplicitlyWatched && !isInWatchedDirectory) return;
-            if (DataMonitorUIHandlers.IsTemporaryFile(e.Name)) return;
-
-            if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
-            {
-                if (File.Exists(e.FullPath) || Directory.Exists(e.FullPath))
-                {
-                    lock (_filesBeingWritten)
-                    {
-                        _filesBeingWritten[e.FullPath] = DateTime.Now;
-                    }
-
-                    LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
-                }
-            }
-            else if (e.ChangeType == WatcherChangeTypes.Deleted)
-            {
-                if (isExplicitlyWatched || isInWatchedDirectory)
-                {
-                    LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
-
-                    if (File.Exists(e.FullPath))
-                    {
-                        // Handle single file deletion
-                        var node = DataMonitorUIHandlers.FindFileInLiteGraph(this, e.FullPath, _LiteGraph, _TenantGuid,
-                            _GraphGuid);
-                        if (node != null)
-                        {
-                            _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                            LogToConsole($"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
-
-                            Dispatcher.UIThread.InvokeAsync(() =>
-                            {
-                                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
-                                var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                                if (filesPanel != null && filesPanel.IsVisible)
-                                {
-                                    FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                                    LogToConsole("[INFO] Refreshed Files panel after file deletion.");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
-                        }
-                    }
-                    else
-                    {
-                        // Handle directory deletion by removing all files within it from LiteGraph
-                        var nodes = _LiteGraph.ReadNodes(_TenantGuid, _GraphGuid)
-                            .Where(n => n.Tags != null &&
-                                        n.Tags.Get("FilePath")?.StartsWith(e.FullPath + Path.DirectorySeparatorChar) ==
-                                        true)
-                            .ToList();
-
-                        if (nodes.Any())
-                        {
-                            foreach (var node in nodes)
-                            {
-                                _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                                LogToConsole(
-                                    $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
-                            }
-
-                            Dispatcher.UIThread.InvokeAsync(() =>
-                            {
-                                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
-                                var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                                if (filesPanel != null && filesPanel.IsVisible)
-                                {
-                                    FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                                    LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
-                                }
-                            });
-                        }
-                        else
-                        {
-                            LogToConsole(
-                                $"[INFO] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
-                        }
-                    }
-
-                    lock (_filesBeingWritten)
-                    {
-                        _filesBeingWritten.Remove(e.FullPath);
-                    }
-                }
-            }
-        }
-
-        public void OnRenamed(object source, RenamedEventArgs e)
-        {
-            var wasExplicitlyWatched = _WatchedPaths.Contains(e.OldFullPath);
-            var wasInWatchedDirectory = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                 e.OldFullPath.StartsWith(
-                                                                     dir + Path.DirectorySeparatorChar));
-
-            if (!wasExplicitlyWatched && !wasInWatchedDirectory) return;
-
-            if (wasExplicitlyWatched || wasInWatchedDirectory)
-            {
-                // Log the rename event
-                LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
-
-                // Step 1: Find and delete the old file in LiteGraph using the old path
-                var oldNode =
-                    DataMonitorUIHandlers.FindFileInLiteGraph(this, e.OldFullPath, _LiteGraph, _TenantGuid, _GraphGuid);
-                if (oldNode != null)
-                {
-                    _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, oldNode.GUID);
-                    LogToConsole(
-                        $"[INFO] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
-                }
-                else
-                {
-                    LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
-                }
-
-                // Step 2: Queue the new path for ingestion if it’s watched or in a watched directory
-                var isExplicitlyWatchedNew = _WatchedPaths.Contains(e.FullPath);
-                var isInWatchedDirectoryNew = _WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                       e.FullPath.StartsWith(
-                                                                           dir + Path.DirectorySeparatorChar));
-
-                if (isExplicitlyWatchedNew || isInWatchedDirectoryNew)
-                    if (!DataMonitorUIHandlers.IsTemporaryFile(e.Name)) // Skip temporary files
-                        lock (_filesBeingWritten)
-                        {
-                            _filesBeingWritten[e.FullPath] = DateTime.Now; // Queue for ingestion
-                        }
-            }
-        }
-
-        private async void CheckForCompletedFileOperations(object sender, ElapsedEventArgs e)
-        {
-            var now = DateTime.Now;
-            var completedFiles = new List<string>();
-
-            lock (_filesBeingWritten)
-            {
-                foreach (var fileEntry in _filesBeingWritten)
-                    if ((now - fileEntry.Value).TotalMilliseconds >= FILE_CHANGE_TIMEOUT &&
-                        !DataMonitorUIHandlers.IsTemporaryFile(Path.GetFileName(fileEntry.Key)))
-                        completedFiles.Add(fileEntry.Key);
-
-                foreach (var filePath in completedFiles) _filesBeingWritten.Remove(filePath);
-            }
-
-            var tasks = completedFiles.Select(filePath => Dispatcher.UIThread.InvokeAsync(async Task () =>
-            {
-                var fileName = Path.GetFileName(filePath);
-                LogToConsole($"[INFO] Processing file: {fileName} ({filePath})");
-
-                if (Directory.Exists(filePath))
-                {
-                    // Handle directory by ingesting all files within it
-                    foreach (var subFilePath in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
-                        if (!DataMonitorUIHandlers.IsTemporaryFile(Path.GetFileName(subFilePath)))
-                        {
-                            var node = DataMonitorUIHandlers.FindFileInLiteGraph(this, subFilePath, _LiteGraph,
-                                _TenantGuid, _GraphGuid);
-                            if (node != null)
-                            {
-                                _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                                LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
-                            }
-
-                            try
-                            {
-                                await IngestFileAsync(subFilePath);
-                                LogToConsole($"[INFO] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
-                            }
-                            catch (Exception ex)
-                            {
-                                LogToConsole(
-                                    $"[ERROR] Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
-                            }
-                        }
-
-                    // Refresh Files panel if visible
-                    var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                    if (filesPanel != null && filesPanel.IsVisible)
-                    {
-                        FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                        LogToConsole("[INFO] Refreshed Files panel after directory ingestion.");
-                    }
-                }
-                else if (File.Exists(filePath))
-                {
-                    // Handle single file as before
-                    var node = DataMonitorUIHandlers.FindFileInLiteGraph(this, filePath, _LiteGraph, _TenantGuid,
-                        _GraphGuid);
-                    if (node != null)
-                    {
-                        LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
-                        _LiteGraph.DeleteNode(_TenantGuid, _GraphGuid, node.GUID);
-                        LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
-                    }
-
-                    try
-                    {
-                        await IngestFileAsync(filePath);
-                        LogToConsole($"[INFO] Ingested file: {fileName} ({filePath})");
-
-                        var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
-                        if (filesPanel != null && filesPanel.IsVisible)
-                        {
-                            FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _GraphGuid, this);
-                            LogToConsole("[INFO] Refreshed Files panel after file ingestion.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogToConsole($"[ERROR] Failed to ingest file {fileName}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    LogToConsole($"[WARN] Path no longer exists: {filePath}");
-                }
-            })).ToList();
-
-            await Task.WhenAll(tasks);
-        }
-
         // Keep LogToConsole in MainWindow.axaml.cs as it's used elsewhere
         public void LogToConsole(string message)
         {
@@ -1315,8 +1067,7 @@ namespace View.Personal
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            foreach (var watcher in _watchers.Values) watcher.Dispose();
-            _changeTimer?.Dispose();
+            DataMonitorUIHandlers.CleanupFileWatchers(this);
         }
 
         private void NavigateUpButton_Click(object sender, RoutedEventArgs e)
