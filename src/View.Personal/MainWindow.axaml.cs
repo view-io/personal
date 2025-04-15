@@ -84,7 +84,7 @@ namespace View.Personal
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
-        private string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         private Dictionary<string, FileSystemWatcher> _watchers = new(); // One watcher per directory
         private Dictionary<string, DateTime> _filesBeingWritten = new(); // Tracks in-progress changes
         private Timer _changeTimer; // Debounce timer
@@ -952,7 +952,7 @@ namespace View.Personal
             }
 
             if (panelName == "Chat") UpdateChatTitle();
-            if (panelName == "Data Monitor") LoadFileSystem(_CurrentPath);
+            if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
         }
 
         private void InitializeToggleSwitches()
@@ -1056,96 +1056,96 @@ namespace View.Personal
 
         #region Data Monitor Logic
 
-        private void LoadFileSystem(string path)
-        {
-            try
-            {
-                var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
-                var pathTextBox = this.FindControl<TextBox>("CurrentPathTextBox");
-                var navigateUpButton = this.FindControl<Button>("NavigateUpButton");
+        // private void LoadFileSystem(string path)
+        // {
+        //     try
+        //     {
+        //         var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
+        //         var pathTextBox = this.FindControl<TextBox>("CurrentPathTextBox");
+        //         var navigateUpButton = this.FindControl<Button>("NavigateUpButton");
+        //
+        //         if (dataGrid == null || pathTextBox == null || navigateUpButton == null) return;
+        //
+        //         _CurrentPath = path;
+        //         pathTextBox.Text = _CurrentPath;
+        //
+        //         var entries = new List<FileSystemEntry>();
+        //
+        //         foreach (var dir in Directory.GetDirectories(path))
+        //         {
+        //             var dirInfo = new DirectoryInfo(dir);
+        //             var isSelectedWatched = _WatchedPaths.Contains(dirInfo.FullName);
+        //             var isImplicitlyWatched =
+        //                 IsWithinWatchedDirectory(dirInfo.FullName) &&
+        //                 !isSelectedWatched; // Only implicit if not explicitly watched
+        //
+        //             entries.Add(new FileSystemEntry
+        //             {
+        //                 Name = dirInfo.Name,
+        //                 Size = "",
+        //                 LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+        //                 FullPath = dirInfo.FullName,
+        //                 IsDirectory = true,
+        //                 IsWatched = isSelectedWatched,
+        //                 IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
+        //                 IsCheckBoxEnabled =
+        //                     isSelectedWatched ||
+        //                     (!isImplicitlyWatched &&
+        //                      !isSelectedWatched), // Enable if explicitly watched or not watched at all
+        //                 ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName),
+        //                 IsSelectedWatchedDirectory = isSelectedWatched
+        //             });
+        //         }
+        //
+        //         foreach (var file in Directory.GetFiles(path))
+        //         {
+        //             var fileInfo = new FileInfo(file);
+        //             if (IsHiddenOrSystemFile(fileInfo)) continue;
+        //
+        //             var parentDir = Path.GetDirectoryName(fileInfo.FullName);
+        //             var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
+        //             var isImplicitlyWatched = parentDir != null && IsWithinWatchedDirectory(fileInfo.FullName) &&
+        //                                       !isSelectedWatched;
+        //
+        //             entries.Add(new FileSystemEntry
+        //             {
+        //                 Name = fileInfo.Name,
+        //                 Size = FormatFileSize(fileInfo.Length),
+        //                 LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+        //                 FullPath = fileInfo.FullName,
+        //                 IsDirectory = false,
+        //                 IsWatched = isSelectedWatched,
+        //                 IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
+        //                 IsCheckBoxEnabled =
+        //                     isSelectedWatched ||
+        //                     (!isImplicitlyWatched &&
+        //                      !isSelectedWatched), // Enable if explicitly watched or not watched at all
+        //                 ContainsWatchedItems = false,
+        //                 IsSelectedWatchedDirectory = isSelectedWatched
+        //             });
+        //         }
+        //
+        //         dataGrid.ItemsSource = entries;
+        //         navigateUpButton.IsEnabled = Directory.GetParent(_CurrentPath) != null;
+        //     }
+        //     catch (UnauthorizedAccessException ex)
+        //     {
+        //         ShowNotification("Access Denied", $"Cannot access {path}: {ex.Message}", NotificationType.Error);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
+        //     }
+        // }
 
-                if (dataGrid == null || pathTextBox == null || navigateUpButton == null) return;
-
-                _CurrentPath = path;
-                pathTextBox.Text = _CurrentPath;
-
-                var entries = new List<FileSystemEntry>();
-
-                foreach (var dir in Directory.GetDirectories(path))
-                {
-                    var dirInfo = new DirectoryInfo(dir);
-                    var isSelectedWatched = _WatchedPaths.Contains(dirInfo.FullName);
-                    var isImplicitlyWatched =
-                        IsWithinWatchedDirectory(dirInfo.FullName) &&
-                        !isSelectedWatched; // Only implicit if not explicitly watched
-
-                    entries.Add(new FileSystemEntry
-                    {
-                        Name = dirInfo.Name,
-                        Size = "",
-                        LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
-                        FullPath = dirInfo.FullName,
-                        IsDirectory = true,
-                        IsWatched = isSelectedWatched,
-                        IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
-                        IsCheckBoxEnabled =
-                            isSelectedWatched ||
-                            (!isImplicitlyWatched &&
-                             !isSelectedWatched), // Enable if explicitly watched or not watched at all
-                        ContainsWatchedItems = ContainsWatchedItemsInPath(dirInfo.FullName),
-                        IsSelectedWatchedDirectory = isSelectedWatched
-                    });
-                }
-
-                foreach (var file in Directory.GetFiles(path))
-                {
-                    var fileInfo = new FileInfo(file);
-                    if (IsHiddenOrSystemFile(fileInfo)) continue;
-
-                    var parentDir = Path.GetDirectoryName(fileInfo.FullName);
-                    var isSelectedWatched = _WatchedPaths.Contains(fileInfo.FullName);
-                    var isImplicitlyWatched = parentDir != null && IsWithinWatchedDirectory(fileInfo.FullName) &&
-                                              !isSelectedWatched;
-
-                    entries.Add(new FileSystemEntry
-                    {
-                        Name = fileInfo.Name,
-                        Size = FormatFileSize(fileInfo.Length),
-                        LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
-                        FullPath = fileInfo.FullName,
-                        IsDirectory = false,
-                        IsWatched = isSelectedWatched,
-                        IsWatchedOrInherited = isSelectedWatched || isImplicitlyWatched,
-                        IsCheckBoxEnabled =
-                            isSelectedWatched ||
-                            (!isImplicitlyWatched &&
-                             !isSelectedWatched), // Enable if explicitly watched or not watched at all
-                        ContainsWatchedItems = false,
-                        IsSelectedWatchedDirectory = isSelectedWatched
-                    });
-                }
-
-                dataGrid.ItemsSource = entries;
-                navigateUpButton.IsEnabled = Directory.GetParent(_CurrentPath) != null;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                ShowNotification("Access Denied", $"Cannot access {path}: {ex.Message}", NotificationType.Error);
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
-            }
-        }
-
-        private bool IsHiddenOrSystemFile(FileInfo fileInfo)
-        {
-            // Check if the file is hidden or has a system attribute (e.g., .DS_Store)
-            return (fileInfo.Attributes & FileAttributes.Hidden) != 0 ||
-                   (fileInfo.Attributes & FileAttributes.System) != 0 ||
-                   fileInfo.Name.StartsWith(".") || // Hidden files on macOS start with a dot
-                   fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
-        }
+        // private bool IsHiddenOrSystemFile(FileInfo fileInfo)
+        // {
+        //     // Check if the file is hidden or has a system attribute (e.g., .DS_Store)
+        //     return (fileInfo.Attributes & FileAttributes.Hidden) != 0 ||
+        //            (fileInfo.Attributes & FileAttributes.System) != 0 ||
+        //            fileInfo.Name.StartsWith(".") || // Hidden files on macOS start with a dot
+        //            fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
+        // }
 
         // Add this new method in MainWindow.cs
         private async void SyncButton_Click(object sender, RoutedEventArgs e)
@@ -1252,7 +1252,7 @@ namespace View.Personal
                 }
 
             // Refresh UI
-            LoadFileSystem(_CurrentPath);
+            DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
             var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
             {
@@ -1323,7 +1323,7 @@ namespace View.Personal
                 _WatchedPaths.Add(entry.FullPath);
                 LogWatchedPaths();
                 UpdateFileWatchers();
-                LoadFileSystem(_CurrentPath);
+                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
                 // Ingest files
                 if (entry.IsDirectory)
@@ -1446,7 +1446,7 @@ namespace View.Personal
                     _WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths();
                     UpdateFileWatchers();
-                    LoadFileSystem(_CurrentPath);
+                    DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
                     LogToConsole($"[INFO] Stopped watching '{entry.Name}' without deleting files.");
                     break;
 
@@ -1479,7 +1479,7 @@ namespace View.Personal
                         }
                     }
 
-                    LoadFileSystem(_CurrentPath);
+                    DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
                     var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
@@ -1502,23 +1502,23 @@ namespace View.Personal
             app.SaveSettings();
         }
 
-        private bool IsWithinWatchedDirectory(string path)
-        {
-            return _WatchedPaths.Any(watchedPath =>
-                Directory.Exists(watchedPath) &&
-                path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
-        }
+        // private bool IsWithinWatchedDirectory(string path)
+        // {
+        //     return _WatchedPaths.Any(watchedPath =>
+        //         Directory.Exists(watchedPath) &&
+        //         path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
+        // }
 
-        private bool ContainsWatchedItemsInPath(string path)
-        {
-            // Check if this path is explicitly watched
-            if (_WatchedPaths.Contains(path))
-                return true;
-
-            // Check if any subdirectories or files within this path are watched
-            return _WatchedPaths.Any(watchedPath =>
-                watchedPath.StartsWith(path + Path.DirectorySeparatorChar));
-        }
+        // private bool ContainsWatchedItemsInPath(string path)
+        // {
+        //     // Check if this path is explicitly watched
+        //     if (_WatchedPaths.Contains(path))
+        //         return true;
+        //
+        //     // Check if any subdirectories or files within this path are watched
+        //     return _WatchedPaths.Any(watchedPath =>
+        //         watchedPath.StartsWith(path + Path.DirectorySeparatorChar));
+        // }
 
         private void LogWatchedPaths()
         {
@@ -1536,31 +1536,31 @@ namespace View.Personal
             }
         }
 
-        private string FormatFileSize(long bytes)
-        {
-            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
-            var counter = 0;
-            decimal number = bytes;
-            while (Math.Round(number / 1024) >= 1)
-            {
-                number = number / 1024;
-                counter++;
-            }
-
-            return $"{number:n1} {suffixes[counter]}";
-        }
+        // private string FormatFileSize(long bytes)
+        // {
+        //     string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+        //     var counter = 0;
+        //     decimal number = bytes;
+        //     while (Math.Round(number / 1024) >= 1)
+        //     {
+        //         number = number / 1024;
+        //         counter++;
+        //     }
+        //
+        //     return $"{number:n1} {suffixes[counter]}";
+        // }
 
         private void NavigateUpButton_Click(object sender, RoutedEventArgs e)
         {
             var parentDir = Directory.GetParent(_CurrentPath);
-            if (parentDir != null) LoadFileSystem(parentDir.FullName);
+            if (parentDir != null) DataMonitorUIHandlers.LoadFileSystem(this, parentDir.FullName);
         }
 
         private void FileSystemDataGrid_DoubleTapped(object sender, RoutedEventArgs e)
         {
             if (sender is DataGrid dataGrid && dataGrid.SelectedItem is FileSystemEntry entry)
                 if (entry.IsDirectory)
-                    LoadFileSystem(entry.FullPath);
+                    DataMonitorUIHandlers.LoadFileSystem(this, entry.FullPath);
         }
 
         private void InitializeFileWatchers()
@@ -1650,7 +1650,7 @@ namespace View.Personal
 
                             Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                LoadFileSystem(_CurrentPath);
+                                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
                                 var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
@@ -1684,7 +1684,7 @@ namespace View.Personal
 
                             Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                LoadFileSystem(_CurrentPath);
+                                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
                                 var filesPanel = this.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
@@ -1910,14 +1910,8 @@ namespace View.Personal
                 {
                     if (Directory.Exists(enteredPath))
                     {
-                        LoadFileSystem(enteredPath);
+                        DataMonitorUIHandlers.LoadFileSystem(this, enteredPath);
                         LogToConsole($"[INFO] Navigated to path: {enteredPath}");
-                    }
-                    else
-                    {
-                        ShowNotification("Path Not Found", $"The path '{enteredPath}' does not exist.",
-                            NotificationType.Error);
-                        textBox.Text = _CurrentPath; // Revert to current path
                     }
                 }
                 catch (UnauthorizedAccessException ex)
