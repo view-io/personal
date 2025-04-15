@@ -143,7 +143,6 @@
                     </Grid>
                 </Border>
                 <StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-                    <!-- Existing StackPanel for header -->
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />

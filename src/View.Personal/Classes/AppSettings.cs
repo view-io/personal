@@ -38,6 +38,9 @@ namespace View.Personal.Classes
         /// </summary>
         public string SelectedProvider { get; set; } = "View";
 
+        /// <summary>
+        /// Gets or sets the list of paths being actively watched by the Data Monitor.
+        /// </summary>
         public List<string> WatchedPaths { get; set; } = new();
 
         /// <summary>

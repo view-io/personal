@@ -74,7 +74,7 @@ namespace View.Personal.Services
         /// Opens a file picker dialog to select a file to ingest
         /// </summary>
         /// <param name="window">The parent window</param>
-        /// <param name="fileType">The file type to filter (e.g., "pdf")</param>
+        /// <param name="fileTypes">The file type to filter (e.g., "pdf")</param>
         /// <returns>The selected file path or null if canceled</returns>
         public async Task<string?> BrowseForFileToIngest(
             Window window,
@@ -89,7 +89,6 @@ namespace View.Personal.Services
                 return null;
             }
 
-            // One combined filter entry
             var supportedFilter = new FilePickerFileType("Supported Files")
             {
                 Patterns = fileTypes.Select(ext => $"*.{ext}").ToArray()
