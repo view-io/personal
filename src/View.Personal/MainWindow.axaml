@@ -13,7 +13,7 @@
     <!-- ReSharper disable ObsoleteElement -->
     <Window.Resources>
         <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
-        <personal:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
+        <classes:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
         <personal:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
     </Window.Resources>
     <Window.Styles>

@@ -406,6 +406,58 @@
             view completion provider.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter">
+            <summary>
+            Converts watched item status to a background color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts watched item status to a background color based on provided values.
+            </summary>
+            <param name="values">A list containing the watched item status and directory selection status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a background color back to watched item status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
+        </member>
+        <member name="T:View.Personal.Classes.ContainsWatchedItemsToColorConverter">
+            <summary>
+            Converts watched item status to a foreground color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToColorConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts watched item status to a foreground color based on provided values.
+            </summary>
+            <param name="values">A list containing the watched item status and directory selection status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the foreground color, defaulting to gray (#6A6B6F).</returns>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToColorConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a foreground color back to watched item status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
+        </member>
         <member name="T:View.Personal.Classes.FileViewModel">
             <summary>
             Represents a view model for a file, containing metadata such as name, creation date, and file properties.
@@ -582,6 +634,11 @@
             Stores title and message.
             </summary>
         </member>
+        <member name="F:View.Personal.MainWindow._WatchedPaths">
+            <summary>
+            Gets or sets the list of paths being actively watched by the Data Monitor.
+            </summary>
+        </member>
         <member name="F:View.Personal.MainWindow._CurrentChatSession">
             <summary>
             The currently active chat session.
@@ -629,6 +686,18 @@
             This method checks if the specified session exists in the _ChatSessions list before attempting to remove it.
             The operation is logged to the console for debugging purposes.
             </remarks>
+        </member>
+        <member name="M:View.Personal.MainWindow.ShowPanel(System.String)">
+            <summary>
+            Displays the specified panel in the UI, hiding others, and updates relevant panel states.
+            </summary>
+            <param name="panelName">The name of the panel to display.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.LogToConsole(System.String)">
+            <summary>
+            Logs a message to the console output in the UI and system console.
+            </summary>
+            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
@@ -725,6 +794,12 @@
             <param name="doc">The JsonDocument containing the parsed response data.</param>
             <param name="provider">The name of the completion provider to determine the token extraction logic.</param>
             <returns>The extracted token string, or null if no token is found or the provider is unsupported.</returns>
+        </member>
+        <member name="M:View.Personal.MainWindow.OnClosed(System.EventArgs)">
+            <summary>
+            Handles the window closing event, ensuring Data Monitor resources are cleaned up.
+            </summary>
+            <param name="e">The event data for the window closing.</param>
         </member>
         <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
@@ -1019,45 +1094,6 @@
             </summary>
             <param name="mainWindow">The main application window containing UI controls.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckForCompletedFileOperations(View.Personal.MainWindow,System.Object,System.Timers.ElapsedEventArgs)">
-            <summary>
-            Processes completed file operations by ingesting changed or new files and updating the UI.
-            </summary>
-            <param name="mainWindow">The main application window containing UI controls.</param>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">The event data for the timer elapsed event.</param>
-            <returns>A task representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsWithinWatchedDirectory(View.Personal.MainWindow,System.String)">
-            <summary>
-            Determines if a path is within a watched directory.
-            </summary>
-            <param name="mainWindow">The main application window containing watched paths.</param>
-            <param name="path">The path to check.</param>
-            <returns>True if the path is within a watched directory, otherwise false.</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ContainsWatchedItemsInPath(View.Personal.MainWindow,System.String)">
-            <summary>
-            Checks if a path contains watched items or is itself watched.
-            </summary>
-            <param name="mainWindow">The main application window containing watched paths.</param>
-            <param name="path">The path to check.</param>
-            <returns>True if the path is watched or contains watched items, otherwise false.</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FormatFileSize(System.Int64)">
-            <summary>
-            Formats a file size in bytes into a human-readable string with appropriate units.
-            </summary>
-            <param name="bytes">The file size in bytes.</param>
-            <returns>A formatted string representing the file size (e.g., "1.2 MB").</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsHiddenOrSystemFile(System.IO.FileInfo)">
-            <summary>
-            Determines if a file is hidden or a system file based on its attributes or name.
-            </summary>
-            <param name="fileInfo">The file information to check.</param>
-            <returns>True if the file is hidden or a system file, otherwise false.</returns>
-        </member>
         <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsTemporaryFile(System.String)">
             <summary>
             Checks if a file is temporary based on its name or specific patterns.
@@ -1097,6 +1133,45 @@
             <param name="mainWindow">The main application window containing UI controls.</param>
             <param name="source">The object that raised the event.</param>
             <param name="e">The event data for the file rename.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckForCompletedFileOperations(View.Personal.MainWindow,System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            Processes completed file operations by ingesting changed or new files and updating the UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the timer elapsed event.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsWithinWatchedDirectory(View.Personal.MainWindow,System.String)">
+            <summary>
+            Determines if a path is within a watched directory.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is within a watched directory, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ContainsWatchedItemsInPath(View.Personal.MainWindow,System.String)">
+            <summary>
+            Checks if a path contains watched items or is itself watched.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is watched or contains watched items, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FormatFileSize(System.Int64)">
+            <summary>
+            Formats a file size in bytes into a human-readable string with appropriate units.
+            </summary>
+            <param name="bytes">The file size in bytes.</param>
+            <returns>A formatted string representing the file size (e.g., "1.2 MB").</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsHiddenOrSystemFile(System.IO.FileInfo)">
+            <summary>
+            Determines if a file is hidden or a system file based on its attributes or name.
+            </summary>
+            <param name="fileInfo">The file information to check.</param>
+            <returns>True if the file is hidden or a system file, otherwise false.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.MainWindowUIHandlers">
             <summary>
