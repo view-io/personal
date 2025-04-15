@@ -2,6 +2,7 @@ namespace View.Personal.UIHandlers
 {
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Interactivity;
     using Classes;
     using System;
     using System.Collections.Generic;
@@ -86,6 +87,19 @@ namespace View.Personal.UIHandlers
             {
                 mainWindow.ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
             }
+        }
+
+        public static void NavigateUpButton_Click(MainWindow mainWindow, object sender, RoutedEventArgs e)
+        {
+            var parentDir = Directory.GetParent(mainWindow._CurrentPath);
+            if (parentDir != null) LoadFileSystem(mainWindow, parentDir.FullName);
+        }
+
+        public static void FileSystemDataGrid_DoubleTapped(MainWindow mainWindow, object sender, RoutedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid && dataGrid.SelectedItem is FileSystemEntry entry)
+                if (entry.IsDirectory)
+                    LoadFileSystem(mainWindow, entry.FullPath);
         }
 
         private static bool IsWithinWatchedDirectory(MainWindow mainWindow, string path)
