@@ -4,6 +4,8 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using Avalonia.Controls;
     using Avalonia.Platform.Storage;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Service class that handles file browsing operations
@@ -72,10 +74,14 @@ namespace View.Personal.Services
         /// Opens a file picker dialog to select a file to ingest
         /// </summary>
         /// <param name="window">The parent window</param>
-        /// <param name="fileType">The file type to filter (e.g., "pdf")</param>
+        /// <param name="fileTypes">The file type to filter (e.g., "pdf")</param>
         /// <returns>The selected file path or null if canceled</returns>
-        public async Task<string> BrowseForFileToIngest(Window window, string fileType = "pdf")
+        public async Task<string?> BrowseForFileToIngest(
+            Window window,
+            IEnumerable<string>? fileTypes = null)
         {
+            fileTypes ??= new[] { "pdf", "txt", "md", "csv", "rtf" };
+
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
@@ -83,15 +89,22 @@ namespace View.Personal.Services
                 return null;
             }
 
+            var supportedFilter = new FilePickerFileType("Supported Files")
+            {
+                Patterns = fileTypes.Select(ext => $"*.{ext}").ToArray()
+            };
+
+            var filters = new List<FilePickerFileType>
+            {
+                supportedFilter,
+                new("All Files") { Patterns = new[] { "*.*" } }
+            };
+
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Select File to Ingest",
                 AllowMultiple = false,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType($"{fileType.ToUpper()} Files") { Patterns = new[] { $"*.{fileType}" } },
-                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
-                }
+                FileTypeFilter = filters
             });
 
             if (files.Count > 0 && !string.IsNullOrEmpty(files[0].Path.LocalPath))
@@ -99,12 +112,11 @@ namespace View.Personal.Services
                 Console.WriteLine($"Selected file path: {files[0].Path.LocalPath}");
                 return files[0].Path.LocalPath;
             }
-            else
-            {
-                Console.WriteLine("No file selected.");
-                return null;
-            }
+
+            Console.WriteLine("No file selected.");
+            return null;
         }
+
 
         /// <summary>
         /// Opens a file save dialog to save chat history

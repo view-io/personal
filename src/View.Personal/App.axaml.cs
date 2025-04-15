@@ -318,7 +318,7 @@ namespace View.Personal
                     // Load GUIDs from settings
                     _TenantGuid = Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuid)
                         ? tenantGuid
-                        : Guid.NewGuid();
+                        : Guid.Empty;
                     _GraphGuid = Guid.TryParse(_AppSettings.View.GraphGuid, out var graphGuid)
                         ? graphGuid
                         : Guid.NewGuid();
@@ -326,11 +326,12 @@ namespace View.Personal
                     _CredentialGuid = Guid.TryParse(_AppSettings.View.CredentialGuid, out var credGuid)
                         ? credGuid
                         : Guid.NewGuid();
+                    _AppSettings.WatchedPaths ??= new List<string>();
                 }
                 else
                 {
                     _Logging.Debug(_Header + "No settings file found, using defaults");
-                    _TenantGuid = Guid.NewGuid();
+                    _TenantGuid = Guid.Empty;
                     _GraphGuid = Guid.NewGuid();
                     _UserGuid = Guid.NewGuid();
                     _CredentialGuid = Guid.NewGuid();
@@ -349,7 +350,8 @@ namespace View.Personal
                             UserGuid = _UserGuid.ToString(),
                             CredentialGuid = _CredentialGuid.ToString()
                         },
-                        Embeddings = new AppSettings.EmbeddingsSettings()
+                        Embeddings = new AppSettings.EmbeddingsSettings(),
+                        WatchedPaths = new List<string>()
                     };
                     SaveSettings();
                 }
@@ -360,7 +362,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
-                _TenantGuid = Guid.NewGuid();
+                _TenantGuid = Guid.Empty;
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();
                 _CredentialGuid = Guid.NewGuid();
@@ -378,7 +380,8 @@ namespace View.Personal
                         UserGuid = _UserGuid.ToString(),
                         CredentialGuid = _CredentialGuid.ToString()
                     },
-                    Embeddings = new AppSettings.EmbeddingsSettings()
+                    Embeddings = new AppSettings.EmbeddingsSettings(),
+                    WatchedPaths = new List<string>()
                 };
                 SaveSettings();
             }

@@ -290,32 +290,6 @@
             The endpoint URL for Voyage API requests.
             </summary>
         </member>
-        <member name="T:View.Personal.Classes.AvaloniaConsoleWriter">
-            <summary>
-            A custom TextWriter implementation that redirects console output to an Avalonia TextBox control.
-            This allows console output to be displayed within the UI of an Avalonia application.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.AvaloniaConsoleWriter.Encoding">
-            <summary>
-            Gets the character encoding in which the output is written.
-            This implementation returns UTF-8 encoding.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.#ctor(Avalonia.Controls.TextBox)">
-            <summary>
-            Initializes a new instance of the AvaloniaConsoleWriter class with the specified TextBox.
-            </summary>
-            <param name="textBox">The TextBox control where console output will be displayed.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when textBox is null.</exception>
-        </member>
-        <member name="M:View.Personal.Classes.AvaloniaConsoleWriter.WriteLine(System.String)">
-            <summary>
-            Writes a string followed by a line terminator to the text box on the UI thread.
-            This method safely updates the UI by dispatching the update operation to the UI thread.
-            </summary>
-            <param name="value">The string to write to the text box.</param>
-        </member>
         <member name="T:View.Personal.Classes.ChatMessage">
             <summary>
             Represents a message in a chat conversation, containing a role and content.
@@ -432,6 +406,129 @@
             view completion provider.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter">
+            <summary>
+            Converts watched item status to a background color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts watched item status to a background color based on provided values.
+            </summary>
+            <param name="values">A list containing the watched item status and directory selection status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a background color back to watched item status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
+        </member>
+        <member name="T:View.Personal.Classes.ContainsWatchedItemsToColorConverter">
+            <summary>
+            Converts watched item status to a foreground color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToColorConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts watched item status to a foreground color based on provided values.
+            </summary>
+            <param name="values">A list containing the watched item status and directory selection status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the foreground color, defaulting to gray (#6A6B6F).</returns>
+        </member>
+        <member name="M:View.Personal.Classes.ContainsWatchedItemsToColorConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a foreground color back to watched item status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
+        </member>
+        <member name="T:View.Personal.Classes.FileSystemEntry">
+            <summary>
+            Represents a file system entry in the Data Monitor UI, with properties for display and watch status.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.Name">
+            <summary>
+            Gets or sets the name of the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.Size">
+            <summary>
+            Gets or sets the size of the file system entry, formatted as a string.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.LastModified">
+            <summary>
+            Gets or sets the last modified date of the file system entry, formatted as a string.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.FullPath">
+            <summary>
+            Gets or sets the full path of the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsDirectory">
+            <summary>
+            Gets or sets whether the file system entry is a directory.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsWatched">
+            <summary>
+            Gets or sets whether the file system entry is explicitly watched.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsWatchedOrInherited">
+            <summary>
+            Gets or sets whether the file system entry is watched explicitly or inherited from a parent directory.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsCheckBoxEnabled">
+            <summary>
+            Gets or sets whether the watch checkbox is enabled for the file system entry.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.ContainsWatchedItems">
+            <summary>
+            Gets or sets whether the file system entry contains watched items.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IsSelectedWatchedDirectory">
+            <summary>
+            Gets or sets whether the directory is explicitly selected as watched.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileSystemEntry.IconKind">
+            <summary>
+            Gets the icon kind for the file system entry, displaying a folder or file icon.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Classes.FileSystemEntry.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.FileSystemEntry.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the PropertyChanged event for a specified property.
+            </summary>
+            <param name="propertyName">The name of the property that changed, automatically inferred if not specified.</param>
+        </member>
         <member name="T:View.Personal.Classes.FileViewModel">
             <summary>
             Represents a view model for a file, containing metadata such as name, creation date, and file properties.
@@ -501,6 +598,32 @@
             <summary>
             Settings.
             </summary>
+        </member>
+        <member name="T:View.Personal.Classes.WatchedDirectoryBackgroundConverter">
+            <summary>
+            Converts directory watch status to a background color for Data Monitor UI elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.WatchedDirectoryBackgroundConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts directory watch status to a background color based on provided values.
+            </summary>
+            <param name="values">A list containing directory status, watched items status, and inherited watch status.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.WatchedDirectoryBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a background color back to directory watch status values (not supported).
+            </summary>
+            <param name="value">The value produced by the binding target.</param>
+            <param name="targetTypes">The types of the binding source properties.</param>
+            <param name="parameter">The converter parameter.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>Not supported, always throws NotSupportedException.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
         </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>
@@ -608,6 +731,11 @@
             Stores title and message.
             </summary>
         </member>
+        <member name="F:View.Personal.MainWindow._WatchedPaths">
+            <summary>
+            Gets or sets the list of paths being actively watched by the Data Monitor.
+            </summary>
+        </member>
         <member name="F:View.Personal.MainWindow._CurrentChatSession">
             <summary>
             The currently active chat session.
@@ -655,6 +783,18 @@
             This method checks if the specified session exists in the _ChatSessions list before attempting to remove it.
             The operation is logged to the console for debugging purposes.
             </remarks>
+        </member>
+        <member name="M:View.Personal.MainWindow.ShowPanel(System.String)">
+            <summary>
+            Displays the specified panel in the UI, hiding others, and updates relevant panel states.
+            </summary>
+            <param name="panelName">The name of the panel to display.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.LogToConsole(System.String)">
+            <summary>
+            Logs a message to the console output in the UI and system console.
+            </summary>
+            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
@@ -752,6 +892,12 @@
             <param name="provider">The name of the completion provider to determine the token extraction logic.</param>
             <returns>The extracted token string, or null if no token is found or the provider is unsupported.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.OnClosed(System.EventArgs)">
+            <summary>
+            Handles the window closing event, ensuring Data Monitor resources are cleaned up.
+            </summary>
+            <param name="e">The event data for the window closing.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -773,7 +919,7 @@
             <param name="fileExtension">The default file extension</param>
             <returns>The selected file path or null if canceled</returns>
         </member>
-        <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.String)">
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Opens a file picker dialog to select a file to ingest
             </summary>
@@ -947,6 +1093,182 @@
             <param name="conversationHistory">The list of chat messages to display.</param>
             <param name="showSpinner">Boolean indicating whether to show a loading spinner for the assistant's response.</param>
             <param name="window">The window containing the chat interface controls.</param>
+        </member>
+        <member name="T:View.Personal.UIHandlers.DataMonitorUIHandlers">
+            <summary>
+            Provides utility methods for handling Data Monitor UI interactions and file system watching.
+            </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LoadFileSystem(View.Personal.MainWindow,System.String)">
+            <summary>
+            Populates the Data Monitor UI with file system entries for the specified path.
+            Displays directories and files, including their watch status, in a DataGrid.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="path">The file system path to load entries from.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.NavigateUpButton_Click(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Navigates to the parent directory of the current path in the Data Monitor UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the button click.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FileSystemDataGrid_DoubleTapped(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles double-tap on the DataGrid to navigate into a selected directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the double-tap.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CurrentPathTextBox_KeyDown(View.Personal.MainWindow,System.Object,Avalonia.Input.KeyEventArgs)">
+            <summary>
+            Handles Enter key press in the path TextBox to navigate to the entered directory path.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the key press.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.SyncButton_Click(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Synchronizes watched paths by removing stale nodes from LiteGraph and ingesting updated or new files.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the button click.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.WatchCheckBox_Checked(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the checked event of the watch checkbox to initiate watching a file or directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the checkbox change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.WatchCheckBox_Unchecked(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the unchecked event of the watch checkbox to stop watching a file or directory.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the checkbox change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ConfirmAndWatchAsync(View.Personal.MainWindow,Avalonia.Controls.CheckBox,View.Personal.Classes.FileSystemEntry)">
+            <summary>
+            Confirms and processes the action to watch a file or directory, ingesting files as needed.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="checkBox">The checkbox triggering the watch action.</param>
+            <param name="entry">The file system entry to watch.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ConfirmAndProcessUnwatchAsync(View.Personal.MainWindow,Avalonia.Controls.CheckBox,View.Personal.Classes.FileSystemEntry)">
+            <summary>
+            Confirms and processes the action to stop watching a file or directory, with options to delete associated data.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="checkBox">The checkbox triggering the unwatch action.</param>
+            <param name="entry">The file system entry to stop watching.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LogWatchedPaths(View.Personal.MainWindow)">
+            <summary>
+            Logs the list of currently watched paths to the console output in the UI and system console.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.InitializeFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Initializes the file system watcher timer and updates watchers for monitored paths.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CleanupFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Disposes of all file system watchers and the change timer, clearing resources.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsTemporaryFile(System.String)">
+            <summary>
+            Checks if a file is temporary based on its name or specific patterns.
+            </summary>
+            <param name="fileName">The name of the file to check.</param>
+            <returns>True if the file is considered temporary, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FindFileInLiteGraph(View.Personal.MainWindow,System.String,LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Searches for a file in LiteGraph by its file path.
+            </summary>
+            <param name="mainWindow">The main application window for logging.</param>
+            <param name="filePath">The file path to search for.</param>
+            <param name="liteGraph">The LiteGraph client instance.</param>
+            <param name="tenantGuid">The tenant GUID for the graph.</param>
+            <param name="graphGuid">The graph GUID to search in.</param>
+            <returns>The matching Node if found, otherwise null.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.UpdateFileWatchers(View.Personal.MainWindow)">
+            <summary>
+            Updates file system watchers for all watched paths, disposing of old watchers and creating new ones.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls and watched paths.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.OnFileActivity(View.Personal.MainWindow,System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            Handles file system events (create, change, delete) for watched paths, updating the ingestion queue and UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="source">The object that raised the event.</param>
+            <param name="e">The event data for the file system change.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.OnRenamed(View.Personal.MainWindow,System.Object,System.IO.RenamedEventArgs)">
+            <summary>
+            Handles file rename events for watched paths, updating LiteGraph and the ingestion queue.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="source">The object that raised the event.</param>
+            <param name="e">The event data for the file rename.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckForCompletedFileOperations(View.Personal.MainWindow,System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            Processes completed file operations by ingesting changed or new files and updating the UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">The event data for the timer elapsed event.</param>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsWithinWatchedDirectory(View.Personal.MainWindow,System.String)">
+            <summary>
+            Determines if a path is within a watched directory.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is within a watched directory, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.ContainsWatchedItemsInPath(View.Personal.MainWindow,System.String)">
+            <summary>
+            Checks if a path contains watched items or is itself watched.
+            </summary>
+            <param name="mainWindow">The main application window containing watched paths.</param>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is watched or contains watched items, otherwise false.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FormatFileSize(System.Int64)">
+            <summary>
+            Formats a file size in bytes into a human-readable string with appropriate units.
+            </summary>
+            <param name="bytes">The file size in bytes.</param>
+            <returns>A formatted string representing the file size (e.g., "1.2 MB").</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.IsHiddenOrSystemFile(System.IO.FileInfo)">
+            <summary>
+            Determines if a file is hidden or a system file based on its attributes or name.
+            </summary>
+            <param name="fileInfo">The file information to check.</param>
+            <returns>True if the file is hidden or a system file, otherwise false.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.MainWindowUIHandlers">
             <summary>

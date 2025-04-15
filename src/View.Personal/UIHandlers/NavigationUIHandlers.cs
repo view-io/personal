@@ -15,6 +15,8 @@ namespace View.Personal.UIHandlers
     public static class NavigationUIHandlers
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
 
         #region Public-Members
 
@@ -50,6 +52,7 @@ namespace View.Personal.UIHandlers
                 var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
                 var mainContentArea = window.FindControl<Grid>("MainContentArea");
+                var dataMonitorPanel = window.FindControl<StackPanel>("DataMonitorPanel");
 
                 // Set main content area background to white
                 if (mainContentArea != null)
@@ -62,6 +65,7 @@ namespace View.Personal.UIHandlers
                 if (chatPanel != null) chatPanel.IsVisible = false;
                 if (consolePanel != null) consolePanel.IsVisible = false;
                 if (workspaceText != null) workspaceText.IsVisible = false;
+                if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = false;
 
                 if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
@@ -100,6 +104,10 @@ namespace View.Personal.UIHandlers
                                 }
                             }
 
+                            break;
+
+                        case "Data Monitor":
+                            mainWindow.ShowPanel("Data Monitor");
                             break;
 
                         case "Settings2":
@@ -193,5 +201,6 @@ namespace View.Personal.UIHandlers
         #endregion
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

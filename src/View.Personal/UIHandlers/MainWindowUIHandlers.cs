@@ -6,7 +6,6 @@ namespace View.Personal.UIHandlers
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
-    using Classes;
     using Services;
     using LiteGraph;
 
@@ -37,10 +36,10 @@ namespace View.Personal.UIHandlers
         {
             Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
             Console.WriteLine("[INFO] Finished MainWindow_Opened.");
-            var consoleBox = window.FindControl<TextBox>("ConsoleOutputTextBox");
-            if (consoleBox != null)
-                Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
-            var sidebarBorder = window.FindControl<Border>("SidebarBorder"); // Add Name="SidebarBorder" to XAML
+            // var consoleBox = window.FindControl<TextBox>("ConsoleOutputTextBox");
+            // if (consoleBox != null)
+            //     Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
+            var sidebarBorder = window.FindControl<Border>("SidebarBorder");
             var dashboardPanel = window.FindControl<Border>("DashboardPanel");
             if (sidebarBorder != null) sidebarBorder.IsVisible = true;
             if (dashboardPanel != null) dashboardPanel.IsVisible = true;

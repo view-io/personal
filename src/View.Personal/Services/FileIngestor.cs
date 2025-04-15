@@ -10,6 +10,7 @@ namespace View.Personal.Services
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
+    using DocumentAtom.Text;
     using DocumentAtom.TypeDetection;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
@@ -97,26 +98,56 @@ namespace View.Personal.Services
                 var typeResult = typeDetector.Process(filePath, contentType);
                 Console.WriteLine($"[INFO] Detected Type: {typeResult.Type}");
 
-                if (typeResult.Type != DocumentTypeEnum.Pdf)
-                {
-                    Console.WriteLine($"[WARNING] Unsupported file type: {typeResult.Type} (only PDF is supported).");
-                    mainWindow.ShowNotification("Ingestion Error", "Only PDF files are supported.",
-                        NotificationType.Error);
-                    return;
-                }
+                List<Atom> atoms;
 
-                var processorSettings = new PdfProcessorSettings
+                switch (typeResult.Type)
                 {
-                    Chunking = new ChunkingSettings
+                    case DocumentTypeEnum.Pdf:
                     {
-                        Enable = true,
-                        MaximumLength = 512,
-                        ShiftSize = 512
+                        var processorSettings = new PdfProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 512
+                            }
+                        };
+
+                        var pdfProcessor = new PdfProcessor(processorSettings);
+                        atoms = pdfProcessor.Extract(filePath).ToList();
+                        Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from PDF");
+                        break;
                     }
-                };
-                var pdfProcessor = new PdfProcessor(processorSettings);
-                var atoms = pdfProcessor.Extract(filePath).ToList();
-                Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from PDF");
+
+                    case DocumentTypeEnum.Text: //  ←  NEW branch
+                    {
+                        var textSettings = new TextProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 512
+                            }
+                            //  Delimiters stay at their defaults, but feel free to
+                            //  override here if you want something custom.
+                        };
+
+                        var textProcessor = new TextProcessor(textSettings);
+                        atoms = textProcessor.Extract(filePath).ToList();
+                        Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from Text file");
+                        break;
+                    }
+
+                    default:
+                    {
+                        Console.WriteLine($"[WARNING] Unsupported file type: {typeResult.Type} (PDF or Text only).");
+                        mainWindow.ShowNotification("Ingestion Error",
+                            "Only PDF or plain‑text files are supported.", NotificationType.Error);
+                        return;
+                    }
+                }
 
                 var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
                 liteGraph.CreateNode(fileNode);
