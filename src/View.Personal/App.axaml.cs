@@ -38,6 +38,11 @@ namespace View.Personal
         /// </summary>
         public AppSettings _AppSettings;
 
+        /// <summary>
+        /// The logging service for writing to the UI console and standard console.
+        /// </summary>
+        public LoggingService LoggingService { get; set; }
+
         #endregion
 
         #region Private-Members
@@ -197,6 +202,11 @@ namespace View.Personal
                 }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        public void Log(string message)
+        {
+            LoggingService?.Log(message);
         }
 
         /// <summary>

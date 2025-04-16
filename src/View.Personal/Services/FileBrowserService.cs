@@ -38,10 +38,11 @@ namespace View.Personal.Services
         public async Task<string> BrowseForExportLocation(Window window, string defaultFileName = "exported_graph.gexf",
             string fileExtension = "gexf")
         {
+            var app = (App)App.Current;
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                Console.WriteLine("Failed to get TopLevel.");
+                app.Log("Failed to get TopLevel.");
                 return null;
             }
 
@@ -60,12 +61,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
+                app.Log($"Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                Console.WriteLine("No file selected.");
+                app.Log("No file selected.");
                 return null;
             }
         }
@@ -81,11 +82,11 @@ namespace View.Personal.Services
             IEnumerable<string>? fileTypes = null)
         {
             fileTypes ??= new[] { "pdf", "txt", "md", "csv", "rtf" };
-
+            var app = (App)App.Current;
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                Console.WriteLine("Failed to get TopLevel.");
+                app.Log("Failed to get TopLevel.");
                 return null;
             }
 
@@ -109,11 +110,11 @@ namespace View.Personal.Services
 
             if (files.Count > 0 && !string.IsNullOrEmpty(files[0].Path.LocalPath))
             {
-                Console.WriteLine($"Selected file path: {files[0].Path.LocalPath}");
+                app.Log($"Selected file path: {files[0].Path.LocalPath}");
                 return files[0].Path.LocalPath;
             }
 
-            Console.WriteLine("No file selected.");
+            app.Log("No file selected.");
             return null;
         }
 
@@ -125,10 +126,11 @@ namespace View.Personal.Services
         /// <returns>The selected file path or null if canceled</returns>
         public async Task<string> BrowseForChatHistorySaveLocation(Window window)
         {
+            var app = (App)App.Current;
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                Console.WriteLine("Failed to get TopLevel.");
+                app.Log("Failed to get TopLevel.");
                 return null;
             }
 
@@ -146,12 +148,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                Console.WriteLine($"Selected file path: {file.Path.LocalPath}");
+                app.Log($"Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                Console.WriteLine("No file selected.");
+                app.Log("No file selected.");
                 return null;
             }
         }

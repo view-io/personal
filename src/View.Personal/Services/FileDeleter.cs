@@ -44,7 +44,8 @@ namespace View.Personal.Services
                         return;
 
                     liteGraph.DeleteNode(tenantGuid, graphGuid, file.NodeGuid);
-                    Console.WriteLine($"Deleted node {file.NodeGuid} for file '{file.Name}'");
+                    var app = (App)App.Current;
+                    app?.Log($"Deleted node {file.NodeGuid} for file '{file.Name}'");
 
                     if (window is MainWindow mainWindow)
                     {
@@ -55,18 +56,18 @@ namespace View.Personal.Services
                             node?.Tags?.Get("FilePath") ?? file.FilePath; // Fallback to FileViewModel if null
 
                         // Debug logs
-                        Console.WriteLine($"[DEBUG] FilePath from node: '{filePath}'");
-                        Console.WriteLine($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
+                        app.Log($"[DEBUG] FilePath from node: '{filePath}'");
+                        app.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
 
                         // Check if the file is explicitly watched or within a watched directory
                         if (!string.IsNullOrEmpty(filePath) && mainWindow._WatchedPaths.Any(watchedPath =>
                                 watchedPath == filePath || // Exact match
                                 (Directory.Exists(watchedPath) &&
                                  filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))
-                            mainWindow.LogToConsole(
+                            app.Log(
                                 $"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
                         else
-                            Console.WriteLine($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+                            app.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
                         FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
                         mainWindow.ShowNotification("File Deleted", "File was deleted successfully!",
@@ -75,7 +76,8 @@ namespace View.Personal.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error deleting file '{file.Name}': {ex.Message}");
+                    var app = (App)App.Current;
+                    app?.Log($"Error deleting file '{file.Name}': {ex.Message}");
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);

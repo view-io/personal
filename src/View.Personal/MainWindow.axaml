@@ -25,6 +25,11 @@
         </Style>
     </Window.Styles>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <DockPanel>
             <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
                     Width="200" Background="#FFFFFF">
@@ -1063,13 +1068,13 @@
                         </Grid>
                     </Grid>
                 </Border>
-                <StackPanel x:Name="ConsolePanel" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
+                <StackPanel x:Name="ConsolePanel1" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Console" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">
-                        <TextBox x:Name="ConsoleOutputTextBox"
+                        <TextBox x:Name="ConsoleOutputTextBox1"
                                  IsReadOnly="True"
                                  AcceptsReturn="True"
                                  IsHitTestVisible="False"
@@ -1080,6 +1085,26 @@
                 <TextBlock Name="WorkspaceText" IsVisible="False" />
             </Grid>
         </DockPanel>
+        <!-- GridSplitter for resizing -->
+        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
+        <!-- Console panel -->
+        <Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"
+                IsVisible="False">
+            <StackPanel Orientation="Vertical" Spacing="10" Margin="20">
+                <DockPanel>
+                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                            Click="CloseConsoleButton_Click">
+                        <avalonia:MaterialIcon Kind="Close" />
+                    </Button>
+                </DockPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
+                    <TextBox x:Name="ConsoleOutputTextBox" IsReadOnly="True" AcceptsReturn="True"
+                             IsHitTestVisible="False" IsTabStop="False" TextWrapping="Wrap"
+                             Background="#000000" Foreground="#FFFFFF" FontFamily="Consolas, Courier New, Monospace"
+                             BorderThickness="0" Padding="5" />
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
         <WindowNotificationManager x:Name="NotificationManager" />
     </Grid>
     <!-- ReSharper restore Xaml.StyleClassNotFound -->

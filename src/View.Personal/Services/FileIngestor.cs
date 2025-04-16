@@ -59,13 +59,10 @@ namespace View.Personal.Services
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             var mainWindow = window as MainWindow;
-            if (mainWindow == null)
-            {
-                Console.WriteLine("[ERROR] Window is not MainWindow.");
-                return;
-            }
+            if (mainWindow == null) return;
 
             var appSettings = ((App)Application.Current).AppSettings;
+            var app = (App)Application.Current;
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
 
@@ -96,7 +93,7 @@ namespace View.Personal.Services
 
                 string? contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
-                Console.WriteLine($"[INFO] Detected Type: {typeResult.Type}");
+                app.Log($"[INFO] Detected Type: {typeResult.Type}");
 
                 List<Atom> atoms;
 
@@ -116,7 +113,7 @@ namespace View.Personal.Services
 
                         var pdfProcessor = new PdfProcessor(processorSettings);
                         atoms = pdfProcessor.Extract(filePath).ToList();
-                        Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from PDF");
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF");
                         break;
                     }
 
@@ -130,19 +127,17 @@ namespace View.Personal.Services
                                 MaximumLength = 512,
                                 ShiftSize = 512
                             }
-                            //  Delimiters stay at their defaults, but feel free to
-                            //  override here if you want something custom.
                         };
 
                         var textProcessor = new TextProcessor(textSettings);
                         atoms = textProcessor.Extract(filePath).ToList();
-                        Console.WriteLine($"[INFO] Extracted {atoms.Count} atoms from Text file");
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
                         break;
                     }
 
                     default:
                     {
-                        Console.WriteLine($"[WARNING] Unsupported file type: {typeResult.Type} (PDF or Text only).");
+                        app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF or Text only).");
                         mainWindow.ShowNotification("Ingestion Error",
                             "Only PDF or plain‑text files are supported.", NotificationType.Error);
                         return;
@@ -151,16 +146,16 @@ namespace View.Personal.Services
 
                 var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
                 liteGraph.CreateNode(fileNode);
-                Console.WriteLine($"[INFO] Created file document node {fileNode.GUID}");
+                app.Log($"[INFO] Created file document node {fileNode.GUID}");
 
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, atoms);
                 liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
-                Console.WriteLine($"[INFO] Created {chunkNodes.Count} chunk nodes.");
+                app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes.");
 
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.CreateEdges(tenantGuid, graphGuid, edges);
-                Console.WriteLine($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
+                app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
 
                 var validChunkNodes = chunkNodes
                     .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -168,7 +163,7 @@ namespace View.Personal.Services
                 var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
 
                 if (!chunkTexts.Any())
-                    Console.WriteLine("[WARNING] No valid text content found in atoms for embedding.");
+                    app.Log("[WARNING] No valid text content found in atoms for embedding.");
                 else
                     switch (embeddingProvider)
                     {
@@ -211,7 +206,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            Console.WriteLine(
+                            app.Log(
                                 $"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
                             break;
 
@@ -254,7 +249,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            Console.WriteLine(
+                            app.Log(
                                 $"[INFO] Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings.");
                             break;
 
@@ -300,7 +295,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            Console.WriteLine(
+                            app.Log(
                                 $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
                             break;
 
@@ -357,7 +352,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            Console.WriteLine(
+                            app.Log(
                                 $"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
                             break;
 
@@ -370,13 +365,13 @@ namespace View.Personal.Services
                 if (filePathTextBox != null)
                     filePathTextBox.Text = "";
 
-                Console.WriteLine($"[INFO] File {filePath} ingested successfully!");
+                app.Log($"[INFO] File {filePath} ingested successfully!");
                 mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
                     NotificationType.Success);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Error ingesting file {filePath}: {ex.Message}");
+                app.Log($"[ERROR] Error ingesting file {filePath}: {ex.Message}");
                 mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                     NotificationType.Error);
             }

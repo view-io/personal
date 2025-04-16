@@ -23,6 +23,11 @@
             Application settings for the View Personal application.
             </summary>
         </member>
+        <member name="P:View.Personal.App.LoggingService">
+            <summary>
+            The logging service for writing to the UI console and standard console.
+            </summary>
+        </member>
         <member name="M:View.Personal.App.Initialize">
             <summary>
             Initializes the component by loading its XAML definition.
@@ -123,6 +128,11 @@
         <member name="P:View.Personal.Classes.AppSettings.SelectedProvider">
             <summary>
             The currently selected AI provider. Default is "View".
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.WatchedPaths">
+            <summary>
+            Gets or sets the list of paths being actively watched by the Data Monitor.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.AppSettings.OpenAISettings">
@@ -924,7 +934,7 @@
             Opens a file picker dialog to select a file to ingest
             </summary>
             <param name="window">The parent window</param>
-            <param name="fileType">The file type to filter (e.g., "pdf")</param>
+            <param name="fileTypes">The file type to filter (e.g., "pdf")</param>
             <returns>The selected file path or null if canceled</returns>
         </member>
         <member name="M:View.Personal.Services.FileBrowserService.BrowseForChatHistorySaveLocation(Avalonia.Controls.Window)">
@@ -1314,15 +1324,6 @@
             <param name="graphGuid">The unique identifier for the graph to be exported.</param>
             <returns>A Task representing the asynchronous operation of browsing for a file location and exporting the graph.</returns>
         </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.BrowseAndUpdateTextBoxAsync(Avalonia.Controls.Window,System.String,System.Func{Avalonia.Controls.Window,System.Threading.Tasks.Task{System.String}})">
-            <summary>
-            Asynchronously browses for a file or directory and updates the specified textbox with the selected path.
-            </summary>
-            <param name="window">The window containing the textbox to update.</param>
-            <param name="textBoxName">The name of the textbox control to update.</param>
-            <param name="browseFunc">A function that performs the browsing operation and returns the selected path.</param>
-            <returns>A task representing the asynchronous operation.</returns>
-        </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IngestBrowseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,View.Personal.Services.FileBrowserService)">
             <summary>
             Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
@@ -1341,14 +1342,6 @@
             <param name="window">The window containing the button to update.</param>
             <param name="buttonName">The name of the button control to enable or disable.</param>
         </member>
-        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.FilePathTextBox_PropertyChanged(System.Object,Avalonia.AvaloniaPropertyChangedEventArgs,Avalonia.Controls.Window)">
-            <summary>
-            Handles the property changed event for the file path textbox, updating the ingest button's enabled state.
-            </summary>
-            <param name="sender">The textbox whose property changed.</param>
-            <param name="e">The property changed event arguments.</param>
-            <param name="window">The window containing the ingest button.</param>
-        </member>
         <member name="T:View.Personal.UIHandlers.NavigationUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing navigation in the user interface.
@@ -1364,38 +1357,6 @@
             <param name="liteGraph">The LiteGraphClient instance for interacting with graph data.</param>
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.ModelProvider_SelectionChanged(System.Object,Avalonia.Controls.SelectionChangedEventArgs,Avalonia.Controls.Window,System.Boolean)">
-            <summary>
-            Handles the selection changed event for the model provider combo box, updating settings and visibility.
-            </summary>
-            <param name="sender">The ComboBox that triggered the selection change event.</param>
-            <param name="e">The selection changed event arguments.</param>
-            <param name="window">The window containing the provider selection controls.</param>
-            <param name="windowInitialized">A flag indicating whether the window has finished initializing.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.NavigateToMyFiles_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
-            <summary>
-            Handles the click event to navigate to the My Files panel in the UI.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="window">The window containing the navigation panels.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.NavigateToChat_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
-            <summary>
-            Handles the click event to navigate to the Chat panel in the UI.
-            </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="window">The window containing the navigation panels.</param>
-        </member>
-        <member name="M:View.Personal.UIHandlers.NavigationUIHandlers.NavigateToPanel(Avalonia.Controls.Window,System.String)">
-            <summary>
-            Navigates to a specified panel by selecting the corresponding item in the navigation list.
-            </summary>
-            <param name="window">The window containing the navigation list.</param>
-            <param name="panelName">The name of the panel to navigate to.</param>
         </member>
     </members>
 </doc>

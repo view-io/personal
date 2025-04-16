@@ -34,11 +34,8 @@ namespace View.Personal.UIHandlers
         /// <param name="window">The main window that has been opened.</param>
         public static void MainWindow_Opened(Window window)
         {
-            Console.WriteLine("[INFO] MainWindow opened. Loading saved settings...");
-            Console.WriteLine("[INFO] Finished MainWindow_Opened.");
-            // var consoleBox = window.FindControl<TextBox>("ConsoleOutputTextBox");
-            // if (consoleBox != null)
-            //     Console.SetOut(new AvaloniaConsoleWriter(consoleBox));
+            var app = (App)Application.Current;
+            app.Log("[INFO] Finished MainWindow_Opened.");
             var sidebarBorder = window.FindControl<Border>("SidebarBorder");
             var dashboardPanel = window.FindControl<Border>("DashboardPanel");
             if (sidebarBorder != null) sidebarBorder.IsVisible = true;
@@ -127,7 +124,6 @@ namespace View.Personal.UIHandlers
         public static async void DeleteFile_Click(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
-            Console.WriteLine("[INFO] DeleteFile_Click triggered.");
             await FileDeleter.DeleteFile_ClickAsync(sender, e, liteGraph, tenantGuid, graphGuid, window);
         }
 
@@ -145,6 +141,7 @@ namespace View.Personal.UIHandlers
         public static async Task ExportGexfButton_Click(object sender, RoutedEventArgs e, MainWindow window,
             FileBrowserService fileBrowserService, LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
         {
+            var app = (App)Application.Current;
             var filePath = await fileBrowserService.BrowseForExportLocation(window);
             if (!string.IsNullOrEmpty(filePath))
             {
@@ -158,13 +155,13 @@ namespace View.Personal.UIHandlers
                 if (GraphExporter.TryExportGraphToGexfFile(liteGraph, tenantGuid, graphGuid, filePath,
                         out var errorMessage))
                 {
-                    Console.WriteLine($"Graph {graphGuid} exported to {filePath} successfully!");
+                    app.Log($"Graph {graphGuid} exported to {filePath} successfully!");
                     window.ShowNotification("File Exported", "File was exported successfully!",
                         NotificationType.Success);
                 }
                 else
                 {
-                    Console.WriteLine($"Error exporting graph to GEXF: {errorMessage}");
+                    app.Log($"Error exporting graph to GEXF: {errorMessage}");
                     window.ShowNotification("Export Error", $"Error exporting graph to GEXF: {errorMessage}",
                         NotificationType.Error);
                 }
@@ -173,27 +170,6 @@ namespace View.Personal.UIHandlers
             }
         }
 
-        /// <summary>
-        /// Asynchronously browses for a file or directory and updates the specified textbox with the selected path.
-        /// </summary>
-        /// <param name="window">The window containing the textbox to update.</param>
-        /// <param name="textBoxName">The name of the textbox control to update.</param>
-        /// <param name="browseFunc">A function that performs the browsing operation and returns the selected path.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public static async Task BrowseAndUpdateTextBoxAsync(Window window, string textBoxName,
-            Func<Window, Task<string>> browseFunc)
-        {
-            Console.WriteLine($"[INFO] Browse triggered for {textBoxName}.");
-            var textBox = window.FindControl<TextBox>(textBoxName);
-            if (textBox == null) return;
-
-            var filePath = await browseFunc(window);
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                textBox.Text = filePath;
-                Console.WriteLine($"[INFO] User selected path: {filePath}");
-            }
-        }
 
         /// <summary>
         /// Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
@@ -206,11 +182,7 @@ namespace View.Personal.UIHandlers
             FileBrowserService fileBrowserService)
         {
             var mainWindow = window as MainWindow;
-            if (mainWindow == null)
-            {
-                Console.WriteLine("[ERROR] Window is not MainWindow.");
-                return;
-            }
+            if (mainWindow == null) return;
 
             // Open file dialog and get the selected file path
             var filePath = await fileBrowserService.BrowseForFileToIngest(window);
@@ -223,10 +195,6 @@ namespace View.Personal.UIHandlers
 
                 // Trigger ingestion immediately
                 await mainWindow.IngestFileAsync(filePath);
-            }
-            else
-            {
-                Console.WriteLine("[INFO] File selection canceled by user.");
             }
         }
 
@@ -246,18 +214,6 @@ namespace View.Personal.UIHandlers
                 if (button != null)
                     button.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
             }
-        }
-
-        /// <summary>
-        /// Handles the property changed event for the file path textbox, updating the ingest button's enabled state.
-        /// </summary>
-        /// <param name="sender">The textbox whose property changed.</param>
-        /// <param name="e">The property changed event arguments.</param>
-        /// <param name="window">The window containing the ingest button.</param>
-        public static void FilePathTextBox_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e,
-            Window window)
-        {
-            UpdateButtonEnabledOnTextChange(sender, e, window, "IngestButton");
         }
 
         #endregion

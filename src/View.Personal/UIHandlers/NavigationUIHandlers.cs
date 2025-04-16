@@ -1,10 +1,8 @@
 namespace View.Personal.UIHandlers
 {
-    using Avalonia;
     using System;
     using System.Linq;
     using Avalonia.Controls;
-    using Avalonia.Interactivity;
     using Avalonia.Media;
     using Helpers;
     using LiteGraph;
@@ -49,23 +47,22 @@ namespace View.Personal.UIHandlers
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
                 var chatPanel = window.FindControl<Border>("ChatPanel");
-                var consolePanel = window.FindControl<StackPanel>("ConsolePanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
-                var mainContentArea = window.FindControl<Grid>("MainContentArea");
                 var dataMonitorPanel = window.FindControl<StackPanel>("DataMonitorPanel");
+                var consolePanel = window.FindControl<Border>("ConsolePanel"); // Updated to Border
 
                 // Set main content area background to white
+                var mainContentArea = window.FindControl<Grid>("MainContentArea");
                 if (mainContentArea != null)
                     mainContentArea.Background = new SolidColorBrush(Colors.White);
 
-                // Hide all panels initially
+                // Hide all main content panels (exclude consolePanel)
                 if (dashboardPanel != null) dashboardPanel.IsVisible = false;
                 if (settingsPanel2 != null) settingsPanel2.IsVisible = false;
                 if (myFilesPanel != null) myFilesPanel.IsVisible = false;
                 if (chatPanel != null) chatPanel.IsVisible = false;
-                if (consolePanel != null) consolePanel.IsVisible = false;
-                if (workspaceText != null) workspaceText.IsVisible = false;
                 if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = false;
+                if (workspaceText != null) workspaceText.IsVisible = false;
 
                 if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
@@ -98,16 +95,13 @@ namespace View.Personal.UIHandlers
                                         fileOperationsPanel.IsVisible = false;
                                         uploadFilesPanel.IsVisible = true;
                                     }
-
-                                    Console.WriteLine(
-                                        $"[INFO] Loaded {uniqueFiles.Count()} unique files into MyFilesPanel.");
                                 }
                             }
 
                             break;
 
                         case "Data Monitor":
-                            mainWindow.ShowPanel("Data Monitor");
+                            if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = true;
                             break;
 
                         case "Settings2":
@@ -115,7 +109,8 @@ namespace View.Personal.UIHandlers
                             break;
 
                         case "Console":
-                            if (consolePanel != null) consolePanel.IsVisible = true;
+                            if (consolePanel != null) consolePanel.IsVisible = !consolePanel.IsVisible;
+                            listBox.SelectedIndex = -1; // Deselect to allow toggling
                             break;
                     }
 
@@ -130,68 +125,6 @@ namespace View.Personal.UIHandlers
                     else if (dashboardPanel != null) dashboardPanel.IsVisible = true;
                 }
             }
-        }
-
-        /// <summary>
-        /// Handles the selection changed event for the model provider combo box, updating settings and visibility.
-        /// </summary>
-        /// <param name="sender">The ComboBox that triggered the selection change event.</param>
-        /// <param name="e">The selection changed event arguments.</param>
-        /// <param name="window">The window containing the provider selection controls.</param>
-        /// <param name="windowInitialized">A flag indicating whether the window has finished initializing.</param>
-        public static void ModelProvider_SelectionChanged(object? sender, SelectionChangedEventArgs e, Window window,
-            bool windowInitialized)
-        {
-            if (!windowInitialized) return;
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
-            {
-                var selectedProvider = selectedItem.Content?.ToString();
-                Console.WriteLine($"[INFO] ModelProvider_SelectionChanged: {selectedProvider}");
-
-                if (string.IsNullOrEmpty(selectedProvider))
-                {
-                    Console.WriteLine("[ERROR] Selected provider is null or empty.");
-                    return;
-                }
-
-                var app = (App)Application.Current;
-                app?.SaveSelectedProvider(selectedProvider);
-            }
-        }
-
-        /// <summary>
-        /// Handles the click event to navigate to the My Files panel in the UI.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the navigation panels.</param>
-        public static void NavigateToMyFiles_Click(object sender, RoutedEventArgs e, Window window)
-        {
-            NavigateToPanel(window, "My Files");
-        }
-
-        /// <summary>
-        /// Handles the click event to navigate to the Chat panel in the UI.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the navigation panels.</param>
-        public static void NavigateToChat_Click(object sender, RoutedEventArgs e, Window window)
-        {
-            NavigateToPanel(window, "Chat");
-        }
-
-        /// <summary>
-        /// Navigates to a specified panel by selecting the corresponding item in the navigation list.
-        /// </summary>
-        /// <param name="window">The window containing the navigation list.</param>
-        /// <param name="panelName">The name of the panel to navigate to.</param>
-        public static void NavigateToPanel(Window window, string panelName)
-        {
-            var navList = window.FindControl<ListBox>("NavList");
-            if (navList?.Items.OfType<ListBoxItem>().FirstOrDefault(x => x.Content?.ToString() == panelName) is
-                { } item)
-                navList.SelectedItem = item;
         }
 
         #endregion

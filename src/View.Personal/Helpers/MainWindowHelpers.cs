@@ -39,9 +39,10 @@ namespace View.Personal.Helpers
         {
             if (liteGraph == null)
             {
-                Console.WriteLine(
+                var app = (App)App.Current;
+                app.Log(
                     "[WARN] LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
-                return new List<FileViewModel>(); // Return empty list to avoid crash
+                return new List<FileViewModel>();
             }
 
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" })?.ToList();
@@ -118,12 +119,13 @@ namespace View.Personal.Helpers
         {
             var chunkNodes = new List<Node>();
             var atomIndex = 0;
+            var app = (App)App.Current;
 
             foreach (var atom in atoms)
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    Console.WriteLine($"Skipping empty atom at index {atomIndex}");
+                    app.Log($"Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }
