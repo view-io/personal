@@ -59,8 +59,14 @@ namespace View.Personal.UIHandlers
                     var selectedTag = selectedItem.Tag?.ToString();
                     if (selectedTag == "Console")
                     {
-                        if (consolePanel != null)
-                            consolePanel.IsVisible = !consolePanel.IsVisible;
+                        if (consolePanel != null && mainWindow != null)
+                        {
+                            if (consolePanel.IsVisible)
+                                mainWindow.HideConsolePanel();
+                            else
+                                mainWindow.ShowConsolePanel();
+                        }
+
                         listBox.SelectedIndex = -1;
                         if (chatHistoryList != null)
                             chatHistoryList.SelectedIndex = -1;

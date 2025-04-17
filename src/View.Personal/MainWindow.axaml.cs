@@ -84,6 +84,7 @@ namespace View.Personal
         private WindowNotificationManager? _WindowNotificationManager;
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
+        private GridLength _ConsoleRowHeight = GridLength.Auto;
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -269,6 +270,33 @@ namespace View.Personal
             if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
         }
 
+        public void ShowConsolePanel()
+        {
+            var consolePanel = this.FindControl<Border>("ConsolePanel");
+            if (consolePanel != null)
+            {
+                var mainGrid = (Grid)Content;
+                var rowDef = mainGrid.RowDefinitions[2];
+                consolePanel.IsVisible = true;
+                if (_ConsoleRowHeight.IsAbsolute)
+                    rowDef.Height = _ConsoleRowHeight; // Restore resized height
+                // If Auto, the content (Height="200") sets the minimum height
+            }
+        }
+
+        public void HideConsolePanel()
+        {
+            var consolePanel = this.FindControl<Border>("ConsolePanel");
+            if (consolePanel != null)
+            {
+                var mainGrid = (Grid)Content;
+                var rowDef = mainGrid.RowDefinitions[2];
+                _ConsoleRowHeight = rowDef.Height; // Store current height
+                consolePanel.IsVisible = false;
+                rowDef.Height = GridLength.Auto; // Collapse the row
+            }
+        }
+
         /// <summary>
         /// Logs a message to the console output in the UI and system console.
         /// </summary>
@@ -289,15 +317,14 @@ namespace View.Personal
             });
         }
 
-        private void CloseConsoleButton_Click(object sender, RoutedEventArgs e)
-        {
-            var consolePanel = this.FindControl<Border>("ConsolePanel");
-            if (consolePanel != null) consolePanel.IsVisible = false;
-        }
-
         #endregion
 
         #region Private-Methods
+
+        private void CloseConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            HideConsolePanel();
+        }
 
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
