@@ -49,6 +49,7 @@ namespace View.Personal
         // ReSharper disable RedundantCast
         // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper disable RedundantSwitchExpressionArms
 
 
         #region Public-Members
@@ -84,6 +85,7 @@ namespace View.Personal
         private WindowNotificationManager? _WindowNotificationManager;
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
+        private GridLength _ConsoleRowHeight = GridLength.Auto;
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -104,6 +106,7 @@ namespace View.Personal
         /// </summary>
         public MainWindow()
         {
+            var app = (App)Application.Current;
             try
             {
                 InitializeComponent();
@@ -112,15 +115,16 @@ namespace View.Personal
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
-                    Console.WriteLine("[INFO] MainWindow opened.");
+                    app.Log("[INFO] MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
                     InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
-                    var app = (App)Application.Current;
+                    var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+                    app.LoggingService = new LoggingService(this, consoleOutput);
                     _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
-                    DataMonitorUIHandlers.LogWatchedPaths(this); // Log initial state
+                    DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                 };
                 NavList.SelectionChanged += (s, e) =>
@@ -131,7 +135,7 @@ namespace View.Personal
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[ERROR] MainWindow constructor exception: {e.Message}");
+                app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
             }
         }
 
@@ -232,15 +236,7 @@ namespace View.Personal
         /// </remarks>
         public void RemoveChatSession(ChatSession session)
         {
-            if (_ChatSessions.Contains(session))
-            {
-                _ChatSessions.Remove(session);
-                Console.WriteLine("[DEBUG] Removed chat session from list.");
-            }
-            else
-            {
-                Console.WriteLine("[WARN] Chat session not found in list.");
-            }
+            if (_ChatSessions.Contains(session)) _ChatSessions.Remove(session);
         }
 
         /// <summary>
@@ -253,24 +249,55 @@ namespace View.Personal
             var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
-            var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
             var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
 
             if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
-                chatPanel != null && consolePanel != null && workspaceText != null && dataMonitorPanel != null)
+                chatPanel != null && workspaceText != null && dataMonitorPanel != null)
+
             {
                 dashboardPanel.IsVisible = panelName == "Dashboard";
                 settingsPanel2.IsVisible = panelName == "Settings2";
                 myFilesPanel.IsVisible = panelName == "Files";
                 chatPanel.IsVisible = panelName == "Chat";
-                consolePanel.IsVisible = panelName == "Console";
                 workspaceText.IsVisible = false;
                 dataMonitorPanel.IsVisible = panelName == "Data Monitor";
             }
 
             if (panelName == "Chat") UpdateChatTitle();
             if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
+        }
+
+        /// <summary>
+        /// Displays the Console panel and restores its previous height if resized.
+        /// </summary>
+        public void ShowConsolePanel()
+        {
+            var consolePanel = this.FindControl<Border>("ConsolePanel");
+            if (consolePanel != null)
+            {
+                var mainGrid = (Grid)Content;
+                var rowDef = mainGrid.RowDefinitions[2];
+                consolePanel.IsVisible = true;
+                if (_ConsoleRowHeight.IsAbsolute)
+                    rowDef.Height = _ConsoleRowHeight;
+            }
+        }
+
+        /// <summary>
+        /// Hides the Console panel, stores its current height, and collapses the row.
+        /// </summary>
+        public void HideConsolePanel()
+        {
+            var consolePanel = this.FindControl<Border>("ConsolePanel");
+            if (consolePanel != null)
+            {
+                var mainGrid = (Grid)Content;
+                var rowDef = mainGrid.RowDefinitions[2];
+                _ConsoleRowHeight = rowDef.Height;
+                consolePanel.IsVisible = false;
+                rowDef.Height = GridLength.Auto;
+            }
         }
 
         /// <summary>
@@ -282,7 +309,13 @@ namespace View.Personal
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
-                if (consoleOutput != null) consoleOutput.Text += message + "\n";
+                if (consoleOutput != null)
+                {
+                    consoleOutput.Text += message + "\n";
+                    var scrollViewer = consoleOutput.Parent as ScrollViewer;
+                    if (scrollViewer != null) scrollViewer.ScrollToEnd();
+                }
+
                 Console.WriteLine(message);
             });
         }
@@ -291,13 +324,16 @@ namespace View.Personal
 
         #region Private-Methods
 
+        private void CloseConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            HideConsolePanel();
+        }
+
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             _CurrentChatSession = new ChatSession();
             _ChatSessions.Add(_CurrentChatSession);
             _ConversationHistory = _CurrentChatSession.Messages;
-            Console.WriteLine("[DEBUG] Starting new chat session. Conversation history count: " +
-                              _ConversationHistory.Count);
 
             var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
             if (conversationContainer != null)
@@ -421,11 +457,7 @@ namespace View.Personal
 
         private void ChatOptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.ContextMenu != null)
-            {
-                Console.WriteLine("[DEBUG] ChatOptionsButton clicked, opening context menu");
-                button.ContextMenu.Open(button);
-            }
+            if (sender is Button button && button.ContextMenu != null) button.ContextMenu.Open(button);
         }
 
         private void ChatHistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -571,7 +603,8 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] GetAIResponse threw exception: {ex.Message}");
+                var app = (App)Application.Current;
+                app.Log($"[ERROR] GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -637,6 +670,7 @@ namespace View.Personal
         /// <returns>A task that resolves to a list of float values representing the embeddings, or null if generation fails.</returns>
         private async Task<List<float>> GenerateEmbeddings(object sdk, EmbeddingsRequest request)
         {
+            var app = (App)Application.Current;
             var result = await (sdk switch
             {
                 ViewOpenAiSdk openAi => openAi.GenerateEmbeddings(request),
@@ -648,9 +682,9 @@ namespace View.Personal
 
             if (!result.Success || result.ContentEmbeddings == null || result.ContentEmbeddings.Count == 0)
             {
-                Console.WriteLine($"[ERROR] Prompt embeddings generation failed: {result.StatusCode}");
+                app.Log($"[ERROR] Prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
-                    Console.WriteLine($"[ERROR] {result.Error.Message}");
+                    app.Log($"[ERROR] {result.Error.Message}");
                 return new List<float>();
             }
 
@@ -664,6 +698,7 @@ namespace View.Personal
         /// <returns>A task that resolves to an enumerable collection of VectorSearchResult objects.</returns>
         private Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(List<float> embeddings)
         {
+            var app = (App)Application.Current;
             var searchRequest = new VectorSearchRequest
             {
                 TenantGUID = _TenantGuid,
@@ -674,7 +709,7 @@ namespace View.Personal
             };
 
             var searchResults = _LiteGraph.SearchVectors(searchRequest);
-            Console.WriteLine($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
+            app.Log($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
@@ -737,7 +772,8 @@ namespace View.Personal
         private object CreateRequestBody(string provider, CompletionProviderSettings settings,
             List<ChatMessage> finalMessages)
         {
-            Console.WriteLine($"[INFO] Creating request body for {provider}");
+            var app = (App)Application.Current;
+            app.Log($"[INFO] Creating request body for {provider}");
             switch (provider)
             {
                 case "OpenAI":
@@ -783,8 +819,8 @@ namespace View.Personal
                         model = settings.AnthropicCompletionModel,
                         system = systemContent,
                         messages = conversationMessages,
-                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
-                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
+                        max_tokens = 4000,
+                        temperature = 0.7,
                         stream = true
                     };
                 default:
@@ -817,8 +853,6 @@ namespace View.Personal
 
             var jsonPayload = _Serializer.SerializeJson(requestBody);
             using var resp = await restRequest.SendAsync(jsonPayload);
-            Console.WriteLine($"[DEBUG] Response Content-Type: {resp.ContentType}");
-            Console.WriteLine($"[DEBUG] ServerSentEvents: {resp.ServerSentEvents}");
 
             if (resp.StatusCode > 299)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
@@ -896,10 +930,6 @@ namespace View.Personal
                             onTokenReceived?.Invoke(token);
                             sb.Append(token);
                         }
-                        else
-                        {
-                            Console.WriteLine($"[DEBUG] Failed to extract token from chunk.");
-                        }
                     }
                 }
             }
@@ -917,10 +947,6 @@ namespace View.Personal
                     {
                         await Dispatcher.UIThread.InvokeAsync(() => onTokenReceived?.Invoke(token));
                         sb.Append(token);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"[DEBUG] Failed to extract token from line.");
                     }
                 }
             }
@@ -975,11 +1001,7 @@ namespace View.Personal
             };
 
             foreach (var ts in _ToggleSwitches)
-                if (ts == null)
-                {
-                    Console.WriteLine("[ERROR] A ToggleSwitch was not found in the UI.");
-                }
-                else
+                if (ts != null)
                 {
                     ts.PropertyChanged -= ToggleSwitch_PropertyChanged;
                     ts.PropertyChanged += ToggleSwitch_PropertyChanged;
@@ -1056,7 +1078,7 @@ namespace View.Personal
 
                 app._AppSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
-                Console.WriteLine($"[INFO] Embedding provider selected: {selectedProvider}");
+                app.Log($"[INFO] Embedding provider selected: {selectedProvider}");
             }
         }
 

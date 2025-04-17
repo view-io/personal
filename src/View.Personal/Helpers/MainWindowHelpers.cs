@@ -15,6 +15,9 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class MainWindowHelpers
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        // ReSharper disable AccessToStaticMemberViaDerivedType
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
         #region Public-Members
@@ -39,9 +42,10 @@ namespace View.Personal.Helpers
         {
             if (liteGraph == null)
             {
-                Console.WriteLine(
+                var app = (App)App.Current;
+                app.Log(
                     "[WARN] LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
-                return new List<FileViewModel>(); // Return empty list to avoid crash
+                return new List<FileViewModel>();
             }
 
             var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" })?.ToList();
@@ -118,12 +122,13 @@ namespace View.Personal.Helpers
         {
             var chunkNodes = new List<Node>();
             var atomIndex = 0;
+            var app = (App)App.Current;
 
             foreach (var atom in atoms)
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    Console.WriteLine($"Skipping empty atom at index {atomIndex}");
+                    app.Log($"Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }
@@ -184,5 +189,8 @@ namespace View.Personal.Helpers
         #region Private-Methods
 
         #endregion
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }

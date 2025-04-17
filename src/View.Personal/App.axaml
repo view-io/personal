@@ -73,6 +73,32 @@
                 </Setter>
             </Style>
 
+            <!-- No Border button -->
+            <Style Selector="Button.console">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value=".97" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="0"
+                                              Padding="12 8 12 8" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
             <Style Selector="Button.flat:pointerover">
                 <Setter Property="Background" Value="#F8F8F8" />
                 <Setter Property="BorderBrush" Value="#C8C8C8" />

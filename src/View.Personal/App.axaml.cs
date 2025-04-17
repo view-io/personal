@@ -14,6 +14,7 @@ namespace View.Personal
     using Timestamps;
     using System.IO;
     using System.Text.Json;
+    using Services;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -30,6 +31,9 @@ namespace View.Personal
     public class App : Application
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
+        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+
 
         #region Public-Members
 
@@ -37,6 +41,11 @@ namespace View.Personal
         /// Application settings for the View Personal application.
         /// </summary>
         public AppSettings _AppSettings;
+
+        /// <summary>
+        /// The logging service for writing to the UI console and standard console.
+        /// </summary>
+        public LoggingService LoggingService { get; set; }
 
         #endregion
 
@@ -181,7 +190,7 @@ namespace View.Personal
                                        (ts.TotalMs.HasValue ? ts.TotalMs.Value.ToString("0.##") : "unknown") + "ms");
                     }
 
-                    SaveSettings(); // Save after all entities are created or verified
+                    SaveSettings();
                 }
                 catch (Exception e)
                 {
@@ -200,6 +209,15 @@ namespace View.Personal
         }
 
         /// <summary>
+        /// Logs a message to the console output in the UI and system console.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
+        public void Log(string message)
+        {
+            LoggingService?.Log(message);
+        }
+
+        /// <summary>
         /// Persists the application settings to the settings file.
         /// Updates the application settings with current GUID values for tenant, graph, user, and credential,
         /// then serializes the settings to JSON and writes them to disk.
@@ -213,7 +231,6 @@ namespace View.Personal
         {
             try
             {
-                // Update AppSettings with current GUIDs
                 _AppSettings.View.TenantGuid = _TenantGuid.ToString();
                 _AppSettings.View.GraphGuid = _GraphGuid.ToString();
                 _AppSettings.View.UserGuid = _UserGuid.ToString();
@@ -275,25 +292,25 @@ namespace View.Personal
             };
         }
 
-        /// <summary>
-        /// Updates the application settings to reflect the newly selected AI provider.
-        /// Sets the IsEnabled property to true for the specified provider and false for all others,
-        /// then persists the updated settings.
-        /// </summary>
-        /// <param name="provider">The name of the provider to be set as active (OpenAI, Anthropic, Ollama, or View).</param>
-        /// <remarks>
-        /// This method ensures that only one provider is enabled at a time.
-        /// After updating the enabled status for all providers, it calls SaveSettings to persist the changes.
-        /// </remarks>
-        public void SaveSelectedProvider(string provider)
-        {
-            // Update IsEnabled based on selected provider
-            _AppSettings.OpenAI.IsEnabled = provider == "OpenAI";
-            _AppSettings.Anthropic.IsEnabled = provider == "Anthropic";
-            _AppSettings.Ollama.IsEnabled = provider == "Ollama";
-            _AppSettings.View.IsEnabled = provider == "View";
-            SaveSettings();
-        }
+        // /// <summary>
+        // /// Updates the application settings to reflect the newly selected AI provider.
+        // /// Sets the IsEnabled property to true for the specified provider and false for all others,
+        // /// then persists the updated settings.
+        // /// </summary>
+        // /// <param name="provider">The name of the provider to be set as active (OpenAI, Anthropic, Ollama, or View).</param>
+        // /// <remarks>
+        // /// This method ensures that only one provider is enabled at a time.
+        // /// After updating the enabled status for all providers, it calls SaveSettings to persist the changes.
+        // /// </remarks>
+        // public void SaveSelectedProvider(string provider)
+        // {
+        //     // Update IsEnabled based on selected provider
+        //     _AppSettings.OpenAI.IsEnabled = provider == "OpenAI";
+        //     _AppSettings.Anthropic.IsEnabled = provider == "Anthropic";
+        //     _AppSettings.Ollama.IsEnabled = provider == "Ollama";
+        //     _AppSettings.View.IsEnabled = provider == "View";
+        //     SaveSettings();
+        // }
 
         /// <summary>
         /// Gets the current application settings.
@@ -315,7 +332,6 @@ namespace View.Personal
                     _AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
                     _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
 
-                    // Load GUIDs from settings
                     _TenantGuid = Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuid)
                         ? tenantGuid
                         : Guid.Empty;
