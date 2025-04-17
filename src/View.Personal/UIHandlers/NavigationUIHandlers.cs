@@ -40,33 +40,40 @@ namespace View.Personal.UIHandlers
         {
             if (sender is ListBox listBox)
             {
-                // Retrieve UI controls
                 var chatHistoryList = window.FindControl<ListBox>("ChatHistoryList");
                 var mainWindow = window as MainWindow;
+                var consolePanel = window.FindControl<Border>("ConsolePanel");
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
                 var settingsPanel2 = window.FindControl<StackPanel>("SettingsPanel2");
                 var myFilesPanel = window.FindControl<StackPanel>("MyFilesPanel");
                 var chatPanel = window.FindControl<Border>("ChatPanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
                 var dataMonitorPanel = window.FindControl<StackPanel>("DataMonitorPanel");
-                var consolePanel = window.FindControl<Border>("ConsolePanel"); // Updated to Border
 
-                // Set main content area background to white
                 var mainContentArea = window.FindControl<Grid>("MainContentArea");
                 if (mainContentArea != null)
                     mainContentArea.Background = new SolidColorBrush(Colors.White);
 
-                // Hide all main content panels (exclude consolePanel)
-                if (dashboardPanel != null) dashboardPanel.IsVisible = false;
-                if (settingsPanel2 != null) settingsPanel2.IsVisible = false;
-                if (myFilesPanel != null) myFilesPanel.IsVisible = false;
-                if (chatPanel != null) chatPanel.IsVisible = false;
-                if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = false;
-                if (workspaceText != null) workspaceText.IsVisible = false;
-
                 if (listBox.SelectedItem is ListBoxItem selectedItem)
                 {
                     var selectedTag = selectedItem.Tag?.ToString();
+                    if (selectedTag == "Console")
+                    {
+                        if (consolePanel != null)
+                            consolePanel.IsVisible = !consolePanel.IsVisible;
+                        listBox.SelectedIndex = -1;
+                        if (chatHistoryList != null)
+                            chatHistoryList.SelectedIndex = -1;
+                        return;
+                    }
+
+                    if (dashboardPanel != null) dashboardPanel.IsVisible = false;
+                    if (settingsPanel2 != null) settingsPanel2.IsVisible = false;
+                    if (myFilesPanel != null) myFilesPanel.IsVisible = false;
+                    if (chatPanel != null) chatPanel.IsVisible = false;
+                    if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = false;
+                    if (workspaceText != null) workspaceText.IsVisible = false;
+
                     switch (selectedTag)
                     {
                         case "Files":
@@ -81,7 +88,6 @@ namespace View.Personal.UIHandlers
                                 {
                                     var uniqueFiles =
                                         MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-
                                     if (uniqueFiles.Any())
                                     {
                                         filesDataGrid.ItemsSource = uniqueFiles;
@@ -101,28 +107,15 @@ namespace View.Personal.UIHandlers
                             break;
 
                         case "Data Monitor":
-                            if (dataMonitorPanel != null) dataMonitorPanel.IsVisible = true;
+                            mainWindow?.ShowPanel("Data Monitor");
                             break;
 
                         case "Settings2":
                             if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
                             break;
-
-                        case "Console":
-                            if (consolePanel != null) consolePanel.IsVisible = !consolePanel.IsVisible;
-                            listBox.SelectedIndex = -1; // Deselect to allow toggling
-                            break;
                     }
 
-                    // Deselect chat history list when a navigation item is selected
                     if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
-                }
-                else
-                {
-                    // No navigation item selected, show chat panel if possible, otherwise dashboard
-                    if (mainWindow != null && chatPanel != null)
-                        chatPanel.IsVisible = true;
-                    else if (dashboardPanel != null) dashboardPanel.IsVisible = true;
                 }
             }
         }
