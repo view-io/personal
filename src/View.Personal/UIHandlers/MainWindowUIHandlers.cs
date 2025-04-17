@@ -198,24 +198,6 @@ namespace View.Personal.UIHandlers
             }
         }
 
-        /// <summary>
-        /// Updates the enabled state of a button based on text changes in a textbox.
-        /// </summary>
-        /// <param name="sender">The object (textbox) that triggered the property change event.</param>
-        /// <param name="e">The property changed event arguments.</param>
-        /// <param name="window">The window containing the button to update.</param>
-        /// <param name="buttonName">The name of the button control to enable or disable.</param>
-        public static void UpdateButtonEnabledOnTextChange(object sender, AvaloniaPropertyChangedEventArgs e,
-            Window window, string buttonName)
-        {
-            if (e.Property.Name == "Text" && sender is TextBox textBox)
-            {
-                var button = window.FindControl<Button>(buttonName);
-                if (button != null)
-                    button.IsEnabled = !string.IsNullOrWhiteSpace(textBox.Text);
-            }
-        }
-
         #endregion
 
         #region Private-Methods

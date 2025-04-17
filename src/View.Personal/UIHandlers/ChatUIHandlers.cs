@@ -22,6 +22,11 @@ namespace View.Personal.UIHandlers
     /// </summary>
     public static class ChatUIHandlers
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        // ReSharper disable AccessToStaticMemberViaDerivedType
+
+
         #region Public-Members
 
         #endregion
@@ -35,108 +40,6 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Public-Methods
-
-        /// <summary>
-        /// Handles the click event for sending a message in a chat interface. 
-        /// Processes the user's input, adds it to the conversation history, 
-        /// requests a response from the AI, and updates the UI accordingly.
-        /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">Event data associated with the click event.</param>
-        /// <param name="window">The window containing the chat interface controls.</param>
-        /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
-        /// <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
-        /// <returns>This method doesn't return a value as it's marked async void.</returns>
-        public static async void SendMessage_Click(
-            object sender,
-            RoutedEventArgs e,
-            Window window,
-            List<ChatMessage> conversationHistory,
-            Func<string, Action<string>, Task<string>> getAIResponse)
-        {
-            var app = (App)App.Current;
-            app.Log("[INFO] Sending user prompt to AI...");
-
-            var inputBox = window.FindControl<TextBox>("ChatInputBox");
-            var conversationContainer = window.FindControl<StackPanel>("ConversationContainer");
-            var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
-            if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
-            {
-                app.Log("[WARN] User tried to send an empty or null message.");
-                return;
-            }
-
-            var userText = inputBox.Text.Trim();
-            inputBox.Text = string.Empty;
-
-            conversationHistory.Add(new ChatMessage
-            {
-                Role = "user",
-                Content = userText
-            });
-
-            UpdateConversationWindow(conversationContainer, conversationHistory, false, window);
-            if (scrollViewer != null)
-                Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-
-            try
-            {
-                var assistantMsg = new ChatMessage
-                {
-                    Role = "assistant",
-                    Content = ""
-                };
-                conversationHistory.Add(assistantMsg);
-                UpdateConversationWindow(conversationContainer, conversationHistory, true,
-                    window); // Show spinner initially
-                if (scrollViewer != null)
-                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-
-                var firstTokenReceived = false;
-                var finalResponse = await getAIResponse(userText, (tokenChunk) =>
-                {
-                    assistantMsg.Content += tokenChunk;
-                    if (!firstTokenReceived)
-                    {
-                        firstTokenReceived = true;
-                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                            window); // Hide spinner on first token
-                    }
-                    else
-                    {
-                        UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                            window); // Update without spinner
-                    }
-
-                    if (scrollViewer != null)
-                        Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-                });
-
-                if (!string.IsNullOrEmpty(finalResponse) && assistantMsg.Content != finalResponse)
-                {
-                    assistantMsg.Content = finalResponse;
-                }
-                else if (string.IsNullOrEmpty(assistantMsg.Content))
-                {
-                    assistantMsg.Content = "No response received from the AI.";
-                    app.Log("[WARN] No content accumulated in assistant message.");
-                }
-
-                UpdateConversationWindow(conversationContainer, conversationHistory, false,
-                    window);
-                if (scrollViewer != null)
-                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-            }
-            catch (Exception ex)
-            {
-                app.Log($"[ERROR] Exception in SendMessage_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
-                if (conversationHistory.Last().Role == "assistant")
-                    conversationHistory.Last().Content = $"Error: {ex.Message}";
-                UpdateConversationWindow(conversationContainer, conversationHistory, false, window);
-                if (scrollViewer != null)
-                    Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-            }
-        }
 
         /// <summary>
         /// Handles the click event for sending a test message in a chat interface.

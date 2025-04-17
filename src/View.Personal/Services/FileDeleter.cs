@@ -17,6 +17,10 @@ namespace View.Personal.Services
     /// </summary>
     public static class FileDeleter
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        // ReSharper disable AccessToStaticMemberViaDerivedType
+
         /// <summary>
         /// Handles the deletion of a file from LiteGraph
         /// <param name="sender">The object triggering the event (expected to be a Button)</param>
@@ -55,13 +59,12 @@ namespace View.Personal.Services
                         var filePath =
                             node?.Tags?.Get("FilePath") ?? file.FilePath; // Fallback to FileViewModel if null
 
-                        // Debug logs
                         app.Log($"[DEBUG] FilePath from node: '{filePath}'");
                         app.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
 
                         // Check if the file is explicitly watched or within a watched directory
                         if (!string.IsNullOrEmpty(filePath) && mainWindow._WatchedPaths.Any(watchedPath =>
-                                watchedPath == filePath || // Exact match
+                                watchedPath == filePath ||
                                 (Directory.Exists(watchedPath) &&
                                  filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))
                             app.Log(
@@ -83,5 +86,8 @@ namespace View.Personal.Services
                             NotificationType.Error);
                 }
         }
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }

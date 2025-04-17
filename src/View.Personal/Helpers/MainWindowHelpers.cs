@@ -15,6 +15,9 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class MainWindowHelpers
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        // ReSharper disable AccessToStaticMemberViaDerivedType
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
         #region Public-Members
@@ -186,5 +189,8 @@ namespace View.Personal.Helpers
         #region Private-Methods
 
         #endregion
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }

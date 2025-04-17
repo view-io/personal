@@ -117,7 +117,7 @@ namespace View.Personal.Services
                         break;
                     }
 
-                    case DocumentTypeEnum.Text: //  ←  NEW branch
+                    case DocumentTypeEnum.Text:
                     {
                         var textSettings = new TextProcessorSettings
                         {

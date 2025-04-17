@@ -49,6 +49,7 @@ namespace View.Personal
         // ReSharper disable RedundantCast
         // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper disable RedundantSwitchExpressionArms
 
 
         #region Public-Members
@@ -248,20 +249,17 @@ namespace View.Personal
             var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
-            // var consolePanel = this.FindControl<StackPanel>("ConsolePanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
             var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
 
             if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
                 chatPanel != null && workspaceText != null && dataMonitorPanel != null)
 
-                // chatPanel != null && consolePanel != null && workspaceText != null && dataMonitorPanel != null)
             {
                 dashboardPanel.IsVisible = panelName == "Dashboard";
                 settingsPanel2.IsVisible = panelName == "Settings2";
                 myFilesPanel.IsVisible = panelName == "Files";
                 chatPanel.IsVisible = panelName == "Chat";
-                // consolePanel.IsVisible = panelName == "Console";
                 workspaceText.IsVisible = false;
                 dataMonitorPanel.IsVisible = panelName == "Data Monitor";
             }
@@ -270,6 +268,9 @@ namespace View.Personal
             if (panelName == "Data Monitor") DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
         }
 
+        /// <summary>
+        /// Displays the Console panel and restores its previous height if resized.
+        /// </summary>
         public void ShowConsolePanel()
         {
             var consolePanel = this.FindControl<Border>("ConsolePanel");
@@ -279,11 +280,13 @@ namespace View.Personal
                 var rowDef = mainGrid.RowDefinitions[2];
                 consolePanel.IsVisible = true;
                 if (_ConsoleRowHeight.IsAbsolute)
-                    rowDef.Height = _ConsoleRowHeight; // Restore resized height
-                // If Auto, the content (Height="200") sets the minimum height
+                    rowDef.Height = _ConsoleRowHeight;
             }
         }
 
+        /// <summary>
+        /// Hides the Console panel, stores its current height, and collapses the row.
+        /// </summary>
         public void HideConsolePanel()
         {
             var consolePanel = this.FindControl<Border>("ConsolePanel");
@@ -291,9 +294,9 @@ namespace View.Personal
             {
                 var mainGrid = (Grid)Content;
                 var rowDef = mainGrid.RowDefinitions[2];
-                _ConsoleRowHeight = rowDef.Height; // Store current height
+                _ConsoleRowHeight = rowDef.Height;
                 consolePanel.IsVisible = false;
-                rowDef.Height = GridLength.Auto; // Collapse the row
+                rowDef.Height = GridLength.Auto;
             }
         }
 
@@ -816,8 +819,8 @@ namespace View.Personal
                         model = settings.AnthropicCompletionModel,
                         system = systemContent,
                         messages = conversationMessages,
-                        max_tokens = 4000, // Add to CompletionProviderSettings if configurable
-                        temperature = 0.7, // Add to CompletionProviderSettings if configurable
+                        max_tokens = 4000,
+                        temperature = 0.7,
                         stream = true
                     };
                 default:

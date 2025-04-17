@@ -202,24 +202,30 @@
                                     <DataGridTemplateColumn Header="Sync" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
+                                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                                <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                                                 <CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
                                                           IsEnabled="{Binding IsCheckBoxEnabled}"
                                                           VerticalAlignment="Center" HorizontalAlignment="Center"
                                                           Checked="WatchCheckBox_Checked"
                                                           Unchecked="WatchCheckBox_Unchecked"
                                                           Width="16" Height="16" />
+                                                <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Header="Type" Width="55">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
+                                                <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                                                 <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
                                                                        VerticalAlignment="Center"
                                                                        HorizontalAlignment="Center">
+                                                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
                                                     <avalonia:MaterialIcon.Foreground>
                                                         <MultiBinding
                                                             Converter="{StaticResource WatchedColorConverter}">
+                                                            <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                                                             <Binding Path="ContainsWatchedItems" />
                                                             <Binding Path="IsSelectedWatchedDirectory" />
                                                         </MultiBinding>
@@ -1068,20 +1074,6 @@
                         </Grid>
                     </Grid>
                 </Border>
-                <StackPanel x:Name="ConsolePanel1" Orientation="Vertical" Spacing="10" Margin="20" IsVisible="False">
-                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Console" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
-                    </StackPanel>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">
-                        <TextBox x:Name="ConsoleOutputTextBox1"
-                                 IsReadOnly="True"
-                                 AcceptsReturn="True"
-                                 IsHitTestVisible="False"
-                                 IsTabStop="False"
-                                 TextWrapping="Wrap" />
-                    </ScrollViewer>
-                </StackPanel>
                 <TextBlock Name="WorkspaceText" IsVisible="False" />
             </Grid>
         </DockPanel>
@@ -1105,7 +1097,9 @@
                 </ScrollViewer>
             </StackPanel>
         </Border>
+        <!-- ReSharper disable Xaml.MissingGridIndex -->
         <WindowNotificationManager x:Name="NotificationManager" />
+        <!-- ReSharper restore Xaml.MissingGridIndex -->
     </Grid>
     <!-- ReSharper restore Xaml.StyleClassNotFound -->
     <!-- ReSharper restore ObsoleteElement -->
