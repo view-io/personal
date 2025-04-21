@@ -182,10 +182,18 @@ namespace View.Personal.Classes
             /// </summary>
             public string OllamaEmbeddingModel { get; set; } = "";
 
+            public int OllamaEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            public int OllamaEmbeddingModelDimensions { get; set; } = 1536;
+
             /// <summary>
             /// The model name to use for View embeddings.
             /// </summary>
             public string ViewEmbeddingModel { get; set; } = "";
+
+            public int ViewEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            public int ViewEmbeddingModelDimensions { get; set; } = 1536;
 
             /// <summary>
             /// The currently selected embedding model provider. Default is "Ollama".
@@ -197,10 +205,18 @@ namespace View.Personal.Classes
             /// </summary>
             public string OpenAIEmbeddingModel { get; set; } = "";
 
+            public int OpenAIEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            public int OpenAIEmbeddingModelDimensions { get; set; } = 1536;
+
             /// <summary>
             /// The model name to use for Voyage embeddings.
             /// </summary>
             public string VoyageEmbeddingModel { get; set; } = "";
+
+            public int VoyageEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            public int VoyageEmbeddingModelDimensions { get; set; } = 1536;
 
             /// <summary>
             /// The API key used for authenticating with Voyage services.

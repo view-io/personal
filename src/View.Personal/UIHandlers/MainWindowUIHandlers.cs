@@ -85,11 +85,27 @@ namespace View.Personal.UIHandlers
 
             // Update Embeddings settings
             app.AppSettings.Embeddings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+            app.AppSettings.Embeddings.OllamaEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.OllamaEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
+            app.AppSettings.Embeddings.ViewEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("ViewEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.ViewEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
+            app.AppSettings.Embeddings.OpenAIEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.OpenAIEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
             app.AppSettings.Embeddings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
             app.AppSettings.Embeddings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
+            app.AppSettings.Embeddings.VoyageEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.VoyageEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
             // Determine the selected provider based on toggle states
             if (window.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked == true)

@@ -395,6 +395,10 @@ namespace View.Personal
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
                 this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
+                this.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text =
+                    settings.Embeddings.OpenAIEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text =
+                    settings.Embeddings.OpenAIEmbeddingModelMaxTokens.ToString();
 
                 // Anthropic
                 this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
@@ -404,12 +408,20 @@ namespace View.Personal
                 this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
                 this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
                 this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
+                this.FindControl<TextBox>("VoyageEmbeddingDimensions").Text =
+                    settings.Embeddings.VoyageEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text =
+                    settings.Embeddings.VoyageEmbeddingModelMaxTokens.ToString();
 
                 // Ollama
                 this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
                 this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
                 this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
                 this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
+                this.FindControl<TextBox>("OllamaEmbeddingDimensions").Text =
+                    settings.Embeddings.OllamaEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text =
+                    settings.Embeddings.OllamaEmbeddingModelMaxTokens.ToString();
 
                 // View
                 this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
@@ -419,6 +431,10 @@ namespace View.Personal
                 this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid ?? Guid.Empty.ToString();
                 this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
                 this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
+                this.FindControl<TextBox>("ViewEmbeddingDimensions").Text =
+                    settings.Embeddings.ViewEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text =
+                    settings.Embeddings.ViewEmbeddingModelMaxTokens.ToString();
 
                 // Embeddings
                 this.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked =
