@@ -731,115 +731,133 @@
                                                 </TextBlock>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
-                                                <StackPanel Spacing="16" x:Name="EmbeddingModelGroup">
-                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
-                                                        <RadioButton Grid.Column="0" GroupName="EmbeddingProvider"
-                                                                     x:Name="OllamaEmbeddingModel"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
-                                                                     Checked="EmbeddingModel_Checked" />
-                                                        <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="Ollama Embedding Model" FontSize="12"
-                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                <StackPanel Spacing="36" x:Name="EmbeddingModelGroup">
+                                                    <!-- Ollama Embedding Model -->
+                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+                                                              BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <RadioButton GroupName="EmbeddingProvider"
+                                                                             x:Name="OllamaEmbeddingModel"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="0,0,6,0"
+                                                                             Checked="EmbeddingModel_Checked" />
+                                                                <TextBlock Text="Ollama Embedding Model"
+                                                                           VerticalAlignment="Center" FontWeight="500"
+                                                                           FontSize="13" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <StackPanel Orientation="Vertical" Spacing="8"
+                                                                    Margin="16,10,8,10">
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OllamaModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Margin="0,4,0,0" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000" />
                                                         </StackPanel>
-                                                    </Grid>
-                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
-                                                        <RadioButton Grid.Column="0" GroupName="EmbeddingProvider"
-                                                                     x:Name="ViewEmbeddingModel2"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
-                                                                     Checked="EmbeddingModel_Checked" />
-                                                        <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="View Embedding Model" FontSize="12"
-                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                    </Expander>
+
+                                                    <!-- View Embedding Model -->
+                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+                                                              BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <RadioButton GroupName="EmbeddingProvider"
+                                                                             x:Name="ViewEmbeddingModel2"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="0,0,6,0"
+                                                                             Checked="EmbeddingModel_Checked" />
+                                                                <TextBlock Text="View Embedding Model"
+                                                                           VerticalAlignment="Center" FontWeight="500"
+                                                                           FontSize="13" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <StackPanel Orientation="Vertical" Spacing="8"
+                                                                    Margin="16,10,8,10">
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="ViewEmbeddingModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Margin="0,4,0,0" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingDimensions" Text="1536"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="ViewEmbeddingDimensions" Text="1536" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000" />
                                                         </StackPanel>
-                                                    </Grid>
-                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
-                                                        <RadioButton Grid.Column="0" GroupName="EmbeddingProvider"
-                                                                     x:Name="OpenAIEmbeddingModel2"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
-                                                                     Checked="EmbeddingModel_Checked" />
-                                                        <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="OpenAI Embedding Model" FontSize="12"
-                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                    </Expander>
+
+                                                    <!-- OpenAI Embedding Model -->
+                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+                                                              BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <RadioButton GroupName="EmbeddingProvider"
+                                                                             x:Name="OpenAIEmbeddingModel2"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="0,0,6,0"
+                                                                             Checked="EmbeddingModel_Checked" />
+                                                                <TextBlock Text="OpenAI Embedding Model"
+                                                                           VerticalAlignment="Center" FontWeight="500"
+                                                                           FontSize="13" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <StackPanel Orientation="Vertical" Spacing="8"
+                                                                    Margin="16,10,8,10">
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OpenAIEmbeddingModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Margin="0,4,0,0" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000" />
                                                         </StackPanel>
-                                                    </Grid>
-                                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
-                                                        <RadioButton Grid.Column="0" GroupName="EmbeddingProvider"
-                                                                     x:Name="VoyageEmbeddingModel2"
-                                                                     VerticalAlignment="Center" Margin="0,0,6,0"
-                                                                     Checked="EmbeddingModel_Checked" />
-                                                        <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="4">
-                                                            <TextBlock Text="VoyageAI Embedding Model" FontSize="12"
-                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                    </Expander>
+
+                                                    <!-- VoyageAI Embedding Model -->
+                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+                                                              BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <RadioButton GroupName="EmbeddingProvider"
+                                                                             x:Name="VoyageEmbeddingModel2"
+                                                                             VerticalAlignment="Center"
+                                                                             Margin="0,0,6,0"
+                                                                             Checked="EmbeddingModel_Checked" />
+                                                                <TextBlock Text="VoyageAI Embedding Model"
+                                                                           VerticalAlignment="Center" FontWeight="500"
+                                                                           FontSize="13" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <StackPanel Orientation="Vertical" Spacing="8"
+                                                                    Margin="16,10,8,10">
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEmbeddingModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Margin="0,4,0,0" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000"
-                                                                     Margin="0,4,0,0" />
+                                                            <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000" />
+                                                            <TextBlock Text="API Key" FontSize="12"
+                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                            <TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here" />
+                                                            <TextBlock Text="Endpoint" FontSize="12"
+                                                                       Foreground="#1A1C1E" FontWeight="500" />
+                                                            <TextBox x:Name="VoyageEndpoint" Text="Your-Endpoint-Here" />
                                                         </StackPanel>
-                                                    </Grid>
+                                                    </Expander>
                                                 </StackPanel>
-                                                <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto"
-                                                      Margin="17,0,0,0">
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="VoyageAI Api Key"
-                                                               VerticalAlignment="Center" FontSize="12"
-                                                               Foreground="#1A1C1E" FontWeight="500" Margin="0,0,10,0" />
-                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="VoyageAI Endpoint"
-                                                               VerticalAlignment="Center" FontSize="12"
-                                                               Foreground="#1A1C1E" FontWeight="500" Margin="10,0,10,0" />
-                                                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                             x:Name="VoyageApiKey"
-                                                             Text="Your-API-Key-Here" Margin="0,4,10,0" />
-                                                    <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
-                                                             x:Name="VoyageEndpoint"
-                                                             Text="Your-Endpoint-Here" Margin="10,4,0,0" />
-                                                </Grid>
                                             </StackPanel>
                                             <!-- ReSharper disable once Xaml.MissingGridIndex -->
                                             <StackPanel VerticalAlignment="Bottom">
