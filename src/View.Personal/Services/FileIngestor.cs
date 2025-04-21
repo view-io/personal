@@ -11,6 +11,7 @@ namespace View.Personal.Services
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
     using DocumentAtom.Text;
+    using DocumentAtom.TextTools;
     using DocumentAtom.TypeDetection;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
@@ -110,13 +111,11 @@ namespace View.Personal.Services
                                 ShiftSize = 512
                             }
                         };
-
                         var pdfProcessor = new PdfProcessor(processorSettings);
                         atoms = pdfProcessor.Extract(filePath).ToList();
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF");
                         break;
                     }
-
                     case DocumentTypeEnum.Text:
                     {
                         var textSettings = new TextProcessorSettings
@@ -128,27 +127,63 @@ namespace View.Personal.Services
                                 ShiftSize = 512
                             }
                         };
-
                         var textProcessor = new TextProcessor(textSettings);
                         atoms = textProcessor.Extract(filePath).ToList();
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
                         break;
                     }
-
                     default:
                     {
                         app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF or Text only).");
-                        mainWindow.ShowNotification("Ingestion Error",
-                            "Only PDF or plain‑text files are supported.", NotificationType.Error);
+                        mainWindow.ShowNotification("Ingestion Error", "Only PDF or plain-text files are supported.",
+                            NotificationType.Error);
                         return;
                     }
                 }
 
-                var fileNode = MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, atoms, typeResult);
+                // Define the maximum token limit and overlap (hardcoded for now)
+                const int maxTokens = 256;
+                const int overlap = 50; // Number of tokens to overlap between chunks
+
+                // Process atoms to ensure they don't exceed the token limit with overlap
+                var finalAtoms = new List<Atom>();
+                using (var tokenExtractor = new TokenExtractor())
+                {
+                    tokenExtractor.WordRemover.WordsToRemove = new string[0];
+                    foreach (var atom in atoms)
+                    {
+                        var tokens = tokenExtractor.Process(atom.Text).ToList();
+                        app.Log(
+                            $"[INFO] Atom {atom.Text} has {tokens.Count} tokens. Here are the tokens: {string.Join(", ", tokens)}");
+                        var tokenCount = tokens.Count;
+                        if (tokenCount <= maxTokens)
+                        {
+                            finalAtoms.Add(atom);
+                        }
+                        else
+                        {
+                            var chunks = SplitIntoTokenChunks(atom.Text, maxTokens, overlap, tokenExtractor);
+                            foreach (var chunk in chunks)
+                                if (!string.IsNullOrWhiteSpace(chunk))
+                                {
+                                    var newAtom = new Atom
+                                    {
+                                        Text = chunk
+                                        // Copy metadata (adjust based on actual Atom properties)
+                                        // Example: PageNumber = atom.PageNumber,
+                                    };
+                                    finalAtoms.Add(newAtom);
+                                }
+                        }
+                    }
+                }
+
+                var fileNode =
+                    MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                 liteGraph.CreateNode(fileNode);
                 app.Log($"[INFO] Created file document node {fileNode.GUID}");
 
-                var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, atoms);
+                var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                 liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
                 app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes.");
 
@@ -183,10 +218,8 @@ namespace View.Personal.Services
                                 Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                 Contents = chunkTexts
                             };
-
                             var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
                             if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) return;
-
                             for (var j = 0; j < validChunkNodes.Count; j++)
                             {
                                 var chunkNode = validChunkNodes[j];
@@ -206,8 +239,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            app.Log(
-                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                            app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
                             break;
 
                         case "Ollama":
@@ -218,18 +250,15 @@ namespace View.Personal.Services
                                 return;
                             }
 
-                            var ollamaSdk = new ViewOllamaSdk(tenantGuid,
-                                appSettings.Ollama.Endpoint, "");
+                            var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint, "");
                             var ollamaEmbeddingsRequest = new EmbeddingsRequest
                             {
                                 Model = appSettings.Embeddings.OllamaEmbeddingModel,
                                 Contents = chunkTexts
                             };
-
                             var ollamaEmbeddingsResult = await ollamaSdk.GenerateEmbeddings(ollamaEmbeddingsRequest);
                             if (!CheckEmbeddingsResult(mainWindow, ollamaEmbeddingsResult, validChunkNodes.Count))
                                 return;
-
                             for (var j = 0; j < validChunkNodes.Count; j++)
                             {
                                 var chunkNode = validChunkNodes[j];
@@ -258,24 +287,20 @@ namespace View.Personal.Services
                                 string.IsNullOrEmpty(appSettings.Embeddings.VoyageEmbeddingModel))
                             {
                                 mainWindow.ShowNotification("Ingestion Error",
-                                    "VoyageAI embedding settings incomplete.",
-                                    NotificationType.Error);
+                                    "VoyageAI embedding settings incomplete.", NotificationType.Error);
                                 return;
                             }
 
-                            var voyageSdk = new ViewVoyageAiSdk(tenantGuid,
-                                appSettings.Embeddings.VoyageEndpoint,
+                            var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
                                 appSettings.Embeddings.VoyageApiKey);
                             var voyageEmbeddingsRequest = new EmbeddingsRequest
                             {
                                 Model = appSettings.Embeddings.VoyageEmbeddingModel,
                                 Contents = chunkTexts
                             };
-
                             var voyageEmbeddingsResult = await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
                             if (!CheckEmbeddingsResult(mainWindow, voyageEmbeddingsResult, validChunkNodes.Count))
                                 return;
-
                             for (var j = 0; j < validChunkNodes.Count; j++)
                             {
                                 var chunkNode = validChunkNodes[j];
@@ -295,8 +320,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            app.Log(
-                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
+                            app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
                             break;
 
                         case "View":
@@ -310,8 +334,7 @@ namespace View.Personal.Services
                                 return;
                             }
 
-                            var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
-                                appSettings.View.Endpoint,
+                            var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid, appSettings.View.Endpoint,
                                 appSettings.View.AccessKey);
                             var viewEmbeddingsRequest = new EmbeddingsRequest
                             {
@@ -328,11 +351,9 @@ namespace View.Personal.Services
                                 Model = appSettings.Embeddings.ViewEmbeddingModel,
                                 Contents = chunkTexts
                             };
-
                             var viewEmbeddingsResult =
                                 await viewEmbeddingsSdk.GenerateEmbeddings(viewEmbeddingsRequest);
                             if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count)) return;
-
                             for (var j = 0; j < validChunkNodes.Count; j++)
                             {
                                 var chunkNode = validChunkNodes[j];
@@ -352,8 +373,7 @@ namespace View.Personal.Services
                                 liteGraph.UpdateNode(chunkNode);
                             }
 
-                            app.Log(
-                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
+                            app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
                             break;
 
                         default:
@@ -385,6 +405,29 @@ namespace View.Personal.Services
         #endregion
 
         #region Private-Methods
+
+        private static List<string> SplitIntoTokenChunks(string text, int maxTokens, int overlap,
+            TokenExtractor tokenExtractor)
+        {
+            if (overlap < 0 || overlap >= maxTokens)
+                throw new ArgumentException("Overlap must be non-negative and less than maxTokens.");
+
+            var tokens = tokenExtractor.Process(text).ToList();
+            var chunks = new List<string>();
+            var step = maxTokens - overlap;
+            var start = 0;
+
+            while (start < tokens.Count)
+            {
+                var end = start + maxTokens;
+                if (end > tokens.Count) end = tokens.Count;
+                var chunkTokens = tokens.GetRange(start, end - start);
+                chunks.Add(string.Join(" ", chunkTokens));
+                start += step;
+            }
+
+            return chunks;
+        }
 
         /// <summary>
         /// Displays an error notification using the provided MainWindow instance.
@@ -433,7 +476,6 @@ namespace View.Personal.Services
         }
 
         #endregion
-
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
