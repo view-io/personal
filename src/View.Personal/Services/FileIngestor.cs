@@ -3,6 +3,7 @@ namespace View.Personal.Services
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Controls.Shapes;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -386,7 +387,8 @@ namespace View.Personal.Services
                     filePathTextBox.Text = "";
 
                 app.Log($"[INFO] File {filePath} ingested successfully!");
-                mainWindow.ShowNotification("File Ingested", "File was ingested successfully!",
+                var filename = System.IO.Path.GetFileName(filePath);
+                mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
                     NotificationType.Success);
             }
             catch (Exception ex)
