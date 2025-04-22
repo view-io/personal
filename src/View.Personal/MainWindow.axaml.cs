@@ -91,8 +91,6 @@ namespace View.Personal
         private bool _WindowInitialized;
 #pragma warning restore CS0414 // Field is assigned but its value is never used
 
-        private List<ToggleSwitch> _ToggleSwitches;
-
         #endregion
 
         #region Constructors-and-Factories
@@ -118,7 +116,6 @@ namespace View.Personal
                     app.Log("[INFO] MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
-                    InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
@@ -855,6 +852,7 @@ namespace View.Personal
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
             object requestBody, Action<string> onTokenReceived)
         {
+            // ToDo: Do I need this method? If so I should grab these from the settings
             var requestUri = provider switch
             {
                 "OpenAI" => "https://api.openai.com/v1/chat/completions",
@@ -1004,46 +1002,6 @@ namespace View.Personal
                     : null,
                 _ => null
             };
-        }
-
-        private void InitializeToggleSwitches()
-        {
-            _ToggleSwitches = new List<ToggleSwitch>
-            {
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle"),
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle"),
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle"),
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle")
-            };
-
-            foreach (var ts in _ToggleSwitches)
-                if (ts != null)
-                {
-                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged;
-                    ts.PropertyChanged += ToggleSwitch_PropertyChanged;
-                }
-        }
-
-        private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            if (e.Property == ToggleButton.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
-                if (toggleSwitch.IsChecked == true)
-                {
-                    var app = (App)Application.Current;
-                    var provider = toggleSwitch.Name switch
-                    {
-                        "OpenAICredentialsToggle" => "OpenAI",
-                        "AnthropicCredentialsToggle" => "Anthropic",
-                        "OllamaCredentialsToggle" => "Ollama",
-                        "ViewCredentialsToggle" => "View",
-                        _ => "View"
-                    };
-                    app.AppSettings.SelectedProvider = provider;
-
-                    foreach (var ts in _ToggleSwitches)
-                        if (ts != toggleSwitch && ts.IsChecked == true)
-                            ts.IsChecked = false;
-                }
         }
 
         private void InitializeEmbeddingRadioButtons()
