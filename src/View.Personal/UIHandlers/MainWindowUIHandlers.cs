@@ -59,20 +59,20 @@ namespace View.Personal.UIHandlers
             app.AppSettings.OpenAI.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
             app.AppSettings.OpenAI.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
             app.AppSettings.OpenAI.IsEnabled =
-                window.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
 
             // Update Anthropic settings
             app.AppSettings.Anthropic.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
             app.AppSettings.Anthropic.CompletionModel = window.FindControl<TextBox>("AnthropicCompletionModel").Text;
             app.AppSettings.Anthropic.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
             app.AppSettings.Anthropic.IsEnabled =
-                window.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
 
             // Update Ollama settings
             app.AppSettings.Ollama.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
             app.AppSettings.Ollama.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
             app.AppSettings.Ollama.IsEnabled =
-                window.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
 
             // Update View settings
             app.AppSettings.View.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
@@ -81,7 +81,7 @@ namespace View.Personal.UIHandlers
             app.AppSettings.View.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
             app.AppSettings.View.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
             app.AppSettings.View.IsEnabled =
-                window.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
 
             // Update Embeddings settings
             app.AppSettings.Embeddings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
@@ -108,13 +108,13 @@ namespace View.Personal.UIHandlers
                 int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
             // Determine the selected provider based on toggle states
-            if (window.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked == true)
+            if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "OpenAI";
-            else if (window.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "Anthropic";
-            else if (window.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "Ollama";
-            else if (window.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "View";
 
             var chatPanel = window.FindControl<Border>("ChatPanel");

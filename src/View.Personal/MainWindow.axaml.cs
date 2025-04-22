@@ -367,30 +367,30 @@ namespace View.Personal
                 app._AppSettings = settings ?? new AppSettings();
 
                 // Load completion provider toggles
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
 
                 // Sync with SelectedProvider
                 switch (app.AppSettings.SelectedProvider)
                 {
                     case "OpenAI":
-                        this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
                         break;
                     case "Anthropic":
-                        this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = true;
                         break;
                     case "Ollama":
-                        this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = true;
                         break;
                     case "View":
-                        this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = true;
                         break;
                 }
 
                 // OpenAI
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
@@ -401,7 +401,7 @@ namespace View.Personal
                     settings.Embeddings.OpenAIEmbeddingModelMaxTokens.ToString();
 
                 // Anthropic
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
                 this.FindControl<TextBox>("AnthropicApiKey").Text = settings.Anthropic.ApiKey;
                 this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
                 this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
@@ -414,7 +414,7 @@ namespace View.Personal
                     settings.Embeddings.VoyageEmbeddingModelMaxTokens.ToString();
 
                 // Ollama
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = settings.Ollama.IsEnabled;
                 this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
                 this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
                 this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
@@ -424,7 +424,7 @@ namespace View.Personal
                     settings.Embeddings.OllamaEmbeddingModelMaxTokens.ToString();
 
                 // View
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
                 this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
                 this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
                 this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
