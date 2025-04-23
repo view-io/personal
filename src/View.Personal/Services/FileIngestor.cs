@@ -9,6 +9,7 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
+    using DocumentAtom.Word;
     using DocumentAtom.Pdf;
     using DocumentAtom.PowerPoint;
     using DocumentAtom.Text;
@@ -173,10 +174,28 @@ namespace View.Personal.Services
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint");
                         break;
                     }
+                    case DocumentTypeEnum.Docx:
+                    {
+                        var processorSettings = new DocxProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 462
+                            }
+                        };
+                        var docxProcessor = new DocxProcessor(processorSettings);
+                        atoms = docxProcessor.Extract(filePath).ToList();
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document");
+                        break;
+                    }
                     default:
                     {
-                        app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF or Text only).");
-                        mainWindow.ShowNotification("Ingestion Error", "Only PDF or plain-text files are supported.",
+                        app.Log(
+                            $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, or Word only).");
+                        mainWindow.ShowNotification("Ingestion Error",
+                            "Only PDF, plain-text, PowerPoint, or Word files are supported.",
                             NotificationType.Error);
                         return;
                     }

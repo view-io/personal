@@ -84,7 +84,7 @@ namespace View.Personal.Services
             Window window,
             IEnumerable<string>? fileTypes = null)
         {
-            fileTypes ??= new[] { "pdf", "txt", "md", "csv", "rtf", "pptx" };
+            fileTypes ??= new[] { "pdf", "txt", "md", "csv", "rtf", "pptx", "docx" };
             var app = (App)App.Current;
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
