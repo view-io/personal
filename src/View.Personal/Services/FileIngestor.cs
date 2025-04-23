@@ -10,6 +10,7 @@ namespace View.Personal.Services
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Word;
+    using DocumentAtom.Markdown;
     using DocumentAtom.Pdf;
     using DocumentAtom.PowerPoint;
     using DocumentAtom.Text;
@@ -190,12 +191,32 @@ namespace View.Personal.Services
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document");
                         break;
                     }
+                    case DocumentTypeEnum.Markdown:
+                    {
+                        var processorSettings = new MarkdownProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 384 // Adjusted to match the sample program's settings
+                            }
+                        };
+                        using (var markdownProcessor = new MarkdownProcessor(processorSettings))
+                        {
+                            atoms = markdownProcessor.Extract(filePath).ToList();
+                        }
+
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file");
+                        break;
+                    }
+
                     default:
                     {
                         app.Log(
-                            $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, or Word only).");
+                            $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, or Markdown only).");
                         mainWindow.ShowNotification("Ingestion Error",
-                            "Only PDF, plain-text, PowerPoint, or Word files are supported.",
+                            "Only PDF, plain-text, PowerPoint, Word, or Markdown files are supported.",
                             NotificationType.Error);
                         return;
                     }
