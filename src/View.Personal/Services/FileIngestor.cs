@@ -93,6 +93,30 @@ namespace View.Personal.Services
                     return;
                 }
 
+                // Determine maxTokens based on the selected embedding provider
+                int maxTokens;
+                switch (embeddingProvider)
+                {
+                    case "Ollama":
+                        maxTokens = appSettings.Embeddings.OllamaEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] Ollama max tokens: {maxTokens}");
+                        break;
+                    case "View":
+                        maxTokens = appSettings.Embeddings.ViewEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] View max tokens: {maxTokens}");
+                        break;
+                    case "OpenAI":
+                        maxTokens = appSettings.Embeddings.OpenAIEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] OpenAI max tokens: {maxTokens}");
+                        break;
+                    case "VoyageAI":
+                        maxTokens = appSettings.Embeddings.VoyageEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] VoyageAI max tokens: {maxTokens}");
+                        break;
+                    default:
+                        throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
+                }
+
                 string? contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
                 app.Log($"[INFO] Detected Type: {typeResult.Type}");
@@ -142,8 +166,7 @@ namespace View.Personal.Services
                     }
                 }
 
-                // Define the maximum token limit and overlap (hardcoded for now)
-                const int maxTokens = 256;
+                // Define the overlap (hardcoded for now)
                 const int overlap = 50; // Number of tokens to overlap between chunks
 
                 // Process atoms to ensure they don't exceed the token limit with overlap
@@ -154,8 +177,6 @@ namespace View.Personal.Services
                     foreach (var atom in atoms)
                     {
                         var tokens = tokenExtractor.Process(atom.Text).ToList();
-                        app.Log(
-                            $"[INFO] Atom {atom.Text} has {tokens.Count} tokens. Here are the tokens: {string.Join(", ", tokens)}");
                         var tokenCount = tokens.Count;
                         if (tokenCount <= maxTokens)
                         {
