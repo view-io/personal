@@ -3,7 +3,6 @@ namespace View.Personal.Services
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using Avalonia.Controls.Shapes;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -11,6 +10,7 @@ namespace View.Personal.Services
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.Pdf;
+    using DocumentAtom.PowerPoint;
     using DocumentAtom.Text;
     using DocumentAtom.TextTools;
     using DocumentAtom.TypeDetection;
@@ -133,7 +133,7 @@ namespace View.Personal.Services
                             {
                                 Enable = true,
                                 MaximumLength = 512,
-                                ShiftSize = 512
+                                ShiftSize = 462
                             }
                         };
                         var pdfProcessor = new PdfProcessor(processorSettings);
@@ -149,12 +149,28 @@ namespace View.Personal.Services
                             {
                                 Enable = true,
                                 MaximumLength = 512,
-                                ShiftSize = 512
+                                ShiftSize = 462
                             }
                         };
                         var textProcessor = new TextProcessor(textSettings);
                         atoms = textProcessor.Extract(filePath).ToList();
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
+                        break;
+                    }
+                    case DocumentTypeEnum.Pptx:
+                    {
+                        var processorSettings = new PptxProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 462
+                            }
+                        };
+                        var pptxProcessor = new PptxProcessor(processorSettings);
+                        atoms = pptxProcessor.Extract(filePath).ToList();
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint");
                         break;
                     }
                     default:
