@@ -16,6 +16,7 @@ namespace View.Personal.Services
     using DocumentAtom.Text;
     using DocumentAtom.TextTools;
     using DocumentAtom.TypeDetection;
+    using DocumentAtom.Excel;
     using LiteGraph;
     using MsBox.Avalonia.Enums;
     using Sdk;
@@ -210,13 +211,32 @@ namespace View.Personal.Services
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file");
                         break;
                     }
+                    case DocumentTypeEnum.Xlsx:
+                    {
+                        var processorSettings = new XlsxProcessorSettings
+                        {
+                            Chunking = new ChunkingSettings
+                            {
+                                Enable = true,
+                                MaximumLength = 512,
+                                ShiftSize = 384
+                            }
+                        };
+                        using (var xlsxProcessor = new XlsxProcessor(processorSettings))
+                        {
+                            atoms = xlsxProcessor.Extract(filePath).ToList();
+                        }
+
+                        app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file");
+                        break;
+                    }
 
                     default:
                     {
                         app.Log(
-                            $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, or Markdown only).");
+                            $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
                         mainWindow.ShowNotification("Ingestion Error",
-                            "Only PDF, plain-text, PowerPoint, Word, or Markdown files are supported.",
+                            "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
                             NotificationType.Error);
                         return;
                     }
