@@ -17,6 +17,8 @@ namespace View.Personal.UIHandlers
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8601 // Possible null reference assignment.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+
 
         #region Public-Members
 
@@ -51,7 +53,6 @@ namespace View.Personal.UIHandlers
         /// <param name="window">The MainWindow instance containing the settings UI controls.</param>
         public static void SaveSettings2_Click(MainWindow window)
         {
-            // Get the current application instance
             var app = (App)Application.Current;
 
             // Update OpenAI settings
@@ -59,20 +60,20 @@ namespace View.Personal.UIHandlers
             app.AppSettings.OpenAI.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
             app.AppSettings.OpenAI.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
             app.AppSettings.OpenAI.IsEnabled =
-                window.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
 
             // Update Anthropic settings
             app.AppSettings.Anthropic.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
             app.AppSettings.Anthropic.CompletionModel = window.FindControl<TextBox>("AnthropicCompletionModel").Text;
             app.AppSettings.Anthropic.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
             app.AppSettings.Anthropic.IsEnabled =
-                window.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
 
             // Update Ollama settings
             app.AppSettings.Ollama.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
             app.AppSettings.Ollama.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
             app.AppSettings.Ollama.IsEnabled =
-                window.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
 
             // Update View settings
             app.AppSettings.View.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
@@ -81,24 +82,39 @@ namespace View.Personal.UIHandlers
             app.AppSettings.View.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
             app.AppSettings.View.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
             app.AppSettings.View.IsEnabled =
-                window.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked ?? false;
+                window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
 
             // Update Embeddings settings
             app.AppSettings.Embeddings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+            app.AppSettings.Embeddings.OllamaEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.OllamaEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
+            app.AppSettings.Embeddings.ViewEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("ViewEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.ViewEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
+            app.AppSettings.Embeddings.OpenAIEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.OpenAIEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text);
             app.AppSettings.Embeddings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
             app.AppSettings.Embeddings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
             app.AppSettings.Embeddings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
+            app.AppSettings.Embeddings.VoyageEmbeddingModelDimensions =
+                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text);
+            app.AppSettings.Embeddings.VoyageEmbeddingModelMaxTokens =
+                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
-            // Determine the selected provider based on toggle states
-            if (window.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked == true)
+            if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "OpenAI";
-            else if (window.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "Anthropic";
-            else if (window.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "Ollama";
-            else if (window.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked == true)
+            else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "View";
 
             var chatPanel = window.FindControl<Border>("ChatPanel");
@@ -170,7 +186,6 @@ namespace View.Personal.UIHandlers
             }
         }
 
-
         /// <summary>
         /// Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
         /// </summary>
@@ -184,16 +199,13 @@ namespace View.Personal.UIHandlers
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            // Open file dialog and get the selected file path
             var filePath = await fileBrowserService.BrowseForFileToIngest(window);
             if (!string.IsNullOrEmpty(filePath))
             {
-                // Update the TextBox (optional, since ingestion clears it later)
                 var textBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (textBox != null)
                     textBox.Text = filePath;
 
-                // Trigger ingestion immediately
                 await mainWindow.IngestFileAsync(filePath);
             }
         }
@@ -207,5 +219,6 @@ namespace View.Personal.UIHandlers
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8601 // Possible null reference assignment.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

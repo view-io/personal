@@ -20,6 +20,7 @@ namespace View.Personal.Services
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
         // ReSharper disable AccessToStaticMemberViaDerivedType
+        // ReSharper disable ConvertTypeCheckPatternToNullCheck
 
         /// <summary>
         /// Handles the deletion of a file from LiteGraph
@@ -73,6 +74,26 @@ namespace View.Personal.Services
                             app.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
                         FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+
+                        var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
+                        if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
+                        {
+                            var fileCount = items.Cast<object>().Count();
+                            var uploadFilesPanel = mainWindow.FindControl<Border>("UploadFilesPanel");
+                            var fileOperationsPanel = mainWindow.FindControl<Grid>("FileOperationsPanel");
+
+                            if (fileCount == 0)
+                            {
+                                uploadFilesPanel.IsVisible = true;
+                                fileOperationsPanel.IsVisible = false;
+                            }
+                            else
+                            {
+                                uploadFilesPanel.IsVisible = false;
+                                fileOperationsPanel.IsVisible = true;
+                            }
+                        }
+
                         mainWindow.ShowNotification("File Deleted", "File was deleted successfully!",
                             NotificationType.Success);
                     }

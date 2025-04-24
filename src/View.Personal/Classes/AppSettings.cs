@@ -183,9 +183,29 @@ namespace View.Personal.Classes
             public string OllamaEmbeddingModel { get; set; } = "";
 
             /// <summary>
+            /// Max tokens for the Ollama embedding model.
+            /// </summary>
+            public int OllamaEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            /// <summary>
+            /// Dimensions for the Ollama embedding model.
+            /// </summary>
+            public int OllamaEmbeddingModelDimensions { get; set; } = 1536;
+
+            /// <summary>
             /// The model name to use for View embeddings.
             /// </summary>
             public string ViewEmbeddingModel { get; set; } = "";
+
+            /// <summary>
+            /// Max tokens for the View embedding model.
+            /// </summary>
+            public int ViewEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            /// <summary>
+            /// Dimensions for the View embedding model.
+            /// </summary>
+            public int ViewEmbeddingModelDimensions { get; set; } = 1536;
 
             /// <summary>
             /// The currently selected embedding model provider. Default is "Ollama".
@@ -198,9 +218,29 @@ namespace View.Personal.Classes
             public string OpenAIEmbeddingModel { get; set; } = "";
 
             /// <summary>
+            /// Max tokens for the OpenAI embedding model.
+            /// </summary>
+            public int OpenAIEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            /// <summary>
+            /// Dimensions for the OpenAI embedding model.
+            /// </summary>
+            public int OpenAIEmbeddingModelDimensions { get; set; } = 1536;
+
+            /// <summary>
             /// The model name to use for Voyage embeddings.
             /// </summary>
             public string VoyageEmbeddingModel { get; set; } = "";
+
+            /// <summary>
+            /// Max tokens for the Voyage embedding model.
+            /// </summary>
+            public int VoyageEmbeddingModelMaxTokens { get; set; } = 1000;
+
+            /// <summary>
+            /// Dimensions for the Voyage embedding model.
+            /// </summary>
+            public int VoyageEmbeddingModelDimensions { get; set; } = 1536;
 
             /// <summary>
             /// The API key used for authenticating with Voyage services.

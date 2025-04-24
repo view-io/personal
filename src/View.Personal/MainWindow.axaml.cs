@@ -11,7 +11,6 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using Avalonia.Controls.Primitives;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
@@ -91,8 +90,6 @@ namespace View.Personal
         private bool _WindowInitialized;
 #pragma warning restore CS0414 // Field is assigned but its value is never used
 
-        private List<ToggleSwitch> _ToggleSwitches;
-
         #endregion
 
         #region Constructors-and-Factories
@@ -118,7 +115,6 @@ namespace View.Personal
                     app.Log("[INFO] MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
-                    InitializeToggleSwitches();
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
@@ -367,58 +363,74 @@ namespace View.Personal
                 app._AppSettings = settings ?? new AppSettings();
 
                 // Load completion provider toggles
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
 
                 // Sync with SelectedProvider
                 switch (app.AppSettings.SelectedProvider)
                 {
                     case "OpenAI":
-                        this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
                         break;
                     case "Anthropic":
-                        this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = true;
                         break;
                     case "Ollama":
-                        this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = true;
                         break;
                     case "View":
-                        this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = true;
+                        this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = true;
                         break;
                 }
 
                 // OpenAI
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle").IsChecked = settings.OpenAI.IsEnabled;
+                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
                 this.FindControl<TextBox>("OpenAIEmbeddingModel").Text = settings.Embeddings.OpenAIEmbeddingModel;
+                this.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text =
+                    settings.Embeddings.OpenAIEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text =
+                    settings.Embeddings.OpenAIEmbeddingModelMaxTokens.ToString();
 
                 // Anthropic
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle").IsChecked = settings.Anthropic.IsEnabled;
+                this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
                 this.FindControl<TextBox>("AnthropicApiKey").Text = settings.Anthropic.ApiKey;
                 this.FindControl<TextBox>("AnthropicCompletionModel").Text = settings.Anthropic.CompletionModel;
                 this.FindControl<TextBox>("AnthropicEndpoint").Text = settings.Anthropic.Endpoint;
                 this.FindControl<TextBox>("VoyageApiKey").Text = settings.Embeddings.VoyageApiKey;
                 this.FindControl<TextBox>("VoyageEmbeddingModel").Text = settings.Embeddings.VoyageEmbeddingModel;
                 this.FindControl<TextBox>("VoyageEndpoint").Text = settings.Embeddings.VoyageEndpoint;
+                this.FindControl<TextBox>("VoyageEmbeddingDimensions").Text =
+                    settings.Embeddings.VoyageEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text =
+                    settings.Embeddings.VoyageEmbeddingModelMaxTokens.ToString();
 
                 // Ollama
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle").IsChecked = settings.Ollama.IsEnabled;
+                this.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = settings.Ollama.IsEnabled;
                 this.FindControl<TextBox>("OllamaCompletionModel").Text = settings.Ollama.CompletionModel;
                 this.FindControl<TextBox>("OllamaEndpoint").Text = settings.Ollama.Endpoint;
                 this.FindControl<TextBox>("OllamaModel").Text = settings.Embeddings.OllamaEmbeddingModel;
+                this.FindControl<TextBox>("OllamaEmbeddingDimensions").Text =
+                    settings.Embeddings.OllamaEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text =
+                    settings.Embeddings.OllamaEmbeddingModelMaxTokens.ToString();
 
                 // View
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle").IsChecked = settings.View.IsEnabled;
+                this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
                 this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
                 this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
                 this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
                 this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid ?? Guid.Empty.ToString();
                 this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
                 this.FindControl<TextBox>("ViewEmbeddingModel").Text = settings.Embeddings.ViewEmbeddingModel;
+                this.FindControl<TextBox>("ViewEmbeddingDimensions").Text =
+                    settings.Embeddings.ViewEmbeddingModelDimensions.ToString();
+                this.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text =
+                    settings.Embeddings.ViewEmbeddingModelMaxTokens.ToString();
 
                 // Embeddings
                 this.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked =
@@ -839,6 +851,7 @@ namespace View.Personal
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
             object requestBody, Action<string> onTokenReceived)
         {
+            // ToDo: Do I need this method? If so I should grab these from the settings
             var requestUri = provider switch
             {
                 "OpenAI" => "https://api.openai.com/v1/chat/completions",
@@ -990,46 +1003,6 @@ namespace View.Personal
             };
         }
 
-        private void InitializeToggleSwitches()
-        {
-            _ToggleSwitches = new List<ToggleSwitch>
-            {
-                this.FindControl<ToggleSwitch>("OpenAICredentialsToggle"),
-                this.FindControl<ToggleSwitch>("AnthropicCredentialsToggle"),
-                this.FindControl<ToggleSwitch>("OllamaCredentialsToggle"),
-                this.FindControl<ToggleSwitch>("ViewCredentialsToggle")
-            };
-
-            foreach (var ts in _ToggleSwitches)
-                if (ts != null)
-                {
-                    ts.PropertyChanged -= ToggleSwitch_PropertyChanged;
-                    ts.PropertyChanged += ToggleSwitch_PropertyChanged;
-                }
-        }
-
-        private void ToggleSwitch_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            if (e.Property == ToggleButton.IsCheckedProperty && sender is ToggleSwitch toggleSwitch)
-                if (toggleSwitch.IsChecked == true)
-                {
-                    var app = (App)Application.Current;
-                    var provider = toggleSwitch.Name switch
-                    {
-                        "OpenAICredentialsToggle" => "OpenAI",
-                        "AnthropicCredentialsToggle" => "Anthropic",
-                        "OllamaCredentialsToggle" => "Ollama",
-                        "ViewCredentialsToggle" => "View",
-                        _ => "View"
-                    };
-                    app.AppSettings.SelectedProvider = provider;
-
-                    foreach (var ts in _ToggleSwitches)
-                        if (ts != toggleSwitch && ts.IsChecked == true)
-                            ts.IsChecked = false;
-                }
-        }
-
         private void InitializeEmbeddingRadioButtons()
         {
             var app = (App)Application.Current;
@@ -1082,7 +1055,7 @@ namespace View.Personal
             }
         }
 
-        #region Data Monitor Proxy
+        #region Data Monitor Proxy Methods
 
         /// <summary>
         /// Handles the window closing event, ensuring Data Monitor resources are cleaned up.
