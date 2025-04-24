@@ -63,6 +63,7 @@ namespace View.Personal.Services
         public static async Task IngestFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
+            // ToDo: Go back over this and make sure this is working as expected
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
@@ -200,7 +201,7 @@ namespace View.Personal.Services
                             {
                                 Enable = true,
                                 MaximumLength = 512,
-                                ShiftSize = 384 // Adjusted to match the sample program's settings
+                                ShiftSize = 384
                             }
                         };
                         using (var markdownProcessor = new MarkdownProcessor(processorSettings))
@@ -242,8 +243,7 @@ namespace View.Personal.Services
                     }
                 }
 
-                // Define the overlap (hardcoded for now)
-                const int overlap = 50; // Number of tokens to overlap between chunks
+                const int overlap = 50;
 
                 // Process atoms to ensure they don't exceed the token limit with overlap
                 var finalAtoms = new List<Atom>();

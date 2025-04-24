@@ -11,7 +11,6 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using Avalonia.Controls.Primitives;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
@@ -1056,7 +1055,7 @@ namespace View.Personal
             }
         }
 
-        #region Data Monitor Proxy
+        #region Data Monitor Proxy Methods
 
         /// <summary>
         /// Handles the window closing event, ensuring Data Monitor resources are cleaned up.

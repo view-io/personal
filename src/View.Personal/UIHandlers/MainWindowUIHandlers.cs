@@ -17,6 +17,8 @@ namespace View.Personal.UIHandlers
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8601 // Possible null reference assignment.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+
 
         #region Public-Members
 
@@ -51,7 +53,6 @@ namespace View.Personal.UIHandlers
         /// <param name="window">The MainWindow instance containing the settings UI controls.</param>
         public static void SaveSettings2_Click(MainWindow window)
         {
-            // Get the current application instance
             var app = (App)Application.Current;
 
             // Update OpenAI settings
@@ -107,7 +108,6 @@ namespace View.Personal.UIHandlers
             app.AppSettings.Embeddings.VoyageEmbeddingModelMaxTokens =
                 int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
-            // Determine the selected provider based on toggle states
             if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
                 app.AppSettings.SelectedProvider = "OpenAI";
             else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
@@ -186,7 +186,6 @@ namespace View.Personal.UIHandlers
             }
         }
 
-
         /// <summary>
         /// Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
         /// </summary>
@@ -200,16 +199,13 @@ namespace View.Personal.UIHandlers
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            // Open file dialog and get the selected file path
             var filePath = await fileBrowserService.BrowseForFileToIngest(window);
             if (!string.IsNullOrEmpty(filePath))
             {
-                // Update the TextBox (optional, since ingestion clears it later)
                 var textBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (textBox != null)
                     textBox.Text = filePath;
 
-                // Trigger ingestion immediately
                 await mainWindow.IngestFileAsync(filePath);
             }
         }
@@ -223,5 +219,6 @@ namespace View.Personal.UIHandlers
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8601 // Possible null reference assignment.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }
