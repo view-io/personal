@@ -179,11 +179,6 @@
             The endpoint URL for Anthropic API requests.
             </summary>
         </member>
-        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.VoyageApiKey">
-            <summary>
-            The API key used for authenticating with Anthropic Voyage services.
-            </summary>
-        </member>
         <member name="T:View.Personal.Classes.AppSettings.OllamaSettings">
             <summary>
             Settings specific to the Ollama service.
@@ -212,6 +207,11 @@
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.Endpoint">
             <summary>
             The endpoint URL for View API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.OllamaHostName">
+            <summary>
+            Gets or sets the host name for Ollama services.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.TenantGuid">
@@ -394,6 +394,11 @@
             Gets or sets the model name for Anthropic completion requests.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicEndpoint">
+            <summary>
+            Gets or sets the endpoint URL for Anthropic API requests.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaCompletionModel">
             <summary>
             Gets or sets the model name for Ollama completion requests.
@@ -460,32 +465,6 @@
             view completion provider.
             </summary>
         </member>
-        <member name="T:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter">
-            <summary>
-            Converts watched item status to a background color for Data Monitor UI elements.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.Convert(System.Collections.Generic.IList{System.Object},System.Type,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            Converts watched item status to a background color based on provided values.
-            </summary>
-            <param name="values">A list containing the watched item status and directory selection status.</param>
-            <param name="targetType">The type of the binding target property.</param>
-            <param name="parameter">The converter parameter.</param>
-            <param name="culture">The culture to use in the converter.</param>
-            <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
-        </member>
-        <member name="M:View.Personal.Classes.ContainsWatchedItemsToBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            Converts a background color back to watched item status values (not supported).
-            </summary>
-            <param name="value">The value produced by the binding target.</param>
-            <param name="targetTypes">The types of the binding source properties.</param>
-            <param name="parameter">The converter parameter.</param>
-            <param name="culture">The culture to use in the converter.</param>
-            <returns>Not supported, always throws NotSupportedException.</returns>
-            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
-        </member>
         <member name="T:View.Personal.Classes.ContainsWatchedItemsToColorConverter">
             <summary>
             Converts watched item status to a foreground color for Data Monitor UI elements.
@@ -500,17 +479,6 @@
             <param name="parameter">The converter parameter.</param>
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the foreground color, defaulting to gray (#6A6B6F).</returns>
-        </member>
-        <member name="M:View.Personal.Classes.ContainsWatchedItemsToColorConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            Converts a foreground color back to watched item status values (not supported).
-            </summary>
-            <param name="value">The value produced by the binding target.</param>
-            <param name="targetTypes">The types of the binding source properties.</param>
-            <param name="parameter">The converter parameter.</param>
-            <param name="culture">The culture to use in the converter.</param>
-            <returns>Not supported, always throws NotSupportedException.</returns>
-            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
         </member>
         <member name="T:View.Personal.Classes.FileSystemEntry">
             <summary>
@@ -618,41 +586,6 @@
             Gets or sets the node GUID.
             </summary>
         </member>
-        <member name="T:View.Personal.Classes.Settings">
-            <summary>
-            Settings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.Settings.DatabaseFilename">
-            <summary>
-            Database filename.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.Settings.Logging">
-            <summary>
-            Logging settings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.Settings.ProviderSettings">
-            <summary>
-            List of provider settings.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.Settings.SelectedProvider">
-            <summary>
-            Currently selected provider (e.g., "OpenAI", "Voyage", "Anthropic", "View").
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.Settings.CompletionSettings">
-            <summary>
-            Completion settings (not used in this context, retained for compatibility).
-            </summary>
-        </member>
-        <member name="M:View.Personal.Classes.Settings.#ctor">
-            <summary>
-            Settings.
-            </summary>
-        </member>
         <member name="T:View.Personal.Classes.WatchedDirectoryBackgroundConverter">
             <summary>
             Converts directory watch status to a background color for Data Monitor UI elements.
@@ -667,17 +600,6 @@
             <param name="parameter">The converter parameter.</param>
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
-        </member>
-        <member name="M:View.Personal.Classes.WatchedDirectoryBackgroundConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            Converts a background color back to directory watch status values (not supported).
-            </summary>
-            <param name="value">The value produced by the binding target.</param>
-            <param name="targetTypes">The types of the binding source properties.</param>
-            <param name="parameter">The converter parameter.</param>
-            <param name="culture">The culture to use in the converter.</param>
-            <returns>Not supported, always throws NotSupportedException.</returns>
-            <exception cref="T:System.NotSupportedException">Thrown as conversion back is not supported.</exception>
         </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>

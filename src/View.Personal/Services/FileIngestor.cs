@@ -97,7 +97,6 @@ namespace View.Personal.Services
                     return;
                 }
 
-                // Determine maxTokens based on the selected embedding provider
                 int maxTokens;
                 switch (embeddingProvider)
                 {
@@ -245,7 +244,6 @@ namespace View.Personal.Services
 
                 const int overlap = 50;
 
-                // Process atoms to ensure they don't exceed the token limit with overlap
                 var finalAtoms = new List<Atom>();
                 using (var tokenExtractor = new TokenExtractor())
                 {
@@ -267,8 +265,6 @@ namespace View.Personal.Services
                                     var newAtom = new Atom
                                     {
                                         Text = chunk
-                                        // Copy metadata (adjust based on actual Atom properties)
-                                        // Example: PageNumber = atom.PageNumber,
                                     };
                                     finalAtoms.Add(newAtom);
                                 }
@@ -436,6 +432,7 @@ namespace View.Personal.Services
                                 appSettings.View.AccessKey);
                             var viewEmbeddingsRequest = new EmbeddingsRequest
                             {
+                                // ToDo: eventually want to remove hardcoded values
                                 EmbeddingsRule = new EmbeddingsRule
                                 {
                                     EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),

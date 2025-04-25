@@ -9,8 +9,6 @@ namespace View.Personal.Services
     /// </summary>
     public class LoggingService
     {
-        // ReSharper disable NotAccessedField.Local
-
         private readonly TextBox _ConsoleOutput;
         private readonly Window _Window;
 

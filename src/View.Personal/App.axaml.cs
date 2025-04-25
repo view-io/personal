@@ -33,9 +33,6 @@ namespace View.Personal
     public class App : Application
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
-        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-
 
         #region Public-Members
 
@@ -307,26 +304,6 @@ namespace View.Personal
                 _ => new CompletionProviderSettings(providerType)
             };
         }
-
-        // /// <summary>
-        // /// Updates the application settings to reflect the newly selected AI provider.
-        // /// Sets the IsEnabled property to true for the specified provider and false for all others,
-        // /// then persists the updated settings.
-        // /// </summary>
-        // /// <param name="provider">The name of the provider to be set as active (OpenAI, Anthropic, Ollama, or View).</param>
-        // /// <remarks>
-        // /// This method ensures that only one provider is enabled at a time.
-        // /// After updating the enabled status for all providers, it calls SaveSettings to persist the changes.
-        // /// </remarks>
-        // public void SaveSelectedProvider(string provider)
-        // {
-        //     // Update IsEnabled based on selected provider
-        //     _AppSettings.OpenAI.IsEnabled = provider == "OpenAI";
-        //     _AppSettings.Anthropic.IsEnabled = provider == "Anthropic";
-        //     _AppSettings.Ollama.IsEnabled = provider == "Ollama";
-        //     _AppSettings.View.IsEnabled = provider == "View";
-        //     SaveSettings();
-        // }
 
         /// <summary>
         /// Gets the current application settings.

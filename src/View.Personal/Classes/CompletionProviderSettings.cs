@@ -5,6 +5,8 @@
     /// </summary>
     public class CompletionProviderSettings
     {
+        // ReSharper disable UnusedAutoPropertyAccessor.Global
+
         /// <summary>
         /// Gets or sets the type of completion provider to use.
         /// </summary>

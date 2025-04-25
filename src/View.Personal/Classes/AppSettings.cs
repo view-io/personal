@@ -93,11 +93,6 @@ namespace View.Personal.Classes
             /// The endpoint URL for Anthropic API requests.
             /// </summary>
             public string Endpoint { get; set; } = "";
-
-            /// <summary>
-            /// The API key used for authenticating with Anthropic Voyage services.
-            /// </summary>
-            public string VoyageApiKey { get; set; } = "";
         }
 
         /// <summary>
@@ -131,6 +126,9 @@ namespace View.Personal.Classes
             /// </summary>
             public string Endpoint { get; set; } = "";
 
+            /// <summary>
+            /// Gets or sets the host name for Ollama services.
+            /// </summary>
             public string OllamaHostName { get; set; } = "";
 
             /// <summary>

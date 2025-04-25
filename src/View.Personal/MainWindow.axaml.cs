@@ -42,15 +42,6 @@ namespace View.Personal
 #pragma warning disable CS8618, CS9264
 #pragma warning disable CS8604 // Possible null reference argument.
 
-        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        // ReSharper disable PossibleMultipleEnumeration
-        // ReSharper disable UnusedParameter.Local
-        // ReSharper disable RedundantCast
-        // ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        // ReSharper disable RedundantSwitchExpressionArms
-
-
         #region Public-Members
 
         /// <summary>
@@ -492,7 +483,6 @@ namespace View.Personal
                     );
                     ShowPanel("Chat");
 
-                    // Deselect NavList
                     var navList = this.FindControl<ListBox>("NavList");
                     if (navList != null) navList.SelectedIndex = -1;
                 }
@@ -622,12 +612,12 @@ namespace View.Personal
             }
         }
 
-
         private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
             AppSettings appSettings, string userInput)
         {
             switch (embeddingsProvider)
             {
+                // ToDo: Make hardcoded values dynamic
                 case "OpenAI":
                     return (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", appSettings.OpenAI.ApiKey),
                         new EmbeddingsRequest
@@ -636,7 +626,7 @@ namespace View.Personal
                             Contents = new List<string> { userInput }
                         });
                 case "Ollama":
-                    return (new ViewOllamaSdk(_TenantGuid, "http://localhost:11434", ""),
+                    return (new ViewOllamaSdk(_TenantGuid, appSettings.Ollama.Endpoint, ""),
                         new EmbeddingsRequest
                         {
                             Model = appSettings.Embeddings.OllamaEmbeddingModel,
@@ -1055,8 +1045,6 @@ namespace View.Personal
             }
         }
 
-        #region Data Monitor Proxy Methods
-
         /// <summary>
         /// Handles the window closing event, ensuring Data Monitor resources are cleaned up.
         /// </summary>
@@ -1096,8 +1084,6 @@ namespace View.Personal
         {
             DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
         }
-
-        #endregion
 
         #endregion
 

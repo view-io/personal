@@ -12,8 +12,6 @@ namespace View.Personal.Classes
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8612 // Nullability of reference types in type doesn't match implicitly implemented member.
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        // ReSharper disable UnusedAutoPropertyAccessor.Global
-        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
         #region Public-Members
 

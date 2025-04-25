@@ -24,8 +24,6 @@ namespace View.Personal.UIHandlers
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        // ReSharper disable AccessToStaticMemberViaDerivedType
-
 
         #region Public-Members
 
