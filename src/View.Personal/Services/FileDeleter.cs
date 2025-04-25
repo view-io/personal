@@ -48,32 +48,42 @@ namespace View.Personal.Services
                     if (result != ButtonResult.Yes)
                         return;
 
-                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
                     var app = (App)App.Current;
-                    app?.Log($"Deleted node {file.NodeGuid} for file '{file.Name}'");
+
+                    // Retrieve child nodes (chunk nodes) of the document node
+                    var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
+                    var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
+                    app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+
+                    // Delete chunk nodes in bulk
+                    if (chunkNodeGuids.Any())
+                    {
+                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
+                        app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
+                    }
+
+                    // Delete document node (automatically deletes edges)
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
+                    app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
 
                     if (window is MainWindow mainWindow)
                     {
-                        // Get the node to retrieve its FilePath
-                        var node = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
-                            .FirstOrDefault(n => n.GUID == file.NodeGuid);
-                        var filePath =
-                            node?.Tags?.Get("FilePath") ?? file.FilePath; // Fallback to FileViewModel if null
+                        // Check if the file is watched
+                        var filePath = file.FilePath;
+                        app?.Log($"[DEBUG] FilePath: '{filePath}'");
+                        app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
 
-                        app.Log($"[DEBUG] FilePath from node: '{filePath}'");
-                        app.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
-
-                        // Check if the file is explicitly watched or within a watched directory
                         if (!string.IsNullOrEmpty(filePath) && mainWindow._WatchedPaths.Any(watchedPath =>
                                 watchedPath == filePath ||
                                 (Directory.Exists(watchedPath) &&
                                  filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))
-                            app.Log(
+                            app?.Log(
                                 $"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
                         else
-                            app.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+                            app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
-                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                        // Refresh file list
+                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
 
                         var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
                         if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
@@ -101,7 +111,7 @@ namespace View.Personal.Services
                 catch (Exception ex)
                 {
                     var app = (App)App.Current;
-                    app?.Log($"Error deleting file '{file.Name}': {ex.Message}");
+                    app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);
