@@ -48,14 +48,14 @@ namespace View.Personal.Services
                     if (result != ButtonResult.Yes)
                         return;
 
-                    liteGraph.DeleteNode(tenantGuid, graphGuid, file.NodeGuid);
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
                     var app = (App)App.Current;
                     app?.Log($"Deleted node {file.NodeGuid} for file '{file.Name}'");
 
                     if (window is MainWindow mainWindow)
                     {
                         // Get the node to retrieve its FilePath
-                        var node = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                        var node = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
                             .FirstOrDefault(n => n.GUID == file.NodeGuid);
                         var filePath =
                             node?.Tags?.Get("FilePath") ?? file.FilePath; // Fallback to FileViewModel if null

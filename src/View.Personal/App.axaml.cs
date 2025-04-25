@@ -6,6 +6,7 @@ namespace View.Personal
     using Classes;
     using LiteGraph;
     using LiteGraph.GraphRepositories;
+    using LiteGraph.GraphRepositories.Sqlite;
     using MsBox.Avalonia;
     using MsBox.Avalonia.Enums;
     using SyslogLogging;
@@ -15,6 +16,7 @@ namespace View.Personal
     using System.IO;
     using System.Text.Json;
     using Services;
+    using System.Collections.Specialized;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -137,9 +139,9 @@ namespace View.Personal
                         _LiteGraph.InitializeRepository();
                         _Logging.Debug(_Header + "initialized litegraph");
 
-                        if (!_LiteGraph.ExistsTenant(_TenantGuid))
+                        if (!_LiteGraph.Tenant.ExistsByGuid(_TenantGuid))
                         {
-                            _LiteGraph.CreateTenant(new TenantMetadata
+                            _LiteGraph.Tenant.Create(new TenantMetadata
                             {
                                 GUID = _TenantGuid,
                                 Name = "View Personal"
@@ -147,15 +149,26 @@ namespace View.Personal
                             _Logging.Debug(_Header + "created tenant " + _TenantGuid);
                         }
 
-                        if (!_LiteGraph.ExistsGraph(_TenantGuid, _GraphGuid))
+                        if (!_LiteGraph.Graph.ExistsByGuid(_TenantGuid, _GraphGuid))
                         {
-                            _LiteGraph.CreateGraph(_TenantGuid, _GraphGuid, "View Personal");
+                            var defaultGraph = new Graph
+                            {
+                                GUID = _GraphGuid,
+                                TenantGUID = _TenantGuid,
+                                Name = "View Personal",
+                                Tags = new NameValueCollection
+                                {
+                                    { "CreatedBy", "View Personal" },
+                                    { "CreatedOn", DateTime.UtcNow.ToString(Constants.TimestampFormat) }
+                                }
+                            };
+                            _LiteGraph.Graph.Create(defaultGraph);
                             _Logging.Debug(_Header + "created graph " + _GraphGuid);
                         }
 
-                        if (!_LiteGraph.ExistsUser(_TenantGuid, _UserGuid))
+                        if (!_LiteGraph.User.ExistsByGuid(_TenantGuid, _UserGuid))
                         {
-                            var user = _LiteGraph.CreateUser(new UserMaster
+                            var user = _LiteGraph.User.Create(new UserMaster
                             {
                                 GUID = _UserGuid,
                                 TenantGUID = _TenantGuid,
@@ -169,9 +182,9 @@ namespace View.Personal
                                            " and password " + user.Password);
                         }
 
-                        if (!_LiteGraph.ExistsCredential(_TenantGuid, _CredentialGuid))
+                        if (!_LiteGraph.Credential.ExistsByGuid(_TenantGuid, _CredentialGuid))
                         {
-                            var cred = _LiteGraph.CreateCredential(new Credential
+                            var cred = _LiteGraph.Credential.Create(new Credential
                             {
                                 GUID = _CredentialGuid,
                                 TenantGUID = _TenantGuid,

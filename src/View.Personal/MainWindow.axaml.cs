@@ -720,7 +720,7 @@ namespace View.Personal
                 Embeddings = embeddings
             };
 
-            var searchResults = _LiteGraph.SearchVectors(searchRequest);
+            var searchResults = _LiteGraph.Vector.Search(searchRequest);
             app.Log($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }

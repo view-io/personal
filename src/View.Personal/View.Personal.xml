@@ -264,9 +264,29 @@
             The model name to use for Ollama embeddings.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OllamaEmbeddingModelMaxTokens">
+            <summary>
+            Max tokens for the Ollama embedding model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OllamaEmbeddingModelDimensions">
+            <summary>
+            Dimensions for the Ollama embedding model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.ViewEmbeddingModel">
             <summary>
             The model name to use for View embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.ViewEmbeddingModelMaxTokens">
+            <summary>
+            Max tokens for the View embedding model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.ViewEmbeddingModelDimensions">
+            <summary>
+            Dimensions for the View embedding model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.SelectedEmbeddingModel">
@@ -279,9 +299,29 @@
             The model name to use for OpenAI embeddings.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OpenAIEmbeddingModelMaxTokens">
+            <summary>
+            Max tokens for the OpenAI embedding model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.OpenAIEmbeddingModelDimensions">
+            <summary>
+            Dimensions for the OpenAI embedding model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageEmbeddingModel">
             <summary>
             The model name to use for Voyage embeddings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageEmbeddingModelMaxTokens">
+            <summary>
+            Max tokens for the Voyage embedding model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageEmbeddingModelDimensions">
+            <summary>
+            Dimensions for the Voyage embedding model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.EmbeddingsSettings.VoyageApiKey">

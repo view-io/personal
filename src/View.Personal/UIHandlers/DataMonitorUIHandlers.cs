@@ -230,7 +230,7 @@ namespace View.Personal.UIHandlers
             var tenantGuid = ((App)Application.Current)._TenantGuid;
             var graphGuid = ((App)Application.Current)._GraphGuid;
 
-            var allNodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
+            var allNodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
                 .Where(n => n.Tags != null && !string.IsNullOrEmpty(n.Tags.Get("FilePath")))
                 .ToDictionary(n => n.Tags.Get("FilePath"), n => n.GUID);
 
@@ -240,7 +240,7 @@ namespace View.Personal.UIHandlers
                 var isInWatchedPath = mainWindow._WatchedPaths.Any(wp => filePath.StartsWith(wp) || filePath == wp);
                 if (isInWatchedPath && !File.Exists(filePath))
                 {
-                    liteGraph.DeleteNode(tenantGuid, graphGuid, node.Value);
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.Value);
                     mainWindow.LogToConsole(
                         $"[INFO] Removed stale node {node.Value} for file {Path.GetFileName(filePath)} ({filePath})");
                 }
@@ -260,7 +260,7 @@ namespace View.Personal.UIHandlers
                             {
                                 if (existingNode != null)
                                 {
-                                    liteGraph.DeleteNode(tenantGuid, graphGuid, existingNode.GUID);
+                                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                                     mainWindow.LogToConsole(
                                         $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
@@ -293,7 +293,7 @@ namespace View.Personal.UIHandlers
                     {
                         if (existingNode != null)
                         {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, existingNode.GUID);
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(watchedPath)}");
                         }
@@ -431,7 +431,7 @@ namespace View.Personal.UIHandlers
                             {
                                 if (existingNode != null)
                                 {
-                                    liteGraph.DeleteNode(tenantGuid, graphGuid, existingNode.GUID);
+                                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                                     mainWindow.LogToConsole(
                                         $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
@@ -465,7 +465,7 @@ namespace View.Personal.UIHandlers
                     {
                         if (existingNode != null)
                         {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, existingNode.GUID);
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
                         }
@@ -555,14 +555,14 @@ namespace View.Personal.UIHandlers
 
                     if (entry.IsDirectory)
                     {
-                        var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                        var nodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
                             .Where(n => n.Tags != null && n.Tags.Get("FilePath")
                                 ?.StartsWith(entry.FullPath + Path.DirectorySeparatorChar) == true)
                             .ToList();
 
                         foreach (var node in nodes)
                         {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
                         }
@@ -572,7 +572,7 @@ namespace View.Personal.UIHandlers
                         var node = FindFileInLiteGraph(mainWindow, entry.FullPath, liteGraph, tenantGuid, graphGuid);
                         if (node != null)
                         {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
                         }
@@ -676,7 +676,7 @@ namespace View.Personal.UIHandlers
         {
             try
             {
-                var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid);
+                var nodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid);
                 if (nodes == null || !nodes.Any())
                 {
                     mainWindow.LogToConsole("[WARN] No nodes found in LiteGraph for this tenant/graph.");
@@ -783,7 +783,7 @@ namespace View.Personal.UIHandlers
                         var node = FindFileInLiteGraph(mainWindow, e.FullPath, liteGraph, tenantGuid, graphGuid);
                         if (node != null)
                         {
-                            liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
 
@@ -805,7 +805,7 @@ namespace View.Personal.UIHandlers
                     }
                     else
                     {
-                        var nodes = liteGraph.ReadNodes(tenantGuid, graphGuid)
+                        var nodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
                             .Where(n => n.Tags != null &&
                                         n.Tags.Get("FilePath")?.StartsWith(e.FullPath + Path.DirectorySeparatorChar) ==
                                         true)
@@ -815,7 +815,7 @@ namespace View.Personal.UIHandlers
                         {
                             foreach (var node in nodes)
                             {
-                                liteGraph.DeleteNode(tenantGuid, graphGuid, node.GUID);
+                                liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                                 mainWindow.LogToConsole(
                                     $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
                             }
@@ -872,7 +872,7 @@ namespace View.Personal.UIHandlers
                         ((App)Application.Current)._GraphGuid);
                 if (oldNode != null)
                 {
-                    ((App)Application.Current)._LiteGraph.DeleteNode(
+                    ((App)Application.Current)._LiteGraph.Node.DeleteByGuid(
                         ((App)Application.Current)._TenantGuid,
                         ((App)Application.Current)._GraphGuid,
                         oldNode.GUID);
@@ -941,7 +941,7 @@ namespace View.Personal.UIHandlers
                                 ((App)Application.Current)._GraphGuid);
                             if (node != null)
                             {
-                                ((App)Application.Current)._LiteGraph.DeleteNode(
+                                ((App)Application.Current)._LiteGraph.Node.DeleteByGuid(
                                     ((App)Application.Current)._TenantGuid,
                                     ((App)Application.Current)._GraphGuid,
                                     node.GUID);
@@ -981,7 +981,7 @@ namespace View.Personal.UIHandlers
                     if (node != null)
                     {
                         mainWindow.LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
-                        ((App)Application.Current)._LiteGraph.DeleteNode(
+                        ((App)Application.Current)._LiteGraph.Node.DeleteByGuid(
                             ((App)Application.Current)._TenantGuid,
                             ((App)Application.Current)._GraphGuid,
                             node.GUID);
