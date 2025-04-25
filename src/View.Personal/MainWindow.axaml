@@ -571,7 +571,7 @@
                                                     <TextBlock Text="Ollama Host Name" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OllamaHostName" Text="https://your-view-endpoint"
+                                                    <TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
                                                              Margin="8,0,8,0" />
                                                     <TextBlock Text="Access Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
