@@ -852,13 +852,12 @@ namespace View.Personal
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
             object requestBody, Action<string> onTokenReceived)
         {
-            // ToDo: Do I need this method? If so I should grab these from the settings
             var requestUri = provider switch
             {
-                "OpenAI" => "https://api.openai.com/v1/chat/completions",
-                "Ollama" => "http://localhost:11434/api/chat",
+                "OpenAI" => settings.ViewEndpoint,
+                "Ollama" => $"{settings.OllamaEndpoint}/api/chat",
                 "View" => $"{settings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions",
-                "Anthropic" => "https://api.anthropic.com/v1/messages",
+                "Anthropic" => $"{settings.AnthropicEndpoint}",
                 _ => throw new ArgumentException("Unsupported provider")
             };
 

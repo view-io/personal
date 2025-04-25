@@ -399,6 +399,11 @@
             Gets or sets the model name for Ollama completion requests.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaEndpoint">
+            <summary>
+            Gets or sets the Ollama Endpoint URL for completion requests.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewApiKey">
             <summary>
             Gets or sets the API key for View completion services.

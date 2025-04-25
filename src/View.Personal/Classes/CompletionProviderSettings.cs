@@ -31,9 +31,19 @@
         public string AnthropicCompletionModel { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the endpoint URL for Anthropic API requests.
+        /// </summary>
+        public string AnthropicEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the model name for Ollama completion requests.
         /// </summary>
         public string OllamaCompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Ollama Endpoint URL for completion requests.
+        /// </summary>
+        public string OllamaEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the API key for View completion services.

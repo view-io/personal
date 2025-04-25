@@ -288,11 +288,13 @@ namespace View.Personal
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
                     AnthropicApiKey = _AppSettings.Anthropic.ApiKey,
-                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel
+                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel,
+                    AnthropicEndpoint = _AppSettings.Anthropic.Endpoint
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
-                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel
+                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel,
+                    OllamaEndpoint = _AppSettings.Ollama.Endpoint
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
