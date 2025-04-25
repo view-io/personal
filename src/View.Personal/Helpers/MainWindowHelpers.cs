@@ -48,7 +48,8 @@ namespace View.Personal.Helpers
                 return new List<FileViewModel>();
             }
 
-            var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" })?.ToList();
+            var documentNodes = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                ?.ToList();
             var uniqueFiles = new List<FileViewModel>();
 
             if (documentNodes != null && documentNodes.Any())

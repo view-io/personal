@@ -23,7 +23,7 @@ namespace View.Personal.Helpers
         /// </summary>
         public static void RefreshFileList(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
-            var documentNodes = liteGraph.ReadNodes(tenantGuid, graphGuid, new List<string> { "document" });
+            var documentNodes = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" });
             var ingestedFiles = new List<FileViewModel>();
 
             if (documentNodes != null)

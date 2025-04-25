@@ -278,16 +278,16 @@ namespace View.Personal.Services
 
                 var fileNode =
                     MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
-                liteGraph.CreateNode(fileNode);
+                liteGraph.Node.Create(fileNode);
                 app.Log($"[INFO] Created file document node {fileNode.GUID}");
 
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
-                liteGraph.CreateNodes(tenantGuid, graphGuid, chunkNodes);
+                liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                 app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes.");
 
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
-                liteGraph.CreateEdges(tenantGuid, graphGuid, edges);
+                liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                 app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
 
                 var validChunkNodes = chunkNodes
@@ -334,7 +334,7 @@ namespace View.Personal.Services
                                         Content = (chunkNode.Data as Atom)?.Text
                                     }
                                 };
-                                liteGraph.UpdateNode(chunkNode);
+                                liteGraph.Node.Update(chunkNode);
                             }
 
                             app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
@@ -373,7 +373,7 @@ namespace View.Personal.Services
                                         Content = (chunkNode.Data as Atom)?.Text
                                     }
                                 };
-                                liteGraph.UpdateNode(chunkNode);
+                                liteGraph.Node.Update(chunkNode);
                             }
 
                             app.Log(
@@ -415,7 +415,7 @@ namespace View.Personal.Services
                                         Content = (chunkNode.Data as Atom)?.Text
                                     }
                                 };
-                                liteGraph.UpdateNode(chunkNode);
+                                liteGraph.Node.Update(chunkNode);
                             }
 
                             app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
@@ -468,7 +468,7 @@ namespace View.Personal.Services
                                         Content = (chunkNode.Data as Atom)?.Text
                                     }
                                 };
-                                liteGraph.UpdateNode(chunkNode);
+                                liteGraph.Node.Update(chunkNode);
                             }
 
                             app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
