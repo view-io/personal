@@ -104,7 +104,7 @@ namespace View.Personal.Services
                             }
                         }
 
-                        mainWindow.ShowNotification("File Deleted", "File was deleted successfully!",
+                        mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
                             NotificationType.Success);
                     }
                 }
