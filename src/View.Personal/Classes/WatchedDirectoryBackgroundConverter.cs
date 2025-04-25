@@ -30,19 +30,5 @@ namespace View.Personal.Classes
 
             return Brushes.Transparent;
         }
-
-        /// <summary>
-        /// Converts a background color back to directory watch status values (not supported).
-        /// </summary>
-        /// <param name="value">The value produced by the binding target.</param>
-        /// <param name="targetTypes">The types of the binding source properties.</param>
-        /// <param name="parameter">The converter parameter.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
-        /// <returns>Not supported, always throws NotSupportedException.</returns>
-        /// <exception cref="NotSupportedException">Thrown as conversion back is not supported.</exception>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

@@ -78,6 +78,7 @@ namespace View.Personal.UIHandlers
             // Update View settings
             app.AppSettings.View.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
             app.AppSettings.View.Endpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
+            app.AppSettings.View.OllamaHostName = window.FindControl<TextBox>("OllamaHostName").Text;
             app.AppSettings.View.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
             app.AppSettings.View.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
             app.AppSettings.View.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;

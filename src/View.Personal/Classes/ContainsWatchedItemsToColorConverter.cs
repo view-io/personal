@@ -13,7 +13,6 @@ namespace View.Personal.Classes
     {
 #pragma warning disable CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.
 #pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-        // ReSharper disable UnusedVariable
 
         /// <summary>
         /// Converts watched item status to a foreground color based on provided values.
@@ -32,20 +31,6 @@ namespace View.Personal.Classes
                 return SolidColorBrush.Parse("#6A6B6F");
 
             return SolidColorBrush.Parse("#6A6B6F"); // Fallback
-        }
-
-        /// <summary>
-        /// Converts a foreground color back to watched item status values (not supported).
-        /// </summary>
-        /// <param name="value">The value produced by the binding target.</param>
-        /// <param name="targetTypes">The types of the binding source properties.</param>
-        /// <param name="parameter">The converter parameter.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
-        /// <returns>Not supported, always throws NotSupportedException.</returns>
-        /// <exception cref="NotSupportedException">Thrown as conversion back is not supported.</exception>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
         }
 
 #pragma warning restore CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.

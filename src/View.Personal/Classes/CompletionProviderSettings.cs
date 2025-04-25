@@ -5,6 +5,8 @@
     /// </summary>
     public class CompletionProviderSettings
     {
+        // ReSharper disable UnusedAutoPropertyAccessor.Global
+
         /// <summary>
         /// Gets or sets the type of completion provider to use.
         /// </summary>
@@ -31,9 +33,19 @@
         public string AnthropicCompletionModel { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the endpoint URL for Anthropic API requests.
+        /// </summary>
+        public string AnthropicEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the model name for Ollama completion requests.
         /// </summary>
         public string OllamaCompletionModel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Ollama Endpoint URL for completion requests.
+        /// </summary>
+        public string OllamaEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the API key for View completion services.
@@ -49,6 +61,12 @@
         /// Gets or sets the endpoint URL for View API requests.
         /// </summary>
         public string ViewEndpoint { get; set; } = string.Empty;
+
+
+        /// <summary>
+        /// Gets or sets the host name for Ollama services.
+        /// </summary>
+        public string OllamaHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the model name for View completion requests.
