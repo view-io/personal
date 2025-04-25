@@ -414,6 +414,11 @@
             Gets or sets the endpoint URL for View API requests.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OllamaHostName">
+            <summary>
+            Gets or sets the host name for Ollama services.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.CompletionProviderSettings.ViewCompletionModel">
             <summary>
             Gets or sets the model name for View completion requests.

@@ -299,6 +299,7 @@ namespace View.Personal
                     ViewApiKey = _AppSettings.View.ApiKey,
                     ViewAccessKey = _AppSettings.View.AccessKey,
                     ViewEndpoint = _AppSettings.View.Endpoint,
+                    OllamaHostName = _AppSettings.View.OllamaHostName,
                     ViewCompletionModel = _AppSettings.View.CompletionModel
                 },
                 _ => new CompletionProviderSettings(providerType)

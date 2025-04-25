@@ -131,6 +131,8 @@ namespace View.Personal.Classes
             /// </summary>
             public string Endpoint { get; set; } = "";
 
+            public string OllamaHostName { get; set; } = "";
+
             /// <summary>
             /// The tenant GUID for View service authentication.
             /// </summary>

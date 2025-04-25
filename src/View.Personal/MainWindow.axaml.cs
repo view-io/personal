@@ -423,6 +423,7 @@ namespace View.Personal
                 this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
                 this.FindControl<TextBox>("ViewApiKey").Text = settings.View.ApiKey;
                 this.FindControl<TextBox>("ViewEndpoint").Text = settings.View.Endpoint;
+                this.FindControl<TextBox>("OllamaHostName").Text = settings.View.OllamaHostName;
                 this.FindControl<TextBox>("ViewAccessKey").Text = settings.View.AccessKey;
                 this.FindControl<TextBox>("ViewTenantGUID").Text = settings.View.TenantGuid ?? Guid.Empty.ToString();
                 this.FindControl<TextBox>("ViewCompletionModel").Text = settings.View.CompletionModel;
@@ -788,6 +789,7 @@ namespace View.Personal
             app.Log($"[INFO] Creating request body for {provider}");
             switch (provider)
             {
+                //ToDo: need to grab control settings dynamically
                 case "OpenAI":
                     return new
                     {
@@ -814,8 +816,7 @@ namespace View.Personal
                         MaxTokens = 4000,
                         GenerationProvider = "ollama",
                         GenerationApiKey = settings.ViewApiKey,
-                        //ToDo: need to grab this dynamically
-                        OllamaHostname = "192.168.197.1",
+                        OllamaHostname = settings.OllamaHostName,
                         OllamaPort = 11434,
                         Stream = true
                     };

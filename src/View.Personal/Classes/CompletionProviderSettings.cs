@@ -50,6 +50,12 @@
         /// </summary>
         public string ViewEndpoint { get; set; } = string.Empty;
 
+
+        /// <summary>
+        /// Gets or sets the host name for Ollama services.
+        /// </summary>
+        public string OllamaHostName { get; set; } = string.Empty;
+
         /// <summary>
         /// Gets or sets the model name for View completion requests.
         /// </summary>
