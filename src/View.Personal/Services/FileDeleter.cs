@@ -50,25 +50,21 @@ namespace View.Personal.Services
 
                     var app = (App)App.Current;
 
-                    // Retrieve child nodes (chunk nodes) of the document node
                     var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
                     var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
                     app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
 
-                    // Delete chunk nodes in bulk
                     if (chunkNodeGuids.Any())
                     {
                         liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
                         app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
                     }
 
-                    // Delete document node (automatically deletes edges)
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
                     app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
 
                     if (window is MainWindow mainWindow)
                     {
-                        // Check if the file is watched
                         var filePath = file.FilePath;
                         app?.Log($"[DEBUG] FilePath: '{filePath}'");
                         app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
@@ -82,7 +78,6 @@ namespace View.Personal.Services
                         else
                             app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
-                        // Refresh file list
                         FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
 
                         var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
