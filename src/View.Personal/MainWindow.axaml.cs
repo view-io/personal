@@ -845,7 +845,7 @@ namespace View.Personal
             var requestUri = provider switch
             {
                 "OpenAI" => settings.ViewEndpoint,
-                "Ollama" => $"{settings.OllamaEndpoint}/api/chat",
+                "Ollama" => $"{settings.OllamaEndpoint}api/chat",
                 "View" => $"{settings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions",
                 "Anthropic" => $"{settings.AnthropicEndpoint}",
                 _ => throw new ArgumentException("Unsupported provider")

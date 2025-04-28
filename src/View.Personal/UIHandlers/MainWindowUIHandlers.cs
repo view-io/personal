@@ -8,6 +8,7 @@ namespace View.Personal.UIHandlers
     using Avalonia.Interactivity;
     using Services;
     using LiteGraph;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -54,6 +55,37 @@ namespace View.Personal.UIHandlers
         public static void SaveSettings2_Click(MainWindow window)
         {
             var app = (App)Application.Current;
+            var endpointPattern = @"^http://(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|localhost):\d{1,5}/$";
+
+            // Validate Ollama endpoint
+            var ollamaEndpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
+            if (!ollamaEndpoint.EndsWith("/"))
+            {
+                window.FindControl<TextBox>("OllamaEndpoint").Text += "/";
+                ollamaEndpoint += "/";
+            }
+
+            if (!string.IsNullOrEmpty(ollamaEndpoint) && !Regex.IsMatch(ollamaEndpoint, endpointPattern))
+            {
+                window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<IP>:<port>/",
+                    NotificationType.Error);
+                return;
+            }
+
+            // Validate View endpoint
+            var viewEndpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
+            if (!viewEndpoint.EndsWith("/"))
+            {
+                window.FindControl<TextBox>("ViewEndpoint").Text += "/";
+                viewEndpoint += "/";
+            }
+
+            if (!string.IsNullOrEmpty(viewEndpoint) && !Regex.IsMatch(viewEndpoint, endpointPattern))
+            {
+                window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<IP>:<port>/",
+                    NotificationType.Error);
+                return;
+            }
 
             // Update OpenAI settings
             app.AppSettings.OpenAI.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
