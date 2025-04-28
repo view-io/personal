@@ -67,7 +67,6 @@ namespace View.Personal.UIHandlers
 
             if (!string.IsNullOrEmpty(ollamaEndpoint) && !Regex.IsMatch(ollamaEndpoint, endpointPattern))
             {
-                Console.WriteLine($"ollamaEndpoint: {ollamaEndpoint}");
                 window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<IP>:<port>/",
                     NotificationType.Error);
                 return;
