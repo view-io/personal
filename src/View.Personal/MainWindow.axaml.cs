@@ -48,18 +48,18 @@ namespace View.Personal
         /// List of active chat sessions in the application.
         /// Stores title and message.
         /// </summary>
-        public List<ChatSession> _ChatSessions = new();
+        public List<ChatSession> ChatSessions = new();
 
         /// <summary>
         /// Gets or sets the list of paths being actively watched by the Data Monitor.
         /// </summary>
-        public List<string> _WatchedPaths = new();
+        public List<string> WatchedPaths = new();
 
         /// <summary>
         /// The currently active chat session.
         /// References the chat session that is currently being displayed and interacted with in the UI.
         /// </summary>
-        public ChatSession _CurrentChatSession;
+        public ChatSession CurrentChatSession;
 
         #endregion
 
@@ -110,7 +110,7 @@ namespace View.Personal
                     InitializeEmbeddingRadioButtons();
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
                     app.LoggingService = new LoggingService(this, consoleOutput);
-                    _WatchedPaths = app.AppSettings.WatchedPaths ?? new List<string>();
+                    WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                 };
@@ -199,7 +199,7 @@ namespace View.Personal
         public void UpdateChatTitle()
         {
             var app = (App)Application.Current;
-            var provider = app.AppSettings.SelectedProvider;
+            var provider = app.ApplicationSettings.SelectedProvider;
             var model = GetCompletionModel(provider);
             var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
             if (chatTitleTextBlock != null)
@@ -223,7 +223,7 @@ namespace View.Personal
         /// </remarks>
         public void RemoveChatSession(ChatSession session)
         {
-            if (_ChatSessions.Contains(session)) _ChatSessions.Remove(session);
+            if (ChatSessions.Contains(session)) ChatSessions.Remove(session);
         }
 
         /// <summary>
@@ -318,9 +318,9 @@ namespace View.Personal
 
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
-            _CurrentChatSession = new ChatSession();
-            _ChatSessions.Add(_CurrentChatSession);
-            _ConversationHistory = _CurrentChatSession.Messages;
+            CurrentChatSession = new ChatSession();
+            ChatSessions.Add(CurrentChatSession);
+            _ConversationHistory = CurrentChatSession.Messages;
 
             var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
             if (conversationContainer != null)
@@ -351,7 +351,7 @@ namespace View.Personal
                 var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
 
                 var app = (App)Application.Current;
-                app._AppSettings = settings ?? new AppSettings();
+                app.ApplicationSettings = settings ?? new AppSettings();
 
                 // Load completion provider toggles
                 this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
@@ -360,7 +360,7 @@ namespace View.Personal
                 this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
 
                 // Sync with SelectedProvider
-                switch (app.AppSettings.SelectedProvider)
+                switch (app.ApplicationSettings.SelectedProvider)
                 {
                     case "OpenAI":
                         this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
@@ -434,12 +434,12 @@ namespace View.Personal
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
 
-                app._AppSettings = settings;
+                app.ApplicationSettings = settings;
             }
             else
             {
                 var app = (App)Application.Current;
-                app._AppSettings.Embeddings.SelectedEmbeddingModel = "Local";
+                app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = "Local";
                 InitializeEmbeddingRadioButtons();
             }
         }
@@ -472,7 +472,7 @@ namespace View.Personal
                 var chatSession = selectedItem.Tag as ChatSession;
                 if (chatSession != null)
                 {
-                    _CurrentChatSession = chatSession;
+                    CurrentChatSession = chatSession;
                     _ConversationHistory = chatSession.Messages;
                     var conversationContainer = this.FindControl<StackPanel>("ConversationContainer");
                     ChatUIHandlers.UpdateConversationWindow(
@@ -510,13 +510,13 @@ namespace View.Personal
             switch (provider)
             {
                 case "OpenAI":
-                    return app.AppSettings.OpenAI.CompletionModel;
+                    return app.ApplicationSettings.OpenAI.CompletionModel;
                 case "Anthropic":
-                    return app.AppSettings.Anthropic.CompletionModel;
+                    return app.ApplicationSettings.Anthropic.CompletionModel;
                 case "Ollama":
-                    return app.AppSettings.Ollama.CompletionModel;
+                    return app.ApplicationSettings.Ollama.CompletionModel;
                 case "View":
-                    return app.AppSettings.View.CompletionModel;
+                    return app.ApplicationSettings.View.CompletionModel;
                 default:
                     return "Unknown";
             }
@@ -582,13 +582,14 @@ namespace View.Personal
             try
             {
                 var app = (App)Application.Current;
-                var selectedProvider = app.AppSettings.SelectedProvider; // Completion provider
-                var embeddingsProvider = app.AppSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
+                var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
+                var embeddingsProvider =
+                    app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
                 // Generate embeddings with the selected embeddings provider
                 var (sdk, embeddingsRequest) =
-                    GetEmbeddingsSdkAndRequest(embeddingsProvider, app.AppSettings, userInput);
+                    GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
                 var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
@@ -997,7 +998,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             var selectedModel =
-                app._AppSettings.Embeddings.SelectedEmbeddingModel ?? "Ollama";
+                app.ApplicationSettings.Embeddings.SelectedEmbeddingModel ?? "Ollama";
 
             var ollamaRadio = this.FindControl<RadioButton>("OllamaEmbeddingModel");
             var openAIRadio = this.FindControl<RadioButton>("OpenAIEmbeddingModel2");
@@ -1020,7 +1021,7 @@ namespace View.Personal
                     break;
                 default:
                     ollamaRadio.IsChecked = true;
-                    app._AppSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
+                    app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = "Ollama";
                     break;
             }
         }
@@ -1039,7 +1040,7 @@ namespace View.Personal
                     _ => "Ollama"
                 };
 
-                app._AppSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
+                app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
                 app.Log($"[INFO] Embedding provider selected: {selectedProvider}");
             }

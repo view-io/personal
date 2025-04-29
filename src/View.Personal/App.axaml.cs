@@ -39,7 +39,7 @@ namespace View.Personal
         /// <summary>
         /// Application settings for the View Personal application.
         /// </summary>
-        public AppSettings _AppSettings;
+        public AppSettings ApplicationSettings;
 
         /// <summary>
         /// The logging service for writing to the UI console and standard console.
@@ -59,7 +59,7 @@ namespace View.Personal
         internal Guid _UserGuid;
         internal Guid _CredentialGuid;
         internal LoggingModule _Logging;
-        private const string SettingsFilePath = "appsettings.json";
+        private const string _SettingsFilePath = "appsettings.json";
 
         #endregion
 
@@ -241,20 +241,20 @@ namespace View.Personal
         {
             try
             {
-                _AppSettings.View.TenantGuid = _TenantGuid.ToString();
-                _AppSettings.View.GraphGuid = _GraphGuid.ToString();
-                _AppSettings.View.UserGuid = _UserGuid.ToString();
-                _AppSettings.View.CredentialGuid = _CredentialGuid.ToString();
+                ApplicationSettings.View.TenantGuid = _TenantGuid.ToString();
+                ApplicationSettings.View.GraphGuid = _GraphGuid.ToString();
+                ApplicationSettings.View.UserGuid = _UserGuid.ToString();
+                ApplicationSettings.View.CredentialGuid = _CredentialGuid.ToString();
 
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
                     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
                 };
-                var json = JsonSerializer.Serialize(_AppSettings, options);
-                File.WriteAllText(SettingsFilePath, json);
+                var json = JsonSerializer.Serialize(ApplicationSettings, options);
+                File.WriteAllText(_SettingsFilePath, json);
                 _Logging.Debug(_Header +
-                               $"Settings saved to {SettingsFilePath} with GUIDs: Tenant={_TenantGuid}, Graph={_GraphGuid}, User={_UserGuid}, Credential={_CredentialGuid}");
+                               $"Settings saved to {_SettingsFilePath} with GUIDs: Tenant={_TenantGuid}, Graph={_GraphGuid}, User={_UserGuid}, Credential={_CredentialGuid}");
             }
             catch (Exception ex)
             {
@@ -279,27 +279,27 @@ namespace View.Personal
             {
                 CompletionProviderTypeEnum.OpenAI => new CompletionProviderSettings(providerType)
                 {
-                    OpenAICompletionApiKey = _AppSettings.OpenAI.ApiKey,
-                    OpenAICompletionModel = _AppSettings.OpenAI.CompletionModel
+                    OpenAICompletionApiKey = ApplicationSettings.OpenAI.ApiKey,
+                    OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
-                    AnthropicApiKey = _AppSettings.Anthropic.ApiKey,
-                    AnthropicCompletionModel = _AppSettings.Anthropic.CompletionModel,
-                    AnthropicEndpoint = _AppSettings.Anthropic.Endpoint
+                    AnthropicApiKey = ApplicationSettings.Anthropic.ApiKey,
+                    AnthropicCompletionModel = ApplicationSettings.Anthropic.CompletionModel,
+                    AnthropicEndpoint = ApplicationSettings.Anthropic.Endpoint
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
-                    OllamaCompletionModel = _AppSettings.Ollama.CompletionModel,
-                    OllamaEndpoint = _AppSettings.Ollama.Endpoint
+                    OllamaCompletionModel = ApplicationSettings.Ollama.CompletionModel,
+                    OllamaEndpoint = ApplicationSettings.Ollama.Endpoint
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
-                    ViewApiKey = _AppSettings.View.ApiKey,
-                    ViewAccessKey = _AppSettings.View.AccessKey,
-                    ViewEndpoint = _AppSettings.View.Endpoint,
-                    OllamaHostName = _AppSettings.View.OllamaHostName,
-                    ViewCompletionModel = _AppSettings.View.CompletionModel
+                    ViewApiKey = ApplicationSettings.View.ApiKey,
+                    ViewAccessKey = ApplicationSettings.View.AccessKey,
+                    ViewEndpoint = ApplicationSettings.View.Endpoint,
+                    OllamaHostName = ApplicationSettings.View.OllamaHostName,
+                    ViewCompletionModel = ApplicationSettings.View.CompletionModel
                 },
                 _ => new CompletionProviderSettings(providerType)
             };
@@ -309,7 +309,6 @@ namespace View.Personal
         /// Gets the current application settings.
         /// Provides public read-only access to the internal application settings object.
         /// </summary>
-        public AppSettings AppSettings => _AppSettings;
 
         #endregion
 
@@ -319,23 +318,25 @@ namespace View.Personal
         {
             try
             {
-                if (File.Exists(SettingsFilePath))
+                if (File.Exists(_SettingsFilePath))
                 {
-                    var json = File.ReadAllText(SettingsFilePath);
-                    _AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
-                    _Logging.Debug(_Header + $"Settings loaded from {SettingsFilePath}");
+                    var json = File.ReadAllText(_SettingsFilePath);
+                    ApplicationSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                    _Logging.Debug(_Header + $"Settings loaded from {_SettingsFilePath}");
 
-                    _TenantGuid = Guid.TryParse(_AppSettings.View.TenantGuid, out var tenantGuid)
+                    _TenantGuid = Guid.TryParse(ApplicationSettings.View.TenantGuid, out var tenantGuid)
                         ? tenantGuid
                         : Guid.Empty;
-                    _GraphGuid = Guid.TryParse(_AppSettings.View.GraphGuid, out var graphGuid)
+                    _GraphGuid = Guid.TryParse(ApplicationSettings.View.GraphGuid, out var graphGuid)
                         ? graphGuid
                         : Guid.NewGuid();
-                    _UserGuid = Guid.TryParse(_AppSettings.View.UserGuid, out var userGuid) ? userGuid : Guid.NewGuid();
-                    _CredentialGuid = Guid.TryParse(_AppSettings.View.CredentialGuid, out var credGuid)
+                    _UserGuid = Guid.TryParse(ApplicationSettings.View.UserGuid, out var userGuid)
+                        ? userGuid
+                        : Guid.NewGuid();
+                    _CredentialGuid = Guid.TryParse(ApplicationSettings.View.CredentialGuid, out var credGuid)
                         ? credGuid
                         : Guid.NewGuid();
-                    _AppSettings.WatchedPaths ??= new List<string>();
+                    ApplicationSettings.WatchedPaths ??= new List<string>();
                 }
                 else
                 {
@@ -345,7 +346,7 @@ namespace View.Personal
                     _UserGuid = Guid.NewGuid();
                     _CredentialGuid = Guid.NewGuid();
 
-                    _AppSettings = new AppSettings
+                    ApplicationSettings = new AppSettings
                     {
                         OpenAI = new AppSettings.OpenAISettings
                             { Endpoint = "https://api.openai.com/v1/chat/completions" },
@@ -376,7 +377,7 @@ namespace View.Personal
                 _UserGuid = Guid.NewGuid();
                 _CredentialGuid = Guid.NewGuid();
 
-                _AppSettings = new AppSettings
+                ApplicationSettings = new AppSettings
                 {
                     OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
                     Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },

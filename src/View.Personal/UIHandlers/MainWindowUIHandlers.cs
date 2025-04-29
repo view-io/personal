@@ -87,68 +87,79 @@ namespace View.Personal.UIHandlers
                 return;
             }
 
+            var openAiSettings = app.ApplicationSettings.OpenAI;
+            var anthropicSettings = app.ApplicationSettings.Anthropic;
+            var ollamaSettings = app.ApplicationSettings.Ollama;
+            var viewSettings = app.ApplicationSettings.View;
+            var embeddingSettings = app.ApplicationSettings.Embeddings;
+            var providerSettings = app.ApplicationSettings;
+
             // Update OpenAI settings
-            app.AppSettings.OpenAI.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
-            app.AppSettings.OpenAI.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
-            app.AppSettings.OpenAI.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
-            app.AppSettings.OpenAI.IsEnabled =
+            openAiSettings.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
+            openAiSettings.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
+            openAiSettings.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
+            openAiSettings.IsEnabled =
                 window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
 
             // Update Anthropic settings
-            app.AppSettings.Anthropic.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
-            app.AppSettings.Anthropic.CompletionModel = window.FindControl<TextBox>("AnthropicCompletionModel").Text;
-            app.AppSettings.Anthropic.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
-            app.AppSettings.Anthropic.IsEnabled =
+            anthropicSettings.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
+            anthropicSettings.CompletionModel =
+                window.FindControl<TextBox>("AnthropicCompletionModel").Text;
+            anthropicSettings.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
+            anthropicSettings.IsEnabled =
                 window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
 
             // Update Ollama settings
-            app.AppSettings.Ollama.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
-            app.AppSettings.Ollama.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
-            app.AppSettings.Ollama.IsEnabled =
+            ollamaSettings.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
+            ollamaSettings.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
+            ollamaSettings.IsEnabled =
                 window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
 
             // Update View settings
-            app.AppSettings.View.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
-            app.AppSettings.View.Endpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
-            app.AppSettings.View.OllamaHostName = window.FindControl<TextBox>("OllamaHostName").Text;
-            app.AppSettings.View.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
-            app.AppSettings.View.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
-            app.AppSettings.View.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
-            app.AppSettings.View.IsEnabled =
+            viewSettings.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
+            viewSettings.Endpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
+            viewSettings.OllamaHostName = window.FindControl<TextBox>("OllamaHostName").Text;
+            viewSettings.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
+            viewSettings.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
+            viewSettings.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
+            viewSettings.IsEnabled =
                 window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
 
             // Update Embeddings settings
-            app.AppSettings.Embeddings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
-            app.AppSettings.Embeddings.OllamaEmbeddingModelDimensions =
+            embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+            embeddingSettings.OllamaEmbeddingModelDimensions =
                 int.Parse(window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text);
-            app.AppSettings.Embeddings.OllamaEmbeddingModelMaxTokens =
+            embeddingSettings.OllamaEmbeddingModelMaxTokens =
                 int.Parse(window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text);
-            app.AppSettings.Embeddings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
-            app.AppSettings.Embeddings.ViewEmbeddingModelDimensions =
+            embeddingSettings.ViewEmbeddingModel =
+                window.FindControl<TextBox>("ViewEmbeddingModel").Text;
+            embeddingSettings.ViewEmbeddingModelDimensions =
                 int.Parse(window.FindControl<TextBox>("ViewEmbeddingDimensions").Text);
-            app.AppSettings.Embeddings.ViewEmbeddingModelMaxTokens =
+            embeddingSettings.ViewEmbeddingModelMaxTokens =
                 int.Parse(window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text);
-            app.AppSettings.Embeddings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
-            app.AppSettings.Embeddings.OpenAIEmbeddingModelDimensions =
+            embeddingSettings.OpenAIEmbeddingModel =
+                window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
+            embeddingSettings.OpenAIEmbeddingModelDimensions =
                 int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text);
-            app.AppSettings.Embeddings.OpenAIEmbeddingModelMaxTokens =
+            embeddingSettings.OpenAIEmbeddingModelMaxTokens =
                 int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text);
-            app.AppSettings.Embeddings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
-            app.AppSettings.Embeddings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
-            app.AppSettings.Embeddings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
-            app.AppSettings.Embeddings.VoyageEmbeddingModelDimensions =
+            embeddingSettings.VoyageEmbeddingModel =
+                window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
+            embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
+            embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
+            embeddingSettings.VoyageEmbeddingModelDimensions =
                 int.Parse(window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text);
-            app.AppSettings.Embeddings.VoyageEmbeddingModelMaxTokens =
+            embeddingSettings.VoyageEmbeddingModelMaxTokens =
                 int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
             if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
-                app.AppSettings.SelectedProvider = "OpenAI";
+                providerSettings.SelectedProvider = "OpenAI";
             else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
-                app.AppSettings.SelectedProvider = "Anthropic";
+                providerSettings.SelectedProvider = "Anthropic";
             else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
-                app.AppSettings.SelectedProvider = "Ollama";
+                providerSettings.SelectedProvider = "Ollama";
             else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
-                app.AppSettings.SelectedProvider = "View";
+                providerSettings.SelectedProvider = "View";
 
             var chatPanel = window.FindControl<Border>("ChatPanel");
             if (chatPanel != null && chatPanel.IsVisible) window.UpdateChatTitle();

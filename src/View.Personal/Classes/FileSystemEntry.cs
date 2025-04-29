@@ -44,11 +44,11 @@ namespace View.Personal.Classes
 
         #region Private-Members
 
-        private bool _isWatched;
-        private bool _isWatchedOrInherited;
-        private bool _isCheckBoxEnabled = true;
-        private bool _containsWatchedItems;
-        private bool _isSelectedWatchedDirectory;
+        private bool _IsWatched;
+        private bool _IsWatchedOrInherited;
+        private bool _IsCheckBoxEnabled = true;
+        private bool _ContainsWatchedItems;
+        private bool _IsSelectedWatchedDirectory;
 
         #endregion
 
@@ -63,12 +63,12 @@ namespace View.Personal.Classes
         /// </summary>
         public bool IsWatched
         {
-            get => _isWatched;
+            get => _IsWatched;
             set
             {
-                if (_isWatched != value)
+                if (_IsWatched != value)
                 {
-                    _isWatched = value;
+                    _IsWatched = value;
                     OnPropertyChanged();
                 }
             }
@@ -79,12 +79,12 @@ namespace View.Personal.Classes
         /// </summary>
         public bool IsWatchedOrInherited
         {
-            get => _isWatchedOrInherited;
+            get => _IsWatchedOrInherited;
             set
             {
-                if (_isWatchedOrInherited != value)
+                if (_IsWatchedOrInherited != value)
                 {
-                    _isWatchedOrInherited = value;
+                    _IsWatchedOrInherited = value;
                     OnPropertyChanged();
                 }
             }
@@ -95,12 +95,12 @@ namespace View.Personal.Classes
         /// </summary>
         public bool IsCheckBoxEnabled
         {
-            get => _isCheckBoxEnabled;
+            get => _IsCheckBoxEnabled;
             set
             {
-                if (_isCheckBoxEnabled != value)
+                if (_IsCheckBoxEnabled != value)
                 {
-                    _isCheckBoxEnabled = value;
+                    _IsCheckBoxEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -111,12 +111,12 @@ namespace View.Personal.Classes
         /// </summary>
         public bool ContainsWatchedItems
         {
-            get => _containsWatchedItems;
+            get => _ContainsWatchedItems;
             set
             {
-                if (_containsWatchedItems != value)
+                if (_ContainsWatchedItems != value)
                 {
-                    _containsWatchedItems = value;
+                    _ContainsWatchedItems = value;
                     OnPropertyChanged();
                 }
             }
@@ -127,12 +127,12 @@ namespace View.Personal.Classes
         /// </summary>
         public bool IsSelectedWatchedDirectory
         {
-            get => _isSelectedWatchedDirectory;
+            get => _IsSelectedWatchedDirectory;
             set
             {
-                if (_isSelectedWatchedDirectory != value)
+                if (_IsSelectedWatchedDirectory != value)
                 {
-                    _isSelectedWatchedDirectory = value;
+                    _IsSelectedWatchedDirectory = value;
                     OnPropertyChanged();
                 }
             }

@@ -63,7 +63,7 @@ namespace View.Personal.UIHandlers
             if (mainWindow == null) return;
 
             // Use the current chat session's message list for consistency
-            var currentMessages = mainWindow._CurrentChatSession.Messages;
+            var currentMessages = mainWindow.CurrentChatSession.Messages;
             var app = (App)App.Current;
 
             // Retrieve UI controls
@@ -88,7 +88,7 @@ namespace View.Personal.UIHandlers
             // Handle first message in the session
             if (currentMessages.Count == 1)
             {
-                mainWindow._CurrentChatSession.Title = GetTitleFromMessage(userText);
+                mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
                 var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
@@ -96,8 +96,8 @@ namespace View.Personal.UIHandlers
                     if (chatLabel != null) chatLabel.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F"));
                     var newItem = new ListBoxItem
                     {
-                        Content = mainWindow._CurrentChatSession.Title,
-                        Tag = mainWindow._CurrentChatSession
+                        Content = mainWindow.CurrentChatSession.Title,
+                        Tag = mainWindow.CurrentChatSession
                     };
                     chatHistoryList.Items.Add(newItem);
                 }
@@ -216,7 +216,7 @@ namespace View.Personal.UIHandlers
             if (mainWindow != null)
             {
                 // Clear the messages in the current chat session
-                mainWindow._CurrentChatSession.Messages.Clear();
+                mainWindow.CurrentChatSession.Messages.Clear();
 
                 // Find the chat history list control in the UI
                 var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
@@ -225,7 +225,7 @@ namespace View.Personal.UIHandlers
                     // Find the ListBoxItem associated with the current chat session
                     var itemToRemove = chatHistoryList.Items
                         .OfType<ListBoxItem>()
-                        .FirstOrDefault(item => item.Tag == mainWindow._CurrentChatSession);
+                        .FirstOrDefault(item => item.Tag == mainWindow.CurrentChatSession);
 
                     // Remove the item if found
                     if (itemToRemove != null) chatHistoryList.Items.Remove(itemToRemove);
@@ -241,7 +241,7 @@ namespace View.Personal.UIHandlers
                 }
 
                 // Remove the chat session using the public method
-                mainWindow.RemoveChatSession(mainWindow._CurrentChatSession);
+                mainWindow.RemoveChatSession(mainWindow.CurrentChatSession);
 
                 // Update the conversation window to reflect the cleared state
                 var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
@@ -250,7 +250,7 @@ namespace View.Personal.UIHandlers
 
                 // Set the current chat session to null after clearing
                 // ToDo: Consider using a more explicit method to clear the session
-                mainWindow._CurrentChatSession = null!;
+                mainWindow.CurrentChatSession = null!;
             }
         }
 
