@@ -67,7 +67,7 @@ namespace View.Personal.Services
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            var appSettings = ((App)Application.Current).AppSettings;
+            var appSettings = ((App)Application.Current).ApplicationSettings;
             var app = (App)Application.Current;
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;

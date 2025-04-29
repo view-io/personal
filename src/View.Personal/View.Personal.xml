@@ -18,7 +18,7 @@
             - Creating and managing default application entities (tenant, graph, user, credential)
             </remarks>
         </member>
-        <member name="F:View.Personal.App._AppSettings">
+        <member name="F:View.Personal.App.ApplicationSettings">
             <summary>
             Application settings for the View Personal application.
             </summary>
@@ -83,7 +83,7 @@
             Returns a default empty settings object for unrecognized provider types.
             </remarks>
         </member>
-        <member name="P:View.Personal.App.AppSettings">
+        <member name="M:View.Personal.App.LoadSettings">
             <summary>
             Gets the current application settings.
             Provides public read-only access to the internal application settings object.
@@ -701,18 +701,18 @@
             Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
             </summary>
         </member>
-        <member name="F:View.Personal.MainWindow._ChatSessions">
+        <member name="F:View.Personal.MainWindow.ChatSessions">
             <summary>
             List of active chat sessions in the application.
             Stores title and message.
             </summary>
         </member>
-        <member name="F:View.Personal.MainWindow._WatchedPaths">
+        <member name="F:View.Personal.MainWindow.WatchedPaths">
             <summary>
             Gets or sets the list of paths being actively watched by the Data Monitor.
             </summary>
         </member>
-        <member name="F:View.Personal.MainWindow._CurrentChatSession">
+        <member name="F:View.Personal.MainWindow.CurrentChatSession">
             <summary>
             The currently active chat session.
             References the chat session that is currently being displayed and interacted with in the UI.

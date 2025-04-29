@@ -65,9 +65,9 @@ namespace View.Personal.Services
                     {
                         var filePath = file.FilePath;
                         app?.Log($"[DEBUG] FilePath: '{filePath}'");
-                        app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow._WatchedPaths)}");
+                        app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
 
-                        if (!string.IsNullOrEmpty(filePath) && mainWindow._WatchedPaths.Any(watchedPath =>
+                        if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
                                 watchedPath == filePath ||
                                 (Directory.Exists(watchedPath) &&
                                  filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))

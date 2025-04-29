@@ -76,7 +76,7 @@ namespace View.Personal.UIHandlers
                 foreach (var dir in Directory.GetDirectories(path))
                 {
                     var dirInfo = new DirectoryInfo(dir);
-                    var isSelectedWatched = mainWindow._WatchedPaths.Contains(dirInfo.FullName);
+                    var isSelectedWatched = mainWindow.WatchedPaths.Contains(dirInfo.FullName);
                     var isImplicitlyWatched =
                         IsWithinWatchedDirectory(mainWindow, dirInfo.FullName) && !isSelectedWatched;
 
@@ -101,7 +101,7 @@ namespace View.Personal.UIHandlers
                     if (IsHiddenOrSystemFile(fileInfo)) continue;
 
                     var parentDir = Path.GetDirectoryName(fileInfo.FullName);
-                    var isSelectedWatched = mainWindow._WatchedPaths.Contains(fileInfo.FullName);
+                    var isSelectedWatched = mainWindow.WatchedPaths.Contains(fileInfo.FullName);
                     var isImplicitlyWatched = parentDir != null &&
                                               IsWithinWatchedDirectory(mainWindow, fileInfo.FullName) &&
                                               !isSelectedWatched;
@@ -214,7 +214,7 @@ namespace View.Personal.UIHandlers
         /// <param name="e">The event data for the button click.</param>
         public static async void SyncButton_Click(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
-            if (mainWindow._WatchedPaths.Count == 0)
+            if (mainWindow.WatchedPaths.Count == 0)
             {
                 mainWindow.ShowNotification("Sync", "No watched paths to sync.", NotificationType.Information);
                 return;
@@ -233,7 +233,7 @@ namespace View.Personal.UIHandlers
             foreach (var node in allNodes)
             {
                 var filePath = node.Key;
-                var isInWatchedPath = mainWindow._WatchedPaths.Any(wp => filePath.StartsWith(wp) || filePath == wp);
+                var isInWatchedPath = mainWindow.WatchedPaths.Any(wp => filePath.StartsWith(wp) || filePath == wp);
                 if (isInWatchedPath && !File.Exists(filePath))
                 {
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.Value);
@@ -242,7 +242,7 @@ namespace View.Personal.UIHandlers
                 }
             }
 
-            foreach (var watchedPath in mainWindow._WatchedPaths.ToList())
+            foreach (var watchedPath in mainWindow.WatchedPaths.ToList())
                 if (Directory.Exists(watchedPath))
                 {
                     foreach (var filePath in Directory.GetFiles(watchedPath, "*", SearchOption.AllDirectories))
@@ -337,9 +337,9 @@ namespace View.Personal.UIHandlers
         public static void WatchCheckBox_Checked(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
-                if (!mainWindow._WatchedPaths.Contains(entry.FullPath))
+                if (!mainWindow.WatchedPaths.Contains(entry.FullPath))
                 {
-                    if (mainWindow._WatchedPaths.Any(watchedPath =>
+                    if (mainWindow.WatchedPaths.Any(watchedPath =>
                             Directory.Exists(watchedPath) &&
                             entry.FullPath.StartsWith(watchedPath + Path.DirectorySeparatorChar)))
                     {
@@ -363,7 +363,7 @@ namespace View.Personal.UIHandlers
         public static void WatchCheckBox_Unchecked(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox && checkBox.DataContext is FileSystemEntry entry)
-                if (mainWindow._WatchedPaths.Contains(entry.FullPath))
+                if (mainWindow.WatchedPaths.Contains(entry.FullPath))
                     Dispatcher.UIThread.Post(async void () =>
                         await ConfirmAndProcessUnwatchAsync(mainWindow, checkBox, entry));
         }
@@ -394,18 +394,18 @@ namespace View.Personal.UIHandlers
             {
                 if (entry.IsDirectory)
                 {
-                    var subItemsToRemove = mainWindow._WatchedPaths
+                    var subItemsToRemove = mainWindow.WatchedPaths
                         .Where(wp => wp.StartsWith(entry.FullPath + Path.DirectorySeparatorChar))
                         .ToList();
                     foreach (var subItem in subItemsToRemove)
                     {
-                        mainWindow._WatchedPaths.Remove(subItem);
+                        mainWindow.WatchedPaths.Remove(subItem);
                         mainWindow.LogToConsole(
                             $"[INFO] Removed explicit watch on '{subItem}' as it's now implicitly watched by '{entry.FullPath}'.");
                     }
                 }
 
-                mainWindow._WatchedPaths.Add(entry.FullPath);
+                mainWindow.WatchedPaths.Add(entry.FullPath);
                 LogWatchedPaths(mainWindow);
                 UpdateFileWatchers(mainWindow);
                 LoadFileSystem(mainWindow, mainWindow._CurrentPath);
@@ -485,7 +485,7 @@ namespace View.Personal.UIHandlers
                 }
 
                 var app = (App)Application.Current;
-                app.AppSettings.WatchedPaths = mainWindow._WatchedPaths;
+                app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
                 app.SaveSettings();
             }
             else
@@ -533,7 +533,7 @@ namespace View.Personal.UIHandlers
             switch (result)
             {
                 case "Unwatch Only":
-                    mainWindow._WatchedPaths.Remove(entry.FullPath);
+                    mainWindow.WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);
@@ -541,7 +541,7 @@ namespace View.Personal.UIHandlers
                     break;
 
                 case "Unwatch and Delete":
-                    mainWindow._WatchedPaths.Remove(entry.FullPath);
+                    mainWindow.WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
 
@@ -593,7 +593,7 @@ namespace View.Personal.UIHandlers
             }
 
             var app = (App)Application.Current;
-            app.AppSettings.WatchedPaths = mainWindow._WatchedPaths;
+            app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
             app.SaveSettings();
         }
 
@@ -606,8 +606,8 @@ namespace View.Personal.UIHandlers
             var consoleOutput = mainWindow.FindControl<TextBox>("ConsoleOutputTextBox");
             if (consoleOutput != null)
             {
-                var logMessage = $"[INFO] Watched paths ({mainWindow._WatchedPaths.Count}):\n" +
-                                 string.Join("\n", mainWindow._WatchedPaths) + "\n";
+                var logMessage = $"[INFO] Watched paths ({mainWindow.WatchedPaths.Count}):\n" +
+                                 string.Join("\n", mainWindow.WatchedPaths) + "\n";
                 consoleOutput.Text += logMessage;
                 Console.WriteLine(logMessage);
             }
@@ -710,7 +710,7 @@ namespace View.Personal.UIHandlers
 
             mainWindow._Watchers.Clear();
 
-            var directoriesToWatch = mainWindow._WatchedPaths
+            var directoriesToWatch = mainWindow.WatchedPaths
                 .Where(path => Directory.Exists(path) || (File.Exists(path) && Path.GetDirectoryName(path) != null))
                 .Select(path => Directory.Exists(path) ? path : Path.GetDirectoryName(path))
                 .Distinct()
@@ -742,10 +742,10 @@ namespace View.Personal.UIHandlers
         /// <param name="e">The event data for the file system change.</param>
         public static void OnFileActivity(MainWindow mainWindow, object source, FileSystemEventArgs e)
         {
-            var isExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.FullPath);
-            var isInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                           e.FullPath.StartsWith(
-                                                                               dir + Path.DirectorySeparatorChar));
+            var isExplicitlyWatched = mainWindow.WatchedPaths.Contains(e.FullPath);
+            var isInWatchedDirectory = mainWindow.WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                          e.FullPath.StartsWith(
+                                                                              dir + Path.DirectorySeparatorChar));
 
             if (!isExplicitlyWatched && !isInWatchedDirectory) return;
             if (IsTemporaryFile(e.Name)) return;
@@ -850,10 +850,10 @@ namespace View.Personal.UIHandlers
         /// <param name="e">The event data for the file rename.</param>
         public static void OnRenamed(MainWindow mainWindow, object source, RenamedEventArgs e)
         {
-            var wasExplicitlyWatched = mainWindow._WatchedPaths.Contains(e.OldFullPath);
-            var wasInWatchedDirectory = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
-                                                                            e.OldFullPath.StartsWith(
-                                                                                dir + Path.DirectorySeparatorChar));
+            var wasExplicitlyWatched = mainWindow.WatchedPaths.Contains(e.OldFullPath);
+            var wasInWatchedDirectory = mainWindow.WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                                                                           e.OldFullPath.StartsWith(
+                                                                               dir + Path.DirectorySeparatorChar));
 
             if (!wasExplicitlyWatched && !wasInWatchedDirectory) return;
 
@@ -880,8 +880,8 @@ namespace View.Personal.UIHandlers
                     mainWindow.LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
                 }
 
-                var isExplicitlyWatchedNew = mainWindow._WatchedPaths.Contains(e.FullPath);
-                var isInWatchedDirectoryNew = mainWindow._WatchedPaths.Any(dir => Directory.Exists(dir) &&
+                var isExplicitlyWatchedNew = mainWindow.WatchedPaths.Contains(e.FullPath);
+                var isInWatchedDirectoryNew = mainWindow.WatchedPaths.Any(dir => Directory.Exists(dir) &&
                     e.FullPath.StartsWith(
                         dir + Path.DirectorySeparatorChar));
 
@@ -1022,7 +1022,7 @@ namespace View.Personal.UIHandlers
         /// <returns>True if the path is within a watched directory, otherwise false.</returns>
         private static bool IsWithinWatchedDirectory(MainWindow mainWindow, string path)
         {
-            return mainWindow._WatchedPaths.Any(watchedPath =>
+            return mainWindow.WatchedPaths.Any(watchedPath =>
                 Directory.Exists(watchedPath) &&
                 path.StartsWith(watchedPath + Path.DirectorySeparatorChar));
         }
@@ -1035,9 +1035,9 @@ namespace View.Personal.UIHandlers
         /// <returns>True if the path is watched or contains watched items, otherwise false.</returns>
         private static bool ContainsWatchedItemsInPath(MainWindow mainWindow, string path)
         {
-            if (mainWindow._WatchedPaths.Contains(path)) return true;
+            if (mainWindow.WatchedPaths.Contains(path)) return true;
 
-            return mainWindow._WatchedPaths.Any(watchedPath =>
+            return mainWindow.WatchedPaths.Any(watchedPath =>
                 watchedPath.StartsWith(path + Path.DirectorySeparatorChar));
         }
 
