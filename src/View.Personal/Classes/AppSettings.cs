@@ -9,6 +9,11 @@ namespace View.Personal.Classes
     public class AppSettings
     {
         /// <summary>
+        /// The GUID of the currently active graph.
+        /// </summary>
+        public string ActiveGraphGuid { get; set; } = "";
+
+        /// <summary>
         /// Settings for the OpenAI API integration.
         /// </summary>
         public OpenAISettings OpenAI { get; set; } = new();

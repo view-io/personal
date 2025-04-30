@@ -76,6 +76,7 @@ namespace View.Personal
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
         private GridLength _ConsoleRowHeight = GridLength.Auto;
+        private Guid _ActiveGraphGuid;
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -111,6 +112,7 @@ namespace View.Personal
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
                     app.LoggingService = new LoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
+                    _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid);
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                 };
@@ -345,14 +347,11 @@ namespace View.Personal
         private void LoadSettingsFromFile()
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            var app = (App)Application.Current;
+            var settings = app.ApplicationSettings; // Use existing settings instead of deserializing anew
+
             if (File.Exists(filePath))
             {
-                var jsonString = File.ReadAllText(filePath);
-                var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
-
-                var app = (App)Application.Current;
-                app.ApplicationSettings = settings ?? new AppSettings();
-
                 // Load completion provider toggles
                 this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
@@ -360,7 +359,7 @@ namespace View.Personal
                 this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
 
                 // Sync with SelectedProvider
-                switch (app.ApplicationSettings.SelectedProvider)
+                switch (settings.SelectedProvider)
                 {
                     case "OpenAI":
                         this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
@@ -377,7 +376,6 @@ namespace View.Personal
                 }
 
                 // OpenAI
-                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
@@ -433,12 +431,9 @@ namespace View.Personal
                     settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
-
-                app.ApplicationSettings = settings;
             }
             else
             {
-                var app = (App)Application.Current;
                 app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = "Local";
                 InitializeEmbeddingRadioButtons();
             }

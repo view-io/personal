@@ -17,6 +17,7 @@ namespace View.Personal
     using System.Text.Json;
     using Services;
     using System.Collections.Specialized;
+    using System.Linq;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -163,6 +164,15 @@ namespace View.Personal
                             _Logging.Debug(_Header + "created graph " + _GraphGuid);
                         }
 
+                        var activeGraphGuid = Guid.Parse(ApplicationSettings.ActiveGraphGuid);
+                        if (!_LiteGraph.Graph.ExistsByGuid(_TenantGuid, activeGraphGuid))
+                        {
+                            _Logging.Debug(_Header +
+                                           $"Active graph {ApplicationSettings.ActiveGraphGuid} not found, resetting to default {_GraphGuid}");
+                            ApplicationSettings.ActiveGraphGuid = _GraphGuid.ToString();
+                            SaveSettings();
+                        }
+
                         if (!_LiteGraph.User.ExistsByGuid(_TenantGuid, _UserGuid))
                         {
                             var user = _LiteGraph.User.Create(new UserMaster
@@ -305,10 +315,20 @@ namespace View.Personal
             };
         }
 
-        /// <summary>
-        /// Gets the current application settings.
-        /// Provides public read-only access to the internal application settings object.
-        /// </summary>
+        public List<Graph> GetAllGraphs()
+        {
+            try
+            {
+                var graphs = _LiteGraph.Graph.ReadAllInTenant(_TenantGuid).ToList();
+                _Logging.Debug(_Header + $"Retrieved {graphs.Count} graphs for tenant {_TenantGuid}");
+                return graphs;
+            }
+            catch (Exception ex)
+            {
+                _Logging.Error(_Header + $"Failed to retrieve graphs: {ex.Message}");
+                return new List<Graph>();
+            }
+        }
 
         #endregion
 
@@ -337,6 +357,10 @@ namespace View.Personal
                         ? credGuid
                         : Guid.NewGuid();
                     ApplicationSettings.WatchedPaths ??= new List<string>();
+                    ApplicationSettings.ActiveGraphGuid =
+                        Guid.TryParse(ApplicationSettings.ActiveGraphGuid, out var activeGraphGuid)
+                            ? activeGraphGuid.ToString()
+                            : _GraphGuid.ToString();
                 }
                 else
                 {
@@ -348,6 +372,7 @@ namespace View.Personal
 
                     ApplicationSettings = new AppSettings
                     {
+                        ActiveGraphGuid = _GraphGuid.ToString(),
                         OpenAI = new AppSettings.OpenAISettings
                             { Endpoint = "https://api.openai.com/v1/chat/completions" },
                         Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
@@ -379,6 +404,7 @@ namespace View.Personal
 
                 ApplicationSettings = new AppSettings
                 {
+                    ActiveGraphGuid = _GraphGuid.ToString(),
                     OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
                     Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
                     Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },

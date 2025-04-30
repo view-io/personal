@@ -83,15 +83,14 @@
             Returns a default empty settings object for unrecognized provider types.
             </remarks>
         </member>
-        <member name="M:View.Personal.App.LoadSettings">
-            <summary>
-            Gets the current application settings.
-            Provides public read-only access to the internal application settings object.
-            </summary>
-        </member>
         <member name="T:View.Personal.Classes.AppSettings">
             <summary>
             Contains application configuration settings for various AI providers and view settings.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ActiveGraphGuid">
+            <summary>
+            The GUID of the currently active graph.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.OpenAI">
