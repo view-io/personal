@@ -11,6 +11,7 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Controls.Templates;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
@@ -18,6 +19,7 @@ namespace View.Personal
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using Helpers;
     using LiteGraph;
     using Sdk;
     using Sdk.Embeddings;
@@ -113,8 +115,12 @@ namespace View.Personal
                     app.LoggingService = new LoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
                     _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid);
+                    LoadGraphComboBox();
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
+                    var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
+                    graphComboBox.SelectionChanged += GraphComboBox_SelectionChanged;
+                    app.LiteGraphInitialized += (s, e) => LoadGraphComboBox();
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
@@ -520,6 +526,9 @@ namespace View.Personal
 
         private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs(); // Get the list of graphs
+            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
                 _TenantGuid, _GraphGuid);
         }
@@ -1079,6 +1088,52 @@ namespace View.Personal
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
+        }
+
+        private void LoadGraphComboBox()
+        {
+            Console.WriteLine("LoadGraphComboBox");
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs(); // Get the list of graphs
+
+            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
+
+            // Transform graphs into GraphItem objects, handling nulls
+            var graphItems = graphs.Select(g => new GraphItem
+            {
+                Name = g?.Name ?? "(no name)", // Use "(no name)" if Name is null
+                GUID = g?.GUID ?? Guid.Empty // Use Guid.Empty if GUID is null
+            }).ToList();
+
+            // Find the ComboBox in your UI
+            var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
+            graphComboBox.ItemsSource = graphItems;
+
+            // Define how each item should be displayed
+            graphComboBox.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+            {
+                return new TextBlock { Text = item?.Name ?? "(no name)" };
+            });
+
+            // Optional: Select the active graph if you have one
+            var activeGraph = graphItems.FirstOrDefault(g => g.GUID == _ActiveGraphGuid);
+            if (activeGraph != null) graphComboBox.SelectedItem = activeGraph;
+        }
+
+        private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox.SelectedItem is { } selectedItem)
+            {
+                var selectedGuid = (Guid)selectedItem.GetType().GetProperty("GUID").GetValue(selectedItem);
+                _ActiveGraphGuid = selectedGuid;
+
+                var app = (App)Application.Current;
+                app.ApplicationSettings.ActiveGraphGuid = selectedGuid.ToString();
+                app.SaveSettings(); // Persist the change
+
+                // FileListHelper.RefreshFileList(); // Update the file list for the selected graph
+            }
         }
 
         #endregion

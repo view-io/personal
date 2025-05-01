@@ -42,6 +42,8 @@ namespace View.Personal
         /// </summary>
         public AppSettings ApplicationSettings;
 
+        public event EventHandler LiteGraphInitialized;
+
         /// <summary>
         /// The logging service for writing to the UI console and standard console.
         /// </summary>
@@ -226,6 +228,7 @@ namespace View.Personal
                 }
 
             base.OnFrameworkInitializationCompleted();
+            LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
