@@ -1129,6 +1129,7 @@ namespace View.Personal
                 app.ApplicationSettings.ActiveGraphGuid = selectedGraph.GUID.ToString();
                 app.SaveSettings(); // Persist the selection
 
+                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                 // Optional: Add a method call here to refresh UI elements
                 // e.g., RefreshFileList();
             }
