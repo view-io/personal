@@ -70,7 +70,6 @@ namespace View.Personal
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
-        private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
@@ -123,7 +122,8 @@ namespace View.Personal
                     app.LiteGraphInitialized += (s, e) => LoadGraphComboBox();
                 };
                 NavList.SelectionChanged += (s, e) =>
-                    NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
+                    NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,
+                        _ActiveGraphGuid);
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
                 if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
@@ -193,7 +193,8 @@ namespace View.Personal
         /// <returns>A <see cref="Task"/> representing the asynchronous operation of file ingestion.</returns>
         public async Task IngestFileAsync(string filePath)
         {
-            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
+            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
+                this);
         }
 
         /// <summary>
@@ -447,7 +448,7 @@ namespace View.Personal
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+            MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
         }
 
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -502,7 +503,7 @@ namespace View.Personal
 
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
+            NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _ActiveGraphGuid);
         }
 
         private string GetCompletionModel(string provider)
@@ -530,7 +531,7 @@ namespace View.Personal
             var graphs = app.GetAllGraphs(); // Get the list of graphs
             foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
-                _TenantGuid, _GraphGuid);
+                _TenantGuid, _ActiveGraphGuid);
         }
 
         private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
@@ -710,7 +711,7 @@ namespace View.Personal
             var searchRequest = new VectorSearchRequest
             {
                 TenantGUID = _TenantGuid,
-                GraphGUID = _GraphGuid,
+                GraphGUID = _ActiveGraphGuid,
                 Domain = VectorSearchDomainEnum.Node,
                 SearchType = VectorSearchTypeEnum.CosineSimilarity,
                 Embeddings = embeddings
