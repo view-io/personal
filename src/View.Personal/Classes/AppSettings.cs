@@ -13,6 +13,8 @@ namespace View.Personal.Classes
         /// </summary>
         public string ActiveGraphGuid { get; set; } = "";
 
+        public Dictionary<Guid, List<string>> WatchedPathsPerGraph { get; set; } = new();
+
         /// <summary>
         /// Settings for the OpenAI API integration.
         /// </summary>

@@ -224,7 +224,7 @@ namespace View.Personal.UIHandlers
 
             var liteGraph = ((App)Application.Current)._LiteGraph;
             var tenantGuid = ((App)Application.Current)._TenantGuid;
-            var graphGuid = ((App)Application.Current)._GraphGuid;
+            var graphGuid = mainWindow.ActiveGraphGuid;
 
             var allNodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid)
                 .Where(n => n.Tags != null && !string.IsNullOrEmpty(n.Tags.Get("FilePath")))

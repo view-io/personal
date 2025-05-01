@@ -55,7 +55,19 @@ namespace View.Personal
         /// <summary>
         /// Gets or sets the list of paths being actively watched by the Data Monitor.
         /// </summary>
-        public List<string> WatchedPaths = new();
+        public List<string> WatchedPaths
+        {
+            get => _WatchedPathsPerGraph.TryGetValue(_ActiveGraphGuid, out var paths) ? paths : new List<string>();
+            set
+            {
+                _WatchedPathsPerGraph[_ActiveGraphGuid] = value;
+                var app = (App)Application.Current;
+                app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = value;
+                app.SaveSettings();
+            }
+        }
+
+        public Guid ActiveGraphGuid => _ActiveGraphGuid;
 
         /// <summary>
         /// The currently active chat session.
@@ -78,6 +90,7 @@ namespace View.Personal
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
         private GridLength _ConsoleRowHeight = GridLength.Auto;
         private Guid _ActiveGraphGuid;
+        private Dictionary<Guid, List<string>> _WatchedPathsPerGraph = new();
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -113,7 +126,10 @@ namespace View.Personal
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
                     app.LoggingService = new LoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
-                    _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid);
+                    _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid); // Example, adjust as needed
+                    if (!app.ApplicationSettings.WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
+                        app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                    _WatchedPathsPerGraph = app.ApplicationSettings.WatchedPathsPerGraph;
                     LoadGraphComboBox();
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
@@ -1129,6 +1145,18 @@ namespace View.Personal
                 var app = (App)Application.Current;
                 app.ApplicationSettings.ActiveGraphGuid = selectedGraph.GUID.ToString();
                 app.SaveSettings(); // Persist the selection
+
+                if (!_WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
+                {
+                    _WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                    app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                }
+
+                // Update file watchers
+                DataMonitorUIHandlers.UpdateFileWatchers(this);
+
+                // Reload Data Monitor UI
+                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
                 FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                 // Optional: Add a method call here to refresh UI elements

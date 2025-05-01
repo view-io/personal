@@ -706,7 +706,7 @@
             Stores title and message.
             </summary>
         </member>
-        <member name="F:View.Personal.MainWindow.WatchedPaths">
+        <member name="P:View.Personal.MainWindow.WatchedPaths">
             <summary>
             Gets or sets the list of paths being actively watched by the Data Monitor.
             </summary>
