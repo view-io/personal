@@ -1092,48 +1092,72 @@ namespace View.Personal
 
         private void LoadGraphComboBox()
         {
-            Console.WriteLine("LoadGraphComboBox");
             var app = (App)Application.Current;
-            var graphs = app.GetAllGraphs(); // Get the list of graphs
+            var graphs = app.GetAllGraphs(); // Retrieve all graphs
 
-            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
-
-            // Transform graphs into GraphItem objects, handling nulls
+            // Convert graphs to GraphItem objects
             var graphItems = graphs.Select(g => new GraphItem
             {
-                Name = g?.Name ?? "(no name)", // Use "(no name)" if Name is null
-                GUID = g?.GUID ?? Guid.Empty // Use Guid.Empty if GUID is null
+                Name = g?.Name ?? "(no name)",
+                GUID = g?.GUID ?? Guid.Empty
             }).ToList();
 
-            // Find the ComboBox in your UI
+            // Find and configure the ComboBox
             var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
             graphComboBox.ItemsSource = graphItems;
-
-            // Define how each item should be displayed
             graphComboBox.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
             {
                 return new TextBlock { Text = item?.Name ?? "(no name)" };
             });
 
-            // Optional: Select the active graph if you have one
+            // Select the active graph based on saved settings
             var activeGraph = graphItems.FirstOrDefault(g => g.GUID == _ActiveGraphGuid);
-            if (activeGraph != null) graphComboBox.SelectedItem = activeGraph;
+            if (activeGraph != null)
+                graphComboBox.SelectedItem = activeGraph;
+            else if (graphItems.Count > 0)
+                // Default to the first graph if no active graph is found
+                graphComboBox.SelectedIndex = 0;
         }
 
         private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
-            if (comboBox.SelectedItem is { } selectedItem)
+            if (comboBox.SelectedItem is GraphItem selectedGraph)
             {
-                var selectedGuid = (Guid)selectedItem.GetType().GetProperty("GUID").GetValue(selectedItem);
-                _ActiveGraphGuid = selectedGuid;
-
+                _ActiveGraphGuid = selectedGraph.GUID;
                 var app = (App)Application.Current;
-                app.ApplicationSettings.ActiveGraphGuid = selectedGuid.ToString();
-                app.SaveSettings(); // Persist the change
+                app.ApplicationSettings.ActiveGraphGuid = selectedGraph.GUID.ToString();
+                app.SaveSettings(); // Persist the selection
 
-                // FileListHelper.RefreshFileList(); // Update the file list for the selected graph
+                // Optional: Add a method call here to refresh UI elements
+                // e.g., RefreshFileList();
             }
+        }
+
+        private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new TextInputDialog("Create New Graph", "Enter graph name:");
+            var result = await dialog.ShowDialogAsync(this); // Changed to ShowDialogAsync
+            if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
+        }
+
+        private void CreateNewGraph(string graphName)
+        {
+            var app = (App)Application.Current;
+            var newGraphGuid = Guid.NewGuid();
+            var graph = new Graph
+            {
+                GUID = newGraphGuid,
+                Name = graphName,
+                TenantGUID = _TenantGuid
+            };
+
+            _LiteGraph.Graph.Create(graph);
+            _ActiveGraphGuid = newGraphGuid;
+            app.ApplicationSettings.ActiveGraphGuid = newGraphGuid.ToString();
+            app.SaveSettings();
+
+            LoadGraphComboBox();
         }
 
         #endregion

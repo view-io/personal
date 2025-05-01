@@ -779,7 +779,9 @@
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
                         <TextBlock Text="Select Graph:" VerticalAlignment="Center" />
                         <ComboBox x:Name="GraphComboBox" Width="200" Theme="{StaticResource MaterialFilledComboBox}" />
+                        <Button Click="CreateGraphButton_Click" Content="Create Graph" />
                     </StackPanel>
+
                     <Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
                             Margin="0,10,0,20" IsVisible="False">
                         <Panel>
