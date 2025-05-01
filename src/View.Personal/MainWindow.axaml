@@ -832,6 +832,17 @@
                                             <Setter Property="BorderThickness" Value="0.97" />
                                         </Style>
 
+                                        <Style Selector="ComboBoxItem">
+                                            <Setter Property="Padding" Value="12,8" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Foreground" Value="#1A1C1E" />
+                                        </Style>
+
+                                        <!-- Hover style for dropdown items -->
+                                        <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+                                            <Setter Property="Background" Value="#F5F5F5" />
+                                        </Style>
+
                                         <!-- <Style Selector="ComboBox:focus-within /template/ Border#watermarkRoot,  -->
                                         <!--        ComboBox:not([SelectedIndex=-1]) /template/ Border#watermarkRoot"> -->
                                         <!--     <Setter Property="Opacity" Value="0" /> -->
