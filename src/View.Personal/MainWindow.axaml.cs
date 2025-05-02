@@ -1159,6 +1159,29 @@ namespace View.Personal
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
                 FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+
+                var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");
+                var fileOperationsPanel = this.FindControl<Grid>("FileOperationsPanel");
+
+                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                {
+                    var uniqueFiles =
+                        MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
+                    if (uniqueFiles.Any())
+                    {
+                        filesDataGrid.ItemsSource = uniqueFiles;
+                        uploadFilesPanel.IsVisible = false;
+                        filesDataGrid.IsVisible = true;
+                    }
+                    else
+                    {
+                        filesDataGrid.ItemsSource = null;
+                        filesDataGrid.IsVisible = false;
+                        fileOperationsPanel.IsVisible = false;
+                        uploadFilesPanel.IsVisible = true;
+                    }
+                }
                 // Optional: Add a method call here to refresh UI elements
                 // e.g., RefreshFileList();
             }

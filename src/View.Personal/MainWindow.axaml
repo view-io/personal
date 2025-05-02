@@ -777,6 +777,105 @@
                         <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
                     </StackPanel>
+                    <Grid Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left side - GraphComboBox and Create Graph button -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
+                                    HorizontalAlignment="Left">
+                            <ComboBox x:Name="GraphComboBox" Width="200"
+                                      Theme="{StaticResource MaterialOutlineComboBox}"
+                                      assists:ComboBoxAssist.Label="Selected Graph"
+                                      Padding="12,4"
+                                      Background="#FFFFFF"
+                                      BorderBrush="#DBDBDB"
+                                      BorderThickness="0.97"
+                                      Foreground="#1A1C1E">
+                                <ComboBox.Styles>
+                                    <Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+                                        <Setter Property="MinHeight" Value="36" />
+                                        <Setter Property="Margin" Value="0,0,0,0" />
+                                    </Style>
+
+                                    <Style Selector="ComboBox /template/ Border#PART_Border">
+                                        <Setter Property="CornerRadius" Value="8" />
+                                        <Setter Property="BorderBrush" Value="#DBDBDB" />
+                                    </Style>
+
+                                    <Style Selector="ComboBox /template/ Border#splitBorder">
+                                        <Setter Property="Margin" Value="12,6" />
+                                    </Style>
+
+                                    <Style Selector="ComboBox /template/ Border#watermarkRoot">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="12,0,0,0" />
+                                    </Style>
+
+                                    <Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+                                        <Setter Property="Foreground" Value="#1A1C1E" />
+                                    </Style>
+
+                                    <Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+                                        <Setter Property="BorderBrush" Value="#DBDBDB" />
+                                        <Setter Property="BorderThickness" Value="0.97" />
+                                    </Style>
+
+                                    <Style Selector="ComboBoxItem">
+                                        <Setter Property="Padding" Value="12,8" />
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="#1A1C1E" />
+                                    </Style>
+
+                                    <!-- Hover style for dropdown items -->
+                                    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="#F5F5F5" />
+                                    </Style>
+
+                                    <!-- <Style Selector="ComboBox:focus-within /template/ Border#watermarkRoot,  -->
+                                    <!--        ComboBox:not([SelectedIndex=-1]) /template/ Border#watermarkRoot"> -->
+                                    <!--     <Setter Property="Opacity" Value="0" /> -->
+                                    <!-- </Style> -->
+
+                                    <Style Selector="ComboBox /template/ Path#arrow">
+                                        <Setter Property="Fill" Value="#1A1C1E" />
+                                    </Style>
+                                </ComboBox.Styles>
+                            </ComboBox>
+
+                            <Button Click="CreateGraphButton_Click" Classes="flat" VerticalAlignment="Bottom"
+                                    Height="41">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Plus"
+                                                           VerticalAlignment="Top"
+                                                           Height="16" Width="16" />
+                                    <TextBlock Text="Create Graph" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Right side - Exactly as it was in the original -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                                    Spacing="8">
+                            <Button Click="IngestBrowseButton_Click"
+                                    Classes="flat" VerticalAlignment="Bottom"
+                                    Height="41">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Plus"
+                                                           VerticalAlignment="Top"
+                                                           Height="16" Width="16" />
+                                    <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
+                            <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF"
+                                    VerticalAlignment="Bottom"
+                                    Height="41">
+                                <avalonia:MaterialIcon Kind="TrayArrowDown" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
 
                     <!-- Move this section from below -->
                     <Grid Name="FileOperationsPanel">
@@ -786,105 +885,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Combined Toolbar Row - Modified to have nested Grids -->
-                        <Grid Grid.Row="0" Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
 
-                            <!-- Left side - GraphComboBox and Create Graph button -->
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
-                                        HorizontalAlignment="Left">
-                                <ComboBox x:Name="GraphComboBox" Width="200"
-                                          Theme="{StaticResource MaterialOutlineComboBox}"
-                                          assists:ComboBoxAssist.Label="Selected Graph"
-                                          Padding="12,4"
-                                          Background="#FFFFFF"
-                                          BorderBrush="#DBDBDB"
-                                          BorderThickness="0.97"
-                                          Foreground="#1A1C1E">
-                                    <ComboBox.Styles>
-                                        <Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-                                            <Setter Property="MinHeight" Value="36" />
-                                            <Setter Property="Margin" Value="0,0,0,0" />
-                                        </Style>
-
-                                        <Style Selector="ComboBox /template/ Border#PART_Border">
-                                            <Setter Property="CornerRadius" Value="8" />
-                                            <Setter Property="BorderBrush" Value="#DBDBDB" />
-                                        </Style>
-
-                                        <Style Selector="ComboBox /template/ Border#splitBorder">
-                                            <Setter Property="Margin" Value="12,6" />
-                                        </Style>
-
-                                        <Style Selector="ComboBox /template/ Border#watermarkRoot">
-                                            <Setter Property="VerticalAlignment" Value="Center" />
-                                            <Setter Property="Margin" Value="12,0,0,0" />
-                                        </Style>
-
-                                        <Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-                                            <Setter Property="Foreground" Value="#1A1C1E" />
-                                        </Style>
-
-                                        <Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-                                            <Setter Property="BorderBrush" Value="#DBDBDB" />
-                                            <Setter Property="BorderThickness" Value="0.97" />
-                                        </Style>
-
-                                        <Style Selector="ComboBoxItem">
-                                            <Setter Property="Padding" Value="12,8" />
-                                            <Setter Property="Background" Value="Transparent" />
-                                            <Setter Property="Foreground" Value="#1A1C1E" />
-                                        </Style>
-
-                                        <!-- Hover style for dropdown items -->
-                                        <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-                                            <Setter Property="Background" Value="#F5F5F5" />
-                                        </Style>
-
-                                        <!-- <Style Selector="ComboBox:focus-within /template/ Border#watermarkRoot,  -->
-                                        <!--        ComboBox:not([SelectedIndex=-1]) /template/ Border#watermarkRoot"> -->
-                                        <!--     <Setter Property="Opacity" Value="0" /> -->
-                                        <!-- </Style> -->
-
-                                        <Style Selector="ComboBox /template/ Path#arrow">
-                                            <Setter Property="Fill" Value="#1A1C1E" />
-                                        </Style>
-                                    </ComboBox.Styles>
-                                </ComboBox>
-
-                                <Button Click="CreateGraphButton_Click" Classes="flat" VerticalAlignment="Bottom"
-                                        Height="41">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <avalonia:MaterialIcon Kind="Plus"
-                                                               VerticalAlignment="Top"
-                                                               Height="16" Width="16" />
-                                        <TextBlock Text="Create Graph" Foreground="#1A1C1E" FontWeight="400" />
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-
-                            <!-- Right side - Exactly as it was in the original -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
-                                        Spacing="8">
-                                <Button Click="IngestBrowseButton_Click"
-                                        Classes="flat" VerticalAlignment="Bottom"
-                                        Height="41">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <avalonia:MaterialIcon Kind="Plus"
-                                                               VerticalAlignment="Top"
-                                                               Height="16" Width="16" />
-                                        <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
-                                    </StackPanel>
-                                </Button>
-                                <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF"
-                                        VerticalAlignment="Bottom"
-                                        Height="41">
-                                    <avalonia:MaterialIcon Kind="TrayArrowDown" />
-                                </Button>
-                            </StackPanel>
-                        </Grid>
 
                         <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FilesDataGrid"
