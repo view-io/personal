@@ -1189,7 +1189,7 @@ namespace View.Personal
 
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new TextInputDialog("Create New Graph", "Enter graph name:");
+            var dialog = new TextInputDialog("Create New Knowledgebase", "Enter Knowledgebase name:");
             var result = await dialog.ShowDialogAsync(this); // Changed to ShowDialogAsync
             if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
         }

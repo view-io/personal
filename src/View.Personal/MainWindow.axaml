@@ -788,7 +788,7 @@
                                     HorizontalAlignment="Left">
                             <ComboBox x:Name="GraphComboBox" Width="200"
                                       Theme="{StaticResource MaterialOutlineComboBox}"
-                                      assists:ComboBoxAssist.Label="Selected Graph"
+                                      assists:ComboBoxAssist.Label="Selected Knowledgebase"
                                       Padding="12,4"
                                       Background="#FFFFFF"
                                       BorderBrush="#DBDBDB"
@@ -851,7 +851,7 @@
                                     <avalonia:MaterialIcon Kind="Plus"
                                                            VerticalAlignment="Top"
                                                            Height="16" Width="16" />
-                                    <TextBlock Text="Create Graph" Foreground="#1A1C1E" FontWeight="400" />
+                                    <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E" FontWeight="400" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
