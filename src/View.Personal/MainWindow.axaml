@@ -448,9 +448,38 @@
                                 </Setter>
                             </Style>
                         </TabControl.Styles>
-                        <TabItem Header="General">
+                        <TabItem Header="Knowledgebases">
                             <Border Padding="0,20,0,0">
-                                <TextBlock Text="General settings will go here." />
+                                <StackPanel Orientation="Vertical" Spacing="10">
+                                    <!-- Buttons moved from MyFilesPanel -->
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Button Click="CreateGraphButton_Click" Classes="flat">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <avalonia:MaterialIcon Kind="Plus" Height="16" Width="16" />
+                                                <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E"
+                                                           FontWeight="400" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Click="DeleteGraphButton_Click" Classes="flat">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <avalonia:MaterialIcon Kind="Delete" Height="16" Width="16" />
+                                                <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E"
+                                                           FontWeight="400" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                    <!-- Metadata display for selected knowledgebase -->
+                                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*" Margin="0,20,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" FontWeight="500"
+                                                   Margin="0,0,10,0" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding SelectedItem.Name, ElementName=GraphComboBox}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="GUID:" FontWeight="500"
+                                                   Margin="0,0,10,0" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                                   Text="{Binding SelectedItem.GUID, ElementName=GraphComboBox}" />
+                                    </Grid>
+                                </StackPanel>
                             </Border>
                         </TabItem>
                         <TabItem Header="Providers" IsSelected="True">
@@ -831,27 +860,27 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
-                                    HorizontalAlignment="Left">
-                            <Button Click="CreateGraphButton_Click" Classes="flat" VerticalAlignment="Bottom"
-                                    Height="41">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <avalonia:MaterialIcon Kind="Plus"
-                                                           VerticalAlignment="Top"
-                                                           Height="16" Width="16" />
-                                    <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E" FontWeight="400" />
-                                </StackPanel>
-                            </Button>
-                            <Button Click="DeleteGraphButton_Click" Classes="flat" VerticalAlignment="Bottom"
-                                    Height="41">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <avalonia:MaterialIcon Kind="Delete"
-                                                           VerticalAlignment="Top"
-                                                           Height="16" Width="16" />
-                                    <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E" FontWeight="400" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
+                        <!-- <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" -->
+                        <!--             HorizontalAlignment="Left"> -->
+                        <!--     <Button Click="CreateGraphButton_Click" Classes="flat" VerticalAlignment="Bottom" -->
+                        <!--             Height="41"> -->
+                        <!--         <StackPanel Orientation="Horizontal" Spacing="8"> -->
+                        <!--             <avalonia:MaterialIcon Kind="Plus" -->
+                        <!--                                    VerticalAlignment="Top" -->
+                        <!--                                    Height="16" Width="16" /> -->
+                        <!--             <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E" FontWeight="400" /> -->
+                        <!--         </StackPanel> -->
+                        <!--     </Button> -->
+                        <!--     <Button Click="DeleteGraphButton_Click" Classes="flat" VerticalAlignment="Bottom" -->
+                        <!--             Height="41"> -->
+                        <!--         <StackPanel Orientation="Horizontal" Spacing="8"> -->
+                        <!--             <avalonia:MaterialIcon Kind="Delete" -->
+                        <!--                                    VerticalAlignment="Top" -->
+                        <!--                                    Height="16" Width="16" /> -->
+                        <!--             <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E" FontWeight="400" /> -->
+                        <!--         </StackPanel> -->
+                        <!--     </Button> -->
+                        <!-- </StackPanel> -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                                     Spacing="8">
                             <Button Click="IngestBrowseButton_Click"
