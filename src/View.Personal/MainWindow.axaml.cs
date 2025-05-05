@@ -1194,6 +1194,11 @@ namespace View.Personal
             if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
         }
 
+        private async void DeleteGraphButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new TextInputDialog("Delete Knowledgebase", "Enter Knowledgebase name:");
+        }
+
         private void CreateNewGraph(string graphName)
         {
             var app = (App)Application.Current;

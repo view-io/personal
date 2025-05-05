@@ -854,6 +854,15 @@
                                     <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E" FontWeight="400" />
                                 </StackPanel>
                             </Button>
+                            <Button Click="DeleteGraphButton_Click" Classes="flat" VerticalAlignment="Bottom"
+                                    Height="41">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Delete"
+                                                           VerticalAlignment="Top"
+                                                           Height="16" Width="16" />
+                                    <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E" FontWeight="400" />
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
 
                         <!-- Right side - Exactly as it was in the original -->
