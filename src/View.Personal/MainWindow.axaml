@@ -448,7 +448,7 @@
                                 </Setter>
                             </Style>
                         </TabControl.Styles>
-                        <TabItem Header="Knowledgebase">
+                        <TabItem Header="Knowledgebases">
                             <Border Padding="0,20,0,0">
                                 <StackPanel Orientation="Vertical" Spacing="10">
                                     <!-- Button for New Knowledgebase -->
@@ -471,10 +471,10 @@
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
                                             <DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
                                             <DataGridTextColumn Header="Created UTC"
-                                                                Binding="{Binding CreatedUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
+                                                                Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
                                             <DataGridTextColumn Header="Last Update UTC"
-                                                                Binding="{Binding LastUpdateUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
+                                                                Binding="{Binding LastUpdateUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
                                             <DataGridTemplateColumn Header="" Width="150">
                                                 <DataGridTemplateColumn.CellTemplate>
