@@ -42,6 +42,11 @@ namespace View.Personal
         /// </summary>
         public AppSettings ApplicationSettings;
 
+        /// <summary>
+        /// Event that is raised when the LiteGraph database has been successfully initialized and configured.
+        /// This event signals that the graph database is ready for use, including the creation of default
+        /// entities such as tenant, graph, user, and credentials if they did not already exist.
+        /// </summary>
         public event EventHandler LiteGraphInitialized;
 
         /// <summary>
@@ -318,6 +323,10 @@ namespace View.Personal
             };
         }
 
+        /// <summary>
+        /// Retrieves all graphs associated with the specified tenant from the LiteGraph database.
+        /// </summary>
+        /// <returns>A list of <see cref="Graph"/> objects representing all graphs for the tenant. Returns an empty list if an error occurs.</returns>
         public List<Graph> GetAllGraphs()
         {
             try
@@ -337,6 +346,12 @@ namespace View.Personal
 
         #region Private-Methods
 
+        /// <summary>
+        /// Loads application settings from a configuration file or initializes default settings if the file does not exist.
+        /// </summary>
+        /// <remarks>
+        /// Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
+        /// </remarks>
         private void LoadSettings()
         {
             try

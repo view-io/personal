@@ -21,7 +21,6 @@ namespace View.Personal
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
@@ -68,6 +67,9 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Gets the GUID of the currently active graph in the application.
+        /// </summary>
         public Guid ActiveGraphGuid => _ActiveGraphGuid;
 
         /// <summary>
@@ -372,7 +374,7 @@ namespace View.Personal
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
             var app = (App)Application.Current;
-            var settings = app.ApplicationSettings; // Use existing settings instead of deserializing anew
+            var settings = app.ApplicationSettings;
 
             if (File.Exists(filePath))
             {
@@ -523,6 +525,11 @@ namespace View.Personal
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _ActiveGraphGuid);
         }
 
+        /// <summary>
+        /// Retrieves the completion model name for the specified provider from the application settings.
+        /// </summary>
+        /// <param name="provider">The name of the provider (e.g., "OpenAI", "Anthropic", "Ollama", "View").</param>
+        /// <returns>A string representing the completion model name for the specified provider, or "Unknown" if the provider is not recognized.</returns>
         private string GetCompletionModel(string provider)
         {
             var app = (App)Application.Current;
@@ -542,10 +549,19 @@ namespace View.Personal
         }
 
 
+        /// <summary>
+        /// Handles the click event for the Export GEXF button, initiating the export of the active graph to GEXF format.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event, typically the Export GEXF button.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
+        /// <remarks>
+        /// This method logs all available graphs and their details, then delegates the export operation to 
+        /// <see cref="MainWindowUIHandlers.ExportGexfButton_Click"/> to process the export asynchronously.
+        /// </remarks>
         private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
-            var graphs = app.GetAllGraphs(); // Get the list of graphs
+            var graphs = app.GetAllGraphs();
             foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
                 _TenantGuid, _ActiveGraphGuid);
@@ -635,6 +651,13 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Creates an SDK instance and an embeddings request for the specified embeddings provider.
+        /// </summary>
+        /// <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>
+        /// <param name="appSettings">The application settings containing provider-specific configurations.</param>
+        /// <param name="userInput">The user input text to be embedded.</param>
+        /// <returns>A tuple containing the SDK instance (<see cref="object"/>) and the <see cref="EmbeddingsRequest"/> configured for the specified provider.</returns>
         private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
             AppSettings appSettings, string userInput)
         {
@@ -1016,6 +1039,9 @@ namespace View.Personal
             };
         }
 
+        /// <summary>
+        /// Initializes the embedding provider radio buttons based on the selected model in the application settings.
+        /// </summary>
         private void InitializeEmbeddingRadioButtons()
         {
             var app = (App)Application.Current;
@@ -1048,6 +1074,11 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the checked event for embedding model radio buttons, updating the selected embedding provider in the application settings.
+        /// </summary>
+        /// <param name="sender">The radio button that triggered the event.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
         private void EmbeddingModel_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is RadioButton radioButton)
@@ -1108,6 +1139,9 @@ namespace View.Personal
             DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
         }
 
+        /// <summary>
+        /// Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
+        /// </summary>
         private void LoadGraphComboBox()
         {
             var app = (App)Application.Current;
@@ -1140,6 +1174,11 @@ namespace View.Personal
             LoadGraphsDataGrid();
         }
 
+        /// <summary>
+        /// Handles the selection changed event for the GraphComboBox, updating the active graph and refreshing related UI elements.
+        /// </summary>
+        /// <param name="sender">The ComboBox that triggered the event.</param>
+        /// <param name="e">The selection changed event arguments containing event data.</param>
         private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
@@ -1148,7 +1187,7 @@ namespace View.Personal
                 _ActiveGraphGuid = selectedGraph.GUID;
                 var app = (App)Application.Current;
                 app.ApplicationSettings.ActiveGraphGuid = selectedGraph.GUID.ToString();
-                app.SaveSettings(); // Persist the selection
+                app.SaveSettings();
 
                 if (!_WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
                 {
@@ -1156,10 +1195,8 @@ namespace View.Personal
                     app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
                 }
 
-                // Update file watchers
                 DataMonitorUIHandlers.UpdateFileWatchers(this);
 
-                // Reload Data Monitor UI
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
                 FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
@@ -1186,11 +1223,14 @@ namespace View.Personal
                         uploadFilesPanel.IsVisible = true;
                     }
                 }
-                // Optional: Add a method call here to refresh UI elements
-                // e.g., RefreshFileList();
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the Create Graph button, prompting the user to enter a new knowledgebase name and creating it.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event, typically the Create Graph button.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new TextInputDialog("Create New Knowledgebase", "Enter Knowledgebase name:");
@@ -1198,11 +1238,10 @@ namespace View.Personal
             if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
         }
 
-        private async void DeleteGraphButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new TextInputDialog("Delete Knowledgebase", "Enter Knowledgebase name:");
-        }
-
+        /// <summary>
+        /// Creates a new graph with the specified name and updates the application state.
+        /// </summary>
+        /// <param name="graphName">The name of the new graph to be created.</param>
         private void CreateNewGraph(string graphName)
         {
             var app = (App)Application.Current;
@@ -1223,16 +1262,14 @@ namespace View.Personal
             LoadGraphsDataGrid();
         }
 
+        /// <summary>
+        /// Populates the DataGrid with a list of all graphs retrieved from the application.
+        /// </summary>
         private void LoadGraphsDataGrid()
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
             Console.WriteLine($"[INFO] Fetched {graphs.Count} graphs.");
-
-            // Log details of each graph to verify the data
-            foreach (var graph in graphs)
-                Console.WriteLine(
-                    $"Graph: Name={graph.Name}, GUID={graph.GUID}, Created={graph.CreatedUtc}, Updated={graph.LastUpdateUtc}");
 
             var graphItems = graphs.Select(g => new GraphItem
             {
@@ -1254,6 +1291,11 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the Remove button in the Knowledgebase DataGrid, initiating the deletion of a graph.
+        /// </summary>
+        /// <param name="sender">The button that triggered the event.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
         private async void RemoveGraph_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is GraphItem graphItem)

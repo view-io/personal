@@ -451,7 +451,6 @@
                         <TabItem Header="Knowledgebases">
                             <Border Padding="0,20,0,0">
                                 <StackPanel Orientation="Vertical" Spacing="10">
-                                    <!-- Button for New Knowledgebase -->
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Button Click="CreateGraphButton_Click" Classes="flat">
                                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -461,7 +460,6 @@
                                             </StackPanel>
                                         </Button>
                                     </StackPanel>
-                                    <!-- DataGrid with Remove button per row -->
                                     <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
                                               CanUserReorderColumns="False" CanUserResizeColumns="True"
                                               GridLinesVisibility="Horizontal" Background="#FFFFFF"
@@ -531,8 +529,6 @@
                                                     Gain access to OpenAI models
                                                 </TextBlock>
                                             </StackPanel>
-
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="OpenAIExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -568,7 +564,6 @@
                                             </Expander>
                                         </Grid>
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Left column: Provider description -->
                                             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Anthropic" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -576,8 +571,6 @@
                                                     Gain access to Anthropic models
                                                 </TextBlock>
                                             </StackPanel>
-
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="AnthropicExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -621,7 +614,6 @@
                                                     Gain access to a local model.
                                                 </TextBlock>
                                             </StackPanel>
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="OllamaExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -831,7 +823,6 @@
                                                             <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000" />
                                                         </StackPanel>
                                                     </Expander>
-
                                                     <!-- View Embedding Model -->
                                                     <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
@@ -914,17 +905,11 @@
                             </Button>
                         </StackPanel>
                     </Grid>
-
-                    <!-- Move this section from below -->
                     <Grid Name="FileOperationsPanel">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <!-- Combined Toolbar Row - Modified to have nested Grids -->
-
-
                         <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FilesDataGrid"
                                       AutoGenerateColumns="False"
@@ -1148,7 +1133,6 @@
                 <TextBlock Name="WorkspaceText" IsVisible="False" />
             </Grid>
         </DockPanel>
-        <!-- GridSplitter for resizing -->
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
         <!-- Console panel -->
         <Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"

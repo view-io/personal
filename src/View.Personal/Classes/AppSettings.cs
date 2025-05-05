@@ -13,6 +13,9 @@ namespace View.Personal.Classes
         /// </summary>
         public string ActiveGraphGuid { get; set; } = "";
 
+        /// <summary>
+        /// Keeps track of the selected files on the users computer to keep track of and sync with the given database.
+        /// </summary>
         public Dictionary<Guid, List<string>> WatchedPathsPerGraph { get; set; } = new();
 
         /// <summary>

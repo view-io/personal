@@ -9,8 +9,21 @@ namespace View.Personal.Services
     using MsBox.Avalonia.Enums;
     using Classes;
 
+    /// <summary>
+    /// Provides methods for handling graph deletion operations within the application.
+    /// </summary>
     public static class GraphDeleter
     {
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        /// <summary>
+        /// Asynchronously deletes a graph from the LiteGraph database after user confirmation.
+        /// </summary>
+        /// <param name="graphItem">The <see cref="GraphItem"/> representing the graph to delete.</param>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> instance for graph operations.</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant.</param>
+        /// <param name="window">The parent window for displaying dialogs and notifications.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous deletion operation.</returns>
         public static async Task DeleteGraphAsync(GraphItem graphItem, LiteGraphClient liteGraph, Guid tenantGuid,
             Window window)
         {
@@ -40,5 +53,6 @@ namespace View.Personal.Services
                         NotificationType.Error);
             }
         }
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }
