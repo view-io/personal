@@ -451,7 +451,7 @@
                         <TabItem Header="Knowledgebases">
                             <Border Padding="0,20,0,0">
                                 <StackPanel Orientation="Vertical" Spacing="10">
-                                    <!-- Buttons moved from MyFilesPanel -->
+                                    <!-- Buttons for New and Remove Knowledgebase -->
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Button Click="CreateGraphButton_Click" Classes="flat">
                                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -468,17 +468,23 @@
                                             </StackPanel>
                                         </Button>
                                     </StackPanel>
-                                    <!-- Metadata display for selected knowledgebase -->
-                                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*" Margin="0,20,0,0">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" FontWeight="500"
-                                                   Margin="0,0,10,0" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1"
-                                                   Text="{Binding SelectedItem.Name, ElementName=GraphComboBox}" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="GUID:" FontWeight="500"
-                                                   Margin="0,0,10,0" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                                   Text="{Binding SelectedItem.GUID, ElementName=GraphComboBox}" />
-                                    </Grid>
+                                    <!-- DataGrid to display all graphs -->
+                                    <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                              CanUserReorderColumns="False" CanUserResizeColumns="True"
+                                              GridLinesVisibility="Horizontal" Background="#FFFFFF"
+                                              HorizontalGridLinesBrush="#EDEDED" BorderThickness="1"
+                                              BorderBrush="#EDEDED">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+                                            <DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
+                                            <DataGridTextColumn Header="Created UTC"
+                                                                Binding="{Binding CreatedUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
+                                                                Width="150" />
+                                            <DataGridTextColumn Header="Last Update UTC"
+                                                                Binding="{Binding LastUpdateUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
+                                                                Width="150" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
                                 </StackPanel>
                             </Border>
                         </TabItem>

@@ -1116,7 +1116,9 @@ namespace View.Personal
             var graphItems = graphs.Select(g => new GraphItem
             {
                 Name = g?.Name ?? "(no name)",
-                GUID = g?.GUID ?? Guid.Empty
+                GUID = g?.GUID ?? Guid.Empty,
+                CreatedUtc = g.CreatedUtc,
+                LastUpdateUtc = g.LastUpdateUtc
             }).ToList();
 
             // Find and configure the ComboBox
@@ -1134,6 +1136,7 @@ namespace View.Personal
             else if (graphItems.Count > 0)
                 // Default to the first graph if no active graph is found
                 graphComboBox.SelectedIndex = 0;
+            LoadGraphsDataGrid();
         }
 
         private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1216,6 +1219,38 @@ namespace View.Personal
             app.SaveSettings();
 
             LoadGraphComboBox();
+            LoadGraphsDataGrid();
+        }
+
+        private void LoadGraphsDataGrid()
+        {
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs();
+            Console.WriteLine($"[INFO] Fetched {graphs.Count} graphs.");
+
+            // Log details of each graph to verify the data
+            foreach (var graph in graphs)
+                Console.WriteLine(
+                    $"Graph: Name={graph.Name}, GUID={graph.GUID}, Created={graph.CreatedUtc}, Updated={graph.LastUpdateUtc}");
+
+            var graphItems = graphs.Select(g => new GraphItem
+            {
+                Name = g?.Name ?? "(no name)",
+                GUID = g?.GUID ?? Guid.Empty,
+                CreatedUtc = g.CreatedUtc,
+                LastUpdateUtc = g.LastUpdateUtc
+            }).ToList();
+
+            var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
+            if (graphsDataGrid != null)
+            {
+                Console.WriteLine("[INFO] Setting ItemsSource for GraphsDataGrid.");
+                graphsDataGrid.ItemsSource = graphItems;
+            }
+            else
+            {
+                Console.WriteLine("[ERROR] GraphsDataGrid not found.");
+            }
         }
 
         #endregion
