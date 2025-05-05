@@ -32,6 +32,8 @@ namespace View.Personal.UIHandlers
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8621 // Nullability of reference types in return type of 'lambda expression' doesn't match the target delegate
+
 
         #region Public-Members
 
@@ -1082,5 +1084,6 @@ namespace View.Personal.UIHandlers
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8621 // Nullability of reference types in return type of 'lambda expression' doesn't match the target delegate
     }
 }

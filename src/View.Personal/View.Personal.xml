@@ -23,6 +23,13 @@
             Application settings for the View Personal application.
             </summary>
         </member>
+        <member name="E:View.Personal.App.LiteGraphInitialized">
+            <summary>
+            Event that is raised when the LiteGraph database has been successfully initialized and configured.
+            This event signals that the graph database is ready for use, including the creation of default
+            entities such as tenant, graph, user, and credentials if they did not already exist.
+            </summary>
+        </member>
         <member name="P:View.Personal.App.LoggingService">
             <summary>
             The logging service for writing to the UI console and standard console.
@@ -83,6 +90,20 @@
             Returns a default empty settings object for unrecognized provider types.
             </remarks>
         </member>
+        <member name="M:View.Personal.App.GetAllGraphs">
+            <summary>
+            Retrieves all graphs associated with the specified tenant from the LiteGraph database.
+            </summary>
+            <returns>A list of <see cref="T:LiteGraph.Graph"/> objects representing all graphs for the tenant. Returns an empty list if an error occurs.</returns>
+        </member>
+        <member name="M:View.Personal.App.LoadSettings">
+            <summary>
+            Loads application settings from a configuration file or initializes default settings if the file does not exist.
+            </summary>
+            <remarks>
+            Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="F:View.Personal.App.ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
+            </remarks>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings">
             <summary>
             Contains application configuration settings for various AI providers and view settings.
@@ -91,6 +112,11 @@
         <member name="P:View.Personal.Classes.AppSettings.ActiveGraphGuid">
             <summary>
             The GUID of the currently active graph.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.WatchedPathsPerGraph">
+            <summary>
+            Keeps track of the selected files on the users computer to keep track of and sync with the given database.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.OpenAI">
@@ -585,6 +611,58 @@
             Gets or sets the node GUID.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.GraphItem">
+            <summary>
+            Represents a graph item in the application, containing metadata about a knowledgebase.
+            </summary>
+            <remarks>
+            This class is used to store and display information about graphs in the UI, such as in the ComboBox and DataGrid.
+            It includes properties for the graph's name, unique identifier, creation timestamp, and last update timestamp.
+            </remarks>
+        </member>
+        <member name="P:View.Personal.Classes.GraphItem.Name">
+            <summary>
+            Gets or sets the name of the graph.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.GraphItem.GUID">
+            <summary>
+            Gets or sets the unique identifier (GUID) of the graph.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.GraphItem.CreatedUtc">
+            <summary>
+            Gets or sets the UTC timestamp when the graph was created.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.GraphItem.LastUpdateUtc">
+            <summary>
+            Gets or sets the UTC timestamp when the graph was last updated.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.TextInputDialog">
+            <summary>
+            A dialog window for collecting text input from the user with OK and Cancel options.
+            </summary>
+            <remarks>
+            This dialog displays a prompt, a text input field, and two buttons (OK and Cancel). It is designed to be shown modally,
+            allowing the user to enter text and confirm or cancel the input. The result is returned asynchronously when the dialog is closed.
+            </remarks>
+        </member>
+        <member name="M:View.Personal.Classes.TextInputDialog.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Classes.TextInputDialog"/> class with a specified title and prompt.
+            </summary>
+            <param name="title">The title of the dialog window.</param>
+            <param name="prompt">The prompt text displayed above the input field.</param>
+        </member>
+        <member name="M:View.Personal.Classes.TextInputDialog.ShowDialogAsync(Avalonia.Controls.Window)">
+            <summary>
+            Displays the dialog modally and returns the user's input text asynchronously.
+            </summary>
+            <param name="owner">The parent window that owns this dialog.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> representing the asynchronous operation, returning the entered text or null if canceled.</returns>
+        </member>
         <member name="T:View.Personal.Classes.WatchedDirectoryBackgroundConverter">
             <summary>
             Converts directory watch status to a background color for Data Monitor UI elements.
@@ -711,6 +789,11 @@
             Gets or sets the list of paths being actively watched by the Data Monitor.
             </summary>
         </member>
+        <member name="P:View.Personal.MainWindow.ActiveGraphGuid">
+            <summary>
+            Gets the GUID of the currently active graph in the application.
+            </summary>
+        </member>
         <member name="F:View.Personal.MainWindow.CurrentChatSession">
             <summary>
             The currently active chat session.
@@ -781,6 +864,24 @@
             </summary>
             <param name="message">The message to log.</param>
         </member>
+        <member name="M:View.Personal.MainWindow.GetCompletionModel(System.String)">
+            <summary>
+            Retrieves the completion model name for the specified provider from the application settings.
+            </summary>
+            <param name="provider">The name of the provider (e.g., "OpenAI", "Anthropic", "Ollama", "View").</param>
+            <returns>A string representing the completion model name for the specified provider, or "Unknown" if the provider is not recognized.</returns>
+        </member>
+        <member name="M:View.Personal.MainWindow.ExportGexfButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the Export GEXF button, initiating the export of the active graph to GEXF format.
+            </summary>
+            <param name="sender">The object that triggered the event, typically the Export GEXF button.</param>
+            <param name="e">The routed event arguments containing event data.</param>
+            <remarks>
+            This method logs all available graphs and their details, then delegates the export operation to 
+            <see cref="M:View.Personal.UIHandlers.MainWindowUIHandlers.ExportGexfButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,View.Personal.MainWindow,View.Personal.Services.FileBrowserService,LiteGraph.LiteGraphClient,System.Guid,System.Guid)"/> to process the export asynchronously.
+            </remarks>
+        </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
             Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
@@ -794,6 +895,15 @@
             <param name="userInput">The user's input string to generate a response for.</param>
             <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
             <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
+        </member>
+        <member name="M:View.Personal.MainWindow.GetEmbeddingsSdkAndRequest(System.String,View.Personal.Classes.AppSettings,System.String)">
+            <summary>
+            Creates an SDK instance and an embeddings request for the specified embeddings provider.
+            </summary>
+            <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>
+            <param name="appSettings">The application settings containing provider-specific configurations.</param>
+            <param name="userInput">The user input text to be embedded.</param>
+            <returns>A tuple containing the SDK instance (<see cref="T:System.Object"/>) and the <see cref="T:View.Sdk.Embeddings.EmbeddingsRequest"/> configured for the specified provider.</returns>
         </member>
         <member name="M:View.Personal.MainWindow.GenerateEmbeddings(System.Object,View.Sdk.Embeddings.EmbeddingsRequest)">
             <summary>
@@ -877,11 +987,60 @@
             <param name="provider">The name of the completion provider to determine the token extraction logic.</param>
             <returns>The extracted token string, or null if no token is found or the provider is unsupported.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.InitializeEmbeddingRadioButtons">
+            <summary>
+            Initializes the embedding provider radio buttons based on the selected model in the application settings.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.EmbeddingModel_Checked(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the checked event for embedding model radio buttons, updating the selected embedding provider in the application settings.
+            </summary>
+            <param name="sender">The radio button that triggered the event.</param>
+            <param name="e">The routed event arguments containing event data.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.OnClosed(System.EventArgs)">
             <summary>
             Handles the window closing event, ensuring Data Monitor resources are cleaned up.
             </summary>
             <param name="e">The event data for the window closing.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.LoadGraphComboBox">
+            <summary>
+            Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.GraphComboBox_SelectionChanged(System.Object,Avalonia.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Handles the selection changed event for the GraphComboBox, updating the active graph and refreshing related UI elements.
+            </summary>
+            <param name="sender">The ComboBox that triggered the event.</param>
+            <param name="e">The selection changed event arguments containing event data.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.CreateGraphButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the Create Graph button, prompting the user to enter a new knowledgebase name and creating it.
+            </summary>
+            <param name="sender">The object that triggered the event, typically the Create Graph button.</param>
+            <param name="e">The routed event arguments containing event data.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.CreateNewGraph(System.String)">
+            <summary>
+            Creates a new graph with the specified name and updates the application state.
+            </summary>
+            <param name="graphName">The name of the new graph to be created.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.LoadGraphsDataGrid">
+            <summary>
+            Populates the DataGrid with a list of all graphs retrieved from the application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.RemoveGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the Remove button in the Knowledgebase DataGrid, initiating the deletion of a graph.
+            </summary>
+            <param name="sender">The button that triggered the event.</param>
+            <param name="e">The routed event arguments containing event data.</param>
         </member>
         <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
@@ -975,6 +1134,21 @@
             <param name="result">The EmbeddingsResult object to validate.</param>
             <param name="expectedCount">The expected number of embeddings in the result.</param>
             <returns>True if the embeddings result is valid, false otherwise.</returns>
+        </member>
+        <member name="T:View.Personal.Services.GraphDeleter">
+            <summary>
+            Provides methods for handling graph deletion operations within the application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.GraphDeleter.DeleteGraphAsync(View.Personal.Classes.GraphItem,LiteGraph.LiteGraphClient,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Asynchronously deletes a graph from the LiteGraph database after user confirmation.
+            </summary>
+            <param name="graphItem">The <see cref="T:View.Personal.Classes.GraphItem"/> representing the graph to delete.</param>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance for graph operations.</param>
+            <param name="tenantGuid">The unique identifier for the tenant.</param>
+            <param name="window">The parent window for displaying dialogs and notifications.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous deletion operation.</returns>
         </member>
         <member name="T:View.Personal.Services.GraphExporter">
             <summary>
