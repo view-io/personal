@@ -448,10 +448,10 @@
                                 </Setter>
                             </Style>
                         </TabControl.Styles>
-                        <TabItem Header="Knowledgebases">
+                        <TabItem Header="Knowledgebase">
                             <Border Padding="0,20,0,0">
                                 <StackPanel Orientation="Vertical" Spacing="10">
-                                    <!-- Buttons for New and Remove Knowledgebase -->
+                                    <!-- Button for New Knowledgebase -->
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Button Click="CreateGraphButton_Click" Classes="flat">
                                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -460,15 +460,8 @@
                                                            FontWeight="400" />
                                             </StackPanel>
                                         </Button>
-                                        <Button Click="DeleteGraphButton_Click" Classes="flat">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <avalonia:MaterialIcon Kind="Delete" Height="16" Width="16" />
-                                                <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E"
-                                                           FontWeight="400" />
-                                            </StackPanel>
-                                        </Button>
                                     </StackPanel>
-                                    <!-- DataGrid to display all graphs -->
+                                    <!-- DataGrid with Remove button per row -->
                                     <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
                                               CanUserReorderColumns="False" CanUserResizeColumns="True"
                                               GridLinesVisibility="Horizontal" Background="#FFFFFF"
@@ -483,6 +476,42 @@
                                             <DataGridTextColumn Header="Last Update UTC"
                                                                 Binding="{Binding LastUpdateUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
                                                                 Width="150" />
+                                            <DataGridTemplateColumn Header="" Width="150">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Click="RemoveGraph_Click"
+                                                                Tag="{Binding}"
+                                                                Content="Remove"
+                                                                HorizontalAlignment="Center"
+                                                                ToolTip.Tip="Delete knowledgebase"
+                                                                Foreground="#6A6B6F"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Padding="0"
+                                                                Cursor="Hand">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <ContentPresenter
+                                                                        Content="{TemplateBinding Content}"
+                                                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                        Padding="{TemplateBinding Padding}"
+                                                                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                                        Background="Transparent" />
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                            <Button.Styles>
+                                                                <Style Selector="Button:pointerover">
+                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
+                                                                </Style>
+                                                                <Style Selector="Button:pressed">
+                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
+                                                                </Style>
+                                                            </Button.Styles>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </StackPanel>
@@ -866,27 +895,6 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <!-- <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" -->
-                        <!--             HorizontalAlignment="Left"> -->
-                        <!--     <Button Click="CreateGraphButton_Click" Classes="flat" VerticalAlignment="Bottom" -->
-                        <!--             Height="41"> -->
-                        <!--         <StackPanel Orientation="Horizontal" Spacing="8"> -->
-                        <!--             <avalonia:MaterialIcon Kind="Plus" -->
-                        <!--                                    VerticalAlignment="Top" -->
-                        <!--                                    Height="16" Width="16" /> -->
-                        <!--             <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E" FontWeight="400" /> -->
-                        <!--         </StackPanel> -->
-                        <!--     </Button> -->
-                        <!--     <Button Click="DeleteGraphButton_Click" Classes="flat" VerticalAlignment="Bottom" -->
-                        <!--             Height="41"> -->
-                        <!--         <StackPanel Orientation="Horizontal" Spacing="8"> -->
-                        <!--             <avalonia:MaterialIcon Kind="Delete" -->
-                        <!--                                    VerticalAlignment="Top" -->
-                        <!--                                    Height="16" Width="16" /> -->
-                        <!--             <TextBlock Text="Remove Knowledgebase" Foreground="#1A1C1E" FontWeight="400" /> -->
-                        <!--         </StackPanel> -->
-                        <!--     </Button> -->
-                        <!-- </StackPanel> -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                                     Spacing="8">
                             <Button Click="IngestBrowseButton_Click"

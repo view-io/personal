@@ -21,6 +21,7 @@ namespace View.Personal
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
+    using MsBox.Avalonia.Enums;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
@@ -1251,6 +1252,13 @@ namespace View.Personal
             {
                 Console.WriteLine("[ERROR] GraphsDataGrid not found.");
             }
+        }
+
+        private async void RemoveGraph_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is GraphItem graphItem)
+                await GraphDeleter.DeleteGraphAsync(graphItem, _LiteGraph, _TenantGuid, this);
+            LoadGraphComboBox();
         }
 
         #endregion
