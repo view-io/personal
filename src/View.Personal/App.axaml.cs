@@ -17,6 +17,7 @@ namespace View.Personal
     using System.Text.Json;
     using Services;
     using System.Collections.Specialized;
+    using System.Linq;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -40,6 +41,13 @@ namespace View.Personal
         /// Application settings for the View Personal application.
         /// </summary>
         public AppSettings ApplicationSettings;
+
+        /// <summary>
+        /// Event that is raised when the LiteGraph database has been successfully initialized and configured.
+        /// This event signals that the graph database is ready for use, including the creation of default
+        /// entities such as tenant, graph, user, and credentials if they did not already exist.
+        /// </summary>
+        public event EventHandler LiteGraphInitialized;
 
         /// <summary>
         /// The logging service for writing to the UI console and standard console.
@@ -163,6 +171,15 @@ namespace View.Personal
                             _Logging.Debug(_Header + "created graph " + _GraphGuid);
                         }
 
+                        var activeGraphGuid = Guid.Parse(ApplicationSettings.ActiveGraphGuid);
+                        if (!_LiteGraph.Graph.ExistsByGuid(_TenantGuid, activeGraphGuid))
+                        {
+                            _Logging.Debug(_Header +
+                                           $"Active graph {ApplicationSettings.ActiveGraphGuid} not found, resetting to default {_GraphGuid}");
+                            ApplicationSettings.ActiveGraphGuid = _GraphGuid.ToString();
+                            SaveSettings();
+                        }
+
                         if (!_LiteGraph.User.ExistsByGuid(_TenantGuid, _UserGuid))
                         {
                             var user = _LiteGraph.User.Create(new UserMaster
@@ -216,6 +233,7 @@ namespace View.Personal
                 }
 
             base.OnFrameworkInitializationCompleted();
+            LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -306,14 +324,34 @@ namespace View.Personal
         }
 
         /// <summary>
-        /// Gets the current application settings.
-        /// Provides public read-only access to the internal application settings object.
+        /// Retrieves all graphs associated with the specified tenant from the LiteGraph database.
         /// </summary>
+        /// <returns>A list of <see cref="Graph"/> objects representing all graphs for the tenant. Returns an empty list if an error occurs.</returns>
+        public List<Graph> GetAllGraphs()
+        {
+            try
+            {
+                var graphs = _LiteGraph.Graph.ReadAllInTenant(_TenantGuid).ToList();
+                _Logging.Debug(_Header + $"Retrieved {graphs.Count} graphs for tenant {_TenantGuid}");
+                return graphs;
+            }
+            catch (Exception ex)
+            {
+                _Logging.Error(_Header + $"Failed to retrieve graphs: {ex.Message}");
+                return new List<Graph>();
+            }
+        }
 
         #endregion
 
         #region Private-Methods
 
+        /// <summary>
+        /// Loads application settings from a configuration file or initializes default settings if the file does not exist.
+        /// </summary>
+        /// <remarks>
+        /// Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
+        /// </remarks>
         private void LoadSettings()
         {
             try
@@ -337,6 +375,10 @@ namespace View.Personal
                         ? credGuid
                         : Guid.NewGuid();
                     ApplicationSettings.WatchedPaths ??= new List<string>();
+                    ApplicationSettings.ActiveGraphGuid =
+                        Guid.TryParse(ApplicationSettings.ActiveGraphGuid, out var activeGraphGuid)
+                            ? activeGraphGuid.ToString()
+                            : _GraphGuid.ToString();
                 }
                 else
                 {
@@ -348,6 +390,7 @@ namespace View.Personal
 
                     ApplicationSettings = new AppSettings
                     {
+                        ActiveGraphGuid = _GraphGuid.ToString(),
                         OpenAI = new AppSettings.OpenAISettings
                             { Endpoint = "https://api.openai.com/v1/chat/completions" },
                         Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
@@ -379,6 +422,7 @@ namespace View.Personal
 
                 ApplicationSettings = new AppSettings
                 {
+                    ActiveGraphGuid = _GraphGuid.ToString(),
                     OpenAI = new AppSettings.OpenAISettings { Endpoint = "https://api.openai.com/v1/chat/completions" },
                     Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
                     Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },

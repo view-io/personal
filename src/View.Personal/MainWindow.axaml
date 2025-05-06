@@ -3,6 +3,7 @@
         xmlns:classes="clr-namespace:View.Personal.Classes"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:helpers="clr-namespace:View.Personal.Helpers"
+        xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Title="View Personal"
@@ -47,6 +48,55 @@
                             <TextBlock Text="Start New Chat" FontWeight="400" />
                         </StackPanel>
                     </Button>
+                    <ComboBox x:Name="GraphComboBox" DockPanel.Dock="Top" Margin="12 8 12 0" Width="149"
+                              Theme="{StaticResource MaterialOutlineComboBox}"
+                              assists:ComboBoxAssist.Label="Knowledgebase"
+                              Padding="12,4"
+                              Background="#FFFFFF"
+                              BorderBrush="#DBDBDB"
+                              BorderThickness="0.97"
+                              Foreground="#1A1C1E">
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+                                <Setter Property="MinHeight" Value="36" />
+                                <Setter Property="Margin" Value="0,0,0,0" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ Border#PART_Border">
+                                <Setter Property="CornerRadius" Value="8" />
+                                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ Border#splitBorder">
+                                <Setter Property="Margin" Value="0,6" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ Border#watermarkRoot">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="12,0,0,0" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+                                <Setter Property="Foreground" Value="#1A1C1E" />
+                            </Style>
+
+                            <Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+                                <Setter Property="BorderBrush" Value="#DBDBDB" />
+                                <Setter Property="BorderThickness" Value="0.97" />
+                            </Style>
+                            <Style Selector="ComboBoxItem">
+                                <Setter Property="Padding" Value="12,8" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="#1A1C1E" />
+                                <Setter Property="FontSize" Value="13" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ ContentPresenter">
+                                <Setter Property="FontSize" Value="13" />
+                            </Style>
+                            <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#F5F5F5" />
+                            </Style>
+                            <Style Selector="ComboBox /template/ Path#arrow">
+                                <Setter Property="Fill" Value="#1A1C1E" />
+                            </Style>
+                        </ComboBox.Styles>
+                    </ComboBox>
                     <StackPanel DockPanel.Dock="Top" Margin="24 24 12 0">
                         <TextBlock Name="ChatHistoryText" Text="Chat History" FontWeight="400" Margin="0 8 0 4"
                                    Foreground="Transparent" />
@@ -398,9 +448,71 @@
                                 </Setter>
                             </Style>
                         </TabControl.Styles>
-                        <TabItem Header="General">
+                        <TabItem Header="Knowledgebases">
                             <Border Padding="0,20,0,0">
-                                <TextBlock Text="General settings will go here." />
+                                <StackPanel Orientation="Vertical" Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Button Click="CreateGraphButton_Click" Classes="flat">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <avalonia:MaterialIcon Kind="Plus" Height="16" Width="16" />
+                                                <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E"
+                                                           FontWeight="400" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                    <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                              CanUserReorderColumns="False" CanUserResizeColumns="True"
+                                              GridLinesVisibility="Horizontal" Background="#FFFFFF"
+                                              HorizontalGridLinesBrush="#EDEDED" BorderThickness="1"
+                                              BorderBrush="#EDEDED">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+                                            <DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
+                                            <DataGridTextColumn Header="Created UTC"
+                                                                Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
+                                                                Width="150" />
+                                            <DataGridTextColumn Header="Last Update UTC"
+                                                                Binding="{Binding LastUpdateUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
+                                                                Width="150" />
+                                            <DataGridTemplateColumn Header="" Width="150">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Click="RemoveGraph_Click"
+                                                                Tag="{Binding}"
+                                                                Content="Remove"
+                                                                HorizontalAlignment="Center"
+                                                                ToolTip.Tip="Delete knowledgebase"
+                                                                Foreground="#6A6B6F"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Padding="0"
+                                                                Cursor="Hand">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <ContentPresenter
+                                                                        Content="{TemplateBinding Content}"
+                                                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                        Padding="{TemplateBinding Padding}"
+                                                                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                                        Background="Transparent" />
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                            <Button.Styles>
+                                                                <Style Selector="Button:pointerover">
+                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
+                                                                </Style>
+                                                                <Style Selector="Button:pressed">
+                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
+                                                                </Style>
+                                                            </Button.Styles>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
                             </Border>
                         </TabItem>
                         <TabItem Header="Providers" IsSelected="True">
@@ -417,8 +529,6 @@
                                                     Gain access to OpenAI models
                                                 </TextBlock>
                                             </StackPanel>
-
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="OpenAIExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -454,7 +564,6 @@
                                             </Expander>
                                         </Grid>
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Left column: Provider description -->
                                             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
                                                 <TextBlock Text="Anthropic" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" VerticalAlignment="Top" />
@@ -462,8 +571,6 @@
                                                     Gain access to Anthropic models
                                                 </TextBlock>
                                             </StackPanel>
-
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="AnthropicExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -507,7 +614,6 @@
                                                     Gain access to a local model.
                                                 </TextBlock>
                                             </StackPanel>
-                                            <!-- Right column: Expander with RadioButton in Header -->
                                             <Expander x:Name="OllamaExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
@@ -717,7 +823,6 @@
                                                             <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000" />
                                                         </StackPanel>
                                                     </Expander>
-
                                                     <!-- View Embedding Model -->
                                                     <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
@@ -776,52 +881,16 @@
                         <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
                     </StackPanel>
-                    <Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
-                            Margin="0,10,0,20" IsVisible="False">
-                        <Panel>
-                            <Canvas Margin="32">
-                                <Rectangle
-                                    Canvas.Left="0" Canvas.Top="0"
-                                    Width="{Binding $parent[Panel].Bounds.Width}"
-                                    Height="{Binding $parent[Panel].Bounds.Height}"
-                                    Stroke="#EDEDED"
-                                    StrokeThickness="2"
-                                    StrokeDashArray="4,4"
-                                    Fill="Transparent"
-                                    RadiusX="16" RadiusY="16" />
-                            </Canvas>
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60"
-                                        Spacing="8">
-                                <Border
-                                    HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <avalonia:MaterialIcon Kind="PlusCircleOutline" Width="24" Height="24"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                           Foreground="#A6A6A8" />
-                                </Border>
-                                <TextBlock Text="Upload Files" FontSize="20" FontWeight="500"
-                                           HorizontalAlignment="Center" Foreground="#1A1C1E" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="Click to upload" Classes="link" Foreground="#0472EF"
-                                            HorizontalAlignment="Center" Click="IngestBrowseButton_Click" FontSize="14"
-                                            Cursor="Hand" />
-                                    <TextBlock Text=" or drag and drop" Foreground="#464A4D"
-                                               HorizontalAlignment="Center" />
-                                </StackPanel>
-
-                                <TextBlock Text="(max file size 500mb)" Foreground="#6A6B6F" FontSize="12"
-                                           HorizontalAlignment="Center" />
-                            </StackPanel>
-                        </Panel>
-                    </Border>
-                    <Grid Name="FileOperationsPanel">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
-                                    Margin="0,0,0,12">
+                    <Grid Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                                    Spacing="8">
                             <Button Click="IngestBrowseButton_Click"
-                                    Classes="flat">
+                                    Classes="flat" VerticalAlignment="Bottom"
+                                    Height="41">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <avalonia:MaterialIcon Kind="Plus"
                                                            VerticalAlignment="Top"
@@ -829,10 +898,18 @@
                                     <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
                                 </StackPanel>
                             </Button>
-                            <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF">
+                            <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF"
+                                    VerticalAlignment="Bottom"
+                                    Height="41">
                                 <avalonia:MaterialIcon Kind="TrayArrowDown" />
                             </Button>
                         </StackPanel>
+                    </Grid>
+                    <Grid Name="FileOperationsPanel">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
                         <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FilesDataGrid"
                                       AutoGenerateColumns="False"
@@ -915,6 +992,45 @@
                             </DataGrid>
                         </ScrollViewer>
                     </Grid>
+
+                    <Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
+                            Margin="0,10,0,20" IsVisible="False">
+                        <Panel>
+                            <Canvas Margin="32">
+                                <Rectangle
+                                    Canvas.Left="0" Canvas.Top="0"
+                                    Width="{Binding $parent[Panel].Bounds.Width}"
+                                    Height="{Binding $parent[Panel].Bounds.Height}"
+                                    Stroke="#EDEDED"
+                                    StrokeThickness="2"
+                                    StrokeDashArray="4,4"
+                                    Fill="Transparent"
+                                    RadiusX="16" RadiusY="16" />
+                            </Canvas>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60"
+                                        Spacing="8">
+                                <Border
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <avalonia:MaterialIcon Kind="PlusCircleOutline" Width="24" Height="24"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Foreground="#A6A6A8" />
+                                </Border>
+                                <TextBlock Text="Upload Files" FontSize="20" FontWeight="500"
+                                           HorizontalAlignment="Center" Foreground="#1A1C1E" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Click to upload" Classes="link" Foreground="#0472EF"
+                                            HorizontalAlignment="Center" Click="IngestBrowseButton_Click" FontSize="14"
+                                            Cursor="Hand" />
+                                    <TextBlock Text=" or drag and drop" Foreground="#464A4D"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+
+                                <TextBlock Text="(max file size 500mb)" Foreground="#6A6B6F" FontSize="12"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Panel>
+                    </Border>
+
                     <ProgressBar x:Name="IngestSpinner"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Stretch"
@@ -1017,7 +1133,6 @@
                 <TextBlock Name="WorkspaceText" IsVisible="False" />
             </Grid>
         </DockPanel>
-        <!-- GridSplitter for resizing -->
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
         <!-- Console panel -->
         <Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"

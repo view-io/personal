@@ -11,6 +11,7 @@ namespace View.Personal
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Controls.Templates;
     using Avalonia.Input;
     using Avalonia.Interactivity;
     using Avalonia.Media;
@@ -18,6 +19,7 @@ namespace View.Personal
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using Helpers;
     using LiteGraph;
     using Sdk;
     using Sdk.Embeddings;
@@ -53,7 +55,22 @@ namespace View.Personal
         /// <summary>
         /// Gets or sets the list of paths being actively watched by the Data Monitor.
         /// </summary>
-        public List<string> WatchedPaths = new();
+        public List<string> WatchedPaths
+        {
+            get => _WatchedPathsPerGraph.TryGetValue(_ActiveGraphGuid, out var paths) ? paths : new List<string>();
+            set
+            {
+                _WatchedPathsPerGraph[_ActiveGraphGuid] = value;
+                var app = (App)Application.Current;
+                app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = value;
+                app.SaveSettings();
+            }
+        }
+
+        /// <summary>
+        /// Gets the GUID of the currently active graph in the application.
+        /// </summary>
+        public Guid ActiveGraphGuid => _ActiveGraphGuid;
 
         /// <summary>
         /// The currently active chat session.
@@ -68,7 +85,6 @@ namespace View.Personal
         private readonly TypeDetector _TypeDetector = new();
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
-        private Guid _GraphGuid => ((App)Application.Current)._GraphGuid;
         private static Serializer _Serializer = new();
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
@@ -76,6 +92,8 @@ namespace View.Personal
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
         private GridLength _ConsoleRowHeight = GridLength.Auto;
+        private Guid _ActiveGraphGuid;
+        private Dictionary<Guid, List<string>> _WatchedPathsPerGraph = new();
 
 #pragma warning disable CS0414 // Field is assigned but its value is never used
         private bool _WindowInitialized;
@@ -111,11 +129,20 @@ namespace View.Personal
                     var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
                     app.LoggingService = new LoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
+                    _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid); // Example, adjust as needed
+                    if (!app.ApplicationSettings.WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
+                        app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                    _WatchedPathsPerGraph = app.ApplicationSettings.WatchedPathsPerGraph;
+                    LoadGraphComboBox();
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
+                    var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
+                    graphComboBox.SelectionChanged += GraphComboBox_SelectionChanged;
+                    app.LiteGraphInitialized += (s, e) => LoadGraphComboBox();
                 };
                 NavList.SelectionChanged += (s, e) =>
-                    NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
+                    NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,
+                        _ActiveGraphGuid);
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
                 if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
@@ -185,7 +212,8 @@ namespace View.Personal
         /// <returns>A <see cref="Task"/> representing the asynchronous operation of file ingestion.</returns>
         public async Task IngestFileAsync(string filePath)
         {
-            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _GraphGuid, this);
+            await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
+                this);
         }
 
         /// <summary>
@@ -345,14 +373,11 @@ namespace View.Personal
         private void LoadSettingsFromFile()
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            var app = (App)Application.Current;
+            var settings = app.ApplicationSettings;
+
             if (File.Exists(filePath))
             {
-                var jsonString = File.ReadAllText(filePath);
-                var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
-
-                var app = (App)Application.Current;
-                app.ApplicationSettings = settings ?? new AppSettings();
-
                 // Load completion provider toggles
                 this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = settings.Anthropic.IsEnabled;
@@ -360,7 +385,7 @@ namespace View.Personal
                 this.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = settings.View.IsEnabled;
 
                 // Sync with SelectedProvider
-                switch (app.ApplicationSettings.SelectedProvider)
+                switch (settings.SelectedProvider)
                 {
                     case "OpenAI":
                         this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
@@ -377,7 +402,6 @@ namespace View.Personal
                 }
 
                 // OpenAI
-                this.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = settings.OpenAI.IsEnabled;
                 this.FindControl<TextBox>("OpenAIApiKey").Text = settings.OpenAI.ApiKey;
                 this.FindControl<TextBox>("OpenAICompletionModel").Text = settings.OpenAI.CompletionModel;
                 this.FindControl<TextBox>("OpenAIEndpoint").Text = settings.OpenAI.Endpoint;
@@ -433,12 +457,9 @@ namespace View.Personal
                     settings.Embeddings.SelectedEmbeddingModel == "OpenAI";
                 this.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked =
                     settings.Embeddings.SelectedEmbeddingModel == "VoyageAI";
-
-                app.ApplicationSettings = settings;
             }
             else
             {
-                var app = (App)Application.Current;
                 app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = "Local";
                 InitializeEmbeddingRadioButtons();
             }
@@ -446,7 +467,7 @@ namespace View.Personal
 
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _GraphGuid, this);
+            MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
         }
 
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -501,9 +522,14 @@ namespace View.Personal
 
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _GraphGuid);
+            NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _ActiveGraphGuid);
         }
 
+        /// <summary>
+        /// Retrieves the completion model name for the specified provider from the application settings.
+        /// </summary>
+        /// <param name="provider">The name of the provider (e.g., "OpenAI", "Anthropic", "Ollama", "View").</param>
+        /// <returns>A string representing the completion model name for the specified provider, or "Unknown" if the provider is not recognized.</returns>
         private string GetCompletionModel(string provider)
         {
             var app = (App)Application.Current;
@@ -523,10 +549,22 @@ namespace View.Personal
         }
 
 
+        /// <summary>
+        /// Handles the click event for the Export GEXF button, initiating the export of the active graph to GEXF format.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event, typically the Export GEXF button.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
+        /// <remarks>
+        /// This method logs all available graphs and their details, then delegates the export operation to 
+        /// <see cref="MainWindowUIHandlers.ExportGexfButton_Click"/> to process the export asynchronously.
+        /// </remarks>
         private async void ExportGexfButton_Click(object sender, RoutedEventArgs e)
         {
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs();
+            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
-                _TenantGuid, _GraphGuid);
+                _TenantGuid, _ActiveGraphGuid);
         }
 
         private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
@@ -613,6 +651,13 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Creates an SDK instance and an embeddings request for the specified embeddings provider.
+        /// </summary>
+        /// <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>
+        /// <param name="appSettings">The application settings containing provider-specific configurations.</param>
+        /// <param name="userInput">The user input text to be embedded.</param>
+        /// <returns>A tuple containing the SDK instance (<see cref="object"/>) and the <see cref="EmbeddingsRequest"/> configured for the specified provider.</returns>
         private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
             AppSettings appSettings, string userInput)
         {
@@ -706,7 +751,7 @@ namespace View.Personal
             var searchRequest = new VectorSearchRequest
             {
                 TenantGUID = _TenantGuid,
-                GraphGUID = _GraphGuid,
+                GraphGUID = _ActiveGraphGuid,
                 Domain = VectorSearchDomainEnum.Node,
                 SearchType = VectorSearchTypeEnum.CosineSimilarity,
                 Embeddings = embeddings
@@ -994,6 +1039,9 @@ namespace View.Personal
             };
         }
 
+        /// <summary>
+        /// Initializes the embedding provider radio buttons based on the selected model in the application settings.
+        /// </summary>
         private void InitializeEmbeddingRadioButtons()
         {
             var app = (App)Application.Current;
@@ -1026,6 +1074,11 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the checked event for embedding model radio buttons, updating the selected embedding provider in the application settings.
+        /// </summary>
+        /// <param name="sender">The radio button that triggered the event.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
         private void EmbeddingModel_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is RadioButton radioButton)
@@ -1084,6 +1137,170 @@ namespace View.Personal
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
+        }
+
+        /// <summary>
+        /// Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
+        /// </summary>
+        private void LoadGraphComboBox()
+        {
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs(); // Retrieve all graphs
+
+            // Convert graphs to GraphItem objects
+            var graphItems = graphs.Select(g => new GraphItem
+            {
+                Name = g?.Name ?? "(no name)",
+                GUID = g?.GUID ?? Guid.Empty,
+                CreatedUtc = g.CreatedUtc,
+                LastUpdateUtc = g.LastUpdateUtc
+            }).ToList();
+
+            // Find and configure the ComboBox
+            var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
+            graphComboBox.ItemsSource = graphItems;
+            graphComboBox.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+            {
+                return new TextBlock { Text = item?.Name ?? "(no name)" };
+            });
+
+            // Select the active graph based on saved settings
+            var activeGraph = graphItems.FirstOrDefault(g => g.GUID == _ActiveGraphGuid);
+            if (activeGraph != null)
+                graphComboBox.SelectedItem = activeGraph;
+            else if (graphItems.Count > 0)
+                // Default to the first graph if no active graph is found
+                graphComboBox.SelectedIndex = 0;
+            LoadGraphsDataGrid();
+        }
+
+        /// <summary>
+        /// Handles the selection changed event for the GraphComboBox, updating the active graph and refreshing related UI elements.
+        /// </summary>
+        /// <param name="sender">The ComboBox that triggered the event.</param>
+        /// <param name="e">The selection changed event arguments containing event data.</param>
+        private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox.SelectedItem is GraphItem selectedGraph)
+            {
+                _ActiveGraphGuid = selectedGraph.GUID;
+                var app = (App)Application.Current;
+                app.ApplicationSettings.ActiveGraphGuid = selectedGraph.GUID.ToString();
+                app.SaveSettings();
+
+                if (!_WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
+                {
+                    _WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                    app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
+                }
+
+                DataMonitorUIHandlers.UpdateFileWatchers(this);
+
+                DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
+
+                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+
+                var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
+                var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");
+                var fileOperationsPanel = this.FindControl<Grid>("FileOperationsPanel");
+
+                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                {
+                    var uniqueFiles =
+                        MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
+                    if (uniqueFiles.Any())
+                    {
+                        filesDataGrid.ItemsSource = uniqueFiles;
+                        uploadFilesPanel.IsVisible = false;
+                        filesDataGrid.IsVisible = true;
+                    }
+                    else
+                    {
+                        filesDataGrid.ItemsSource = null;
+                        filesDataGrid.IsVisible = false;
+                        fileOperationsPanel.IsVisible = false;
+                        uploadFilesPanel.IsVisible = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the click event for the Create Graph button, prompting the user to enter a new knowledgebase name and creating it.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event, typically the Create Graph button.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
+        private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new TextInputDialog("Create New Knowledgebase", "Enter Knowledgebase name:");
+            var result = await dialog.ShowDialogAsync(this); // Changed to ShowDialogAsync
+            if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
+        }
+
+        /// <summary>
+        /// Creates a new graph with the specified name and updates the application state.
+        /// </summary>
+        /// <param name="graphName">The name of the new graph to be created.</param>
+        private void CreateNewGraph(string graphName)
+        {
+            var app = (App)Application.Current;
+            var newGraphGuid = Guid.NewGuid();
+            var graph = new Graph
+            {
+                GUID = newGraphGuid,
+                Name = graphName,
+                TenantGUID = _TenantGuid
+            };
+
+            _LiteGraph.Graph.Create(graph);
+            _ActiveGraphGuid = newGraphGuid;
+            app.ApplicationSettings.ActiveGraphGuid = newGraphGuid.ToString();
+            app.SaveSettings();
+
+            LoadGraphComboBox();
+            LoadGraphsDataGrid();
+        }
+
+        /// <summary>
+        /// Populates the DataGrid with a list of all graphs retrieved from the application.
+        /// </summary>
+        private void LoadGraphsDataGrid()
+        {
+            var app = (App)Application.Current;
+            var graphs = app.GetAllGraphs();
+            Console.WriteLine($"[INFO] Fetched {graphs.Count} graphs.");
+
+            var graphItems = graphs.Select(g => new GraphItem
+            {
+                Name = g?.Name ?? "(no name)",
+                GUID = g?.GUID ?? Guid.Empty,
+                CreatedUtc = g.CreatedUtc,
+                LastUpdateUtc = g.LastUpdateUtc
+            }).ToList();
+
+            var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
+            if (graphsDataGrid != null)
+            {
+                Console.WriteLine("[INFO] Setting ItemsSource for GraphsDataGrid.");
+                graphsDataGrid.ItemsSource = graphItems;
+            }
+            else
+            {
+                Console.WriteLine("[ERROR] GraphsDataGrid not found.");
+            }
+        }
+
+        /// <summary>
+        /// Handles the click event for the Remove button in the Knowledgebase DataGrid, initiating the deletion of a graph.
+        /// </summary>
+        /// <param name="sender">The button that triggered the event.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
+        private async void RemoveGraph_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is GraphItem graphItem)
+                await GraphDeleter.DeleteGraphAsync(graphItem, _LiteGraph, _TenantGuid, this);
+            LoadGraphComboBox();
         }
 
         #endregion
