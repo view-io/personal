@@ -38,7 +38,7 @@ namespace View.Personal.Services
                 if (result != ButtonResult.Yes)
                     return;
 
-                liteGraph.Graph.DeleteByGuid(tenantGuid, graphItem.GUID);
+                liteGraph.Graph.DeleteByGuid(tenantGuid, graphItem.GUID, true);
 
                 if (window is MainWindow mainWindow)
                     mainWindow.ShowNotification("Knowledgebase Deleted", $"{graphItem.Name} was deleted successfully!",
