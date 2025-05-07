@@ -39,6 +39,7 @@
         <PackageReference Include="SerializationHelper" Version="2.0.3"/>
         <PackageReference Include="SyslogLogging" Version="2.0.8"/>
         <PackageReference Include="View.Sdk" Version="1.2.49.5"/>
+		<PackageReference Include="NPOI" Version="2.7.3" />
     </ItemGroup>
 
     <ItemGroup>

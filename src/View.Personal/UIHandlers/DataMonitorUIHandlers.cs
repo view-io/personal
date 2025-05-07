@@ -124,7 +124,7 @@ namespace View.Personal.UIHandlers
                 }
 
                 dataGrid.ItemsSource = entries;
-                navigateUpButton.IsEnabled = Directory.GetParent(mainWindow._CurrentPath) != null;
+                navigateUpButton.IsEnabled = mainWindow._CurrentPath != "Drives";
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -139,6 +139,7 @@ namespace View.Personal.UIHandlers
 
         /// <summary>
         /// Navigates to the parent directory of the current path in the Data Monitor UI.
+        /// If at a drive root, shows all available drives in the system.
         /// </summary>
         /// <param name="mainWindow">The main application window containing UI controls.</param>
         /// <param name="sender">The object that raised the event.</param>
@@ -146,7 +147,96 @@ namespace View.Personal.UIHandlers
         public static void NavigateUpButton_Click(MainWindow mainWindow, object sender, RoutedEventArgs e)
         {
             var parentDir = Directory.GetParent(mainWindow._CurrentPath);
-            if (parentDir != null) LoadFileSystem(mainWindow, parentDir.FullName);
+            if (parentDir != null)
+            {
+                LoadFileSystem(mainWindow, parentDir.FullName);
+            }
+            else
+            {
+                // At root level, show all drives
+                LoadAllDrives(mainWindow);
+            }
+        }
+
+        /// <summary>
+        /// Loads all available drives in the system into the Data Monitor UI.
+        /// </summary>
+        /// <param name="mainWindow">The main application window containing UI controls.</param>
+        private static void LoadAllDrives(MainWindow mainWindow)
+        {
+            try
+            {
+                var dataGrid = mainWindow.FindControl<DataGrid>("FileSystemDataGrid");
+                var pathTextBox = mainWindow.FindControl<TextBox>("CurrentPathTextBox");
+                var navigateUpButton = mainWindow.FindControl<Button>("NavigateUpButton");
+                var scrollViewer = dataGrid?.Parent as ScrollViewer;
+
+                // Save current scroll position
+                double? verticalOffset = scrollViewer?.Offset.Y;
+
+                if (dataGrid == null || pathTextBox == null || navigateUpButton == null) return;
+
+                // Set a special path to indicate we're at the drives view
+                mainWindow._CurrentPath = "Drives";
+                pathTextBox.Text = "Available Drives";
+
+                var entries = new List<FileSystemEntry>();
+                var drives = DriveInfo.GetDrives();
+
+                foreach (var drive in drives)
+                {
+                    try
+                    {
+                        if (!drive.IsReady) continue;
+
+                        var isSelectedWatched = mainWindow.WatchedPaths.Contains(drive.RootDirectory.FullName);
+                        var containsWatchedItems = ContainsWatchedItemsInPath(mainWindow, drive.RootDirectory.FullName);
+
+                        entries.Add(new FileSystemEntry
+                        {
+                            Name = !string.IsNullOrEmpty(drive.VolumeLabel)
+                                ? $"{drive.Name} ({drive.VolumeLabel})"
+                                : drive.Name,
+                            Size = FormatFileSize(drive.TotalSize),
+                            LastModified = "",
+                            FullPath = drive.RootDirectory.FullName,
+                            IsDirectory = true,
+                            IsWatched = isSelectedWatched,
+                            IsWatchedOrInherited = isSelectedWatched,
+                            IsCheckBoxEnabled = true,
+                            ContainsWatchedItems = containsWatchedItems,
+                            IsSelectedWatchedDirectory = isSelectedWatched
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        mainWindow.LogToConsole($"[WARNING] Could not access drive {drive.Name}: {ex.Message}");
+                    }
+                }
+
+                dataGrid.ItemsSource = entries;
+                navigateUpButton.IsEnabled = false;
+                mainWindow.LogToConsole("[INFO] Showing available drives");
+
+                // Restore scroll position after the UI has updated with a delay to ensure complete rendering
+                if (scrollViewer != null && verticalOffset.HasValue)
+                {
+                    // Use a two-step approach with a small delay to ensure the DataGrid has fully updated
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        // First let the UI update with the new items
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            // Then restore the scroll position after a small delay
+                            scrollViewer.Offset = new Avalonia.Vector(scrollViewer.Offset.X, verticalOffset.Value);
+                        }, Avalonia.Threading.DispatcherPriority.Background);
+                    }, Avalonia.Threading.DispatcherPriority.Render);
+                }
+            }
+            catch (Exception ex)
+            {
+                mainWindow.ShowNotification("Error", $"Failed to load drives: {ex.Message}", NotificationType.Error);
+            }
         }
 
         /// <summary>
