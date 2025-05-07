@@ -876,7 +876,10 @@
                         </TabItem>
                     </TabControl>
                 </StackPanel>
-                <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+                <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False"
+                            DragDrop.AllowDrop="True"
+                            DragDrop.DragOver="MyFilesPanel_DragOver"
+                            DragDrop.Drop="MyFilesPanel_Drop">
                     <StackPanel Spacing="12" Margin="0, 20, 0, 0">
                         <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />

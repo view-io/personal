@@ -1302,6 +1302,30 @@ namespace View.Personal
                 await GraphDeleter.DeleteGraphAsync(graphItem, _LiteGraph, _TenantGuid, this);
             LoadGraphComboBox();
         }
+        
+        private void MyFilesPanel_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.FileNames))
+            {
+                e.DragEffects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+        }
+
+        private async void MyFilesPanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.FileNames))
+            {
+                var filePaths = e.Data.GetFileNames().Where(File.Exists).ToList();
+                foreach (var filePath in filePaths)
+                {
+                    await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                }
+            }
+        }
 
         #endregion
 

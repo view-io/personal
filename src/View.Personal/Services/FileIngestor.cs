@@ -28,7 +28,6 @@ namespace View.Personal.Services
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using NPOI.HSSF.UserModel;
     using System.IO;
-    using Avalonia.Threading;
 
     /// <summary>
     /// Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -125,17 +124,17 @@ namespace View.Personal.Services
 
                 string? contentType = null;
                 var typeResult = typeDetector.Process(filePath, contentType);
-                var isXlsFile = System.IO.Path.GetExtension(filePath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+                var isXlsFile = Path.GetExtension(filePath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
                 app.Log($"[INFO] Detected Type: {typeResult.Type}");
 
-                List<Atom> atoms = new List<Atom>();
+                var atoms = new List<Atom>();
                 await Task.Run(async () =>
                 {
                     if (isXlsFile)
                     {
                         typeResult = new DocumentAtom.TypeDetection.TypeResult
                         {
-                            Type = DocumentTypeEnum.Xlsx,
+                            Type = DocumentTypeEnum.Xlsx
                         };
                         atoms = Extract(filePath);
                         app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel (.xls) file");
@@ -145,117 +144,117 @@ namespace View.Personal.Services
                         switch (typeResult.Type)
                         {
                             case DocumentTypeEnum.Pdf:
+                            {
+                                var processorSettings = new PdfProcessorSettings
                                 {
-                                    var processorSettings = new PdfProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 462
-                                        }
-                                    };
-                                    var pdfProcessor = new PdfProcessor(processorSettings);
-                                    atoms = pdfProcessor.Extract(filePath).ToList();
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF");
-                                    break;
-                                }
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var pdfProcessor = new PdfProcessor(processorSettings);
+                                atoms = pdfProcessor.Extract(filePath).ToList();
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF");
+                                break;
+                            }
                             case DocumentTypeEnum.Text:
+                            {
+                                var textSettings = new TextProcessorSettings
                                 {
-                                    var textSettings = new TextProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 462
-                                        }
-                                    };
-                                    var textProcessor = new TextProcessor(textSettings);
-                                    atoms = textProcessor.Extract(filePath).ToList();
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
-                                    break;
-                                }
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var textProcessor = new TextProcessor(textSettings);
+                                atoms = textProcessor.Extract(filePath).ToList();
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
+                                break;
+                            }
                             case DocumentTypeEnum.Pptx:
+                            {
+                                var processorSettings = new PptxProcessorSettings
                                 {
-                                    var processorSettings = new PptxProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 462
-                                        }
-                                    };
-                                    var pptxProcessor = new PptxProcessor(processorSettings);
-                                    atoms = pptxProcessor.Extract(filePath).ToList();
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint");
-                                    break;
-                                }
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var pptxProcessor = new PptxProcessor(processorSettings);
+                                atoms = pptxProcessor.Extract(filePath).ToList();
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint");
+                                break;
+                            }
                             case DocumentTypeEnum.Docx:
+                            {
+                                var processorSettings = new DocxProcessorSettings
                                 {
-                                    var processorSettings = new DocxProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 462
-                                        }
-                                    };
-                                    var docxProcessor = new DocxProcessor(processorSettings);
-                                    atoms = docxProcessor.Extract(filePath).ToList();
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document");
-                                    break;
-                                }
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var docxProcessor = new DocxProcessor(processorSettings);
+                                atoms = docxProcessor.Extract(filePath).ToList();
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document");
+                                break;
+                            }
                             case DocumentTypeEnum.Markdown:
+                            {
+                                var processorSettings = new MarkdownProcessorSettings
                                 {
-                                    var processorSettings = new MarkdownProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 384
-                                        }
-                                    };
-                                    using (var markdownProcessor = new MarkdownProcessor(processorSettings))
-                                    {
-                                        atoms = markdownProcessor.Extract(filePath).ToList();
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 384
                                     }
-
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file");
-                                    break;
+                                };
+                                using (var markdownProcessor = new MarkdownProcessor(processorSettings))
+                                {
+                                    atoms = markdownProcessor.Extract(filePath).ToList();
                                 }
+
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file");
+                                break;
+                            }
                             case DocumentTypeEnum.Xlsx:
+                            {
+                                var processorSettings = new XlsxProcessorSettings
                                 {
-                                    var processorSettings = new XlsxProcessorSettings
+                                    Chunking = new ChunkingSettings
                                     {
-                                        Chunking = new ChunkingSettings
-                                        {
-                                            Enable = true,
-                                            MaximumLength = 512,
-                                            ShiftSize = 384
-                                        }
-                                    };
-                                    using (var xlsxProcessor = new XlsxProcessor(processorSettings))
-                                    {
-                                        atoms = xlsxProcessor.Extract(filePath).ToList();
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 384
                                     }
-
-                                    app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file");
-                                    break;
+                                };
+                                using (var xlsxProcessor = new XlsxProcessor(processorSettings))
+                                {
+                                    atoms = xlsxProcessor.Extract(filePath).ToList();
                                 }
+
+                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file");
+                                break;
+                            }
 
                             default:
-                                {
-                                    app.Log(
-                                        $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
-                                    mainWindow.ShowNotification("Ingestion Error",
-                                        "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
-                                        NotificationType.Error);
-                                    return;
-                                }
+                            {
+                                app.Log(
+                                    $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
+                                mainWindow.ShowNotification("Ingestion Error",
+                                    "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                    NotificationType.Error);
+                                return;
+                            }
                         }
                     }
 
@@ -317,7 +316,8 @@ namespace View.Personal.Services
                                 if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error", "OpenAI embedding settings incomplete.",
+                                    mainWindow.ShowNotification("Ingestion Error",
+                                        "OpenAI embedding settings incomplete.",
                                         NotificationType.Error);
                                     return;
                                 }
@@ -335,18 +335,18 @@ namespace View.Personal.Services
                                 {
                                     var chunkNode = validChunkNodes[j];
                                     chunkNode.Vectors = new List<VectorMetadata>
-                                {
-                                    new()
                                     {
-                                        TenantGUID = tenantGuid,
-                                        GraphGUID = graphGuid,
-                                        NodeGUID = chunkNode.GUID,
-                                        Model = appSettings.Embeddings.OpenAIEmbeddingModel,
-                                        Dimensionality = embeddingsResult.ContentEmbeddings[j].Embeddings.Count,
-                                        Vectors = embeddingsResult.ContentEmbeddings[j].Embeddings,
-                                        Content = (chunkNode.Data as Atom)?.Text
-                                    }
-                                };
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.OpenAIEmbeddingModel,
+                                            Dimensionality = embeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                            Vectors = embeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
@@ -356,7 +356,8 @@ namespace View.Personal.Services
                             case "Ollama":
                                 if (string.IsNullOrEmpty(appSettings.Embeddings.OllamaEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error", "Local embedding model not configured.",
+                                    mainWindow.ShowNotification("Ingestion Error",
+                                        "Local embedding model not configured.",
                                         NotificationType.Error);
                                     return;
                                 }
@@ -367,25 +368,27 @@ namespace View.Personal.Services
                                     Model = appSettings.Embeddings.OllamaEmbeddingModel,
                                     Contents = chunkTexts
                                 };
-                                var ollamaEmbeddingsResult = await ollamaSdk.GenerateEmbeddings(ollamaEmbeddingsRequest);
+                                var ollamaEmbeddingsResult =
+                                    await ollamaSdk.GenerateEmbeddings(ollamaEmbeddingsRequest);
                                 if (!CheckEmbeddingsResult(mainWindow, ollamaEmbeddingsResult, validChunkNodes.Count))
                                     return;
                                 for (var j = 0; j < validChunkNodes.Count; j++)
                                 {
                                     var chunkNode = validChunkNodes[j];
                                     chunkNode.Vectors = new List<VectorMetadata>
-                                {
-                                    new()
                                     {
-                                        TenantGUID = tenantGuid,
-                                        GraphGUID = graphGuid,
-                                        NodeGUID = chunkNode.GUID,
-                                        Model = appSettings.Embeddings.OllamaEmbeddingModel,
-                                        Dimensionality = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
-                                        Vectors = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings,
-                                        Content = (chunkNode.Data as Atom)?.Text
-                                    }
-                                };
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                                            Dimensionality = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                                .Count,
+                                            Vectors = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
@@ -409,29 +412,32 @@ namespace View.Personal.Services
                                     Model = appSettings.Embeddings.VoyageEmbeddingModel,
                                     Contents = chunkTexts
                                 };
-                                var voyageEmbeddingsResult = await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
+                                var voyageEmbeddingsResult =
+                                    await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
                                 if (!CheckEmbeddingsResult(mainWindow, voyageEmbeddingsResult, validChunkNodes.Count))
                                     return;
                                 for (var j = 0; j < validChunkNodes.Count; j++)
                                 {
                                     var chunkNode = validChunkNodes[j];
                                     chunkNode.Vectors = new List<VectorMetadata>
-                                {
-                                    new()
                                     {
-                                        TenantGUID = tenantGuid,
-                                        GraphGUID = graphGuid,
-                                        NodeGUID = chunkNode.GUID,
-                                        Model = appSettings.Embeddings.VoyageEmbeddingModel,
-                                        Dimensionality = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
-                                        Vectors = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings,
-                                        Content = (chunkNode.Data as Atom)?.Text
-                                    }
-                                };
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                                            Dimensionality = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                                .Count,
+                                            Vectors = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
+                                app.Log(
+                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
                                 break;
 
                             case "View":
@@ -440,12 +446,14 @@ namespace View.Personal.Services
                                     string.IsNullOrEmpty(appSettings.View.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.ViewEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error", "View embedding settings incomplete.",
+                                    mainWindow.ShowNotification("Ingestion Error",
+                                        "View embedding settings incomplete.",
                                         NotificationType.Error);
                                     return;
                                 }
 
-                                var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid, appSettings.View.Endpoint,
+                                var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
+                                    appSettings.View.Endpoint,
                                     appSettings.View.AccessKey);
                                 var viewEmbeddingsRequest = new EmbeddingsRequest
                                 {
@@ -465,23 +473,24 @@ namespace View.Personal.Services
                                 };
                                 var viewEmbeddingsResult =
                                     await viewEmbeddingsSdk.GenerateEmbeddings(viewEmbeddingsRequest);
-                                if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count)) return;
+                                if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count))
+                                    return;
                                 for (var j = 0; j < validChunkNodes.Count; j++)
                                 {
                                     var chunkNode = validChunkNodes[j];
                                     chunkNode.Vectors = new List<VectorMetadata>
-                                {
-                                    new()
                                     {
-                                        TenantGUID = tenantGuid,
-                                        GraphGUID = graphGuid,
-                                        NodeGUID = chunkNode.GUID,
-                                        Model = appSettings.Embeddings.ViewEmbeddingModel,
-                                        Dimensionality = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
-                                        Vectors = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings,
-                                        Content = (chunkNode.Data as Atom)?.Text
-                                    }
-                                };
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.ViewEmbeddingModel,
+                                            Dimensionality = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                            Vectors = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
@@ -498,7 +507,7 @@ namespace View.Personal.Services
                 if (filePathTextBox != null)
                     filePathTextBox.Text = "";
                 app.Log($"[INFO] File {filePath} ingested successfully!");
-                var filename = System.IO.Path.GetFileName(filePath);
+                var filename = Path.GetFileName(filePath);
                 mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
                     NotificationType.Success);
             }
@@ -604,25 +613,19 @@ namespace View.Personal.Services
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             var workbook = new HSSFWorkbook(fs);
 
-            for (int i = 0; i < workbook.NumberOfSheets; i++)
+            for (var i = 0; i < workbook.NumberOfSheets; i++)
             {
                 var sheet = workbook.GetSheetAt(i);
-                for (int rowIdx = 0; rowIdx <= sheet.LastRowNum; rowIdx++)
+                for (var rowIdx = 0; rowIdx <= sheet.LastRowNum; rowIdx++)
                 {
                     var row = sheet.GetRow(rowIdx);
                     if (row == null) continue;
 
                     var cellTexts = new List<string>();
-                    foreach (var cell in row.Cells)
-                    {
-                        cellTexts.Add(cell.ToString() ?? string.Empty);
-                    }
+                    foreach (var cell in row.Cells) cellTexts.Add(cell.ToString() ?? string.Empty);
 
                     var atomText = string.Join(" ", cellTexts);
-                    if (!string.IsNullOrWhiteSpace(atomText))
-                    {
-                        atoms.Add(new Atom { Text = atomText });
-                    }
+                    if (!string.IsNullOrWhiteSpace(atomText)) atoms.Add(new Atom { Text = atomText });
                 }
             }
 
