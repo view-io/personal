@@ -1135,6 +1135,18 @@
             <param name="expectedCount">The expected number of embeddings in the result.</param>
             <returns>True if the embeddings result is valid, false otherwise.</returns>
         </member>
+        <member name="M:View.Personal.Services.FileIngester.Extract(System.String)">
+            <summary>
+            Extracts textual content from an Excel (.xls) file and converts each non-empty row into an <see cref="T:DocumentAtom.Core.Atoms.Atom"/>.
+            </summary>
+            <param name="filePath">The full path to the Excel (.xls) file.</param>
+            <returns>
+            A list of <see cref="T:DocumentAtom.Core.Atoms.Atom"/> objects, where each atom represents the concatenated text of a non-empty row in the Excel file.
+            </returns>
+            <remarks>
+            This method uses NPOI's <see cref="T:NPOI.HSSF.UserModel.HSSFWorkbook"/> to read the contents of the file. It supports only `.xls` format.
+            </remarks>
+        </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>
             Provides methods for handling graph deletion operations within the application.
@@ -1274,10 +1286,17 @@
         <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.NavigateUpButton_Click(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
             <summary>
             Navigates to the parent directory of the current path in the Data Monitor UI.
+            If at a drive root, shows all available drives in the system.
             </summary>
             <param name="mainWindow">The main application window containing UI controls.</param>
             <param name="sender">The object that raised the event.</param>
             <param name="e">The event data for the button click.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LoadAllDrives(View.Personal.MainWindow)">
+            <summary>
+            Loads all available drives in the system into the Data Monitor UI.
+            </summary>
+            <param name="mainWindow">The main application window containing UI controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FileSystemDataGrid_DoubleTapped(View.Personal.MainWindow,System.Object,Avalonia.Interactivity.RoutedEventArgs)">
             <summary>
