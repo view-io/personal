@@ -43,6 +43,11 @@ namespace View.Personal.Services
 
         #region Private-Members
 
+        private static readonly HashSet<string> SupportedExtensions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ".pdf", ".txt", ".pptx", ".docx", ".md", ".xlsx", ".xls", ".rtf"
+        };
+
         #endregion
 
         #region Public-Methods
@@ -65,12 +70,27 @@ namespace View.Personal.Services
         public static async Task IngestFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
+            var appSettings = ((App)Application.Current).ApplicationSettings;
+            var app = (App)Application.Current;
+
             // ToDo: Go back over this and make sure this is working as expected
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            var appSettings = ((App)Application.Current).ApplicationSettings;
-            var app = (App)Application.Current;
+            var fileName = Path.GetFileName(filePath);
+            if (fileName == ".DS_Store")
+            {
+                app.Log($"[INFO] Skipping system file: {filePath}");
+                return;
+            }
+
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            if (!SupportedExtensions.Contains(extension))
+            {
+                app.Log($"[WARNING] Unsupported file extension: {extension}");
+                mainWindow.ShowNotification("Ingestion Error", "Unsupported file type.", NotificationType.Error);
+                return;
+            }
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
 
