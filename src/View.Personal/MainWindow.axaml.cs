@@ -43,6 +43,7 @@ namespace View.Personal
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable CS8618, CS9264
 #pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS0618 // Type or member is obsolete
 
         #region Public-Members
 
@@ -1303,6 +1304,81 @@ namespace View.Personal
             LoadGraphComboBox();
         }
 
+        /// <summary>
+        /// Handles the DragOver event for the MyFilesPanel to provide visual feedback during a drag operation.
+        /// Sets the drag effect to Copy if files are being dragged over the panel, otherwise sets it to None.
+        /// </summary>
+        /// <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
+        /// <param name="e">The DragEventArgs containing information about the drag operation.</param>
+        private void MyFilesPanel_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.FileNames))
+                e.DragEffects = DragDropEffects.Copy;
+            else
+                e.DragEffects = DragDropEffects.None;
+        }
+
+        /// <summary>
+        /// Handles the Drop event for the MyFilesPanel to process dropped files or folders.
+        /// Retrieves the list of dropped paths, processes folders recursively, and ingests each file asynchronously.
+        /// Displays a spinner during the ingestion process and hides it upon completion.
+        /// </summary>
+        /// <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
+        /// <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
+        private async void MyFilesPanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.FileNames))
+            {
+                var paths = e.Data.GetFileNames().ToList();
+                var spinner = this.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
+                {
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+
+                try
+                {
+                    foreach (var path in paths)
+                        if (Directory.Exists(path))
+                        {
+                            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                            foreach (var file in files)
+                                try
+                                {
+                                    await IngestFileAsync(file);
+                                }
+                                catch (Exception ex)
+                                {
+                                    var app = (App)Application.Current;
+                                    app.Log($"[ERROR] Failed to ingest file {file}: {ex.Message}");
+                                    ShowNotification("Ingestion Error",
+                                        $"Failed to ingest {Path.GetFileName(file)}: {ex.Message}",
+                                        NotificationType.Error);
+                                }
+                        }
+                        else if (File.Exists(path))
+                        {
+                            try
+                            {
+                                await IngestFileAsync(path);
+                            }
+                            catch (Exception ex)
+                            {
+                                var app = (App)Application.Current;
+                                app.Log($"[ERROR] Failed to ingest file {path}: {ex.Message}");
+                                ShowNotification("Ingestion Error",
+                                    $"Failed to ingest {Path.GetFileName(path)}: {ex.Message}", NotificationType.Error);
+                            }
+                        }
+                }
+                finally
+                {
+                    if (spinner != null) spinner.IsVisible = false;
+                }
+            }
+        }
+
         #endregion
 
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -1312,5 +1388,6 @@ namespace View.Personal
 #pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8618, CS9264
 #pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
