@@ -469,12 +469,53 @@ namespace View.Personal.UIHandlers
         /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ConfirmAndWatchAsync(MainWindow mainWindow, CheckBox checkBox, FileSystemEntry entry)
         {
-            int fileCount;
+            int fileCount = 0;
             if (entry.IsDirectory)
-                fileCount = Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories)
-                    .Count(file => !IsTemporaryFile(Path.GetFileName(file)));
+            {
+                try
+                {
+                    // Try accessing directory to ensure read permission
+                    var accessibleFiles = Directory
+                        .EnumerateFiles(entry.FullPath, "*", SearchOption.AllDirectories)
+                        .Where(file =>
+                        {
+                            var (canAccess, _) = CheckFileReadPermission(file);
+                            return canAccess && !IsTemporaryFile(Path.GetFileName(file));
+                        })
+                        .ToList();
+
+                    fileCount = accessibleFiles.Count;
+
+                    if (fileCount == 0)
+                    {
+                        mainWindow.LogToConsole($"[WARN] No accessible files to ingest in directory '{entry.FullPath}'.");
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    mainWindow.ShowNotification("Ingestion Error", $"Access denied to directory: {entry.FullPath}.",
+                                        NotificationType.Error);
+                    mainWindow.LogToConsole($"[ERROR] Access denied to directory: {entry.FullPath}");
+                    checkBox.IsChecked = false;
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    mainWindow.LogToConsole($"[ERROR] Failed to access directory: {entry.FullPath}. {ex.Message}");
+                    checkBox.IsChecked = false;
+                    return;
+                }
+            }
             else
-                fileCount = 1;
+            {
+                var (canAccess, error) = CheckFileReadPermission(entry.FullPath);
+                if (!canAccess)
+                {
+                    mainWindow.LogToConsole($"[ERROR] {error}");
+                    checkBox.IsChecked = false;
+                    return;
+                }
+            }
 
             var result = await MessageBoxManager
                 .GetMessageBoxStandard("Confirm Watch",
@@ -1163,6 +1204,46 @@ namespace View.Personal.UIHandlers
                    (fileInfo.Attributes & FileAttributes.System) != 0 ||
                    fileInfo.Name.StartsWith(".") ||
                    fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Checks if the application has read permission for the specified file.
+        /// </summary>
+        /// <param name="filePath">The path to the file to check.</param>
+        /// <returns>A tuple containing a boolean indicating if the file can be accessed and an error message if it cannot.</returns>
+        private static (bool canAccess, string errorMessage) CheckFileReadPermission(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                return (false, "No file path provided. Please select a valid file.");
+
+            if (!File.Exists(filePath))
+                return (false, $"File does not exist: {filePath}. Please verify the file path is correct.");
+
+            try
+            {
+                // Try to open the file with read access to check permissions
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    // If we get here, we have read permission
+                    return (true, string.Empty);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return (false, $"Permission denied: You don't have sufficient permissions to access this file. Try running the application as administrator or check file permissions.");
+            }
+            catch (IOException ex) when ((ex.HResult & 0x0000FFFF) == 32) // File is being used by another process
+            {
+                return (false, $"File is in use by another process. Please close any programs that might be using this file and try again.");
+            }
+            catch (PathTooLongException)
+            {
+                return (false, $"The file path is too long. Try moving the file to a location with a shorter path.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Cannot access file: {ex.Message}. Please ensure the file is not corrupted and you have appropriate permissions.");
+            }
         }
 
         #endregion

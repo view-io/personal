@@ -1453,6 +1453,13 @@
             <param name="fileInfo">The file information to check.</param>
             <returns>True if the file is hidden or a system file, otherwise false.</returns>
         </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckFileReadPermission(System.String)">
+            <summary>
+            Checks if the application has read permission for the specified file.
+            </summary>
+            <param name="filePath">The path to the file to check.</param>
+            <returns>A tuple containing a boolean indicating if the file can be accessed and an error message if it cannot.</returns>
+        </member>
         <member name="T:View.Personal.UIHandlers.MainWindowUIHandlers">
             <summary>
             Provides event handlers and utility methods for managing the main window user interface.

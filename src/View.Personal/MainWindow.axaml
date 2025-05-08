@@ -209,12 +209,12 @@
                                 <avalonia:MaterialIcon Kind="ArrowBack" Height="16" Width="16" />
                             </Button>
                             <TextBox x:Name="CurrentPathTextBox" Grid.Column="1" KeyDown="CurrentPathTextBox_KeyDown"
-                                     Classes="no-shadow" Margin="8,0" />
+                                     Classes="no-shadow" Margin="8,0" Watermark="Enter path to navigate..." />
                             <Button x:Name="SyncButton" Grid.Column="2" Content="Sync" Click="SyncButton_Click"
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" Height="500" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
                                       CanUserReorderColumns="False" CanUserResizeColumns="False"
                                       GridLinesVisibility="Horizontal" Background="#FFFFFF"
@@ -547,17 +547,18 @@
                                                     <TextBlock Text="OpenAI API Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OpenAIApiKey" Text="YOUR_API_KEY_HERE"
+                                                    <TextBox x:Name="OpenAIApiKey" Classes="no-shadow" Text="YOUR_API_KEY_HERE"
                                                              Margin="8,0,8,0" />
                                                     <TextBlock Text="OpenAI Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OpenAICompletionModel" Text="gpt-3.5-turbo"
+                                                    <TextBox x:Name="OpenAICompletionModel" Classes="no-shadow" Text="gpt-3.5-turbo"
                                                              Margin="8,0,8,0" />
                                                     <TextBlock Text="OpenAI Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OpenAIEndpoint"
+															 Classes="no-shadow"
                                                              Text="https://api.openai.com/v1/chat/completions"
                                                              Margin="8,0,8,0" />
                                                 </StackPanel>
@@ -589,17 +590,18 @@
                                                     <TextBlock Text="Anthropic API Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="AnthropicApiKey" Text="YOUR_API_KEY_HERE"
+                                                    <TextBox x:Name="AnthropicApiKey" Classes="no-shadow" Text="YOUR_API_KEY_HERE"
                                                              Margin="8,0,8,0" />
                                                     <TextBlock Text="Anthropic Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="AnthropicCompletionModel" Text="claude-2"
+                                                    <TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow" Text="claude-2"
                                                              Margin="8,0,8,0" />
                                                     <TextBlock Text="Anthropic Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="AnthropicEndpoint"
+															 Classes="no-shadow"
                                                              Text="https://api.anthropic.com/v1" Margin="8,0,8,0" />
                                                 </StackPanel>
                                             </Expander>
@@ -633,12 +635,12 @@
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow" />
                                                     <TextBlock Text="Ollama Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow" />
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -668,32 +670,32 @@
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewApiKey" Text="YOUR_EMBEDDINGS_API_KEY"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                     <TextBlock Text="View Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                     <TextBlock Text="Ollama Host Name" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                     <TextBlock Text="Access Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                     <TextBlock Text="Tenant Guid" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                     <TextBlock Text="Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"/>
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -744,13 +746,13 @@
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OpenAIEmbeddingModel"
-                                                                     Text="text-embedding-3-small" />
+                                                                     Text="text-embedding-3-small" Classes="no-shadow"/>
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536" />
+                                                            <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536" Classes="no-shadow" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000" />
+                                                            <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000" Classes="no-shadow"/>
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- VoyageAI Embedding Model -->
@@ -775,20 +777,20 @@
                                                                     Margin="16,10,8,10">
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingModel" Text="voyage-3" />
+                                                            <TextBox x:Name="VoyageEmbeddingModel" Text="voyage-3" Classes="no-shadow"/>
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536" />
+                                                            <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536" Classes="no-shadow"/>
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000" />
+                                                            <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000" Classes="no-shadow"/>
                                                             <TextBlock Text="API Key" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here" />
+                                                            <TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here" Classes="no-shadow"/>
                                                             <TextBlock Text="Endpoint" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEndpoint"
-                                                                     Text="https://api.voyageai.com/" />
+                                                                     Text="https://api.voyageai.com/" Classes="no-shadow"/>
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- Ollama Embedding Model -->
@@ -814,13 +816,13 @@
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OllamaModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" Classes="no-shadow"/>
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536" />
+                                                            <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536" Classes="no-shadow"/>
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000" />
+                                                            <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000" Classes="no-shadow"/>
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- View Embedding Model -->
@@ -845,13 +847,13 @@
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="ViewEmbeddingModel"
-                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" />
+                                                                     Text="sentence-transformers/all-MiniLM-L6-v2" Classes="no-shadow"/>
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingDimensions" Text="1536" />
+                                                            <TextBox x:Name="ViewEmbeddingDimensions" Text="1536" Classes="no-shadow" />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000" />
+                                                            <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000" Classes="no-shadow"/>
                                                         </StackPanel>
                                                     </Expander>
                                                 </StackPanel>
