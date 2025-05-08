@@ -1042,6 +1042,23 @@
             <param name="sender">The button that triggered the event.</param>
             <param name="e">The routed event arguments containing event data.</param>
         </member>
+        <member name="M:View.Personal.MainWindow.MyFilesPanel_DragOver(System.Object,Avalonia.Input.DragEventArgs)">
+            <summary>
+            Handles the DragOver event for the MyFilesPanel to provide visual feedback during a drag operation.
+            Sets the drag effect to Copy if files are being dragged over the panel, otherwise sets it to None.
+            </summary>
+            <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
+            <param name="e">The DragEventArgs containing information about the drag operation.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.MyFilesPanel_Drop(System.Object,Avalonia.Input.DragEventArgs)">
+            <summary>
+            Handles the Drop event for the MyFilesPanel to process dropped files or folders.
+            Retrieves the list of dropped paths, processes folders recursively, and ingests each file asynchronously.
+            Displays a spinner during the ingestion process and hides it upon completion.
+            </summary>
+            <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
+            <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
