@@ -213,9 +213,14 @@
 
             <!-- No shadow textbox -->
             <Style Selector="TextBox.no-shadow">
+				<Setter Property="SelectionBrush" Value="#0472EF" />
+				<Setter Property="SelectionForegroundBrush" Value="White" />
+				<Setter Property="Cursor" Value="IBeam" />
+				<Setter Property="Background" Value="#FFFFFF" />
                 <Setter Property="Template">
                     <ControlTemplate>
-                        <Border Background="{TemplateBinding Background}"
+                        <Border Name="PART_Border"
+                                Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
@@ -232,16 +237,18 @@
                                 <ScrollViewer Name="PART_ContentHost"
                                               Padding="{TemplateBinding Padding}"
                                               HorizontalAlignment="Stretch">
-                                    <TextPresenter Name="PART_TextPresenter"
-                                                   Text="{TemplateBinding Text, Mode=TwoWay}"
-                                                   CaretIndex="{TemplateBinding CaretIndex, Mode=TwoWay}"
-                                                   SelectionStart="{TemplateBinding SelectionStart, Mode=TwoWay}"
-                                                   SelectionEnd="{TemplateBinding SelectionEnd, Mode=TwoWay}"
-                                                   TextWrapping="{TemplateBinding TextWrapping}"
-                                                   PasswordChar="{TemplateBinding PasswordChar}"
-                                                   RevealPassword="{TemplateBinding RevealPassword}"
-                                                   VerticalAlignment="Center" />
-                                </ScrollViewer>
+									<TextPresenter Name="PART_TextPresenter"
+				                                   Text="{TemplateBinding Text, Mode=TwoWay}"
+				                                   CaretIndex="{TemplateBinding CaretIndex, Mode=TwoWay}"
+				                                   SelectionStart="{TemplateBinding SelectionStart, Mode=TwoWay}"
+				                                   SelectionEnd="{TemplateBinding SelectionEnd, Mode=TwoWay}"
+				                                   SelectionBrush="{TemplateBinding SelectionBrush}"
+				                                   SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+				                                   TextWrapping="{TemplateBinding TextWrapping}"
+				                                   PasswordChar="{TemplateBinding PasswordChar}"
+				                                   RevealPassword="{TemplateBinding RevealPassword}"
+				                                   VerticalAlignment="Center" />
+								</ScrollViewer>
                             </Panel>
                         </Border>
                     </ControlTemplate>
