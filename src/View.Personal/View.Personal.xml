@@ -1215,45 +1215,36 @@
             <summary>
             Logs a debug message to the file.
             </summary>
-            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogInfo(System.String)">
             <summary>
             Logs an informational message to the file.
             </summary>
-            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogWarning(System.String)">
             <summary>
             Logs a warning message to the file.
             </summary>
-            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogError(System.String)">
             <summary>
             Logs an error message to the file.
             </summary>
-            <param name="message">The message to log.</param>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogException(System.Exception,System.String)">
             <summary>
             Logs an exception to the file with a custom message.
             </summary>
-            <param name="ex">The exception to log.</param>
-            <param name="message">An optional custom message to include with the exception details.</param>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.GetCurrentLogFilePath">
             <summary>
             Gets the current log file path based on the date.
             </summary>
-            <returns>The full path to the current log file.</returns>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.WriteToFile(System.String,System.String)">
             <summary>
             Writes a message to the log file with the specified level.
             </summary>
-            <param name="level">The log level (e.g., DEBUG, INFO, WARNING, ERROR).</param>
-            <param name="message">The message to write to the log file.</param>
         </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>

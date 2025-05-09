@@ -216,13 +216,12 @@
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <DataGrid x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
-                                      CanUserReorderColumns="False" CanUserResizeColumns="False"
-                                      GridLinesVisibility="Horizontal" Background="#FFFFFF"
-                                      HorizontalGridLinesBrush="#EDEDED" BorderThickness="1" BorderBrush="#EDEDED"
-                                      DoubleTapped="FileSystemDataGrid_DoubleTapped"
-                                      x:DataType="classes:FileSystemEntry">
+					    <DataGrid Grid.Row="1" Height="500" x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+								  CanUserReorderColumns="False" CanUserResizeColumns="False"
+								  GridLinesVisibility="Horizontal" Background="#FFFFFF"
+								  HorizontalGridLinesBrush="#EDEDED" BorderThickness="1" BorderBrush="#EDEDED"
+								  DoubleTapped="FileSystemDataGrid_DoubleTapped"
+								  x:DataType="classes:FileSystemEntry" VerticalScrollBarVisibility="Visible">
                                 <DataGrid.Styles>
                                     <Style Selector="DataGridColumnHeader">
                                         <Setter Property="Background" Value="#FAFAFA" />
@@ -302,8 +301,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
-                            </DataGrid>
-                        </ScrollViewer>
+                    </DataGrid>
                     </Grid>
                 </StackPanel>
                 <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
