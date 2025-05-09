@@ -210,7 +210,8 @@
                                 <avalonia:MaterialIcon Kind="ArrowBack" Height="16" Width="16" />
                             </Button>
                             <TextBox x:Name="CurrentPathTextBox" Grid.Column="1" KeyDown="CurrentPathTextBox_KeyDown"
-                                     Classes="no-shadow" Margin="8,0" Watermark="Enter path to navigate..." />
+                                     Classes="no-shadow" Margin="8,0" Watermark="Enter path to navigate..."
+                                     BorderBrush="#DBDBDB" BorderThickness="0.97" CornerRadius="8" Padding="8,0" />
                             <Button x:Name="SyncButton" Grid.Column="2" Content="Sync" Click="SyncButton_Click"
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
