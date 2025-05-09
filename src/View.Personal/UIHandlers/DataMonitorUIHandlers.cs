@@ -86,7 +86,7 @@ namespace View.Personal.UIHandlers
                     {
                         Name = dirInfo.Name,
                         Size = "",
-                        LastModified = dirInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+                        LastModified = FormatLastModifiedDateTime(dirInfo.LastWriteTime),
                         FullPath = dirInfo.FullName,
                         IsDirectory = true,
                         IsWatched = isSelectedWatched,
@@ -112,7 +112,7 @@ namespace View.Personal.UIHandlers
                     {
                         Name = fileInfo.Name,
                         Size = FormatFileSize(fileInfo.Length),
-                        LastModified = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+                        LastModified = FormatLastModifiedDateTime(fileInfo.LastWriteTime),
                         FullPath = fileInfo.FullName,
                         IsDirectory = false,
                         IsWatched = isSelectedWatched,
@@ -1030,6 +1030,21 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
+
+        /// <summary>
+        /// Formats the last modified date time according to user's system time format preference (12-hour or 24-hour)
+        /// </summary>
+        /// <param name="dateTime">The DateTime to format</param>
+        /// <returns>Formatted date time string</returns>
+        private static string FormatLastModifiedDateTime(DateTime dateTime)
+        {
+            // Detect if the system uses 24-hour time format
+            bool uses24HourFormat = !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
+            string timeFormat = uses24HourFormat ? "HH:mm" : "hh:mm tt";
+            string dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
+            
+            return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
+        }
 
         /// <summary>
         /// Processes completed file operations by ingesting changed or new files and updating the UI.

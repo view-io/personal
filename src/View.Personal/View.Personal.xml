@@ -35,6 +35,11 @@
             The logging service for writing to the UI console and standard console.
             </summary>
         </member>
+        <member name="P:View.Personal.App.FileLoggingService">
+            <summary>
+            The file logging service for writing logs to a file to help diagnose application crashes.
+            </summary>
+        </member>
         <member name="M:View.Personal.App.Initialize">
             <summary>
             Initializes the component by loading its XAML definition.
@@ -678,22 +683,53 @@
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
         </member>
+        <member name="T:View.Personal.Helpers.ByteSizeConverter">
+            <summary>
+            A value converter that transforms a string representing a file size in bytes into a human-readable format (e.g., "1.5 KB", "2.0 MB").
+            This converter is used in Avalonia-based applications to improve the readability of file sizes in the UI.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.ByteSizeConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a string representing a file size in bytes to a human-readable string.
+            </summary>
+            <param name="value">The value to convert, expected to be a string representing a numeric value (e.g., "1536").</param>
+            <param name="targetType">The type of the binding target property (not used in this converter).</param>
+            <param name="parameter">An optional parameter (not used in this converter).</param>
+            <param name="culture">The culture to use for formatting (not used in this converter).</param>
+            <returns>
+            A string representing the file size in a human-readable format (e.g., "1.5 KB", "2.0 MB").
+            If the input is not a valid numeric string, returns "0 B".
+            </returns>
+        </member>
+        <member name="M:View.Personal.Helpers.ByteSizeConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            This method is not implemented as the conversion is one-way (from bytes to human-readable format).
+            </summary>
+            <param name="value">The value to convert back (not used).</param>
+            <param name="targetType">The type of the binding target property (not used).</param>
+            <param name="parameter">An optional parameter (not used).</param>
+            <param name="culture">The culture to use for formatting (not used).</param>
+            <returns>Throws a <see cref="T:System.NotImplementedException"/> as conversion back is not supported.</returns>
+        </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>
-            Converts DateTime objects or string date representations to a formatted string with the pattern "M/d/yyyy, h:mm:ss tt".
-            Handles both DateTime objects and string dates in UTC format.
+            Converts DateTime objects or string date representations to a formatted string.
+            Handles both DateTime objects and string dates in UTC format, converting them to local time zone.
+            Respects the user's system time format preference (12-hour or 24-hour).
             </summary>
         </member>
         <member name="M:View.Personal.Helpers.DateTimeFormatConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
             <summary>
-            Converts a DateTime object or string date representation to a formatted string.
+            Converts a DateTime object or string date representation to a formatted string in the local time zone.
+            Respects the user's system time format preference (12-hour or 24-hour).
             </summary>
             <param name="value">The value to convert, either a DateTime object or a string representation of a date.</param>
             <param name="targetType">The type of the binding target property (not used).</param>
             <param name="parameter">Optional parameter (not used).</param>
-            <param name="culture">The culture to use for conversion (not used, always uses InvariantCulture).</param>
+            <param name="culture">The culture to use for conversion (not used, uses current culture for format detection).</param>
             <returns>
-            A string in the format "M/d/yyyy, h:mm:ss tt" (e.g., "3/25/2025, 7:47:03 PM") if conversion is successful;
+            A string in the format "M/d/yyyy, h:mm:ss tt" (12-hour) or "M/d/yyyy, HH:mm:ss" (24-hour) in local time zone if conversion is successful;
             otherwise, the string representation of the value or an empty string.
             </returns>
         </member>
@@ -1059,12 +1095,11 @@
             <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
             <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
-            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1163,6 +1198,53 @@
             <remarks>
             This method uses NPOI's <see cref="T:NPOI.HSSF.UserModel.HSSFWorkbook"/> to read the contents of the file. It supports only `.xls` format.
             </remarks>
+        </member>
+        <member name="T:View.Personal.Services.FileLoggingService">
+            <summary>
+            Service for logging messages to a file to help diagnose application crashes.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.#ctor(System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Services.FileLoggingService"/> class.
+            </summary>
+            <param name="logFilePath">The path to the log file. If null, defaults to "./logs/view-personal-[DATE].log".</param>
+            <param name="appendTimestamp">Whether to append a timestamp to each log entry.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.LogDebug(System.String)">
+            <summary>
+            Logs a debug message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.LogInfo(System.String)">
+            <summary>
+            Logs an informational message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.LogWarning(System.String)">
+            <summary>
+            Logs a warning message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.LogError(System.String)">
+            <summary>
+            Logs an error message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.LogException(System.Exception,System.String)">
+            <summary>
+            Logs an exception to the file with a custom message.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.GetCurrentLogFilePath">
+            <summary>
+            Gets the current log file path based on the date.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileLoggingService.WriteToFile(System.String,System.String)">
+            <summary>
+            Writes a message to the log file with the specified level.
+            </summary>
         </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>
@@ -1430,6 +1512,13 @@
             <param name="mainWindow">The main application window containing UI controls.</param>
             <param name="source">The object that raised the event.</param>
             <param name="e">The event data for the file rename.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.FormatLastModifiedDateTime(System.DateTime)">
+            <summary>
+            Formats the last modified date time according to user's system time format preference (12-hour or 24-hour)
+            </summary>
+            <param name="dateTime">The DateTime to format</param>
+            <returns>Formatted date time string</returns>
         </member>
         <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.CheckForCompletedFileOperations(View.Personal.MainWindow,System.Object,System.Timers.ElapsedEventArgs)">
             <summary>
