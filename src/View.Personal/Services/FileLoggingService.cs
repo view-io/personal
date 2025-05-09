@@ -9,11 +9,17 @@ namespace View.Personal.Services
     /// </summary>
     public class FileLoggingService
     {
+        #region Private-Members
+
         private readonly string _logDirectory;
         private readonly string _baseFileName;
         private readonly object _lockObject = new object();
         private readonly bool _appendTimestamp;
         private DateTime _currentLogDate;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLoggingService"/> class.
@@ -24,7 +30,7 @@ namespace View.Personal.Services
         {
             _appendTimestamp = appendTimestamp;
             _currentLogDate = DateTime.UtcNow.Date;
-            
+
             if (string.IsNullOrEmpty(logFilePath))
             {
                 _logDirectory = Path.Combine(".", "logs");
@@ -35,7 +41,7 @@ namespace View.Personal.Services
                 _logDirectory = Path.GetDirectoryName(logFilePath) ?? Path.Combine(".", "logs");
                 _baseFileName = Path.GetFileNameWithoutExtension(logFilePath);
             }
-            
+
             if (!Directory.Exists(_logDirectory))
             {
                 Directory.CreateDirectory(_logDirectory);
@@ -44,10 +50,13 @@ namespace View.Personal.Services
             LogInfo($"FileLoggingService initialized at {DateTime.UtcNow.ToString(Constants.TimestampFormat)}");
         }
 
+        #endregion
+
+        #region Public-Methods
+
         /// <summary>
         /// Logs a debug message to the file.
         /// </summary>
-        /// <param name="message">The message to log.</param>
         public void LogDebug(string message)
         {
             WriteToFile("DEBUG", message);
@@ -56,7 +65,6 @@ namespace View.Personal.Services
         /// <summary>
         /// Logs an informational message to the file.
         /// </summary>
-        /// <param name="message">The message to log.</param>
         public void LogInfo(string message)
         {
             WriteToFile("INFO", message);
@@ -65,7 +73,6 @@ namespace View.Personal.Services
         /// <summary>
         /// Logs a warning message to the file.
         /// </summary>
-        /// <param name="message">The message to log.</param>
         public void LogWarning(string message)
         {
             WriteToFile("WARNING", message);
@@ -74,7 +81,6 @@ namespace View.Personal.Services
         /// <summary>
         /// Logs an error message to the file.
         /// </summary>
-        /// <param name="message">The message to log.</param>
         public void LogError(string message)
         {
             WriteToFile("ERROR", message);
@@ -83,8 +89,6 @@ namespace View.Personal.Services
         /// <summary>
         /// Logs an exception to the file with a custom message.
         /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        /// <param name="message">An optional custom message to include with the exception details.</param>
         public void LogException(Exception ex, string message)
         {
             StringBuilder sb = new StringBuilder();
@@ -107,10 +111,13 @@ namespace View.Personal.Services
             WriteToFile("EXCEPTION", sb.ToString());
         }
 
+        #endregion
+
+        #region Private-Methods
+
         /// <summary>
         /// Gets the current log file path based on the date.
         /// </summary>
-        /// <returns>The full path to the current log file.</returns>
         private string GetCurrentLogFilePath()
         {
             DateTime now = DateTime.UtcNow.Date;
@@ -121,8 +128,6 @@ namespace View.Personal.Services
         /// <summary>
         /// Writes a message to the log file with the specified level.
         /// </summary>
-        /// <param name="level">The log level (e.g., DEBUG, INFO, WARNING, ERROR).</param>
-        /// <param name="message">The message to write to the log file.</param>
         private void WriteToFile(string level, string message)
         {
             try
@@ -148,5 +153,7 @@ namespace View.Personal.Services
                 Console.WriteLine($"Failed to write to log file: {ex.Message}");
             }
         }
+
+        #endregion
     }
 }
