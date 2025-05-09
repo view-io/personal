@@ -303,7 +303,7 @@ namespace View.Personal.UIHandlers
 
                 foreach (var msg in conversationHistory)
                 {
-                    var labelBlock = new TextBlock
+                    var labelBlock = new SelectableTextBlock
                     {
                         Text = msg.Role == "user" ? "You" : "Assistant",
                         Foreground = new SolidColorBrush(Color.Parse("#464A4D")),
@@ -312,13 +312,13 @@ namespace View.Personal.UIHandlers
                         Margin = new Thickness(180, 0, 0, 0)
                     };
 
-                    var messageBlock = new TextBlock
+                    var messageBlock = new SelectableTextBlock
                     {
                         Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
                         TextWrapping = TextWrapping.Wrap,
                         Margin = new Thickness(10, 0, 0, 0),
                         FontSize = 14,
-                        Foreground = new SolidColorBrush(Color.Parse("#1A1C1E"))
+                        Foreground = new SolidColorBrush(Color.Parse("#1A1C1E")),
                     };
 
                     var messageContainer = new StackPanel
