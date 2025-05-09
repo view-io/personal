@@ -54,6 +54,11 @@ namespace View.Personal
         /// </summary>
         public LoggingService LoggingService { get; set; }
 
+        /// <summary>
+        /// The file logging service for writing logs to a file to help diagnose application crashes.
+        /// </summary>
+        public FileLoggingService FileLoggingService { get; set; }
+
         #endregion
 
         #region Private-Members
@@ -110,6 +115,9 @@ namespace View.Personal
                     _Logging = new LoggingModule("127.0.0.1", 514, false);
                     _Logging.Debug(_Header + "initializing View Personal at " +
                                    DateTime.UtcNow.ToString(Constants.TimestampFormat));
+
+                    FileLoggingService = new FileLoggingService(Path.Combine(".", "logs", "view-personal.log"),true);
+                    FileLoggingService.LogInfo(_Header + "File logging initialized");
 
                     LoadSettings();
 
@@ -229,6 +237,7 @@ namespace View.Personal
                         Icon.Error);
                     messageBoxStandardWindow.ShowAsync().Wait();
                     _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
+                    FileLoggingService?.LogException(e, _Header + "Unable to start View Personal");
                     Environment.Exit(1);
                 }
 
@@ -243,6 +252,7 @@ namespace View.Personal
         public void Log(string message)
         {
             LoggingService?.Log(message);
+            FileLoggingService?.LogInfo(message);
         }
 
         /// <summary>
@@ -277,6 +287,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to save settings: {ex.Message}");
+                FileLoggingService?.LogException(ex, _Header + "Failed to save settings");
             }
         }
 
@@ -338,6 +349,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to retrieve graphs: {ex.Message}");
+                FileLoggingService?.LogException(ex, _Header + "Failed to retrieve graphs");
                 return new List<Graph>();
             }
         }
@@ -415,6 +427,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
+                FileLoggingService?.LogException(ex, _Header + "Failed to load settings");
                 _TenantGuid = Guid.Empty;
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();
