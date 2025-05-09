@@ -148,14 +148,10 @@ namespace View.Personal.UIHandlers
         {
             var parentDir = Directory.GetParent(mainWindow._CurrentPath);
             if (parentDir != null)
-            {
                 LoadFileSystem(mainWindow, parentDir.FullName);
-            }
             else
-            {
                 // At root level, show all drives
                 LoadAllDrives(mainWindow);
-            }
         }
 
         /// <summary>
@@ -172,7 +168,7 @@ namespace View.Personal.UIHandlers
                 var scrollViewer = dataGrid?.Parent as ScrollViewer;
 
                 // Save current scroll position
-                double? verticalOffset = scrollViewer?.Offset.Y;
+                var verticalOffset = scrollViewer?.Offset.Y;
 
                 if (dataGrid == null || pathTextBox == null || navigateUpButton == null) return;
 
@@ -184,7 +180,6 @@ namespace View.Personal.UIHandlers
                 var drives = DriveInfo.GetDrives();
 
                 foreach (var drive in drives)
-                {
                     try
                     {
                         if (!drive.IsReady) continue;
@@ -212,7 +207,6 @@ namespace View.Personal.UIHandlers
                     {
                         mainWindow.LogToConsole($"[WARNING] Could not access drive {drive.Name}: {ex.Message}");
                     }
-                }
 
                 dataGrid.ItemsSource = entries;
                 navigateUpButton.IsEnabled = false;
@@ -220,7 +214,6 @@ namespace View.Personal.UIHandlers
 
                 // Restore scroll position after the UI has updated with a delay to ensure complete rendering
                 if (scrollViewer != null && verticalOffset.HasValue)
-                {
                     // Use a two-step approach with a small delay to ensure the DataGrid has fully updated
                     Dispatcher.UIThread.Post(() =>
                     {
@@ -228,10 +221,9 @@ namespace View.Personal.UIHandlers
                         Dispatcher.UIThread.Post(() =>
                         {
                             // Then restore the scroll position after a small delay
-                            scrollViewer.Offset = new Avalonia.Vector(scrollViewer.Offset.X, verticalOffset.Value);
-                        }, Avalonia.Threading.DispatcherPriority.Background);
-                    }, Avalonia.Threading.DispatcherPriority.Render);
-                }
+                            scrollViewer.Offset = new Vector(scrollViewer.Offset.X, verticalOffset.Value);
+                        }, DispatcherPriority.Background);
+                    }, DispatcherPriority.Render);
             }
             catch (Exception ex)
             {
@@ -469,7 +461,7 @@ namespace View.Personal.UIHandlers
         /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ConfirmAndWatchAsync(MainWindow mainWindow, CheckBox checkBox, FileSystemEntry entry)
         {
-            int fileCount = 0;
+            var fileCount = 0;
             if (entry.IsDirectory)
             {
                 try
@@ -487,14 +479,13 @@ namespace View.Personal.UIHandlers
                     fileCount = accessibleFiles.Count;
 
                     if (fileCount == 0)
-                    {
-                        mainWindow.LogToConsole($"[WARN] No accessible files to ingest in directory '{entry.FullPath}'.");
-                    }
+                        mainWindow.LogToConsole(
+                            $"[WARN] No accessible files to ingest in directory '{entry.FullPath}'.");
                 }
                 catch (UnauthorizedAccessException)
                 {
                     mainWindow.ShowNotification("Ingestion Error", $"Access denied to directory: {entry.FullPath}.",
-                                        NotificationType.Error);
+                        NotificationType.Error);
                     mainWindow.LogToConsole($"[ERROR] Access denied to directory: {entry.FullPath}");
                     checkBox.IsChecked = false;
                     return;
@@ -515,6 +506,8 @@ namespace View.Personal.UIHandlers
                     checkBox.IsChecked = false;
                     return;
                 }
+
+                fileCount = 1;
             }
 
             var result = await MessageBoxManager
@@ -1039,10 +1032,11 @@ namespace View.Personal.UIHandlers
         private static string FormatLastModifiedDateTime(DateTime dateTime)
         {
             // Detect if the system uses 24-hour time format
-            bool uses24HourFormat = !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
-            string timeFormat = uses24HourFormat ? "HH:mm" : "hh:mm tt";
-            string dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
-            
+            var uses24HourFormat =
+                !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
+            var timeFormat = uses24HourFormat ? "HH:mm" : "hh:mm tt";
+            var dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
+
             return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
         }
 
@@ -1245,11 +1239,13 @@ namespace View.Personal.UIHandlers
             }
             catch (UnauthorizedAccessException)
             {
-                return (false, $"Permission denied: You don't have sufficient permissions to access this file. Try running the application as administrator or check file permissions.");
+                return (false,
+                    $"Permission denied: You don't have sufficient permissions to access this file. Try running the application as administrator or check file permissions.");
             }
             catch (IOException ex) when ((ex.HResult & 0x0000FFFF) == 32) // File is being used by another process
             {
-                return (false, $"File is in use by another process. Please close any programs that might be using this file and try again.");
+                return (false,
+                    $"File is in use by another process. Please close any programs that might be using this file and try again.");
             }
             catch (PathTooLongException)
             {
@@ -1257,7 +1253,8 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                return (false, $"Cannot access file: {ex.Message}. Please ensure the file is not corrupted and you have appropriate permissions.");
+                return (false,
+                    $"Cannot access file: {ex.Message}. Please ensure the file is not corrupted and you have appropriate permissions.");
             }
         }
 
