@@ -1153,8 +1153,8 @@ namespace View.Personal
             {
                 Name = g?.Name ?? "(no name)",
                 GUID = g?.GUID ?? Guid.Empty,
-                CreatedUtc = g.CreatedUtc,
-                LastUpdateUtc = g.LastUpdateUtc
+                CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
+                LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc)
             }).ToList();
 
             // Find and configure the ComboBox
@@ -1276,8 +1276,8 @@ namespace View.Personal
             {
                 Name = g?.Name ?? "(no name)",
                 GUID = g?.GUID ?? Guid.Empty,
-                CreatedUtc = g.CreatedUtc,
-                LastUpdateUtc = g.LastUpdateUtc
+                CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
+                LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc)
             }).ToList();
 
             var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
@@ -1377,6 +1377,16 @@ namespace View.Personal
                     if (spinner != null) spinner.IsVisible = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts a UTC <see cref="DateTime"/> to the local system time.
+        /// </summary>
+        /// <param name="utcDateTime">The UTC <see cref="DateTime"/> to convert.</param>
+        /// <returns>A <see cref="DateTime"/> representing the local system time equivalent.</returns>
+        private static DateTime ConvertUtcToLocal(DateTime utcDateTime)
+        {
+            return utcDateTime.ToLocalTime();
         }
 
         #endregion

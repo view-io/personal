@@ -216,7 +216,7 @@
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
                         </Grid>
 
-					    <DataGrid Grid.Row="1" Height="500" x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+					    <DataGrid Grid.Row="1" x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
 								  CanUserReorderColumns="False" CanUserResizeColumns="False"
 								  GridLinesVisibility="Horizontal" Background="#FFFFFF"
 								  HorizontalGridLinesBrush="#EDEDED" BorderThickness="1" BorderBrush="#EDEDED"
@@ -468,10 +468,10 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
                                             <DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
-                                            <DataGridTextColumn Header="Created UTC"
+                                            <DataGridTextColumn Header="Created"
                                                                 Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
-                                            <DataGridTextColumn Header="Last Update UTC"
+                                            <DataGridTextColumn Header="Last Update"
                                                                 Binding="{Binding LastUpdateUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
                                             <DataGridTemplateColumn Header="" Width="150">
