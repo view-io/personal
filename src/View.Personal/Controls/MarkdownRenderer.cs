@@ -116,7 +116,7 @@ namespace View.Personal.Controls
         /// </summary>
         private static Control RenderHeading(HeadingBlock heading)
         {
-            var text = GetInlineText(heading.Inline);
+            var text = heading.Inline != null ? GetInlineText(heading.Inline) : string.Empty;
             var fontSize = heading.Level switch
             {
                 1 => 24,
