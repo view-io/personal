@@ -1,11 +1,6 @@
 namespace View.Personal.UIHandlers
 {
     using Avalonia;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Avalonia.Controls;
     using Avalonia.Input;
     using Avalonia.Interactivity;
@@ -14,6 +9,11 @@ namespace View.Personal.UIHandlers
     using Avalonia.Threading;
     using Classes;
     using Services;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides static event handlers and utility methods for managing the chat user interface.
@@ -312,15 +312,6 @@ namespace View.Personal.UIHandlers
                         Margin = new Thickness(180, 0, 0, 0)
                     };
 
-                    var messageBlock = new SelectableTextBlock
-                    {
-                        Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
-                        TextWrapping = TextWrapping.Wrap,
-                        Margin = new Thickness(10, 0, 0, 0),
-                        FontSize = 14,
-                        Foreground = new SolidColorBrush(Color.Parse("#1A1C1E")),
-                    };
-
                     var messageContainer = new StackPanel
                     {
                         Orientation = Orientation.Vertical,
@@ -328,9 +319,36 @@ namespace View.Personal.UIHandlers
                     };
 
                     messageContainer.Children.Add(labelBlock);
-                    messageBlock.TextWrapping = TextWrapping.Wrap;
-                    messageBlock.MaxWidth = 610;
-                    messageContainer.Children.Add(messageBlock);
+
+                    Control messageContent;
+                    if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.Content))
+                    {
+                        messageContent = View.Personal.Controls.MarkdownRenderer.Render(msg.Content);
+                    }
+                    else
+                    {
+                        messageContent = new SelectableTextBlock
+                        {
+                            Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
+                            TextWrapping = TextWrapping.Wrap,
+                            FontSize = 14,
+                            Foreground = new SolidColorBrush(Color.Parse("#1A1C1E")),
+                        };
+                    }
+
+                    // Apply common styling
+                    messageContent.Margin = new Thickness(10, 0, 0, 0);
+                    if (messageContent is SelectableTextBlock textBlock)
+                    {
+                        textBlock.TextWrapping = TextWrapping.Wrap;
+                        textBlock.MaxWidth = 650;
+                    }
+                    else
+                    {
+                        messageContent.MaxWidth = 650;
+                    }
+                    
+                    messageContainer.Children.Add(messageContent);
 
                     if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
                     {

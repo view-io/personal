@@ -79,6 +79,11 @@ namespace View.Personal
         /// </summary>
         public ChatSession CurrentChatSession;
 
+        /// <summary>
+        /// The file logging service for writing logs to a file to help diagnose application crashes.
+        /// </summary>
+        public FileLoggingService FileLoggingService { get; set; }
+
         #endregion
 
         #region Private-Members
@@ -151,6 +156,7 @@ namespace View.Personal
             catch (Exception e)
             {
                 app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
+                FileLoggingService?.LogException(e, "[ViewPersonal] " + "MainWindow constructor exception:");
             }
         }
 
@@ -909,7 +915,8 @@ namespace View.Personal
 
             ValidateResponseStream(provider, resp);
 
-            return await ProcessStreamingResponse(resp, onTokenReceived, provider);
+            var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
+            return response;
         }
 
         /// <summary>
@@ -956,8 +963,7 @@ namespace View.Personal
         /// <param name="onTokenReceived">An action to handle each token as it is received from the stream.</param>
         /// <param name="provider">The name of the completion provider to determine token extraction logic.</param>
         /// <returns>A task that resolves to the complete response string built from the streamed tokens.</returns>
-        private async Task<string> ProcessStreamingResponse(RestResponse resp, Action<string> onTokenReceived,
-            string provider)
+        private async Task<string> ProcessStreamingResponse(RestResponse resp, Action<string> onTokenReceived, string provider)
         {
             var sb = new StringBuilder();
 
@@ -969,16 +975,26 @@ namespace View.Personal
                     if (sseEvent == null) break;
 
                     var chunkJson = sseEvent.Data;
+
+                    // Stop markers
                     if (chunkJson == "[DONE]" || chunkJson == "[END_OF_TEXT_STREAM]") break;
 
-                    if (!string.IsNullOrEmpty(chunkJson))
+                    if (!string.IsNullOrWhiteSpace(chunkJson))
                     {
-                        using var doc = JsonDocument.Parse(chunkJson);
-                        var token = ExtractTokenFromJson(doc, provider);
-                        if (token != null)
+                        try
                         {
-                            onTokenReceived?.Invoke(token);
-                            sb.Append(token);
+                            using var doc = JsonDocument.Parse(chunkJson);
+                            var token = ExtractTokenFromJson(doc, provider);
+                            if (token != null)
+                            {
+                                onTokenReceived?.Invoke(token);
+                                sb.Append(token);
+                            }
+                        }
+                        catch (JsonException je)
+                        {
+                            Console.WriteLine($"[ERROR] Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
+                            FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
                         }
                     }
                 }
@@ -989,20 +1005,29 @@ namespace View.Personal
                 while (!reader.EndOfStream)
                 {
                     var line = await reader.ReadLineAsync();
-                    if (string.IsNullOrEmpty(line)) continue;
+                    if (string.IsNullOrWhiteSpace(line)) continue;
 
-                    using var doc = JsonDocument.Parse(line);
-                    var token = ExtractTokenFromJson(doc, provider);
-                    if (token != null)
+                    try
                     {
-                        await Dispatcher.UIThread.InvokeAsync(() => onTokenReceived?.Invoke(token));
-                        sb.Append(token);
+                        using var doc = JsonDocument.Parse(line);
+                        var token = ExtractTokenFromJson(doc, provider);
+                        if (token != null)
+                        {
+                            await Dispatcher.UIThread.InvokeAsync(() => onTokenReceived?.Invoke(token));
+                            sb.Append(token);
+                        }
+                    }
+                    catch (JsonException je)
+                    {
+                        Console.WriteLine($"[ERROR] Invalid JSON in response line: {line}\n{je.Message}");
+                        FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in response line");
                     }
                 }
             }
 
             return sb.ToString();
         }
+
 
         /// <summary>
         /// Extracts a token string from a JSON document based on the provider-specific response structure.
