@@ -683,6 +683,83 @@
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
         </member>
+        <member name="T:View.Personal.Controls.MarkdownRenderer">
+            <summary>
+            Provides functionality to render Markdown content as Avalonia UI controls.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.Render(System.String)">
+            <summary>
+            Renders a Markdown string to Avalonia UI controls.
+            </summary>
+            <param name="markdown">The Markdown string to render.</param>
+            <returns>A control containing the rendered Markdown.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderDocument(Markdig.Syntax.MarkdownDocument)">
+            <summary>
+            Converts a MarkdownDocument into a vertical StackPanel containing rendered blocks.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderBlock(Markdig.Syntax.Block)">
+            <summary>
+            Renders a specific Markdown block element into a UI control.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderHeading(Markdig.Syntax.HeadingBlock)">
+            <summary>
+            Renders a Markdown heading block with dynamic font size.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderParagraph(Markdig.Syntax.ParagraphBlock)">
+            <summary>
+            Renders a Markdown paragraph block with inline elements.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderList(Markdig.Syntax.ListBlock)">
+            <summary>
+            Renders a Markdown list block (ordered or unordered).
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderCodeBlock(Markdig.Syntax.CodeBlock)">
+            <summary>
+            Renders a Markdown code block, styled with monospaced font and border.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderQuoteBlock(Markdig.Syntax.QuoteBlock)">
+            <summary>
+            Renders a Markdown blockquote with vertical bar styling.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderTable(Markdig.Extensions.Tables.Table)">
+            <summary>
+            Renders a Markdown table into a grid layout.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInlines(Markdig.Syntax.Inlines.ContainerInline)">
+            <summary>
+            Renders all inline elements within a container inline.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInline(Markdig.Syntax.Inlines.Inline)">
+            <summary>
+            Renders a single Markdown inline element into an Avalonia control.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderEmphasis(Markdig.Syntax.Inlines.EmphasisInline)">
+            <summary>
+            Renders bold or italic Markdown emphasis inline.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderLink(Markdig.Syntax.Inlines.LinkInline)">
+            <summary>
+            Renders a Markdown hyperlink inline element.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.ContainerInline)">
+            <summary>
+            Recursively retrieves the plain text content from a container inline.
+            </summary>
+        </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
             A value converter that transforms a string representing a file size in bytes into a human-readable format (e.g., "1.5 KB", "2.0 MB").
@@ -834,6 +911,11 @@
             <summary>
             The currently active chat session.
             References the chat session that is currently being displayed and interacted with in the UI.
+            </summary>
+        </member>
+        <member name="P:View.Personal.MainWindow.FileLoggingService">
+            <summary>
+            The file logging service for writing logs to a file to help diagnose application crashes.
             </summary>
         </member>
         <member name="M:View.Personal.MainWindow.#ctor">
@@ -1094,6 +1176,13 @@
             </summary>
             <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
             <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.ConvertUtcToLocal(System.DateTime)">
+            <summary>
+            Converts a UTC <see cref="T:System.DateTime"/> to the local system time.
+            </summary>
+            <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
+            <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
         <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
