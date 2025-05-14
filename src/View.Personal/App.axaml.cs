@@ -309,7 +309,8 @@ namespace View.Personal
                 CompletionProviderTypeEnum.OpenAI => new CompletionProviderSettings(providerType)
                 {
                     OpenAICompletionApiKey = ApplicationSettings.OpenAI.ApiKey,
-                    OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel
+                    OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel,
+                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
