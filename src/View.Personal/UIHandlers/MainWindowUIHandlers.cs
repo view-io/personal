@@ -153,13 +153,91 @@ namespace View.Personal.UIHandlers
                 int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
 
             if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
+            {
                 providerSettings.SelectedProvider = "OpenAI";
+                if (string.IsNullOrWhiteSpace(openAiSettings.ApiKey))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI API Key.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(openAiSettings.CompletionModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Completion Model.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(openAiSettings.Endpoint))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Endpoint.", NotificationType.Error);
+                    return;
+                }
+            }
             else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
+            {
                 providerSettings.SelectedProvider = "Anthropic";
+                if (string.IsNullOrWhiteSpace(anthropicSettings.ApiKey))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic API Key.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(anthropicSettings.CompletionModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic Completion Model.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(anthropicSettings.Endpoint))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic Endpoint.", NotificationType.Error);
+                    return;
+                }
+            }
             else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
+            {
                 providerSettings.SelectedProvider = "Ollama";
+                if (string.IsNullOrWhiteSpace(ollamaSettings.CompletionModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Completion Model.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(ollamaSettings.Endpoint))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Endpoint.", NotificationType.Error);
+                    return;
+                }
+            }
             else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
+            {
                 providerSettings.SelectedProvider = "View";
+                if (string.IsNullOrWhiteSpace(viewSettings.ApiKey))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the View API Key.", NotificationType.Error);
+                    return;
+                }            
+                if (string.IsNullOrWhiteSpace(viewSettings.Endpoint))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the View Endpoint.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(viewSettings.OllamaHostName))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the OllamaHostName.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(viewSettings.AccessKey))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the AccessKey.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(viewSettings.TenantGuid))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the TenantGuid.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(viewSettings.CompletionModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the View Completion Model.", NotificationType.Error);
+                    return;
+                }
+            }
 
             var chatPanel = window.FindControl<Border>("ChatPanel");
             if (chatPanel != null && chatPanel.IsVisible) window.UpdateChatTitle();
