@@ -125,33 +125,6 @@ namespace View.Personal.UIHandlers
             viewSettings.IsEnabled =
                 window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
 
-            // Update Embeddings settings
-            embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
-            embeddingSettings.OllamaEmbeddingModelDimensions =
-                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text);
-            embeddingSettings.OllamaEmbeddingModelMaxTokens =
-                int.Parse(window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text);
-            embeddingSettings.ViewEmbeddingModel =
-                window.FindControl<TextBox>("ViewEmbeddingModel").Text;
-            embeddingSettings.ViewEmbeddingModelDimensions =
-                int.Parse(window.FindControl<TextBox>("ViewEmbeddingDimensions").Text);
-            embeddingSettings.ViewEmbeddingModelMaxTokens =
-                int.Parse(window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text);
-            embeddingSettings.OpenAIEmbeddingModel =
-                window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
-            embeddingSettings.OpenAIEmbeddingModelDimensions =
-                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text);
-            embeddingSettings.OpenAIEmbeddingModelMaxTokens =
-                int.Parse(window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text);
-            embeddingSettings.VoyageEmbeddingModel =
-                window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
-            embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
-            embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
-            embeddingSettings.VoyageEmbeddingModelDimensions =
-                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text);
-            embeddingSettings.VoyageEmbeddingModelMaxTokens =
-                int.Parse(window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text);
-
             if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
             {
                 providerSettings.SelectedProvider = "OpenAI";
@@ -235,6 +208,72 @@ namespace View.Personal.UIHandlers
                 if (string.IsNullOrWhiteSpace(viewSettings.CompletionModel))
                 {
                     window.ShowNotification("Validation Error", "Please enter value for the View Completion Model.", NotificationType.Error);
+                    return;
+                }
+            }
+
+            // Embedding model selection validation
+            if (window.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked == true)
+            {
+                embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+                if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
+                embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
+                if (!TryParsePositiveInt(window, "OllamaEmbeddingMaxTokens", "Ollama Embedding Model Max Tokens", out int ollamaTokens)) return;
+                embeddingSettings.OllamaEmbeddingModelMaxTokens = ollamaTokens;
+                if (string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Embedding Model.", NotificationType.Error);
+                    return;
+                }
+            }
+            else if (window.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked == true)
+            {
+                embeddingSettings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
+                if (!TryParsePositiveInt(window, "ViewEmbeddingDimensions", "View Embedding Model Dimensions", out int viewDims)) return;
+                embeddingSettings.ViewEmbeddingModelDimensions = viewDims;
+                if (!TryParsePositiveInt(window, "ViewEmbeddingMaxTokens", "View Embedding Model Max Tokens", out int viewTokens)) return;
+                embeddingSettings.ViewEmbeddingModelMaxTokens = viewTokens;
+                if (string.IsNullOrWhiteSpace(embeddingSettings.ViewEmbeddingModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the View Embedding Model.", NotificationType.Error);
+                    return;
+                }
+            }
+            else if (window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked == true)
+            {
+                embeddingSettings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
+                if (!TryParsePositiveInt(window, "OpenAIEmbeddingDimensions", "OpenAI Embedding Model Dimensions", out int openAiDims)) return;
+                embeddingSettings.OpenAIEmbeddingModelDimensions = openAiDims;
+                if (!TryParsePositiveInt(window, "OpenAIEmbeddingMaxTokens", "OpenAI Embedding Model Max Tokens", out int openAiTokens)) return;
+                embeddingSettings.OpenAIEmbeddingModelMaxTokens = openAiTokens;
+                if (string.IsNullOrWhiteSpace(embeddingSettings.OpenAIEmbeddingModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Embedding Model.", NotificationType.Error);
+                    return;
+                }
+            }
+            else if (window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked == true)
+            {
+                embeddingSettings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
+                embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
+                embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
+                if (!TryParsePositiveInt(window, "VoyageEmbeddingDimensions", "Voyage Embedding Model Dimensions", out int voyageDims)) return;
+                embeddingSettings.VoyageEmbeddingModelDimensions = voyageDims;
+                if (!TryParsePositiveInt(window, "VoyageEmbeddingMaxTokens", "Voyage Embedding Model Max Tokens", out int voyageTokens)) return;
+                embeddingSettings.VoyageEmbeddingModelMaxTokens = voyageTokens;
+                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEmbeddingModel))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Voyage Embedding Model.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageApiKey))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Voyage API Key.", NotificationType.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEndpoint))
+                {
+                    window.ShowNotification("Validation Error", "Please enter value for the Voyage Endpoint.", NotificationType.Error);
                     return;
                 }
             }
@@ -335,6 +374,30 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
+
+        /// <summary>
+        /// Attempts to parse the value of a <see cref="TextBox"/> as a positive integer.
+        /// If parsing fails or the number is less than or equal to zero, a validation error is shown to the user.
+        /// </summary>
+        /// <param name="window">The <see cref="MainWindow"/> instance containing the control.</param>
+        /// <param name="controlName">The name of the <see cref="TextBox"/> control to read the input from.</param>
+        /// <param name="label">The label used in the validation error message to identify the field to the user.</param>
+        /// <param name="result">The parsed positive integer value if successful; otherwise, zero.</param>
+        /// <returns>
+        /// <c>true</c> if parsing was successful and the value is greater than zero; otherwise, <c>false</c>.
+        /// </returns>
+
+        private static bool TryParsePositiveInt(MainWindow window, string controlName, string label, out int result)
+        {
+            result = 0;
+            var text = window.FindControl<TextBox>(controlName).Text;
+            if (!int.TryParse(text, out result) || result <= 0)
+            {
+                window.ShowNotification("Validation Error", $"Please enter a valid positive integer for {label}.", NotificationType.Error);
+                return false;
+            }
+            return true;
+        }
 
         #endregion
 
