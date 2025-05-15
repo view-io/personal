@@ -160,6 +160,46 @@ namespace View.Personal.Services
             }
         }
 
+        /// <summary>
+        /// Opens a file save dialog to save console logs
+        /// </summary>
+        /// <param name="window">The parent window</param>
+        /// <returns>The selected file path or null if canceled</returns>
+        public async Task<string> BrowseForLogSaveLocation(Window window)
+        {
+            var app = (App)App.Current;
+            var topLevel = TopLevel.GetTopLevel(window);
+            if (topLevel == null)
+            {
+                app.Log("Failed to get TopLevel.");
+                return null;
+            }
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Console Logs",
+                DefaultExtension = "log",
+                SuggestedFileName = $"console_logs_{DateTime.Now:yyyyMMdd_HHmmss}.log",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("Log Files") { Patterns = new[] { "*.log" } },
+                    new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
+                    new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+                }
+            });
+
+            if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
+            {
+                app.Log($"Selected file path: {file.Path.LocalPath}");
+                return file.Path.LocalPath;
+            }
+            else
+            {
+                app.Log("No file selected.");
+                return null;
+            }
+        }
+
         #endregion
 
         #region Private-Methods

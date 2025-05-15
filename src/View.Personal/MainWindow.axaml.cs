@@ -356,6 +356,38 @@ namespace View.Personal
             app.LoggingService?.Clear();
         }
 
+        /// <summary>
+        /// Handles the click event for the download console logs button.
+        /// Downloads the console output text to a file.
+        /// </summary>
+        private async void DownloadConsoleLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var filePath = await _FileBrowserService.BrowseForLogSaveLocation(this);
+            
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                try
+                {
+                    bool success = await app.LoggingService.DownloadLogsAsync(filePath);
+                    if (success)
+                    {
+                        ShowNotification("Success", "Console logs saved successfully", NotificationType.Success);
+                    }
+                    else
+                    {
+                        ShowNotification("Warning", "No console logs to download", NotificationType.Warning);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    app.Log($"[ERROR] Error saving console logs: {ex.Message}");
+                    app.LogExceptionToFile(ex,"[ERROR] Error saving console logs");
+                    ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
+                }
+            }
+        }
+
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             CurrentChatSession = new ChatSession();

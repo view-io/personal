@@ -1165,6 +1165,10 @@
                             Click="ClearConsoleButton_Click" Margin="0,0,5,0" ToolTip.Tip="Clear Console">
                         <avalonia:MaterialIcon Kind="DeleteOutline" />
                     </Button>
+                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                            Click="DownloadConsoleLogsButton_Click" Margin="0,0,5,0" ToolTip.Tip="Download Logs">
+                        <avalonia:MaterialIcon Kind="Download" />
+                    </Button>
                 </DockPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
                     <TextBox x:Name="ConsoleOutputTextBox" IsReadOnly="True" AcceptsReturn="True"

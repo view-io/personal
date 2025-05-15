@@ -993,6 +993,12 @@
             Clears the console output text.
             </summary>
         </member>
+        <member name="M:View.Personal.MainWindow.DownloadConsoleLogsButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the download console logs button.
+            Downloads the console output text to a file.
+            </summary>
+        </member>
         <member name="M:View.Personal.MainWindow.GetCompletionModel(System.String)">
             <summary>
             Retrieves the completion model name for the specified provider from the application settings.
@@ -1231,6 +1237,13 @@
             <param name="window">The parent window</param>
             <returns>The selected file path or null if canceled</returns>
         </member>
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForLogSaveLocation(Avalonia.Controls.Window)">
+            <summary>
+            Opens a file save dialog to save console logs
+            </summary>
+            <param name="window">The parent window</param>
+            <returns>The selected file path or null if canceled</returns>
+        </member>
         <member name="T:View.Personal.Services.FileDeleter">
             <summary>
             Provides methods for handling file deletion operations within the application.
@@ -1363,6 +1376,13 @@
             <summary>
             Clears the console output text.
             </summary>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.DownloadLogsAsync(System.String)">
+            <summary>
+            Downloads the console logs to a file asynchronously.
+            </summary>
+            <param name="filePath">The path where the logs will be saved.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>
