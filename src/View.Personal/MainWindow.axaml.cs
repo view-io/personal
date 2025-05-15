@@ -79,11 +79,6 @@ namespace View.Personal
         /// </summary>
         public ChatSession CurrentChatSession;
 
-        /// <summary>
-        /// The file logging service for writing logs to a file to help diagnose application crashes.
-        /// </summary>
-        public FileLoggingService FileLoggingService { get; set; }
-
         #endregion
 
         #region Private-Members
@@ -156,7 +151,7 @@ namespace View.Personal
             catch (Exception e)
             {
                 app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
-                FileLoggingService?.LogException(e, "[ViewPersonal] " + "MainWindow constructor exception:");
+                app?.LogExceptionToFile(e, "[ViewPersonal] " + "MainWindow constructor exception:");
             }
         }
 
@@ -268,7 +263,7 @@ namespace View.Personal
         public void ShowPanel(string panelName)
         {
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
-            var settingsPanel2 = this.FindControl<StackPanel>("SettingsPanel2");
+            var settingsPanel2 = this.FindControl<Grid>("SettingsPanel2");
             var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
@@ -349,6 +344,48 @@ namespace View.Personal
         private void CloseConsoleButton_Click(object sender, RoutedEventArgs e)
         {
             HideConsolePanel();
+        }
+
+        /// <summary>
+        /// Handles the click event for the clear console button.
+        /// Clears the console output text.
+        /// </summary>
+        private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            app.LoggingService?.Clear();
+        }
+
+        /// <summary>
+        /// Handles the click event for the download console logs button.
+        /// Downloads the console output text to a file.
+        /// </summary>
+        private async void DownloadConsoleLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var filePath = await _FileBrowserService.BrowseForLogSaveLocation(this);
+            
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                try
+                {
+                    bool success = await app.LoggingService.DownloadLogsAsync(filePath);
+                    if (success)
+                    {
+                        ShowNotification("Success", "Console logs saved successfully", NotificationType.Success);
+                    }
+                    else
+                    {
+                        ShowNotification("Warning", "No console logs to download", NotificationType.Warning);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    app.Log($"[ERROR] Error saving console logs: {ex.Message}");
+                    app.LogExceptionToFile(ex,"[ERROR] Error saving console logs");
+                    ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
+                }
+            }
         }
 
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
@@ -897,7 +934,7 @@ namespace View.Personal
         {
             var requestUri = provider switch
             {
-                "OpenAI" => settings.ViewEndpoint,
+                "OpenAI" => settings.OpenAIEndpoint,
                 "Ollama" => $"{settings.OllamaEndpoint}api/chat",
                 "View" => $"{settings.ViewEndpoint}v1.0/tenants/{_TenantGuid}/assistant/chat/completions",
                 "Anthropic" => $"{settings.AnthropicEndpoint}",
@@ -966,7 +1003,7 @@ namespace View.Personal
         private async Task<string> ProcessStreamingResponse(RestResponse resp, Action<string> onTokenReceived, string provider)
         {
             var sb = new StringBuilder();
-
+            var app = (App)Application.Current;
             if (resp.ServerSentEvents)
             {
                 while (true)
@@ -994,7 +1031,7 @@ namespace View.Personal
                         catch (JsonException je)
                         {
                             Console.WriteLine($"[ERROR] Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
-                            FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
+                            app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
                         }
                     }
                 }
@@ -1020,7 +1057,7 @@ namespace View.Personal
                     catch (JsonException je)
                     {
                         Console.WriteLine($"[ERROR] Invalid JSON in response line: {line}\n{je.Message}");
-                        FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in response line");
+                        app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in response line");
                     }
                 }
             }

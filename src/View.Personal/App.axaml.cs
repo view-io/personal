@@ -2,6 +2,7 @@ namespace View.Personal
 {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
+    using Avalonia.Logging;
     using Avalonia.Markup.Xaml;
     using Classes;
     using LiteGraph;
@@ -9,15 +10,15 @@ namespace View.Personal
     using LiteGraph.GraphRepositories.Sqlite;
     using MsBox.Avalonia;
     using MsBox.Avalonia.Enums;
+    using Services;
     using SyslogLogging;
     using System;
     using System.Collections.Generic;
-    using Timestamps;
-    using System.IO;
-    using System.Text.Json;
-    using Services;
     using System.Collections.Specialized;
+    using System.IO;
     using System.Linq;
+    using System.Text.Json;
+    using Timestamps;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -50,14 +51,9 @@ namespace View.Personal
         public event EventHandler LiteGraphInitialized;
 
         /// <summary>
-        /// The logging service for writing to the UI console and standard console.
+        /// The logging service for writing to the UI console, standard console and log file.
         /// </summary>
         public LoggingService LoggingService { get; set; }
-
-        /// <summary>
-        /// The file logging service for writing logs to a file to help diagnose application crashes.
-        /// </summary>
-        public FileLoggingService FileLoggingService { get; set; }
 
         #endregion
 
@@ -72,6 +68,7 @@ namespace View.Personal
         internal Guid _UserGuid;
         internal Guid _CredentialGuid;
         internal LoggingModule _Logging;
+        internal LoggingModule _FileLogging;
         private const string _SettingsFilePath = "appsettings.json";
 
         #endregion
@@ -116,8 +113,8 @@ namespace View.Personal
                     _Logging.Debug(_Header + "initializing View Personal at " +
                                    DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
-                    FileLoggingService = new FileLoggingService(Path.Combine(".", "logs", "view-personal.log"),true);
-                    FileLoggingService.LogInfo(_Header + "File logging initialized");
+                    _FileLogging = new LoggingModule(Path.Combine(".", "logs", "view-personal.log"));
+                    _FileLogging.Debug(_Header + "File logging initialized");
 
                     LoadSettings();
 
@@ -147,7 +144,7 @@ namespace View.Personal
                         _GraphDriver = new SqliteGraphRepository(Constants.LiteGraphDatabaseFilename);
                         _Logging.Debug(_Header + "initialized graph driver using sqlite file " +
                                        Constants.LiteGraphDatabaseFilename);
-
+                        _FileLogging.Info(_Header + "Showing MainWindow");
                         _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings);
                         _LiteGraph.InitializeRepository();
                         _Logging.Debug(_Header + "initialized litegraph");
@@ -237,7 +234,7 @@ namespace View.Personal
                         Icon.Error);
                     messageBoxStandardWindow.ShowAsync().Wait();
                     _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
-                    FileLoggingService?.LogException(e, _Header + "Unable to start View Personal");
+                    _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
                     Environment.Exit(1);
                 }
 
@@ -252,7 +249,22 @@ namespace View.Personal
         public void Log(string message)
         {
             LoggingService?.Log(message);
-            FileLoggingService?.LogInfo(message);
+        }
+
+        /// <summary>
+        /// Logs an informational message to the file.
+        /// </summary>
+        public void LogInfoToFile(string message)
+        {
+            LoggingService?.LogInfoToFile(message);
+        }
+
+        /// <summary>
+        /// Logs an exception to the file with a custom message.
+        /// </summary>
+        public void LogExceptionToFile(Exception ex, string context = "")
+        {
+            LoggingService?.LogExceptionToFile(ex, context);
         }
 
         /// <summary>
@@ -287,7 +299,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to save settings: {ex.Message}");
-                FileLoggingService?.LogException(ex, _Header + "Failed to save settings");
+                _FileLogging?.Exception(ex, _Header + "Failed to save settings");
             }
         }
 
@@ -309,7 +321,8 @@ namespace View.Personal
                 CompletionProviderTypeEnum.OpenAI => new CompletionProviderSettings(providerType)
                 {
                     OpenAICompletionApiKey = ApplicationSettings.OpenAI.ApiKey,
-                    OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel
+                    OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel,
+                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
@@ -349,7 +362,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to retrieve graphs: {ex.Message}");
-                FileLoggingService?.LogException(ex, _Header + "Failed to retrieve graphs");
+                _FileLogging?.Exception(ex, _Header + "Failed to retrieve graphs");
                 return new List<Graph>();
             }
         }
@@ -427,7 +440,7 @@ namespace View.Personal
             catch (Exception ex)
             {
                 _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
-                FileLoggingService?.LogException(ex, _Header + "Failed to load settings");
+                _FileLogging?.Exception(ex, _Header + "Failed to load settings");
                 _TenantGuid = Guid.Empty;
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();

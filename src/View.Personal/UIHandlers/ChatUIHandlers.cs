@@ -157,6 +157,7 @@ namespace View.Personal.UIHandlers
             {
                 app.Log(
                     $"[ERROR] Exception in SendMessageTest_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                app?.LogExceptionToFile(ex, $"[ERROR] Exception in SendMessageTest_Click");
                 if (currentMessages.Last().Role == "assistant")
                     currentMessages.Last().Content = $"Error: {ex.Message}";
                 UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);

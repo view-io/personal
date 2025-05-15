@@ -284,7 +284,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="600" />
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
                                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="170" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
                                                         Width="250" />
@@ -304,12 +304,12 @@
                     </DataGrid>
                     </Grid>
                 </StackPanel>
-                <StackPanel Name="SettingsPanel2" Orientation="Vertical" Margin="40,20,40,20" IsVisible="False">
-                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
+				<Grid  Name="SettingsPanel2" RowDefinitions="Auto,*" Margin="40,20,40,20" IsVisible="False">
+                    <StackPanel Spacing="12" Grid.Row="0" Margin="0, 20, 0, 0">
                         <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
                         <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
                     </StackPanel>
-                    <TabControl Margin="0,0,0,0">
+                    <TabControl Margin="0,0,0,0" Grid.Row="1">
                         <TabControl.Template>
                             <ControlTemplate TargetType="TabControl">
                                 <DockPanel>
@@ -517,7 +517,7 @@
                         </TabItem>
                         <TabItem Header="Providers" IsSelected="True">
                             <Border Padding="0,0,0,0">
-                                <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="600">
+								<ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
                                     <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,20,0">
 
                                         <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
@@ -888,13 +888,8 @@
                                 </ScrollViewer>
                             </Border>
                         </TabItem>
-                        <TabItem Header="Local Models">
-                            <Border Padding="0,20,0,0">
-                                <TextBlock Text="Local models settings will go here." />
-                            </Border>
-                        </TabItem>
                     </TabControl>
-                </StackPanel>
+                </Grid >
                 <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False"
                             DragDrop.AllowDrop="True"
                             DragDrop.DragOver="MyFilesPanel_DragOver"
@@ -1165,6 +1160,14 @@
                     <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="CloseConsoleButton_Click">
                         <avalonia:MaterialIcon Kind="Close" />
+                    </Button>
+                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                            Click="ClearConsoleButton_Click" Margin="0,0,5,0" ToolTip.Tip="Clear Console">
+                        <avalonia:MaterialIcon Kind="DeleteOutline" />
+                    </Button>
+                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                            Click="DownloadConsoleLogsButton_Click" Margin="0,0,5,0" ToolTip.Tip="Download Logs">
+                        <avalonia:MaterialIcon Kind="Download" />
                     </Button>
                 </DockPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">

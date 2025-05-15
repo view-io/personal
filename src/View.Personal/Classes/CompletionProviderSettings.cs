@@ -23,6 +23,11 @@
         public string OpenAICompletionModel { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the endpoint URL for  OpenAI API requests.
+        /// </summary>
+        public string OpenAIEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the API key for Anthropic completion services.
         /// </summary>
         public string AnthropicApiKey { get; set; } = string.Empty;

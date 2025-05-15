@@ -32,12 +32,7 @@
         </member>
         <member name="P:View.Personal.App.LoggingService">
             <summary>
-            The logging service for writing to the UI console and standard console.
-            </summary>
-        </member>
-        <member name="P:View.Personal.App.FileLoggingService">
-            <summary>
-            The file logging service for writing logs to a file to help diagnose application crashes.
+            The logging service for writing to the UI console, standard console and log file.
             </summary>
         </member>
         <member name="M:View.Personal.App.Initialize">
@@ -69,6 +64,16 @@
             Logs a message to the console output in the UI and system console.
             </summary>
             <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.App.LogInfoToFile(System.String)">
+            <summary>
+            Logs an informational message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.LogExceptionToFile(System.Exception,System.String)">
+            <summary>
+            Logs an exception to the file with a custom message.
+            </summary>
         </member>
         <member name="M:View.Personal.App.SaveSettings">
             <summary>
@@ -412,6 +417,11 @@
         <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionModel">
             <summary>
             Gets or sets the model name for OpenAI completion requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAIEndpoint">
+            <summary>
+            Gets or sets the endpoint URL for  OpenAI API requests.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.CompletionProviderSettings.AnthropicApiKey">
@@ -913,11 +923,6 @@
             References the chat session that is currently being displayed and interacted with in the UI.
             </summary>
         </member>
-        <member name="P:View.Personal.MainWindow.FileLoggingService">
-            <summary>
-            The file logging service for writing logs to a file to help diagnose application crashes.
-            </summary>
-        </member>
         <member name="M:View.Personal.MainWindow.#ctor">
             <summary>
             Initializes a new instance of the MainWindow class, setting up event handlers and UI components.
@@ -981,6 +986,18 @@
             Logs a message to the console output in the UI and system console.
             </summary>
             <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.ClearConsoleButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the clear console button.
+            Clears the console output text.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.DownloadConsoleLogsButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the download console logs button.
+            Downloads the console output text to a file.
+            </summary>
         </member>
         <member name="M:View.Personal.MainWindow.GetCompletionModel(System.String)">
             <summary>
@@ -1220,6 +1237,13 @@
             <param name="window">The parent window</param>
             <returns>The selected file path or null if canceled</returns>
         </member>
+        <member name="M:View.Personal.Services.FileBrowserService.BrowseForLogSaveLocation(Avalonia.Controls.Window)">
+            <summary>
+            Opens a file save dialog to save console logs
+            </summary>
+            <param name="window">The parent window</param>
+            <returns>The selected file path or null if canceled</returns>
+        </member>
         <member name="T:View.Personal.Services.FileDeleter">
             <summary>
             Provides methods for handling file deletion operations within the application.
@@ -1289,53 +1313,6 @@
             This method uses NPOI's <see cref="T:NPOI.HSSF.UserModel.HSSFWorkbook"/> to read the contents of the file. It supports only `.xls` format.
             </remarks>
         </member>
-        <member name="T:View.Personal.Services.FileLoggingService">
-            <summary>
-            Service for logging messages to a file to help diagnose application crashes.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.#ctor(System.String,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:View.Personal.Services.FileLoggingService"/> class.
-            </summary>
-            <param name="logFilePath">The path to the log file. If null, defaults to "./logs/view-personal-[DATE].log".</param>
-            <param name="appendTimestamp">Whether to append a timestamp to each log entry.</param>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogDebug(System.String)">
-            <summary>
-            Logs a debug message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogInfo(System.String)">
-            <summary>
-            Logs an informational message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogWarning(System.String)">
-            <summary>
-            Logs a warning message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogError(System.String)">
-            <summary>
-            Logs an error message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogException(System.Exception,System.String)">
-            <summary>
-            Logs an exception to the file with a custom message.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.GetCurrentLogFilePath">
-            <summary>
-            Gets the current log file path based on the date.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.WriteToFile(System.String,System.String)">
-            <summary>
-            Writes a message to the log file with the specified level.
-            </summary>
-        </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>
             Provides methods for handling graph deletion operations within the application.
@@ -1369,7 +1346,7 @@
         </member>
         <member name="T:View.Personal.Services.LoggingService">
             <summary>
-            Service for logging messages to a UI console output and system console.
+            Service for logging messages to a UI console output, system console and file log.
             </summary>
         </member>
         <member name="M:View.Personal.Services.LoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.TextBox)">
@@ -1384,6 +1361,28 @@
             Logs a message to the UI console output and system console.
             </summary>
             <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.LogInfoToFile(System.String)">
+            <summary>
+            Logs an informational message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.LogExceptionToFile(System.Exception,System.String)">
+            <summary>
+            Logs an exception to the file with a custom message.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.Clear">
+            <summary>
+            Clears the console output text.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.DownloadLogsAsync(System.String)">
+            <summary>
+            Downloads the console logs to a file asynchronously.
+            </summary>
+            <param name="filePath">The path where the logs will be saved.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>
@@ -1708,6 +1707,35 @@
             <param name="e">The routed event arguments.</param>
             <param name="window">The window containing the textbox to update.</param>
             <param name="fileBrowserService">The service used to browse for a file to ingest.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.TryParsePositiveInt(View.Personal.MainWindow,System.String,System.String,System.Int32@)">
+            <summary>
+            Attempts to parse the value of a <see cref="T:Avalonia.Controls.TextBox"/> as a positive integer.
+            If parsing fails or the number is less than or equal to zero, a validation error is shown to the user.
+            </summary>
+            <param name="window">The <see cref="T:View.Personal.MainWindow"/> instance containing the control.</param>
+            <param name="controlName">The name of the <see cref="T:Avalonia.Controls.TextBox"/> control to read the input from.</param>
+            <param name="label">The label used in the validation error message to identify the field to the user.</param>
+            <param name="result">The parsed positive integer value if successful; otherwise, zero.</param>
+            <returns>
+            <c>true</c> if parsing was successful and the value is greater than zero; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IsHostnameResolvable(System.String)">
+            <summary>
+            Determines whether the hostname part of a given HTTP endpoint is resolvable via DNS.
+            </summary>
+            <param name="endpoint">
+            A string representing the full HTTP endpoint URL (e.g., "http://example.com:8080/").
+            </param>
+            <returns>
+            <c>true</c> if the hostname can be resolved to at least one IP address via DNS; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            This method first attempts to parse the given string into a <see cref="T:System.Uri"/>. 
+            If successful, it extracts the hostname and performs a DNS lookup using <see cref="M:System.Net.Dns.GetHostAddresses(System.String)"/>.
+            Any exceptions (e.g., invalid URI format or DNS failure) will result in a return value of <c>false</c>.
+            </remarks>
         </member>
         <member name="T:View.Personal.UIHandlers.NavigationUIHandlers">
             <summary>

@@ -2,15 +2,19 @@ namespace View.Personal.Services
 {
     using Avalonia.Controls;
     using Avalonia.Threading;
+    using SyslogLogging;
     using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Service for logging messages to a UI console output and system console.
+    /// Service for logging messages to a UI console output, system console and file log.
     /// </summary>
     public class LoggingService
     {
         private readonly TextBox _ConsoleOutput;
         private readonly Window _Window;
+        private readonly LoggingModule _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingService"/> class.
@@ -19,8 +23,10 @@ namespace View.Personal.Services
         /// <param name="consoleOutput">The TextBox control for displaying console messages.</param>
         public LoggingService(Window window, TextBox consoleOutput)
         {
+            var logFilePath = Path.Combine(".", "logs", "view-personal.log");
             _Window = window;
             _ConsoleOutput = consoleOutput;
+            _logger = new LoggingModule(logFilePath);
         }
 
         /// <summary>
@@ -35,6 +41,59 @@ namespace View.Personal.Services
                 if (_ConsoleOutput.Parent is ScrollViewer scrollViewer) scrollViewer.ScrollToEnd();
             });
             Console.WriteLine(message);
+        }
+
+        /// <summary>
+        /// Logs an informational message to the file.
+        /// </summary>
+        public void LogInfoToFile(string message)
+        {
+            _logger?.Info(message);
+        }
+
+        /// <summary>
+        /// Logs an exception to the file with a custom message.
+        /// </summary>
+        public void LogExceptionToFile(Exception ex, string context = "")
+        {
+            _logger?.Exception(ex, context);
+        }
+
+        /// <summary>
+        /// Clears the console output text.
+        /// </summary>
+        public void Clear()
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _ConsoleOutput.Text = string.Empty;
+            });
+        }
+
+        /// <summary>
+        /// Downloads the console logs to a file asynchronously.
+        /// </summary>
+        /// <param name="filePath">The path where the logs will be saved.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
+        public async Task<bool> DownloadLogsAsync(string filePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_ConsoleOutput.Text))
+                    return false;
+
+                string? directory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                await File.WriteAllTextAsync(filePath, _ConsoleOutput.Text);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogExceptionToFile(ex, "Error downloading console logs");
+                return false;
+            }
         }
     }
 }

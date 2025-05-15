@@ -1,16 +1,17 @@
 namespace View.Personal.Services
 {
-    using System;
-    using System.Threading.Tasks;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
-    using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using Classes;
     using Helpers;
+    using LiteGraph;
+    using MsBox.Avalonia.Enums;
+    using System;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     /// Provides methods for handling file deletion operations within the application.
@@ -105,6 +106,7 @@ namespace View.Personal.Services
                 {
                     var app = (App)App.Current;
                     app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
+                    app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);

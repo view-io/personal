@@ -127,7 +127,7 @@ namespace View.Personal.Helpers
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    app.Log($"Skipping empty atom at index {atomIndex}");
+                    app.Log($"[INFO] Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }
