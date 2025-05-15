@@ -63,12 +63,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log($"Selected file path: {file.Path.LocalPath}");
+                app.Log($"[INFO] Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log("No file selected.");
+                app.Log("[INFO] No file selected.");
                 return null;
             }
         }
@@ -88,7 +88,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log("Failed to get TopLevel.");
+                app.Log("[ERROR] Failed to get TopLevel.");
                 return null;
             }
 
@@ -112,11 +112,11 @@ namespace View.Personal.Services
 
             if (files.Count > 0 && !string.IsNullOrEmpty(files[0].Path.LocalPath))
             {
-                app.Log($"Selected file path: {files[0].Path.LocalPath}");
+                app.Log($"[INFO] Selected file path: {files[0].Path.LocalPath}");
                 return files[0].Path.LocalPath;
             }
 
-            app.Log("No file selected.");
+            app.Log("[INFO] No file selected.");
             return null;
         }
 
@@ -132,7 +132,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log("Failed to get TopLevel.");
+                app.Log("[ERROR] Failed to get TopLevel.");
                 return null;
             }
 
@@ -150,12 +150,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log($"Selected file path: {file.Path.LocalPath}");
+                app.Log($"[INFO] Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log("No file selected.");
+                app.Log("[INFO] No file selected.");
                 return null;
             }
         }
@@ -171,7 +171,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log("Failed to get TopLevel.");
+                app.Log("[ERROR] Failed to get TopLevel.");
                 return null;
             }
 
@@ -190,12 +190,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log($"Selected file path: {file.Path.LocalPath}");
+                app.Log($"[INFO] Selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log("No file selected.");
+                app.Log("[INFO] No file selected.");
                 return null;
             }
         }
