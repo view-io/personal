@@ -1299,16 +1299,10 @@
             Service for logging messages to a file to help diagnose application crashes.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.FileLoggingService.#ctor(System.String,System.Boolean)">
+        <member name="M:View.Personal.Services.FileLoggingService.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:View.Personal.Services.FileLoggingService"/> class.
-            </summary>
-            <param name="logFilePath">The path to the log file. If null, defaults to "./logs/view-personal-[DATE].log".</param>
-            <param name="appendTimestamp">Whether to append a timestamp to each log entry.</param>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogDebug(System.String)">
-            <summary>
-            Logs a debug message to the file.
+            Logs will be written to "./logs/view-personal.log".
             </summary>
         </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogInfo(System.String)">
@@ -1316,29 +1310,9 @@
             Logs an informational message to the file.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogWarning(System.String)">
-            <summary>
-            Logs a warning message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogError(System.String)">
-            <summary>
-            Logs an error message to the file.
-            </summary>
-        </member>
         <member name="M:View.Personal.Services.FileLoggingService.LogException(System.Exception,System.String)">
             <summary>
             Logs an exception to the file with a custom message.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.GetCurrentLogFilePath">
-            <summary>
-            Gets the current log file path based on the date.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.WriteToFile(System.String,System.String)">
-            <summary>
-            Writes a message to the log file with the specified level.
             </summary>
         </member>
         <member name="T:View.Personal.Services.GraphDeleter">
@@ -1713,6 +1687,19 @@
             <param name="e">The routed event arguments.</param>
             <param name="window">The window containing the textbox to update.</param>
             <param name="fileBrowserService">The service used to browse for a file to ingest.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.TryParsePositiveInt(View.Personal.MainWindow,System.String,System.String,System.Int32@)">
+            <summary>
+            Attempts to parse the value of a <see cref="T:Avalonia.Controls.TextBox"/> as a positive integer.
+            If parsing fails or the number is less than or equal to zero, a validation error is shown to the user.
+            </summary>
+            <param name="window">The <see cref="T:View.Personal.MainWindow"/> instance containing the control.</param>
+            <param name="controlName">The name of the <see cref="T:Avalonia.Controls.TextBox"/> control to read the input from.</param>
+            <param name="label">The label used in the validation error message to identify the field to the user.</param>
+            <param name="result">The parsed positive integer value if successful; otherwise, zero.</param>
+            <returns>
+            <c>true</c> if parsing was successful and the value is greater than zero; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:View.Personal.UIHandlers.NavigationUIHandlers">
             <summary>

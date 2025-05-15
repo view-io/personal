@@ -116,7 +116,7 @@ namespace View.Personal
                     _Logging.Debug(_Header + "initializing View Personal at " +
                                    DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
-                    FileLoggingService = new FileLoggingService(Path.Combine(".", "logs", "view-personal.log"),true);
+                    FileLoggingService = new FileLoggingService();
                     FileLoggingService.LogInfo(_Header + "File logging initialized");
 
                     LoadSettings();
