@@ -284,7 +284,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="600" />
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
                                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="170" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
                                                         Width="250" />
