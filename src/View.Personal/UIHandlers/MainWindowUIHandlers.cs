@@ -55,7 +55,7 @@ namespace View.Personal.UIHandlers
         public static void SaveSettings2_Click(MainWindow window)
         {
             var app = (App)Application.Current;
-            var endpointPattern = @"^http://(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|localhost):\d{1,5}/$";
+            var endpointPattern = @"^http://((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|localhost|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+):\d{1,5}/$";
 
             // Validate Ollama endpoint
             var ollamaEndpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
@@ -67,7 +67,7 @@ namespace View.Personal.UIHandlers
 
             if (!string.IsNullOrEmpty(ollamaEndpoint) && !Regex.IsMatch(ollamaEndpoint, endpointPattern))
             {
-                window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<IP>:<port>/",
+                window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
                     NotificationType.Error);
                 return;
             }
@@ -82,8 +82,7 @@ namespace View.Personal.UIHandlers
 
             if (!string.IsNullOrEmpty(viewEndpoint) && !Regex.IsMatch(viewEndpoint, endpointPattern))
             {
-                window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<IP>:<port>/",
-                    NotificationType.Error);
+                window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",NotificationType.Error);
                 return;
             }
 
