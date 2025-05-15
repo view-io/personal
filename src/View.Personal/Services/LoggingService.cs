@@ -57,5 +57,16 @@ namespace View.Personal.Services
         {
             _logger?.Exception(ex, context);
         }
+
+        /// <summary>
+        /// Clears the console output text.
+        /// </summary>
+        public void Clear()
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _ConsoleOutput.Text = string.Empty;
+            });
+        }
     }
 }

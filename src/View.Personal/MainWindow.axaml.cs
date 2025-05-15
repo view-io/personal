@@ -346,6 +346,16 @@ namespace View.Personal
             HideConsolePanel();
         }
 
+        /// <summary>
+        /// Handles the click event for the clear console button.
+        /// Clears the console output text.
+        /// </summary>
+        private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            app.LoggingService?.Clear();
+        }
+
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             CurrentChatSession = new ChatSession();
