@@ -48,6 +48,7 @@ namespace View.Personal.Services
             {
                 var app = (App)Application.Current;
                 app?.Log($"[ERROR] Error deleting knowledgebase '{graphItem.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"[ERROR] Error deleting knowledgebase {graphItem.Name}");
                 if (window is MainWindow mainWindow)
                     mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);

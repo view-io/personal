@@ -32,12 +32,7 @@
         </member>
         <member name="P:View.Personal.App.LoggingService">
             <summary>
-            The logging service for writing to the UI console and standard console.
-            </summary>
-        </member>
-        <member name="P:View.Personal.App.FileLoggingService">
-            <summary>
-            The file logging service for writing logs to a file to help diagnose application crashes.
+            The logging service for writing to the UI console, standard console and log file.
             </summary>
         </member>
         <member name="M:View.Personal.App.Initialize">
@@ -69,6 +64,16 @@
             Logs a message to the console output in the UI and system console.
             </summary>
             <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.App.LogInfoToFile(System.String)">
+            <summary>
+            Logs an informational message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.LogExceptionToFile(System.Exception,System.String)">
+            <summary>
+            Logs an exception to the file with a custom message.
+            </summary>
         </member>
         <member name="M:View.Personal.App.SaveSettings">
             <summary>
@@ -918,11 +923,6 @@
             References the chat session that is currently being displayed and interacted with in the UI.
             </summary>
         </member>
-        <member name="P:View.Personal.MainWindow.FileLoggingService">
-            <summary>
-            The file logging service for writing logs to a file to help diagnose application crashes.
-            </summary>
-        </member>
         <member name="M:View.Personal.MainWindow.#ctor">
             <summary>
             Initializes a new instance of the MainWindow class, setting up event handlers and UI components.
@@ -1189,12 +1189,11 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
-            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1294,27 +1293,6 @@
             This method uses NPOI's <see cref="T:NPOI.HSSF.UserModel.HSSFWorkbook"/> to read the contents of the file. It supports only `.xls` format.
             </remarks>
         </member>
-        <member name="T:View.Personal.Services.FileLoggingService">
-            <summary>
-            Service for logging messages to a file to help diagnose application crashes.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:View.Personal.Services.FileLoggingService"/> class.
-            Logs will be written to "./logs/view-personal.log".
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogInfo(System.String)">
-            <summary>
-            Logs an informational message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.FileLoggingService.LogException(System.Exception,System.String)">
-            <summary>
-            Logs an exception to the file with a custom message.
-            </summary>
-        </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>
             Provides methods for handling graph deletion operations within the application.
@@ -1348,7 +1326,7 @@
         </member>
         <member name="T:View.Personal.Services.LoggingService">
             <summary>
-            Service for logging messages to a UI console output and system console.
+            Service for logging messages to a UI console output, system console and file log.
             </summary>
         </member>
         <member name="M:View.Personal.Services.LoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.TextBox)">
@@ -1363,6 +1341,16 @@
             Logs a message to the UI console output and system console.
             </summary>
             <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.LogInfoToFile(System.String)">
+            <summary>
+            Logs an informational message to the file.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LoggingService.LogExceptionToFile(System.Exception,System.String)">
+            <summary>
+            Logs an exception to the file with a custom message.
+            </summary>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>

@@ -79,11 +79,6 @@ namespace View.Personal
         /// </summary>
         public ChatSession CurrentChatSession;
 
-        /// <summary>
-        /// The file logging service for writing logs to a file to help diagnose application crashes.
-        /// </summary>
-        public FileLoggingService FileLoggingService { get; set; }
-
         #endregion
 
         #region Private-Members
@@ -156,7 +151,7 @@ namespace View.Personal
             catch (Exception e)
             {
                 app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
-                FileLoggingService?.LogException(e, "[ViewPersonal] " + "MainWindow constructor exception:");
+                app?.LogExceptionToFile(e, "[ViewPersonal] " + "MainWindow constructor exception:");
             }
         }
 
@@ -966,7 +961,7 @@ namespace View.Personal
         private async Task<string> ProcessStreamingResponse(RestResponse resp, Action<string> onTokenReceived, string provider)
         {
             var sb = new StringBuilder();
-
+            var app = (App)Application.Current;
             if (resp.ServerSentEvents)
             {
                 while (true)
@@ -994,7 +989,7 @@ namespace View.Personal
                         catch (JsonException je)
                         {
                             Console.WriteLine($"[ERROR] Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
-                            FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
+                            app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
                         }
                     }
                 }
@@ -1020,7 +1015,7 @@ namespace View.Personal
                     catch (JsonException je)
                     {
                         Console.WriteLine($"[ERROR] Invalid JSON in response line: {line}\n{je.Message}");
-                        FileLoggingService?.LogException(je, "[ViewPersonal] " + "Invalid JSON in response line");
+                        app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in response line");
                     }
                 }
             }

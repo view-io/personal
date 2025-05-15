@@ -534,6 +534,7 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 app.Log($"[ERROR] Error ingesting file {filePath}: {ex.Message}");
+                app.LogExceptionToFile(ex, $"[ERROR] Error ingesting file {filePath}");
                 mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                     NotificationType.Error);
             }
