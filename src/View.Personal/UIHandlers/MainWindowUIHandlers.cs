@@ -65,11 +65,21 @@ namespace View.Personal.UIHandlers
                 ollamaEndpoint += "/";
             }
 
-            if (!string.IsNullOrEmpty(ollamaEndpoint) && !Regex.IsMatch(ollamaEndpoint, endpointPattern))
+            if (!string.IsNullOrEmpty(ollamaEndpoint) && window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
             {
-                window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
-                    NotificationType.Error);
-                return;
+                if (!Regex.IsMatch(ollamaEndpoint, endpointPattern))
+                {
+                    window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
+                        NotificationType.Error);
+                    return;
+                }
+
+                if (!IsHostnameResolvable(ollamaEndpoint))
+                {
+                    window.ShowNotification("Unreachable Host", "The Ollama endpoint hostname could not be resolved via DNS.",
+                        NotificationType.Error);
+                    return;
+                }
             }
 
             // Validate View endpoint
@@ -80,10 +90,21 @@ namespace View.Personal.UIHandlers
                 viewEndpoint += "/";
             }
 
-            if (!string.IsNullOrEmpty(viewEndpoint) && !Regex.IsMatch(viewEndpoint, endpointPattern))
+            if (!string.IsNullOrEmpty(viewEndpoint) && window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
             {
-                window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",NotificationType.Error);
-                return;
+                if (!Regex.IsMatch(viewEndpoint, endpointPattern))
+                {
+                    window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",
+                        NotificationType.Error);
+                    return;
+                }
+
+                if (!IsHostnameResolvable(viewEndpoint))
+                {
+                    window.ShowNotification("Unreachable Host", "The View endpoint hostname could not be resolved via DNS.",
+                        NotificationType.Error);
+                    return;
+                }
             }
 
             var openAiSettings = app.ApplicationSettings.OpenAI;
@@ -397,6 +418,38 @@ namespace View.Personal.UIHandlers
             }
             return true;
         }
+
+        /// <summary>
+        /// Determines whether the hostname part of a given HTTP endpoint is resolvable via DNS.
+        /// </summary>
+        /// <param name="endpoint">
+        /// A string representing the full HTTP endpoint URL (e.g., "http://example.com:8080/").
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the hostname can be resolved to at least one IP address via DNS; otherwise, <c>false</c>.
+        /// </returns>
+        /// <remarks>
+        /// This method first attempts to parse the given string into a <see cref="System.Uri"/>. 
+        /// If successful, it extracts the hostname and performs a DNS lookup using <see cref="System.Net.Dns.GetHostAddresses"/>.
+        /// Any exceptions (e.g., invalid URI format or DNS failure) will result in a return value of <c>false</c>.
+        /// </remarks>
+        private static bool IsHostnameResolvable(string endpoint)
+        {
+            try
+            {
+                var uri = new Uri(endpoint);
+                var host = uri.Host;
+
+                // Try DNS resolution
+                var addresses = System.Net.Dns.GetHostAddresses(host);
+                return addresses.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
         #endregion
 
