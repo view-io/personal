@@ -249,7 +249,7 @@
                                     </Style>
                                 </DataGrid.Styles>
                                 <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Sync" Width="80">
+                                    <DataGridTemplateColumn Header="Sync" Width="60">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
@@ -264,7 +264,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Type" Width="80">
+                                    <DataGridTemplateColumn Header="Type" Width="60">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
@@ -285,10 +285,10 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
-                                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="170" />
+                                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="120" />
                                     <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
-                                                        Width="250" />
-                                    <DataGridTemplateColumn Header="Watching" Width="120">
+                                                        Width="200" />
+                                    <DataGridTemplateColumn Header="Watching" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <avalonia:MaterialIcon Kind="EyeOutline" Width="16" Height="16"
@@ -549,20 +549,23 @@
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OpenAIApiKey" Classes="no-shadow"
                                                              Text="YOUR_API_KEY_HERE"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0"
+                                                             ToolTip.Tip="Enter your OpenAI API key." />
                                                     <TextBlock Text="OpenAI Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OpenAICompletionModel" Classes="no-shadow"
                                                              Text="gpt-3.5-turbo"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0"
+                                                             ToolTip.Tip="Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4." />
                                                     <TextBlock Text="OpenAI Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OpenAIEndpoint"
                                                              Classes="no-shadow"
                                                              Text="https://api.openai.com/v1/chat/completions"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0"
+                                                             ToolTip.Tip="Set the OpenAI API endpoint." />
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -594,19 +597,22 @@
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="AnthropicApiKey" Classes="no-shadow"
                                                              Text="YOUR_API_KEY_HERE"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0"
+                                                             ToolTip.Tip="Enter your Anthropic API key." />
                                                     <TextBlock Text="Anthropic Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow"
                                                              Text="claude-2"
-                                                             Margin="8,0,8,0" />
+                                                             Margin="8,0,8,0"
+                                                             ToolTip.Tip="Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1." />
                                                     <TextBlock Text="Anthropic Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="AnthropicEndpoint"
                                                              Classes="no-shadow"
-                                                             Text="https://api.anthropic.com/v1" Margin="8,0,8,0" />
+                                                             Text="https://api.anthropic.com/v1" Margin="8,0,8,0" 
+															 ToolTip.Tip="Set the Anthropic API endpoint."/>
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -639,12 +645,14 @@
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B." />
                                                     <TextBlock Text="Ollama Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Set the Ollama API endpoint." />
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -674,32 +682,38 @@
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewApiKey" Text="YOUR_EMBEDDINGS_API_KEY"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Enter your View embeddings API key." />
                                                     <TextBlock Text="View Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Set the View API endpoint URL." />
                                                     <TextBlock Text="Ollama Host Name" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Enter the Ollama host name or URL." />
                                                     <TextBlock Text="Access Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Enter your View access key for authentication." />
                                                     <TextBlock Text="Tenant Guid" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Enter your View tenant GUID for multi-tenant environments." />
                                                     <TextBlock Text="Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
                                                     <TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
-                                                             Margin="8,0,8,0" Classes="no-shadow" />
+                                                             Margin="8,0,8,0" Classes="no-shadow"
+                                                             ToolTip.Tip="Specify the View completion model to use, e.g., llama3.1:8b." />
                                                 </StackPanel>
                                             </Expander>
                                         </Grid>
@@ -750,15 +764,18 @@
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OpenAIEmbeddingModel"
-                                                                     Text="text-embedding-3-small" Classes="no-shadow" />
+                                                                     Text="text-embedding-3-small" Classes="no-shadow"
+                                                                     ToolTip.Tip="Specify the OpenAI embedding model to use, e.g., text-embedding-3-small." />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- VoyageAI Embedding Model -->
@@ -784,24 +801,29 @@
                                                             <TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEmbeddingModel" Text="voyage-3"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="Specify the VoyageAI embedding model to use, e.g., voyage-3." />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
                                                             <TextBlock Text="API Key" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="Enter your VoyageAI API key for authentication." />
                                                             <TextBlock Text="Endpoint" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="VoyageEndpoint"
                                                                      Text="https://api.voyageai.com/"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="Set the VoyageAI API endpoint URL." />
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- Ollama Embedding Model -->
@@ -828,15 +850,18 @@
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OllamaModel"
                                                                      Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="Specify the Ollama embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2." />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
                                                         </StackPanel>
                                                     </Expander>
                                                     <!-- View Embedding Model -->
@@ -862,15 +887,18 @@
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="ViewEmbeddingModel"
                                                                      Text="sentence-transformers/all-MiniLM-L6-v2"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="Specify the View embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2." />
                                                             <TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="ViewEmbeddingDimensions" Text="1536"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
                                                             <TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
                                                             <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000"
-                                                                     Classes="no-shadow" />
+                                                                     Classes="no-shadow"
+                                                                     ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
                                                         </StackPanel>
                                                     </Expander>
                                                 </StackPanel>

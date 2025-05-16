@@ -118,12 +118,6 @@ namespace View.Personal
 
                     LoadSettings();
 
-                    _Logging.Debug(_Header + "Creating MainWindow");
-                    desktop.MainWindow = new MainWindow();
-
-                    _Logging.Debug(_Header + "Showing MainWindow");
-                    desktop.MainWindow.Show();
-
                     using (var ts = new Timestamp())
                     {
                         ts.Start = DateTime.UtcNow;
@@ -144,7 +138,6 @@ namespace View.Personal
                         _GraphDriver = new SqliteGraphRepository(Constants.LiteGraphDatabaseFilename);
                         _Logging.Debug(_Header + "initialized graph driver using sqlite file " +
                                        Constants.LiteGraphDatabaseFilename);
-                        _FileLogging.Info(_Header + "Showing MainWindow");
                         _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings);
                         _LiteGraph.InitializeRepository();
                         _Logging.Debug(_Header + "initialized litegraph");
@@ -223,6 +216,17 @@ namespace View.Personal
                     }
 
                     SaveSettings();
+                    
+                    base.OnFrameworkInitializationCompleted();
+                    LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
+                    
+                    _Logging.Debug(_Header + "Creating MainWindow");
+                    _FileLogging.Info(_Header + "Creating MainWindow");
+                    desktop.MainWindow = new MainWindow();
+
+                    _Logging.Debug(_Header + "Showing MainWindow");
+                    _FileLogging.Info(_Header + "Showing MainWindow");
+                    desktop.MainWindow.Show();
                 }
                 catch (Exception e)
                 {
@@ -237,9 +241,6 @@ namespace View.Personal
                     _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
                     Environment.Exit(1);
                 }
-
-            base.OnFrameworkInitializationCompleted();
-            LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
