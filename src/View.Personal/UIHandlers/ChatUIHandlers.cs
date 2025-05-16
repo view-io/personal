@@ -326,6 +326,7 @@ namespace View.Personal.UIHandlers
                     if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.Content))
                     {
                         messageContent = View.Personal.Controls.MarkdownRenderer.Render(msg.Content);
+                        messageContent.MaxWidth = 650;
                     }
                     else
                     {
@@ -335,6 +336,7 @@ namespace View.Personal.UIHandlers
                             TextWrapping = TextWrapping.Wrap,
                             FontSize = 14,
                             Foreground = new SolidColorBrush(Color.Parse("#1A1C1E")),
+                            MaxWidth = 650
                         };
                     }
 
@@ -343,11 +345,6 @@ namespace View.Personal.UIHandlers
                     if (messageContent is SelectableTextBlock textBlock)
                     {
                         textBlock.TextWrapping = TextWrapping.Wrap;
-                        textBlock.MaxWidth = 650;
-                    }
-                    else
-                    {
-                        messageContent.MaxWidth = 650;
                     }
                     
                     messageContainer.Children.Add(messageContent);
