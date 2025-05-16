@@ -124,17 +124,18 @@ namespace View.Personal.UIHandlers
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
-                        UpdateConversationWindow(conversationContainer, currentMessages, false,
-                            mainWindow); // Hide spinner
+                        Dispatcher.UIThread.Post(() => {
+                            UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
+                            scrollViewer?.ScrollToEnd();
+                        }, DispatcherPriority.Background);
                     }
                     else
                     {
-                        UpdateConversationWindow(conversationContainer, currentMessages, false,
-                            mainWindow); // Update UI
+                        Dispatcher.UIThread.Post(() => {
+                            UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
+                            scrollViewer?.ScrollToEnd();
+                        }, DispatcherPriority.Background);
                     }
-
-                    if (scrollViewer != null)
-                        Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
                 });
 
                 // Finalize assistant response
