@@ -28,6 +28,7 @@ namespace View.Personal.Services
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
     using NPOI.HSSF.UserModel;
     using System.IO;
+    using Avalonia.Threading;
 
     /// <summary>
     /// Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -157,7 +158,7 @@ namespace View.Personal.Services
                             Type = DocumentTypeEnum.Xlsx
                         };
                         atoms = Extract(filePath);
-                        app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel (.xls) file");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel (.xls) file"));
                     }
                     else
                     {
@@ -176,7 +177,7 @@ namespace View.Personal.Services
                                 };
                                 var pdfProcessor = new PdfProcessor(processorSettings);
                                 atoms = pdfProcessor.Extract(filePath).ToList();
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF"));
                                 break;
                             }
                             case DocumentTypeEnum.Text:
@@ -192,7 +193,7 @@ namespace View.Personal.Services
                                 };
                                 var textProcessor = new TextProcessor(textSettings);
                                 atoms = textProcessor.Extract(filePath).ToList();
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file"));
                                 break;
                             }
                             case DocumentTypeEnum.Pptx:
@@ -208,7 +209,7 @@ namespace View.Personal.Services
                                 };
                                 var pptxProcessor = new PptxProcessor(processorSettings);
                                 atoms = pptxProcessor.Extract(filePath).ToList();
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint"));
                                 break;
                             }
                             case DocumentTypeEnum.Docx:
@@ -224,7 +225,7 @@ namespace View.Personal.Services
                                 };
                                 var docxProcessor = new DocxProcessor(processorSettings);
                                 atoms = docxProcessor.Extract(filePath).ToList();
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document"));
                                 break;
                             }
                             case DocumentTypeEnum.Markdown:
@@ -242,8 +243,7 @@ namespace View.Personal.Services
                                 {
                                     atoms = markdownProcessor.Extract(filePath).ToList();
                                 }
-
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file"));
                                 break;
                             }
                             case DocumentTypeEnum.Xlsx:
@@ -261,18 +261,18 @@ namespace View.Personal.Services
                                 {
                                     atoms = xlsxProcessor.Extract(filePath).ToList();
                                 }
-
-                                app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file"));
                                 break;
                             }
-
                             default:
                             {
-                                app.Log(
-                                    $"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
-                                mainWindow.ShowNotification("Ingestion Error",
-                                    "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
-                                    NotificationType.Error);
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                {
+                                    app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
+                                    mainWindow.ShowNotification("Ingestion Error",
+                                        "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                        NotificationType.Error);
+                                });
                                 return;
                             }
                         }
@@ -376,9 +376,12 @@ namespace View.Personal.Services
                             case "Ollama":
                                 if (string.IsNullOrEmpty(appSettings.Embeddings.OllamaEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error",
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Ingestion Error",
                                         "Local embedding model not configured.",
                                         NotificationType.Error);
+                                    });
                                     return;
                                 }
 
@@ -420,8 +423,11 @@ namespace View.Personal.Services
                                 if (string.IsNullOrEmpty(appSettings.Embeddings.VoyageApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.VoyageEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error",
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Ingestion Error",
                                         "VoyageAI embedding settings incomplete.", NotificationType.Error);
+                                    });
                                     return;
                                 }
 
@@ -466,9 +472,12 @@ namespace View.Personal.Services
                                     string.IsNullOrEmpty(appSettings.View.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.ViewEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error",
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Ingestion Error",
                                         "View embedding settings incomplete.",
                                         NotificationType.Error);
+                                    });
                                     return;
                                 }
 
@@ -528,8 +537,11 @@ namespace View.Personal.Services
                     filePathTextBox.Text = "";
                 app.Log($"[INFO] File {filePath} ingested successfully!");
                 var filename = Path.GetFileName(filePath);
-                mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
                     NotificationType.Success);
+                });
             }
             catch (Exception ex)
             {
