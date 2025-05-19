@@ -113,7 +113,10 @@ namespace View.Personal
                     _Logging.Debug(_Header + "initializing View Personal at " +
                                    DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
-                    _FileLogging = new LoggingModule(Path.Combine(".", "logs", "view-personal.log"));
+                    var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ViewPersonal", "logs");
+                    Directory.CreateDirectory(logDirectory);
+                    _FileLogging = new LoggingModule(Path.Combine(logDirectory, "view-personal.log"));
+
                     _FileLogging.Debug(_Header + "File logging initialized");
 
                     LoadSettings();

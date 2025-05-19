@@ -23,7 +23,7 @@ namespace View.Personal.Services
         /// <param name="consoleOutput">The TextBox control for displaying console messages.</param>
         public LoggingService(Window window, TextBox consoleOutput)
         {
-            var logFilePath = Path.Combine(".", "logs", "view-personal.log");
+            var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "logs");
             _Window = window;
             _ConsoleOutput = consoleOutput;
             _logger = new LoggingModule(logFilePath);
