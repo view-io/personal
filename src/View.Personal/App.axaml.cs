@@ -69,7 +69,8 @@ namespace View.Personal
         internal Guid _CredentialGuid;
         internal LoggingModule _Logging;
         internal LoggingModule _FileLogging;
-        private const string _SettingsFilePath = "appsettings.json";
+        private static readonly string _SettingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
+        private static readonly string _SettingsFilePath = Path.Combine(_SettingsDirectory, "appsettings.json");
 
         #endregion
 
@@ -113,10 +114,12 @@ namespace View.Personal
                     _Logging.Debug(_Header + "initializing View Personal at " +
                                    DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
-                    var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ViewPersonal", "logs");
-                    Directory.CreateDirectory(logDirectory);
+                    var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "logs");
+                    if (!Directory.Exists(logDirectory))
+                    {
+                        Directory.CreateDirectory(logDirectory);
+                    }
                     _FileLogging = new LoggingModule(Path.Combine(logDirectory, "view-personal.log"));
-
                     _FileLogging.Debug(_Header + "File logging initialized");
 
                     LoadSettings();
@@ -124,6 +127,11 @@ namespace View.Personal
                     using (var ts = new Timestamp())
                     {
                         ts.Start = DateTime.UtcNow;
+                        var dbDirectory = Path.GetDirectoryName(Constants.LiteGraphDatabaseFilename);
+                        if (!string.IsNullOrWhiteSpace(dbDirectory))
+                        {
+                            Directory.CreateDirectory(dbDirectory);
+                        }
 
                         _LoggingSettings = new LiteGraph.LoggingSettings
                         {
@@ -219,10 +227,10 @@ namespace View.Personal
                     }
 
                     SaveSettings();
-                    
+
                     base.OnFrameworkInitializationCompleted();
                     LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
-                    
+
                     _Logging.Debug(_Header + "Creating MainWindow");
                     _FileLogging.Info(_Header + "Creating MainWindow");
                     desktop.MainWindow = new MainWindow();
@@ -233,6 +241,8 @@ namespace View.Personal
                 }
                 catch (Exception e)
                 {
+                    _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
+                    _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
                     var messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(
                         "Unable to start View Personal",
                         "View Personal was unable to start due to the following exception:" + Environment.NewLine +
@@ -240,8 +250,6 @@ namespace View.Personal
                         ButtonEnum.Ok,
                         Icon.Error);
                     messageBoxStandardWindow.ShowAsync().Wait();
-                    _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
-                    _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
                     Environment.Exit(1);
                 }
         }
@@ -385,6 +393,10 @@ namespace View.Personal
         {
             try
             {
+                if (!Directory.Exists(_SettingsDirectory))
+                {
+                    Directory.CreateDirectory(_SettingsDirectory);
+                }
                 if (File.Exists(_SettingsFilePath))
                 {
                     var json = File.ReadAllText(_SettingsFilePath);
@@ -421,7 +433,7 @@ namespace View.Personal
                     {
                         ActiveGraphGuid = _GraphGuid.ToString(),
                         OpenAI = new AppSettings.OpenAISettings
-                            { Endpoint = "https://api.openai.com/v1/chat/completions" },
+                        { Endpoint = "https://api.openai.com/v1/chat/completions" },
                         Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },
                         Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
                         View = new AppSettings.ViewSettings
