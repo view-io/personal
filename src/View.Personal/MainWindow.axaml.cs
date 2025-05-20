@@ -83,7 +83,12 @@ namespace View.Personal
 
         #region Private-Members
 
-        private readonly TypeDetector _TypeDetector = new();
+        private static readonly string _TempPath = Path.Combine(
+                                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                                     "ViewPersonal", "Temp");
+
+        private TypeDetector _TypeDetector;
+
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private static Serializer _Serializer = new();
@@ -116,6 +121,8 @@ namespace View.Personal
             var app = (App)Application.Current;
             try
             {
+                Directory.CreateDirectory(_TempPath); // ensure path exists
+                _TypeDetector = new TypeDetector(_TempPath);
                 InitializeComponent();
                 Opened += (_, __) =>
                 {
