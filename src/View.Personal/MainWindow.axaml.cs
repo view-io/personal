@@ -83,7 +83,12 @@ namespace View.Personal
 
         #region Private-Members
 
-        private readonly TypeDetector _TypeDetector = new();
+        private static readonly string _TempPath = Path.Combine(
+                                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                                     "ViewPersonal", "Temp");
+
+        private TypeDetector _TypeDetector;
+
         private LiteGraphClient _LiteGraph => ((App)Application.Current)._LiteGraph;
         private Guid _TenantGuid => ((App)Application.Current)._TenantGuid;
         private static Serializer _Serializer = new();
@@ -116,6 +121,8 @@ namespace View.Personal
             var app = (App)Application.Current;
             try
             {
+                Directory.CreateDirectory(_TempPath); // ensure path exists
+                _TypeDetector = new TypeDetector(_TempPath);
                 InitializeComponent();
                 Opened += (_, __) =>
                 {
@@ -364,7 +371,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             var filePath = await _FileBrowserService.BrowseForLogSaveLocation(this);
-            
+
             if (!string.IsNullOrEmpty(filePath))
             {
                 try
@@ -382,7 +389,7 @@ namespace View.Personal
                 catch (Exception ex)
                 {
                     app.Log($"[ERROR] Error saving console logs: {ex.Message}");
-                    app.LogExceptionToFile(ex,"[ERROR] Error saving console logs");
+                    app.LogExceptionToFile(ex, "[ERROR] Error saving console logs");
                     ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
                 }
             }
@@ -672,12 +679,12 @@ namespace View.Personal
                 // Generate embeddings with the selected embeddings provider
                 var (sdk, embeddingsRequest) =
                     GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
-                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest);
+                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false); ;
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
 
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
-                var searchResults = await PerformVectorSearch(floatEmbeddings);
+                var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
                 if (searchResults == null || !searchResults.Any())
                     return "No relevant documents found to answer your question.";
 
@@ -685,7 +692,8 @@ namespace View.Personal
                 var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
 
-                return await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived);
+                var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                return result;
             }
             catch (Exception ex)
             {
@@ -1004,6 +1012,18 @@ namespace View.Personal
         {
             var sb = new StringBuilder();
             var app = (App)Application.Current;
+
+            // Create a SynchronizationContext-aware token handler that safely updates the UI
+            Action<string> safeTokenHandler = null;
+            if (onTokenReceived != null)
+            {
+                safeTokenHandler = (token) =>
+                {
+                    // Always dispatch UI updates to the UI thread
+                    Dispatcher.UIThread.InvokeAsync(() => onTokenReceived(token));
+                };
+            }
+
             if (resp.ServerSentEvents)
             {
                 while (true)
@@ -1024,7 +1044,7 @@ namespace View.Personal
                             var token = ExtractTokenFromJson(doc, provider);
                             if (token != null)
                             {
-                                onTokenReceived?.Invoke(token);
+                                safeTokenHandler?.Invoke(token);
                                 sb.Append(token);
                             }
                         }
@@ -1041,7 +1061,7 @@ namespace View.Personal
                 using var reader = new StreamReader(resp.Data);
                 while (!reader.EndOfStream)
                 {
-                    var line = await reader.ReadLineAsync();
+                    var line = await reader.ReadLineAsync().ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
                     try
@@ -1050,7 +1070,7 @@ namespace View.Personal
                         var token = ExtractTokenFromJson(doc, provider);
                         if (token != null)
                         {
-                            await Dispatcher.UIThread.InvokeAsync(() => onTokenReceived?.Invoke(token));
+                            safeTokenHandler?.Invoke(token);
                             sb.Append(token);
                         }
                     }

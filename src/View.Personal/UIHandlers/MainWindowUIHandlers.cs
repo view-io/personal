@@ -419,18 +419,10 @@ namespace View.Personal.UIHandlers
             return true;
         }
 
-        /// <summary>
-        /// Determines whether the hostname part of a given HTTP endpoint is resolvable via DNS.
-        /// </summary>
-        /// <param name="endpoint">
-        /// A string representing the full HTTP endpoint URL (e.g., "http://example.com:8080/").
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the hostname can be resolved to at least one IP address via DNS; otherwise, <c>false</c>.
-        /// </returns>
         /// <remarks>
         /// This method first attempts to parse the given string into a <see cref="System.Uri"/>. 
-        /// If successful, it extracts the hostname and performs a DNS lookup using <see cref="System.Net.Dns.GetHostAddresses"/>.
+        /// If successful, it extracts the hostname and performs a DNS lookup using 
+        /// <see cref="System.Net.Dns.GetHostAddresses(string)"/>.
         /// Any exceptions (e.g., invalid URI format or DNS failure) will result in a return value of <c>false</c>.
         /// </remarks>
         private static bool IsHostnameResolvable(string endpoint)

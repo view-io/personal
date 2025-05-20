@@ -1201,12 +1201,11 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
-            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1722,18 +1721,10 @@
             </returns>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IsHostnameResolvable(System.String)">
-            <summary>
-            Determines whether the hostname part of a given HTTP endpoint is resolvable via DNS.
-            </summary>
-            <param name="endpoint">
-            A string representing the full HTTP endpoint URL (e.g., "http://example.com:8080/").
-            </param>
-            <returns>
-            <c>true</c> if the hostname can be resolved to at least one IP address via DNS; otherwise, <c>false</c>.
-            </returns>
             <remarks>
             This method first attempts to parse the given string into a <see cref="T:System.Uri"/>. 
-            If successful, it extracts the hostname and performs a DNS lookup using <see cref="M:System.Net.Dns.GetHostAddresses(System.String)"/>.
+            If successful, it extracts the hostname and performs a DNS lookup using 
+            <see cref="M:System.Net.Dns.GetHostAddresses(System.String)"/>.
             Any exceptions (e.g., invalid URI format or DNS failure) will result in a return value of <c>false</c>.
             </remarks>
         </member>
