@@ -23,7 +23,9 @@ Ensure the following tools are installed on your macOS system:
 A build script is provided for convenience:
 
 ```sh
-./build_mac_pkg.sh
+chmod +x build_mac_pkg.sh
+or
+./build_mac_pkg.sh 
 ```
 
 This script will:
