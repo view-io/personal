@@ -199,21 +199,21 @@ namespace View.Personal.Controls
                             var row = new Grid
                             {
                                 ColumnDefinitions =
-                        {
-                            new ColumnDefinition { Width = GridLength.Auto },
-                            new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
-                        },
+                                {
+                                     new ColumnDefinition { Width = GridLength.Auto },
+                                     new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                                },
                                 Margin = new Thickness(0, 0, 0, 4)
                             };
 
-                            var prefixBlock = new TextBlock
+                            var prefixBlock = new SelectableTextBlock
                             {
                                 Text = numberPrefix,
                                 Margin = new Thickness(8, 0, 8, 0),
                                 VerticalAlignment = VerticalAlignment.Top
                             };
 
-                            var contentBlock = new TextBlock
+                            var contentBlock = new SelectableTextBlock
                             {
                                 TextWrapping = TextWrapping.Wrap,
                                 MaxWidth = 900
