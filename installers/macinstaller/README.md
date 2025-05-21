@@ -24,7 +24,6 @@ A build script is provided for convenience:
 
 ```sh
 chmod +x build_mac_pkg.sh
-or
 ./build_mac_pkg.sh 
 ```
 
