@@ -49,6 +49,11 @@ namespace View.Personal.Classes
         public string SelectedProvider { get; set; } = "View";
 
         /// <summary>
+        /// The currently selected embeddings provider. Default is "Ollama".
+        /// </summary>
+        public string SelectedEmbeddingsProvider { get; set; } = "Ollama";
+
+        /// <summary>
         /// Gets or sets the list of paths being actively watched by the Data Monitor.
         /// </summary>
         public List<string> WatchedPaths { get; set; } = new();

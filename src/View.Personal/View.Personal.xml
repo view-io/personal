@@ -159,6 +159,11 @@
             The currently selected AI provider. Default is "View".
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.SelectedEmbeddingsProvider">
+            <summary>
+            The currently selected embeddings provider. Default is "Ollama".
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.WatchedPaths">
             <summary>
             Gets or sets the list of paths being actively watched by the Data Monitor.
@@ -1666,6 +1671,12 @@
             <summary>
             Provides event handlers and utility methods for managing the main window user interface.
             </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.LoadSettingsToUI(View.Personal.MainWindow)">
+            <summary>
+            Loads application settings from the App instance into the UI controls.
+            </summary>
+            <param name="window">The MainWindow instance containing the settings UI controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.MainWindow_Opened(Avalonia.Controls.Window)">
             <summary>
