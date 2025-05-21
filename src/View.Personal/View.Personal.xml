@@ -159,6 +159,11 @@
             The currently selected AI provider. Default is "View".
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.SelectedEmbeddingsProvider">
+            <summary>
+            The currently selected embeddings provider. Default is "Ollama".
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.WatchedPaths">
             <summary>
             Gets or sets the list of paths being actively watched by the Data Monitor.
@@ -770,6 +775,13 @@
             Recursively retrieves the plain text content from a container inline.
             </summary>
         </member>
+        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.Inline)">
+            <summary>
+            Recursively retrieves the plain text content from a Markdown inline element.
+            </summary>
+            <param name="inline">The Markdown inline element (e.g., LiteralInline, EmphasisInline, CodeInline).</param>
+            <returns>A plain text string representation of the inline element and its nested content.</returns>
+        </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
             A value converter that transforms a string representing a file size in bytes into a human-readable format (e.g., "1.5 KB", "2.0 MB").
@@ -1201,11 +1213,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1658,6 +1671,12 @@
             <summary>
             Provides event handlers and utility methods for managing the main window user interface.
             </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.LoadSettingsToUI(View.Personal.MainWindow)">
+            <summary>
+            Loads application settings from the App instance into the UI controls.
+            </summary>
+            <param name="window">The MainWindow instance containing the settings UI controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.MainWindow_Opened(Avalonia.Controls.Window)">
             <summary>

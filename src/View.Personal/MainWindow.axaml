@@ -459,6 +459,9 @@
                                                            FontWeight="400" />
                                             </StackPanel>
                                         </Button>
+                                        <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF">
+                                            <avalonia:MaterialIcon Kind="TrayArrowDown" />
+                                        </Button>
                                     </StackPanel>
                                     <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
                                               CanUserReorderColumns="False" CanUserResizeColumns="True"
@@ -942,11 +945,6 @@
                                                            Height="16" Width="16" />
                                     <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
                                 </StackPanel>
-                            </Button>
-                            <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF"
-                                    VerticalAlignment="Bottom"
-                                    Height="41">
-                                <avalonia:MaterialIcon Kind="TrayArrowDown" />
                             </Button>
                         </StackPanel>
                     </Grid>

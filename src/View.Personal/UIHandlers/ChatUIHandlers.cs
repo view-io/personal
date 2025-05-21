@@ -305,64 +305,74 @@ namespace View.Personal.UIHandlers
 
                 foreach (var msg in conversationHistory)
                 {
-                    var labelBlock = new SelectableTextBlock
+                    var container = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical,
+                        Margin = new Thickness(0, 0, 0, 20),
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    };
+
+                    var labelBlock = new TextBlock
                     {
                         Text = msg.Role == "user" ? "You" : "Assistant",
                         Foreground = new SolidColorBrush(Color.Parse("#464A4D")),
                         FontSize = 12,
-                        FontWeight = FontWeight.Normal,
-                        Margin = new Thickness(180, 0, 0, 0)
+                        FontWeight = FontWeight.Bold,
+                        Margin = new Thickness(10, 0, 10, 2)
                     };
-
-                    var messageContainer = new StackPanel
-                    {
-                        Orientation = Orientation.Vertical,
-                        Margin = new Thickness(0, 0, 0, 20)
-                    };
-
-                    messageContainer.Children.Add(labelBlock);
 
                     Control messageContent;
                     if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.Content))
                     {
                         messageContent = View.Personal.Controls.MarkdownRenderer.Render(msg.Content);
-                        messageContent.MaxWidth = 650;
                     }
                     else
                     {
                         messageContent = new SelectableTextBlock
                         {
-                            Text = string.IsNullOrEmpty(msg.Content) ? "" : msg.Content,
+                            Text = msg.Content ?? "",
                             TextWrapping = TextWrapping.Wrap,
                             FontSize = 14,
-                            Foreground = new SolidColorBrush(Color.Parse("#1A1C1E")),
-                            MaxWidth = 650
+                            Foreground = new SolidColorBrush(Color.Parse("#1A1C1E"))
                         };
                     }
 
-                    // Apply common styling
-                    messageContent.Margin = new Thickness(10, 0, 0, 0);
-                    if (messageContent is SelectableTextBlock textBlock)
+                    // Wrap message in a container with max width and center alignment
+                    var messageWrapper = new Border
                     {
-                        textBlock.TextWrapping = TextWrapping.Wrap;
-                    }
-                    
-                    messageContainer.Children.Add(messageContent);
+                        MaxWidth = 650,
+                        Child = messageContent,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Margin = new Thickness(10, 0, 10, 0)
+                    };
 
+                    container.Children.Add(labelBlock);
+                    container.Children.Add(messageWrapper);
+
+                    // Optional spinner
                     if (msg.Role == "assistant" && msg == conversationHistory.Last() && showSpinner)
                     {
-                        var spinner = new ProgressBar
+                        container.Children.Add(new ProgressBar
                         {
                             IsIndeterminate = true,
-                            Width = 100,
-                            Margin = new Thickness(180, 5, 0, 0),
+                            Width = 70,
+                            Margin = new Thickness(10, 5, 0, 0),
                             HorizontalAlignment = HorizontalAlignment.Left
-                        };
-                        messageContainer.Children.Add(spinner);
+                        });
                     }
 
-                    conversationContainer.Children.Add(messageContainer);
+                    var outerWrapper = new Grid
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Margin = new Thickness(180, 0, 0, 0),
+                        Width = 1000
+                    };
+                    outerWrapper.Children.Add(container);
+                    conversationContainer.Children.Add(outerWrapper);
+
                 }
+
+
 
                 // Ensure scroll viewer scrolls to bottom when new messages are added
                 var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
