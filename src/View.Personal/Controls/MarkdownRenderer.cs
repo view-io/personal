@@ -12,6 +12,7 @@ namespace View.Personal.Controls
     using Markdig.Syntax.Inlines;
     using Markdig.Extensions.Tables;
     using Avalonia.Controls.Primitives;
+    using Avalonia.Controls.Documents;
 
     /// <summary>
     /// Provides functionality to render Markdown content as Avalonia UI controls.
@@ -160,55 +161,93 @@ namespace View.Personal.Controls
         {
             var panel = new StackPanel
             {
-                Spacing = 4,
+                Spacing = 8,
                 Orientation = Orientation.Vertical,
                 Margin = new Thickness(0, 4, 0, 4)
             };
 
             int index = 1;
+
             foreach (var item in list)
             {
                 if (item is ListItemBlock listItem)
                 {
-                    var itemPanel = new StackPanel
-                    {
-                        Orientation = Orientation.Horizontal,
-                        Spacing = 8
-                    };
-
-                    // Add bullet or number
-                    var bullet = new SelectableTextBlock
-                    {
-                        Text = list.IsOrdered ? $"{index++}." : "•",
-                        VerticalAlignment = VerticalAlignment.Top,
-                        Width = 20,
-                        TextAlignment = TextAlignment.Right
-                    };
-
-                    itemPanel.Children.Add(bullet);
-
-                    // Add content
-                    var contentPanel = new StackPanel
-                    {
-                        Orientation = Orientation.Vertical,
-                        Spacing = 4
-                    };
-
                     foreach (var block in listItem)
                     {
-                        var control = RenderBlock(block);
-                        if (control != null)
-                            contentPanel.Children.Add(control);
-                    }
+                        if (block is ParagraphBlock paragraph && paragraph.Inline != null)
+                        {
+                            var inline = paragraph.Inline.FirstChild;
+                            string boldText = "";
+                            string restText = "";
 
-                    itemPanel.Children.Add(contentPanel);
-                    panel.Children.Add(itemPanel);
+                            // Extract bold prefix (e.g., **bold text**)
+                            if (inline is EmphasisInline emphasis && emphasis.DelimiterChar == '*' && emphasis.DelimiterCount == 2)
+                            {
+                                boldText = GetInlineText(emphasis);
+                                inline = emphasis.NextSibling;
+                            }
+
+                            while (inline != null)
+                            {
+                                restText += GetInlineText(inline);
+                                inline = inline.NextSibling;
+                            }
+
+                            var numberPrefix = list.IsOrdered ? $"{index++}." : "•";
+
+                            // Grid layout for proper indentation
+                            var row = new Grid
+                            {
+                                ColumnDefinitions =
+                        {
+                            new ColumnDefinition { Width = GridLength.Auto },
+                            new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                        },
+                                Margin = new Thickness(0, 0, 0, 4)
+                            };
+
+                            var prefixBlock = new TextBlock
+                            {
+                                Text = numberPrefix,
+                                Margin = new Thickness(8, 0, 8, 0),
+                                VerticalAlignment = VerticalAlignment.Top
+                            };
+
+                            var contentBlock = new TextBlock
+                            {
+                                TextWrapping = TextWrapping.Wrap,
+                                MaxWidth = 900
+                            };
+
+                            if (!string.IsNullOrWhiteSpace(boldText))
+                            {
+                                contentBlock.Inlines!.Add(new Run { Text = boldText, FontWeight = FontWeight.Bold });
+                                contentBlock.Inlines.Add(new Run { Text = " " + restText.Trim() });
+                            }
+                            else
+                            {
+                                contentBlock.Text = restText.Trim();
+                            }
+
+                            Grid.SetColumn(prefixBlock, 0);
+                            Grid.SetColumn(contentBlock, 1);
+
+                            row.Children.Add(prefixBlock);
+                            row.Children.Add(contentBlock);
+                            panel.Children.Add(row);
+                        }
+                        else
+                        {
+                            var fallback = RenderBlock(block);
+                            if (fallback != null)
+                                panel.Children.Add(fallback);
+                        }
+                    }
                 }
             }
 
             return panel;
         }
-
 
         /// <summary>
         /// Renders a Markdown code block, styled with monospaced font and border.
@@ -438,7 +477,7 @@ namespace View.Personal.Controls
         /// <summary>
         /// Renders a single Markdown inline element into an Avalonia control.
         /// </summary>
-        private static Control RenderInline(Inline inline)
+        private static Control RenderInline(Markdig.Syntax.Inlines.Inline inline)
         {
             switch (inline)
             {
@@ -552,6 +591,40 @@ namespace View.Personal.Controls
             return text;
         }
 
+        /// <summary>
+        /// Recursively retrieves the plain text content from a Markdown inline element.
+        /// </summary>
+        /// <param name="inline">The Markdown inline element (e.g., LiteralInline, EmphasisInline, CodeInline).</param>
+        /// <returns>A plain text string representation of the inline element and its nested content.</returns>
+        private static string GetInlineText(Markdig.Syntax.Inlines.Inline inline)
+        {
+            if (inline is LiteralInline literal)
+            {
+                return literal.Content.ToString();
+            }
+            else if (inline is ContainerInline containerInline)
+            {
+                return GetInlineText(containerInline);
+            }
+            else if (inline is CodeInline code)
+            {
+                return code.Content;
+            }
+            else if (inline is EmphasisInline emphasis)
+            {
+                return GetInlineText(emphasis);
+            }
+            else if (inline is LineBreakInline)
+            {
+                return Environment.NewLine;
+            }
+            else if (inline is LinkInline link)
+            {
+                return link.Title ?? link.Url ?? "";
+            }
+
+            return string.Empty;
+        }
         #endregion
     }
 }
