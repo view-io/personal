@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="View.Personal.Views.OnboardingOverlay">
+    <Canvas x:Name="OverlayRoot" Background="#80000000" ZIndex="10000" IsVisible="{Binding IsVisible, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        <!-- Highlight Rectangle (positioned dynamically in code-behind) -->
+        <Border x:Name="HighlightBorder"
+                BorderBrush="#0472EF"
+                BorderThickness="3"
+                CornerRadius="8"
+                Background="#00FFFFFF"
+                IsHitTestVisible="False"
+                />
+        <!-- Tooltip Panel -->
+        <Border x:Name="TooltipPanelBorder" Background="#FFF" Padding="20" CornerRadius="10" MaxWidth="340" Effect="{DynamicResource MaterialShadowDepth2}" ZIndex="1001">
+            <StackPanel x:Name="TooltipPanel"
+                        Orientation="Vertical">
+                <TextBlock x:Name="TooltipTitle"
+                           FontWeight="Bold"
+                           FontSize="18"
+                           Margin="0,0,0,8"/>
+                <TextBlock x:Name="TooltipDescription"
+                           FontSize="14"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,16"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button x:Name="SkipButton" Content="Skip" Classes="flat"/>
+                    <Button x:Name="NextButton" Content="Next" Classes="flat"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Canvas>
+</UserControl>

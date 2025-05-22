@@ -660,6 +660,36 @@
             Gets or sets the UTC timestamp when the graph was last updated.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.OnboardingState">
+            <summary>
+            Represents the onboarding completion state.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OnboardingState.Completed">
+            <summary>
+            Gets or sets a value indicating whether the onboarding process has been completed.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OnboardingStep">
+            <summary>
+            Represents a single onboarding step, including target UI element and descriptive details.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OnboardingStep.TargetName">
+            <summary>
+            Gets or sets the name of the control to be highlighted during the onboarding step.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OnboardingStep.Title">
+            <summary>
+            Gets or sets the title displayed in the onboarding tooltip.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OnboardingStep.Description">
+            <summary>
+            Gets or sets the description displayed in the onboarding tooltip.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.TextInputDialog">
             <summary>
             A dialog window for collecting text input from the user with OK and Cancel options.
@@ -1762,6 +1792,60 @@
             <param name="liteGraph">The LiteGraphClient instance for interacting with graph data.</param>
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
+        </member>
+        <member name="T:View.Personal.Views.OnboardingOverlay">
+            <summary>
+            Represents the onboarding overlay that guides the user through application features.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Views.OnboardingOverlay.IsVisibleProperty">
+            <summary>
+            Identifies the IsVisible Avalonia property.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Views.OnboardingOverlay.IsVisible">
+            <summary>
+            Gets or sets whether the overlay is visible.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Views.OnboardingOverlay"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.Start(Avalonia.Controls.Window,System.Action)">
+            <summary>
+            Starts the onboarding sequence.
+            </summary>
+            <param name="mainWindow">The main application window.</param>
+            <param name="onComplete">The callback to execute upon completion.</param>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.ClearPreviousHighlight">
+            <summary>
+            Clears the previous step's highlight class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.CompleteWalkthrough">
+            <summary>
+            Completes the onboarding walkthrough and saves the state.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.ShowStep">
+            <summary>
+            Displays the current onboarding step.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.HighlightTarget(System.String)">
+            <summary>
+            Highlights the UI element for the current onboarding step.
+            </summary>
+            <param name="targetName">The name of the control to highlight.</param>
+        </member>
+        <member name="M:View.Personal.Views.OnboardingOverlay.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
     </members>
 </doc>
