@@ -4,6 +4,7 @@
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:helpers="clr-namespace:View.Personal.Helpers"
         xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+        xmlns:controls="clr-namespace:View.Personal.Views"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Title="View Personal"
@@ -31,14 +32,18 @@
             <RowDefinition Height="5" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <DockPanel>
+        
+        <!-- Onboarding Overlay -->
+		<controls:OnboardingOverlay x:Name="OnboardingOverlay" Grid.Row="0" Grid.RowSpan="3" ZIndex="9999"/>
+		<DockPanel>
             <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
                     Width="200" Background="#FFFFFF">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24 32 0 24">
                         <Image Source="/Assets/logo.png" Height="26" Width="97.61" />
                     </StackPanel>
-                    <Button DockPanel.Dock="Top" Margin="12 0 12 0"
+                    <Button x:Name="StartNewChatButton"
+							DockPanel.Dock="Top" Margin="12 0 12 0"
                             Click="StartNewChatButton_Click"
                             Classes="flat"
                             Width="149" Height="32">
@@ -121,7 +126,7 @@
                                 <TextBlock Text="Data Monitor" Foreground="#6A6B6F" />
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="Settings2">
+                        <ListBoxItem Tag="Settings2" x:Name="SettingsPanel">
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
 
@@ -154,8 +159,6 @@
                             <TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
                             <Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
                                     VerticalAlignment="Top">
-                                <TextBlock Text="OSS" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Foreground="#6A6B6F" FontWeight="500" />
                             </Border>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
@@ -191,9 +194,6 @@
                         <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
                             <TextBlock Text="©2025 View Systems Inc." FontSize="12" Foreground="#6A6B6F"
                                        FontWeight="500" />
-                            <TextBlock Text="Released under the MIT License." FontSize="12" Foreground="#C0C0C1"
-                                       FontWeight="500"
-                                       HorizontalAlignment="Right" />
                         </Grid>
                     </Grid>
                 </Border>

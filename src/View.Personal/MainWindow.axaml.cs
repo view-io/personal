@@ -30,6 +30,7 @@ namespace View.Personal
     using RestWrapper;
     using Sdk.Embeddings.Providers.VoyageAI;
     using UIHandlers;
+    using View.Personal.Controls;
 
     /// <summary>
     /// Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
@@ -154,6 +155,30 @@ namespace View.Personal
                 var chatInputBox = this.FindControl<TextBox>("ChatInputBox");
                 if (chatInputBox == null) throw new Exception("ChatInputBox not found in XAML");
                 chatInputBox.KeyDown += ChatInputBox_KeyDown;
+                // Onboarding state check using onboarding.json
+                bool onboardingCompleted = false;
+                string onboardingDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
+                string onboardingPath = Path.Combine(onboardingDir, "onboarding.json");
+                if (!Directory.Exists(onboardingDir))
+                    Directory.CreateDirectory(onboardingDir);
+                if (File.Exists(onboardingPath))
+                {
+                    try
+                    {
+                        var json = File.ReadAllText(onboardingPath);
+                        var state = System.Text.Json.JsonSerializer.Deserialize<OnboardingState>(json);
+                        onboardingCompleted = state?.Completed ?? false;
+                    }
+                    catch { }
+                }
+                if (!onboardingCompleted)
+                {
+                    var onboardingOverlay = this.FindControl<View.Personal.Views.OnboardingOverlay>("OnboardingOverlay");
+                    if (onboardingOverlay != null)
+                    {
+                        onboardingOverlay.Start(this, () => { });
+                    }
+                }
             }
             catch (Exception e)
             {
