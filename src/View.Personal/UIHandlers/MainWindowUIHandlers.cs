@@ -32,6 +32,78 @@ namespace View.Personal.UIHandlers
         #region Public-Methods
 
         /// <summary>
+        /// Loads application settings from the App instance into the UI controls.
+        /// </summary>
+        /// <param name="window">The MainWindow instance containing the settings UI controls.</param>
+        public static void LoadSettingsToUI(MainWindow window)
+        {
+            var app = (App)Application.Current;
+            var openAiSettings = app.ApplicationSettings.OpenAI;
+            var anthropicSettings = app.ApplicationSettings.Anthropic;
+            var ollamaSettings = app.ApplicationSettings.Ollama;
+            var viewSettings = app.ApplicationSettings.View;
+            var embeddingSettings = app.ApplicationSettings.Embeddings;
+            var providerSettings = app.ApplicationSettings;
+
+            window.FindControl<TextBox>("OpenAIApiKey").Text = openAiSettings.ApiKey ?? string.Empty;
+            window.FindControl<TextBox>("OpenAICompletionModel").Text = openAiSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("OpenAIEndpoint").Text = openAiSettings.Endpoint ?? string.Empty;
+            window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = openAiSettings.IsEnabled;
+
+            window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
+            window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("AnthropicEndpoint").Text = anthropicSettings.Endpoint ?? string.Empty;
+            window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = anthropicSettings.IsEnabled;
+
+            window.FindControl<TextBox>("OllamaCompletionModel").Text = ollamaSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("OllamaEndpoint").Text = ollamaSettings.Endpoint ?? string.Empty;
+            window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = ollamaSettings.IsEnabled;
+
+            window.FindControl<TextBox>("ViewApiKey").Text = viewSettings.ApiKey ?? string.Empty;
+            window.FindControl<TextBox>("ViewEndpoint").Text = viewSettings.Endpoint ?? string.Empty;
+            window.FindControl<TextBox>("OllamaHostName").Text = viewSettings.OllamaHostName ?? string.Empty;
+            window.FindControl<TextBox>("ViewAccessKey").Text = viewSettings.AccessKey ?? string.Empty;
+            window.FindControl<TextBox>("ViewTenantGUID").Text = viewSettings.TenantGuid ?? string.Empty;
+            window.FindControl<TextBox>("ViewCompletionModel").Text = viewSettings.CompletionModel ?? string.Empty;
+            window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = viewSettings.IsEnabled;
+
+            // Embedding models
+            window.FindControl<TextBox>("OllamaModel").Text = embeddingSettings.OllamaEmbeddingModel ?? string.Empty;
+            window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text = embeddingSettings.OllamaEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text = embeddingSettings.OllamaEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("ViewEmbeddingModel").Text = embeddingSettings.ViewEmbeddingModel ?? string.Empty;
+            window.FindControl<TextBox>("ViewEmbeddingDimensions").Text = embeddingSettings.ViewEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text = embeddingSettings.ViewEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("OpenAIEmbeddingModel").Text = embeddingSettings.OpenAIEmbeddingModel ?? string.Empty;
+            window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text = embeddingSettings.OpenAIEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text = embeddingSettings.OpenAIEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("VoyageEmbeddingModel").Text = embeddingSettings.VoyageEmbeddingModel ?? string.Empty;
+            window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text = embeddingSettings.VoyageEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text = embeddingSettings.VoyageEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("VoyageApiKey").Text = embeddingSettings.VoyageApiKey ?? string.Empty;
+
+            // Set selected provider radio button
+            if (providerSettings.SelectedProvider == "OpenAI")
+                window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = true;
+            else if (providerSettings.SelectedProvider == "Anthropic")
+                window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = true;
+            else if (providerSettings.SelectedProvider == "Ollama")
+                window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = true;
+            else if (providerSettings.SelectedProvider == "View")
+                window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = true;
+
+            // Set selected embeddings provider radio button
+            if (providerSettings.SelectedEmbeddingsProvider == "Ollama")
+                window.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked = true;
+            else if (providerSettings.SelectedEmbeddingsProvider == "View")
+                window.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked = true;
+            else if (providerSettings.SelectedEmbeddingsProvider == "OpenAI")
+                window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked = true;
+            else if (providerSettings.SelectedEmbeddingsProvider == "Voyage")
+                window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked = true; 
+        }
+
+        /// <summary>
         /// Handles the opened event of the main window, initializing settings and console output.
         /// </summary>
         /// <param name="window">The main window that has been opened.</param>
@@ -204,7 +276,7 @@ namespace View.Personal.UIHandlers
                 {
                     window.ShowNotification("Validation Error", "Please enter value for the View API Key.", NotificationType.Error);
                     return;
-                }            
+                }
                 if (string.IsNullOrWhiteSpace(viewSettings.Endpoint))
                 {
                     window.ShowNotification("Validation Error", "Please enter value for the View Endpoint.", NotificationType.Error);
@@ -235,6 +307,7 @@ namespace View.Personal.UIHandlers
             // Embedding model selection validation
             if (window.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked == true)
             {
+                providerSettings.SelectedEmbeddingsProvider = "Ollama";
                 embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
                 if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
                 embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
@@ -248,6 +321,7 @@ namespace View.Personal.UIHandlers
             }
             else if (window.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked == true)
             {
+                providerSettings.SelectedEmbeddingsProvider = "View";
                 embeddingSettings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
                 if (!TryParsePositiveInt(window, "ViewEmbeddingDimensions", "View Embedding Model Dimensions", out int viewDims)) return;
                 embeddingSettings.ViewEmbeddingModelDimensions = viewDims;
@@ -261,6 +335,7 @@ namespace View.Personal.UIHandlers
             }
             else if (window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked == true)
             {
+                providerSettings.SelectedEmbeddingsProvider = "OpenAI";
                 embeddingSettings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
                 if (!TryParsePositiveInt(window, "OpenAIEmbeddingDimensions", "OpenAI Embedding Model Dimensions", out int openAiDims)) return;
                 embeddingSettings.OpenAIEmbeddingModelDimensions = openAiDims;
@@ -274,6 +349,7 @@ namespace View.Personal.UIHandlers
             }
             else if (window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked == true)
             {
+                providerSettings.SelectedEmbeddingsProvider = "Voyage";
                 embeddingSettings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
                 embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
                 embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
