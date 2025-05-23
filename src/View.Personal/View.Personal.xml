@@ -1391,7 +1391,7 @@
             Service for logging messages to a UI console output, system console and file log.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.LoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.TextBox)">
+        <member name="M:View.Personal.Services.LoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.SelectableTextBlock)">
             <summary>
             Initializes a new instance of the <see cref="T:View.Personal.Services.LoggingService"/> class.
             </summary>

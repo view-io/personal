@@ -135,7 +135,7 @@ namespace View.Personal
                     navList.SelectedIndex = -1;
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
-                    var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+                    var consoleOutput = this.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
                     app.LoggingService = new LoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
                     _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid); // Example, adjust as needed
@@ -357,7 +357,7 @@ namespace View.Personal
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                var consoleOutput = this.FindControl<TextBox>("ConsoleOutputTextBox");
+                var consoleOutput = this.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
                 if (consoleOutput != null)
                 {
                     consoleOutput.Text += message + "\n";

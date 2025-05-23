@@ -1197,11 +1197,16 @@
                     </Button>
                 </DockPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
-                    <TextBox x:Name="ConsoleOutputTextBox" IsReadOnly="True" AcceptsReturn="True"
-                             IsHitTestVisible="False" IsTabStop="False" TextWrapping="Wrap"
-                             Background="#000000" Foreground="#FFFFFF" FontFamily="Consolas, Courier New, Monospace"
-                             BorderThickness="0" Padding="5" />
-                </ScrollViewer>
+					<SelectableTextBlock x:Name="ConsoleOutputTextBox"
+                                         IsHitTestVisible="True"
+                                         IsTabStop="False"
+                                         TextWrapping="Wrap"
+                                         Background="#000000"
+                                         Foreground="#FFFFFF"
+                                         FontFamily="Consolas, Courier New, Monospace"
+                                         Padding="5" />
+
+				</ScrollViewer>
             </StackPanel>
         </Border>
         <!-- ReSharper disable Xaml.MissingGridIndex -->
