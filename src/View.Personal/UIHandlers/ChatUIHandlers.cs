@@ -92,8 +92,6 @@ namespace View.Personal.UIHandlers
                 var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
-                    var chatLabel = mainWindow.FindControl<TextBlock>("ChatHistoryText");
-                    if (chatLabel != null) chatLabel.Foreground = new SolidColorBrush(Color.Parse("#6A6B6F"));
                     var newItem = new ListBoxItem
                     {
                         Content = mainWindow.CurrentChatSession.Title,
@@ -250,9 +248,8 @@ namespace View.Personal.UIHandlers
                 if (conversationContainer != null)
                     UpdateConversationWindow(conversationContainer, new List<ChatMessage>(), false, mainWindow);
 
-                // Set the current chat session to null after clearing
-                // ToDo: Consider using a more explicit method to clear the session
-                mainWindow.CurrentChatSession = null!;
+                mainWindow.CurrentChatSession = new ChatSession();
+                mainWindow.ChatSessions.Add(mainWindow.CurrentChatSession);
             }
         }
 
