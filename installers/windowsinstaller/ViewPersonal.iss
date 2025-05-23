@@ -44,7 +44,7 @@ begin
 
   InfoPage := CreateCustomPage(
     wpLicense,
-    'AI Service Requirement',
+    'An External AI Service is Required',
     'Important Information Before Installation'
   );
 
@@ -53,8 +53,8 @@ begin
     Parent := InfoPage.Surface;
     Caption :=
       'To use this application, you need to have access to at least one of the following services:' + #13#10 + #13#10 +
-      '1. OpenAI (API Key Required)' + #13#10 +
-      '2. Claude by Anthropic (API Key Required)' + #13#10 +
+      '1. OpenAI (API key required)' + #13#10 +
+      '2. Claude by Anthropic (API key required)' + #13#10 +
       '3. Local Ollama deployment' + #13#10 +
       '4. View deployment' + #13#10 + #13#10 +
       'Please ensure you have access before proceeding.';
