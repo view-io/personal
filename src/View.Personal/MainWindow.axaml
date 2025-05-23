@@ -9,52 +9,52 @@
         Width="1200" Height="800"
         Title="View Personal"
         Icon="/Assets/glyph.png">
-    <!-- ReSharper disable Xaml.StyleClassNotFound -->
-    <!-- ReSharper disable ObsoleteElement -->
-    <Window.Resources>
-        <helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
-        <classes:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
-        <classes:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
-        <helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
-    </Window.Resources>
-    <Window.Styles>
-        <Style Selector="#ChatHistoryList > ListBoxItem">
-            <Setter Property="Background" Value="#EFF7FF" />
-            <Setter Property="Foreground" Value="#389CFF" />
-            <Setter Property="Padding" Value="12" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-    </Window.Styles>
+	<!-- ReSharper disable Xaml.StyleClassNotFound -->
+	<!-- ReSharper disable ObsoleteElement -->
+	<Window.Resources>
+		<helpers:DateTimeFormatConverter x:Key="DateTimeConverter" />
+		<classes:ContainsWatchedItemsToColorConverter x:Key="WatchedColorConverter" />
+		<classes:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
+		<helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
+	</Window.Resources>
+	<Window.Styles>
+		<Style Selector="#ChatHistoryList > ListBoxItem">
+			<Setter Property="Background" Value="#EFF7FF" />
+			<Setter Property="Foreground" Value="#389CFF" />
+			<Setter Property="Padding" Value="12" />
+			<Setter Property="CornerRadius" Value="6" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+	</Window.Styles>
 	<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="5" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        
-        <!-- Onboarding Overlay -->
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="5" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<!-- Onboarding Overlay -->
 		<controls:OnboardingOverlay x:Name="OnboardingOverlay" Grid.Row="0" Grid.RowSpan="3" ZIndex="9999"/>
 		<DockPanel>
-            <Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
+			<Border Name="SidebarBorder" DockPanel.Dock="Left" BorderThickness="0,0,1,0" BorderBrush="#DDDDDD"
                     Width="200" Background="#FFFFFF">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24 32 0 24">
-                        <Image Source="/Assets/logo.png" Height="26" Width="97.61" />
-                    </StackPanel>
-                    <Button x:Name="StartNewChatButton"
+				<DockPanel>
+					<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24 32 0 24">
+						<Image Source="/Assets/logo.png" Height="26" Width="97.61" />
+					</StackPanel>
+					<Button x:Name="StartNewChatButton"
 							DockPanel.Dock="Top" Margin="12 0 12 0"
                             Click="StartNewChatButton_Click"
                             Classes="flat"
                             Width="149" Height="32">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <avalonia:MaterialIcon Kind="SquareEditOutline" Foreground="#1A1C1E"
+						<StackPanel Orientation="Horizontal" Spacing="8">
+							<avalonia:MaterialIcon Kind="SquareEditOutline" Foreground="#1A1C1E"
                                                    VerticalAlignment="Top"
                                                    Height="16" Width="16" />
-                            <TextBlock Text="Start New Chat" FontWeight="400" />
-                        </StackPanel>
-                    </Button>
-                    <ComboBox x:Name="GraphComboBox" DockPanel.Dock="Top" Margin="12 8 12 0" Width="149"
+							<TextBlock Text="Start New Chat" FontWeight="400" />
+						</StackPanel>
+					</Button>
+					<ComboBox x:Name="GraphComboBox" DockPanel.Dock="Top" Margin="12 8 12 0" Width="149"
                               Theme="{StaticResource MaterialOutlineComboBox}"
                               assists:ComboBoxAssist.Label="Knowledgebase"
                               Padding="12,4"
@@ -62,55 +62,55 @@
                               BorderBrush="#DBDBDB"
                               BorderThickness="0.97"
                               Foreground="#1A1C1E">
-                        <ComboBox.Styles>
-                            <Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-                                <Setter Property="MinHeight" Value="36" />
-                                <Setter Property="Margin" Value="0,0,0,0" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ Border#PART_Border">
-                                <Setter Property="CornerRadius" Value="8" />
-                                <Setter Property="BorderBrush" Value="#DBDBDB" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ Border#splitBorder">
-                                <Setter Property="Margin" Value="0,6" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ Border#watermarkRoot">
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="12,0,0,0" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-                                <Setter Property="Foreground" Value="#1A1C1E" />
-                            </Style>
+						<ComboBox.Styles>
+							<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+								<Setter Property="MinHeight" Value="36" />
+								<Setter Property="Margin" Value="0,0,0,0" />
+							</Style>
+							<Style Selector="ComboBox /template/ Border#PART_Border">
+								<Setter Property="CornerRadius" Value="8" />
+								<Setter Property="BorderBrush" Value="#DBDBDB" />
+							</Style>
+							<Style Selector="ComboBox /template/ Border#splitBorder">
+								<Setter Property="Margin" Value="0,6" />
+							</Style>
+							<Style Selector="ComboBox /template/ Border#watermarkRoot">
+								<Setter Property="VerticalAlignment" Value="Center" />
+								<Setter Property="Margin" Value="12,0,0,0" />
+							</Style>
+							<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+								<Setter Property="Foreground" Value="#1A1C1E" />
+							</Style>
 
-                            <Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-                                <Setter Property="BorderBrush" Value="#DBDBDB" />
-                                <Setter Property="BorderThickness" Value="0.97" />
-                            </Style>
-                            <Style Selector="ComboBoxItem">
-                                <Setter Property="Padding" Value="12,8" />
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="Foreground" Value="#1A1C1E" />
-                                <Setter Property="FontSize" Value="13" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ ContentPresenter">
-                                <Setter Property="FontSize" Value="13" />
-                            </Style>
-                            <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#F5F5F5" />
-                            </Style>
-                            <Style Selector="ComboBox /template/ Path#arrow">
-                                <Setter Property="Fill" Value="#1A1C1E" />
-                            </Style>
-                        </ComboBox.Styles>
-                    </ComboBox>
+							<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+								<Setter Property="BorderBrush" Value="#DBDBDB" />
+								<Setter Property="BorderThickness" Value="0.97" />
+							</Style>
+							<Style Selector="ComboBoxItem">
+								<Setter Property="Padding" Value="12,8" />
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="Foreground" Value="#1A1C1E" />
+								<Setter Property="FontSize" Value="13" />
+							</Style>
+							<Style Selector="ComboBox /template/ ContentPresenter">
+								<Setter Property="FontSize" Value="13" />
+							</Style>
+							<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="#F5F5F5" />
+							</Style>
+							<Style Selector="ComboBox /template/ Path#arrow">
+								<Setter Property="Fill" Value="#1A1C1E" />
+							</Style>
+						</ComboBox.Styles>
+					</ComboBox>
 					<StackPanel DockPanel.Dock="Top" Margin="24 24 12 0">
 						<Expander Header="Chat History" Margin="0 8 0 4"
-					  Background="#FFFFFF"
-					  BorderBrush="#DBDBDB"
-					  BorderThickness="0.97"
-					  CornerRadius="8"
-					  assists:ShadowAssist.ShadowDepth="{x:Static assists:ShadowDepth.Depth0}"
-							IsExpanded="False">
+					              Background="#FFFFFF"
+					              BorderBrush="#DBDBDB"
+					              BorderThickness="0.97"
+					              CornerRadius="8"
+					              assists:ShadowAssist.ShadowDepth="{x:Static assists:ShadowDepth.Depth0}"
+							      IsExpanded="False">
 							<Expander.Styles>
 								<Style Selector="Expander /template/ ToggleButton#PART_toggle">
 									<Setter Property="Background" Value="Transparent"/>
@@ -135,311 +135,311 @@
 									 Margin="0 8 0 0" MaxHeight="300" />
 						</Expander>
 					</StackPanel>
-                    <ListBox DockPanel.Dock="Bottom" x:Name="NavList" SelectionChanged="NavList_SelectionChanged"
+					<ListBox DockPanel.Dock="Bottom" x:Name="NavList" SelectionChanged="NavList_SelectionChanged"
                              Margin="16 0 16 32">
-                        <ListBoxItem Tag="Files">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="FileOutline" Foreground="#6A6B6F"
+						<ListBoxItem Tag="Files">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<avalonia:MaterialIcon Kind="FileOutline" Foreground="#6A6B6F"
 
                                                        Height="18" Width="18" />
-                                <TextBlock Text="Files" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem Tag="Data Monitor">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="ArrangeBringToFront" Foreground="#6A6B6F"
+								<TextBlock Text="Files" Foreground="#6A6B6F" />
+							</StackPanel>
+						</ListBoxItem>
+						<ListBoxItem Tag="Data Monitor">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<avalonia:MaterialIcon Kind="ArrangeBringToFront" Foreground="#6A6B6F"
 
                                                        Height="18" Width="18" />
-                                <TextBlock Text="Data Monitor" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem Tag="Settings2" x:Name="SettingsPanel">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
+								<TextBlock Text="Data Monitor" Foreground="#6A6B6F" />
+							</StackPanel>
+						</ListBoxItem>
+						<ListBoxItem Tag="Settings2" x:Name="SettingsPanel">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<avalonia:MaterialIcon Kind="CogOutline" Foreground="#6A6B6F"
 
                                                        Height="18" Width="18" />
-                                <TextBlock Text="Settings" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem Tag="Console">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <avalonia:MaterialIcon Kind="Console" Foreground="#6A6B6F"
+								<TextBlock Text="Settings" Foreground="#6A6B6F" />
+							</StackPanel>
+						</ListBoxItem>
+						<ListBoxItem Tag="Console">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<avalonia:MaterialIcon Kind="Console" Foreground="#6A6B6F"
                                                        Height="18" Width="18" />
-                                <TextBlock Text="Console" Foreground="#6A6B6F" />
-                            </StackPanel>
-                        </ListBoxItem>
-                    </ListBox>
-                    <StackPanel />
-                </DockPanel>
-            </Border>
-            <Grid Name="MainContentArea" Background="#F5F5F5">
-                <Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
+								<TextBlock Text="Console" Foreground="#6A6B6F" />
+							</StackPanel>
+						</ListBoxItem>
+					</ListBox>
+					<StackPanel />
+				</DockPanel>
+			</Border>
+			<Grid Name="MainContentArea" Background="#F5F5F5">
+				<Border Name="DashboardPanel" Background="White" CornerRadius="8" Padding="20 24 20 16"
                         HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="True" Width="454"
                         Height="601" BoxShadow="0 2 4 -2 #1A1C1E 6%, 0 4 8 -2 #1A1C1E 10%">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
-                            <TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
-                            <Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+							<TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
+							<Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
                                     VerticalAlignment="Top">
-                            </Border>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
-                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                <avalonia:MaterialIcon Kind="FileDocumentOutline" Foreground="#009E61"
+							</Border>
+						</StackPanel>
+						<StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
+							<StackPanel Orientation="Horizontal" Spacing="16">
+								<avalonia:MaterialIcon Kind="FileDocumentOutline" Foreground="#009E61"
                                                        VerticalAlignment="Top"
                                                        Height="24" Width="24" />
-                                <StackPanel>
-                                    <TextBlock Text="Files" Classes="default"
+								<StackPanel>
+									<TextBlock Text="Files" Classes="default"
                                                Margin="0" Padding="0" FontWeight="500" />
-                                    <TextBlock Classes="secondary" Text="Manage the files you want to chat with" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                <avalonia:MaterialIcon Kind="CogOutline" Foreground="#0472EF" VerticalAlignment="Top"
+									<TextBlock Classes="secondary" Text="Manage the files you want to chat with" />
+								</StackPanel>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Spacing="16">
+								<avalonia:MaterialIcon Kind="CogOutline" Foreground="#0472EF" VerticalAlignment="Top"
                                                        Height="24" Width="24" />
-                                <StackPanel>
-                                    <TextBlock Text="Settings" Classes="default"
+								<StackPanel>
+									<TextBlock Text="Settings" Classes="default"
                                                Margin="0" Padding="0" FontWeight="500" />
-                                    <TextBlock Classes="secondary" Text="Configure your LLM and API keys" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                <avalonia:MaterialIcon Kind="MessageProcessingOutline" Foreground="#7B45E6"
+									<TextBlock Classes="secondary" Text="Configure your LLM and API keys" />
+								</StackPanel>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Spacing="16">
+								<avalonia:MaterialIcon Kind="MessageProcessingOutline" Foreground="#7B45E6"
                                                        VerticalAlignment="Top" Height="24" Width="24" />
-                                <StackPanel>
-                                    <TextBlock Text="Chat" Classes="default"
+								<StackPanel>
+									<TextBlock Text="Chat" Classes="default"
                                                Margin="0" Padding="0" FontWeight="500" />
-                                    <TextBlock Classes="secondary" Text="Chat with your data" />
-                                </StackPanel>
-                            </StackPanel>
-                        </StackPanel>
-                        <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
-                            <TextBlock Text="©2025 View Systems Inc." FontSize="12" Foreground="#6A6B6F"
+									<TextBlock Classes="secondary" Text="Chat with your data" />
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+						<Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
+							<TextBlock Text="©2025 View Systems Inc." FontSize="12" Foreground="#6A6B6F"
                                        FontWeight="500" />
-                        </Grid>
-                    </Grid>
-                </Border>
-                <StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
-                    </StackPanel>
+						</Grid>
+					</Grid>
+				</Border>
+				<StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
+					<StackPanel Spacing="12" Margin="0, 20, 0, 0">
+						<TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
+					</StackPanel>
 
-                    <Grid RowDefinitions="Auto,*">
-                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="8,0,0,12" VerticalAlignment="Center">
-                            <Button x:Name="NavigateUpButton" Grid.Column="0" Click="NavigateUpButton_Click"
+					<Grid RowDefinitions="Auto,*">
+						<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="8,0,0,12" VerticalAlignment="Center">
+							<Button x:Name="NavigateUpButton" Grid.Column="0" Click="NavigateUpButton_Click"
                                     Classes="flat" Height="30">
-                                <avalonia:MaterialIcon Kind="ArrowBack" Height="16" Width="16" />
-                            </Button>
-                            <TextBox x:Name="CurrentPathTextBox" Grid.Column="1" KeyDown="CurrentPathTextBox_KeyDown"
+								<avalonia:MaterialIcon Kind="ArrowBack" Height="16" Width="16" />
+							</Button>
+							<TextBox x:Name="CurrentPathTextBox" Grid.Column="1" KeyDown="CurrentPathTextBox_KeyDown"
                                      Classes="no-shadow" Margin="8,0" Watermark="Enter path to navigate..."
                                      BorderBrush="#DBDBDB" BorderThickness="0.97" CornerRadius="8" Padding="8,0" />
-                            <Button x:Name="SyncButton" Grid.Column="2" Content="Sync" Click="SyncButton_Click"
+							<Button x:Name="SyncButton" Grid.Column="2" Content="Sync" Click="SyncButton_Click"
                                     HorizontalAlignment="Right" Margin="0,0,8,0" Classes="flat" />
-                        </Grid>
+						</Grid>
 
-					    <DataGrid Grid.Row="1" x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+						<DataGrid Grid.Row="1" x:Name="FileSystemDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
 								  CanUserReorderColumns="False" CanUserResizeColumns="False"
 								  GridLinesVisibility="Horizontal" Background="#FFFFFF"
 								  HorizontalGridLinesBrush="#EDEDED" BorderThickness="1" BorderBrush="#EDEDED"
 								  DoubleTapped="FileSystemDataGrid_DoubleTapped"
 								  x:DataType="classes:FileSystemEntry" VerticalScrollBarVisibility="Visible">
-                                <DataGrid.Styles>
-                                    <Style Selector="DataGridColumnHeader">
-                                        <Setter Property="Background" Value="#FAFAFA" />
-                                        <Setter Property="Foreground" Value="#1A1C1E" />
-                                        <Setter Property="FontWeight" Value="500" />
-                                        <Setter Property="FontSize" Value="14.5" />
-                                        <Setter Property="Padding" Value="12 0 8 0" />
-                                        <Setter Property="MinHeight" Value="24" />
-                                        <Setter Property="Height" Value="38" />
-                                    </Style>
-                                    <Style Selector="DataGridRow">
-                                        <Setter Property="MinHeight" Value="24" />
-                                        <Setter Property="Height" Value="38" />
-                                        <Setter Property="BorderBrush" Value="#EDEDED" />
-                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <MultiBinding Converter="{StaticResource WatchedBackgroundConverter}">
-                                                    <Binding Path="IsDirectory" />
-                                                    <Binding Path="ContainsWatchedItems" />
-                                                    <Binding Path="IsWatchedOrInherited" />
-                                                </MultiBinding>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </DataGrid.Styles>
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Sync" Width="60">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                                                <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
-                                                <CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
-                                                          IsEnabled="{Binding IsCheckBoxEnabled}"
-                                                          VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                          Checked="WatchCheckBox_Checked"
-                                                          Unchecked="WatchCheckBox_Unchecked"
-                                                          Width="16" Height="16" />
-                                                <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Type" Width="60">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
-                                                <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
-                                                                       VerticalAlignment="Center"
-                                                                       HorizontalAlignment="Center">
-                                                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
-                                                    <avalonia:MaterialIcon.Foreground>
-                                                        <MultiBinding
-                                                            Converter="{StaticResource WatchedColorConverter}">
-                                                            <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
-                                                            <Binding Path="ContainsWatchedItems" />
-                                                            <Binding Path="IsSelectedWatchedDirectory" />
-                                                        </MultiBinding>
-                                                    </avalonia:MaterialIcon.Foreground>
-                                                </avalonia:MaterialIcon>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
-                                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="120" />
-                                    <DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
-                                                        Width="200" />
-                                    <DataGridTemplateColumn Header="Watching" Width="100">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <avalonia:MaterialIcon Kind="EyeOutline" Width="16" Height="16"
-                                                                       Foreground="#0472EF"
-                                                                       IsVisible="{Binding IsWatchedOrInherited}"
-                                                                       VerticalAlignment="Center"
-                                                                       HorizontalAlignment="Center"
-                                                                       ToolTip.Tip="This item is being watched" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                    </DataGrid>
-                    </Grid>
-                </StackPanel>
+							<DataGrid.Styles>
+								<Style Selector="DataGridColumnHeader">
+									<Setter Property="Background" Value="#FAFAFA" />
+									<Setter Property="Foreground" Value="#1A1C1E" />
+									<Setter Property="FontWeight" Value="500" />
+									<Setter Property="FontSize" Value="14.5" />
+									<Setter Property="Padding" Value="12 0 8 0" />
+									<Setter Property="MinHeight" Value="24" />
+									<Setter Property="Height" Value="38" />
+								</Style>
+								<Style Selector="DataGridRow">
+									<Setter Property="MinHeight" Value="24" />
+									<Setter Property="Height" Value="38" />
+									<Setter Property="BorderBrush" Value="#EDEDED" />
+									<Setter Property="BorderThickness" Value="0,0,0,1" />
+									<Setter Property="Background">
+										<Setter.Value>
+											<MultiBinding Converter="{StaticResource WatchedBackgroundConverter}">
+												<Binding Path="IsDirectory" />
+												<Binding Path="ContainsWatchedItems" />
+												<Binding Path="IsWatchedOrInherited" />
+											</MultiBinding>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</DataGrid.Styles>
+							<DataGrid.Columns>
+								<DataGridTemplateColumn Header="Sync" Width="60">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+											<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+											<CheckBox IsChecked="{Binding IsWatched, Mode=TwoWay}"
+													  IsEnabled="{Binding IsCheckBoxEnabled}"
+													  VerticalAlignment="Center" HorizontalAlignment="Center"
+													  Checked="WatchCheckBox_Checked"
+													  Unchecked="WatchCheckBox_Unchecked"
+													  Width="16" Height="16" />
+											<!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTemplateColumn Header="Type" Width="60">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+											<avalonia:MaterialIcon Kind="{Binding IconKind}" Width="16" Height="16"
+																   VerticalAlignment="Center"
+																   HorizontalAlignment="Center">
+												<!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+												<avalonia:MaterialIcon.Foreground>
+													<MultiBinding
+														Converter="{StaticResource WatchedColorConverter}">
+														<!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+														<Binding Path="ContainsWatchedItems" />
+														<Binding Path="IsSelectedWatchedDirectory" />
+													</MultiBinding>
+												</avalonia:MaterialIcon.Foreground>
+											</avalonia:MaterialIcon>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" />
+								<DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="120" />
+								<DataGridTextColumn Header="Last Modified" Binding="{Binding LastModified}"
+													Width="200" />
+								<DataGridTemplateColumn Header="Watching" Width="100">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<avalonia:MaterialIcon Kind="EyeOutline" Width="16" Height="16"
+																   Foreground="#0472EF"
+																   IsVisible="{Binding IsWatchedOrInherited}"
+																   VerticalAlignment="Center"
+																   HorizontalAlignment="Center"
+																   ToolTip.Tip="This item is being watched" />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Grid>
+				</StackPanel>
 				<Grid  Name="SettingsPanel2" RowDefinitions="Auto,*" Margin="40,20,40,20" IsVisible="False">
-                    <StackPanel Spacing="12" Grid.Row="0" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
-                    </StackPanel>
-                    <TabControl Margin="0,0,0,0" Grid.Row="1">
-                        <TabControl.Template>
-                            <ControlTemplate TargetType="TabControl">
-                                <DockPanel>
-                                    <Grid DockPanel.Dock="Top" RowDefinitions="40,*">
-                                        <ItemsPresenter Name="PART_ItemsPresenter"
+					<StackPanel Spacing="12" Grid.Row="0" Margin="0, 20, 0, 0">
+						<TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
+					</StackPanel>
+					<TabControl Margin="0,0,0,0" Grid.Row="1">
+						<TabControl.Template>
+							<ControlTemplate TargetType="TabControl">
+								<DockPanel>
+									<Grid DockPanel.Dock="Top" RowDefinitions="40,*">
+										<ItemsPresenter Name="PART_ItemsPresenter"
                                                         Grid.Row="0"
                                                         ItemsPanel="{TemplateBinding ItemsPanel}"
                                                         Margin="0" />
-                                        <Border Grid.Row="0"
+										<Border Grid.Row="0"
                                                 VerticalAlignment="Bottom"
                                                 Margin="0,0,0,-1"
                                                 BorderThickness="0,0,0,1"
                                                 BorderBrush="#EAECF0" />
-                                    </Grid>
-                                    <ContentPresenter Name="PART_SelectedContentHost"
+									</Grid>
+									<ContentPresenter Name="PART_SelectedContentHost"
                                                       Margin="0,12,0,0"
                                                       HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                                       Content="{TemplateBinding SelectedContent}"
                                                       ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
-                                </DockPanel>
-                            </ControlTemplate>
-                        </TabControl.Template>
-                        <TabControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="18" Margin="0" />
-                            </ItemsPanelTemplate>
-                        </TabControl.ItemsPanel>
-                        <TabControl.Styles>
-                            <Style Selector="TabItem">
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="Height" Value="40" />
-                                <Setter Property="VerticalContentAlignment" Value="Center" />
-                                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                <Setter Property="HorizontalAlignment" Value="Left" />
-                                <Setter Property="MinWidth" Value="0" />
-                                <Setter Property="Margin" Value="0" />
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="Template">
-                                    <ControlTemplate>
-                                        <Border Name="PART_Border"
+								</DockPanel>
+							</ControlTemplate>
+						</TabControl.Template>
+						<TabControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="18" Margin="0" />
+							</ItemsPanelTemplate>
+						</TabControl.ItemsPanel>
+						<TabControl.Styles>
+							<Style Selector="TabItem">
+								<Setter Property="FontSize" Value="14" />
+								<Setter Property="Height" Value="40" />
+								<Setter Property="VerticalContentAlignment" Value="Center" />
+								<Setter Property="HorizontalContentAlignment" Value="Left" />
+								<Setter Property="HorizontalAlignment" Value="Left" />
+								<Setter Property="MinWidth" Value="0" />
+								<Setter Property="Margin" Value="0" />
+								<Setter Property="Padding" Value="0" />
+								<Setter Property="BorderThickness" Value="0" />
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="Template">
+									<ControlTemplate>
+										<Border Name="PART_Border"
                                                 Height="{TemplateBinding Height}"
                                                 HorizontalAlignment="Left"
                                                 BorderThickness="0,0,0,1"
                                                 BorderBrush="Transparent"
                                                 Background="Transparent">
-                                            <ContentPresenter Name="PART_ContentPresenter"
+											<ContentPresenter Name="PART_ContentPresenter"
                                                               ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                               Content="{TemplateBinding Header}"
                                                               HorizontalAlignment="Left"
                                                               VerticalAlignment="Center"
                                                               Margin="0" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter>
-                            </Style>
-                            <Style Selector="TabItem:selected">
-                                <Setter Property="Foreground" Value="#1A1C1E" />
-                                <Setter Property="FontWeight" Value="500" />
-                                <Setter Property="Template">
-                                    <ControlTemplate>
-                                        <Border Name="PART_SelectedPipe"
+										</Border>
+									</ControlTemplate>
+								</Setter>
+							</Style>
+							<Style Selector="TabItem:selected">
+								<Setter Property="Foreground" Value="#1A1C1E" />
+								<Setter Property="FontWeight" Value="500" />
+								<Setter Property="Template">
+									<ControlTemplate>
+										<Border Name="PART_SelectedPipe"
                                                 Height="{TemplateBinding Height}"
                                                 HorizontalAlignment="Left"
                                                 BorderThickness="0,0,0,1"
                                                 BorderBrush="#1A1C1E"
                                                 Background="Transparent">
-                                            <ContentPresenter Name="PART_ContentPresenter"
+											<ContentPresenter Name="PART_ContentPresenter"
                                                               ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                               Content="{TemplateBinding Header}"
                                                               HorizontalAlignment="Left"
                                                               VerticalAlignment="Center"
                                                               Margin="0" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter>
-                            </Style>
-                            <Style Selector="TabControl StackPanel">
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="Margin" Value="0" />
-                            </Style>
-                            <Style Selector="TextBox">
-                                <Setter Property="CornerRadius" Value="8" />
-                                <Setter Property="Height" Value="36" />
-                                <Setter Property="BorderBrush" Value="#DBDBDB" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="Background" Value="#FAFAFA" />
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="Foreground" Value="#6A6B6F" />
-                                <Setter Property="Padding" Value="10,8,10,10" />
-                                <Setter Property="Template">
-                                    <ControlTemplate>
-                                        <Border Background="{TemplateBinding Background}"
+										</Border>
+									</ControlTemplate>
+								</Setter>
+							</Style>
+							<Style Selector="TabControl StackPanel">
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="Margin" Value="0" />
+							</Style>
+							<Style Selector="TextBox">
+								<Setter Property="CornerRadius" Value="8" />
+								<Setter Property="Height" Value="36" />
+								<Setter Property="BorderBrush" Value="#DBDBDB" />
+								<Setter Property="BorderThickness" Value="1" />
+								<Setter Property="Background" Value="#FAFAFA" />
+								<Setter Property="FontSize" Value="14" />
+								<Setter Property="Foreground" Value="#6A6B6F" />
+								<Setter Property="Padding" Value="10,8,10,10" />
+								<Setter Property="Template">
+									<ControlTemplate>
+										<Border Background="{TemplateBinding Background}"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 BorderThickness="{TemplateBinding BorderThickness}"
                                                 CornerRadius="{TemplateBinding CornerRadius}">
-                                            <ScrollViewer Name="PART_ContentHost"
+											<ScrollViewer Name="PART_ContentHost"
                                                           Padding="{TemplateBinding Padding}"
                                                           HorizontalAlignment="Stretch"
                                                           VerticalAlignment="Stretch">
-                                                <TextPresenter Name="PART_TextPresenter"
+												<TextPresenter Name="PART_TextPresenter"
                                                                Text="{TemplateBinding Text, Mode=TwoWay}"
                                                                CaretIndex="{TemplateBinding CaretIndex, Mode=TwoWay}"
                                                                SelectionStart="{TemplateBinding SelectionStart, Mode=TwoWay}"
@@ -447,67 +447,67 @@
                                                                TextWrapping="{TemplateBinding TextWrapping}"
                                                                PasswordChar="{TemplateBinding PasswordChar}"
                                                                RevealPassword="{TemplateBinding RevealPassword}" />
-                                            </ScrollViewer>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter>
-                            </Style>
-                            <Style Selector="RadioButton">
-                                <Setter Property="Width" Value="12" />
-                                <Setter Property="Height" Value="12" />
-                                <Setter Property="VerticalAlignment" Value="Top" />
-                                <Setter Property="BorderBrush" Value="#6A6B6F" />
-                                <Setter Property="Foreground" Value="#1A1C1E" />
-                                <Setter Property="Template">
-                                    <ControlTemplate>
-                                        <Grid>
-                                            <Ellipse x:Name="PART_OuterCircle"
+											</ScrollViewer>
+										</Border>
+									</ControlTemplate>
+								</Setter>
+							</Style>
+							<Style Selector="RadioButton">
+								<Setter Property="Width" Value="12" />
+								<Setter Property="Height" Value="12" />
+								<Setter Property="VerticalAlignment" Value="Top" />
+								<Setter Property="BorderBrush" Value="#6A6B6F" />
+								<Setter Property="Foreground" Value="#1A1C1E" />
+								<Setter Property="Template">
+									<ControlTemplate>
+										<Grid>
+											<Ellipse x:Name="PART_OuterCircle"
                                                      Width="12" Height="12"
                                                      Stroke="{TemplateBinding BorderBrush}"
                                                      StrokeThickness="1"
                                                      Fill="Transparent" />
-                                            <Ellipse x:Name="PART_InnerCircle"
+											<Ellipse x:Name="PART_InnerCircle"
                                                      Width="6" Height="6"
                                                      Fill="{TemplateBinding Foreground}"
                                                      IsVisible="{TemplateBinding IsChecked}" />
-                                        </Grid>
-                                    </ControlTemplate>
-                                </Setter>
-                            </Style>
-                        </TabControl.Styles>
-                        <TabItem Header="Knowledgebases">
-                            <Border Padding="0,20,0,0">
-                                <StackPanel Orientation="Vertical" Spacing="10">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
-                                        <Button Click="CreateGraphButton_Click" Classes="flat">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <avalonia:MaterialIcon Kind="Plus" Height="16" Width="16" />
-                                                <TextBlock Text="New Knowledgebase" Foreground="#1A1C1E"
+										</Grid>
+									</ControlTemplate>
+								</Setter>
+							</Style>
+						</TabControl.Styles>
+						<TabItem Header="Knowledgebases">
+							<Border Padding="0,20,0,0">
+								<StackPanel Orientation="Vertical" Spacing="10">
+									<StackPanel Orientation="Horizontal" Spacing="10">
+										<Button Click="CreateGraphButton_Click" Classes="flat">
+											<StackPanel Orientation="Horizontal" Spacing="8">
+												<avalonia:MaterialIcon Kind="Plus" Height="16" Width="16" />
+												<TextBlock Text="New Knowledgebase" Foreground="#1A1C1E"
                                                            FontWeight="400" />
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF">
-                                            <avalonia:MaterialIcon Kind="TrayArrowDown" />
-                                        </Button>
-                                    </StackPanel>
-                                    <DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
+											</StackPanel>
+										</Button>
+										<Button Click="ExportGexfButton_Click" Classes="flat" ToolTip.Tip="Export to GEXF">
+											<avalonia:MaterialIcon Kind="TrayArrowDown" />
+										</Button>
+									</StackPanel>
+									<DataGrid x:Name="GraphsDataGrid" AutoGenerateColumns="False" IsReadOnly="True"
                                               CanUserReorderColumns="False" CanUserResizeColumns="True"
                                               GridLinesVisibility="Horizontal" Background="#FFFFFF"
                                               HorizontalGridLinesBrush="#EDEDED" BorderThickness="1"
                                               BorderBrush="#EDEDED">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
-                                            <DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
-                                            <DataGridTextColumn Header="Created"
+										<DataGrid.Columns>
+											<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+											<DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
+											<DataGridTextColumn Header="Created"
                                                                 Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
-                                            <DataGridTextColumn Header="Last Update"
+											<DataGridTextColumn Header="Last Update"
                                                                 Binding="{Binding LastUpdateUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />
-                                            <DataGridTemplateColumn Header="" Width="150">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Button Click="RemoveGraph_Click"
+											<DataGridTemplateColumn Header="" Width="150">
+												<DataGridTemplateColumn.CellTemplate>
+													<DataTemplate>
+														<Button Click="RemoveGraph_Click"
                                                                 Tag="{Binding}"
                                                                 Content="Remove"
                                                                 HorizontalAlignment="Center"
@@ -517,471 +517,471 @@
                                                                 BorderThickness="0"
                                                                 Padding="0"
                                                                 Cursor="Hand">
-                                                            <Button.Template>
-                                                                <ControlTemplate TargetType="Button">
-                                                                    <ContentPresenter
+															<Button.Template>
+																<ControlTemplate TargetType="Button">
+																	<ContentPresenter
                                                                         Content="{TemplateBinding Content}"
                                                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                                                         Padding="{TemplateBinding Padding}"
                                                                         HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                                                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                                                         Background="Transparent" />
-                                                                </ControlTemplate>
-                                                            </Button.Template>
-                                                            <Button.Styles>
-                                                                <Style Selector="Button:pointerover">
-                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
-                                                                </Style>
-                                                                <Style Selector="Button:pressed">
-                                                                    <Setter Property="Foreground" Value="#6A6B6F" />
-                                                                </Style>
-                                                            </Button.Styles>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </StackPanel>
-                            </Border>
-                        </TabItem>
-                        <TabItem Header="Providers" IsSelected="True">
-                            <Border Padding="0,0,0,0">
+																</ControlTemplate>
+															</Button.Template>
+															<Button.Styles>
+																<Style Selector="Button:pointerover">
+																	<Setter Property="Foreground" Value="#6A6B6F" />
+																</Style>
+																<Style Selector="Button:pressed">
+																	<Setter Property="Foreground" Value="#6A6B6F" />
+																</Style>
+															</Button.Styles>
+														</Button>
+													</DataTemplate>
+												</DataGridTemplateColumn.CellTemplate>
+											</DataGridTemplateColumn>
+										</DataGrid.Columns>
+									</DataGrid>
+								</StackPanel>
+							</Border>
+						</TabItem>
+						<TabItem Header="Providers" IsSelected="True">
+							<Border Padding="0,0,0,0">
 								<ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
-                                    <StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,20,0">
+									<StackPanel Orientation="Vertical" Spacing="20" Margin="0,20,20,0">
 
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <!-- Left column: Provider description -->
-                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
-                                                <TextBlock Text="OpenAI" FontWeight="500" FontSize="14"
+										<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
+											<!-- Left column: Provider description -->
+											<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+												<TextBlock Text="OpenAI" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                                <TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
-                                                    Gain access to OpenAI models
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <Expander x:Name="OpenAIExpander" Grid.Column="1" IsExpanded="False"
+												<TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
+													Gain access to OpenAI models
+												</TextBlock>
+											</StackPanel>
+											<Expander x:Name="OpenAIExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
-                                                <Expander.Header>
-                                                    <Grid ColumnDefinitions="Auto,*">
-                                                        <RadioButton Grid.Column="0" GroupName="CompletionProvider"
+												<Expander.Header>
+													<Grid ColumnDefinitions="Auto,*">
+														<RadioButton Grid.Column="0" GroupName="CompletionProvider"
                                                                      x:Name="OpenAICompletionProvider"
                                                                      VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Column="1" Text="OpenAI Settings"
+														<TextBlock Grid.Column="1" Text="OpenAI Settings"
                                                                    VerticalAlignment="Center"
                                                                    HorizontalAlignment="Center" FontWeight="500"
                                                                    FontSize="13" />
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <StackPanel Margin="0,10,0,10" Spacing="8">
-                                                    <TextBlock Text="OpenAI API Key" Padding="8,0,0,0"
+													</Grid>
+												</Expander.Header>
+												<StackPanel Margin="0,10,0,10" Spacing="8">
+													<TextBlock Text="OpenAI API Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OpenAIApiKey" Classes="no-shadow"
+													<TextBox x:Name="OpenAIApiKey" Classes="no-shadow"
                                                              Text="YOUR_API_KEY_HERE"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Enter your OpenAI API key." />
-                                                    <TextBlock Text="OpenAI Completion Model" Padding="8,0,0,0"
+													<TextBlock Text="OpenAI Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OpenAICompletionModel" Classes="no-shadow"
+													<TextBox x:Name="OpenAICompletionModel" Classes="no-shadow"
                                                              Text="gpt-3.5-turbo"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4." />
-                                                    <TextBlock Text="OpenAI Endpoint" Padding="8,0,0,0"
+													<TextBlock Text="OpenAI Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OpenAIEndpoint"
+													<TextBox x:Name="OpenAIEndpoint"
                                                              Classes="no-shadow"
                                                              Text="https://api.openai.com/v1/chat/completions"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Set the OpenAI API endpoint." />
-                                                </StackPanel>
-                                            </Expander>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
-                                                <TextBlock Text="Anthropic" FontWeight="500" FontSize="14"
+												</StackPanel>
+											</Expander>
+										</Grid>
+										<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
+											<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+												<TextBlock Text="Anthropic" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                                <TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
-                                                    Gain access to Anthropic models
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <Expander x:Name="AnthropicExpander" Grid.Column="1" IsExpanded="False"
+												<TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap">
+													Gain access to Anthropic models
+												</TextBlock>
+											</StackPanel>
+											<Expander x:Name="AnthropicExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
-                                                <Expander.Header>
-                                                    <Grid ColumnDefinitions="Auto,*">
-                                                        <RadioButton Grid.Column="0" GroupName="CompletionProvider"
+												<Expander.Header>
+													<Grid ColumnDefinitions="Auto,*">
+														<RadioButton Grid.Column="0" GroupName="CompletionProvider"
                                                                      x:Name="AnthropicCompletionProvider"
                                                                      VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Column="1" Text="Anthropic Settings"
+														<TextBlock Grid.Column="1" Text="Anthropic Settings"
                                                                    VerticalAlignment="Center"
                                                                    HorizontalAlignment="Center" FontWeight="500"
                                                                    FontSize="13" />
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <StackPanel Margin="0,10,0,10" Spacing="8">
-                                                    <TextBlock Text="Anthropic API Key" Padding="8,0,0,0"
+													</Grid>
+												</Expander.Header>
+												<StackPanel Margin="0,10,0,10" Spacing="8">
+													<TextBlock Text="Anthropic API Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="AnthropicApiKey" Classes="no-shadow"
+													<TextBox x:Name="AnthropicApiKey" Classes="no-shadow"
                                                              Text="YOUR_API_KEY_HERE"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Enter your Anthropic API key." />
-                                                    <TextBlock Text="Anthropic Completion Model" Padding="8,0,0,0"
+													<TextBlock Text="Anthropic Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow"
+													<TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow"
                                                              Text="claude-2"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1." />
-                                                    <TextBlock Text="Anthropic Endpoint" Padding="8,0,0,0"
+													<TextBlock Text="Anthropic Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="AnthropicEndpoint"
+													<TextBox x:Name="AnthropicEndpoint"
                                                              Classes="no-shadow"
-                                                             Text="https://api.anthropic.com/v1" Margin="8,0,8,0" 
+                                                             Text="https://api.anthropic.com/v1" Margin="8,0,8,0"
 															 ToolTip.Tip="Set the Anthropic API endpoint."/>
-                                                </StackPanel>
-                                            </Expander>
-                                        </Grid>
-                                        <Border BorderBrush="#EAECF0" BorderThickness="1" />
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
-                                                <TextBlock Text="Local" FontWeight="500"
+												</StackPanel>
+											</Expander>
+										</Grid>
+										<Border BorderBrush="#EAECF0" BorderThickness="1" />
+										<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
+											<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
+												<TextBlock Text="Local" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                                <TextBlock FontSize="12" Foreground="#6A6B6F"
+												<TextBlock FontSize="12" Foreground="#6A6B6F"
                                                            TextWrapping="Wrap">
-                                                    Gain access to a local model.
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <Expander x:Name="OllamaExpander" Grid.Column="1" IsExpanded="False"
+													Gain access to a local model.
+												</TextBlock>
+											</StackPanel>
+											<Expander x:Name="OllamaExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
-                                                <Expander.Header>
-                                                    <Grid ColumnDefinitions="Auto,*">
-                                                        <RadioButton Grid.Column="0" GroupName="CompletionProvider"
+												<Expander.Header>
+													<Grid ColumnDefinitions="Auto,*">
+														<RadioButton Grid.Column="0" GroupName="CompletionProvider"
                                                                      x:Name="OllamaCompletionProvider"
                                                                      VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Column="1" Text="Ollama Settings"
+														<TextBlock Grid.Column="1" Text="Ollama Settings"
                                                                    VerticalAlignment="Center"
                                                                    HorizontalAlignment="Center" FontWeight="500"
                                                                    FontSize="13" />
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <StackPanel Margin="0,10,0,10" Spacing="8">
-                                                    <TextBlock Text="Ollama Completion Model" Padding="8,0,0,0"
+													</Grid>
+												</Expander.Header>
+												<StackPanel Margin="0,10,0,10" Spacing="8">
+													<TextBlock Text="Ollama Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
+													<TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B." />
-                                                    <TextBlock Text="Ollama Endpoint" Padding="8,0,0,0"
+													<TextBlock Text="Ollama Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
+													<TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Set the Ollama API endpoint." />
-                                                </StackPanel>
-                                            </Expander>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-                                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
-                                                <TextBlock Text="" FontWeight="500"
+												</StackPanel>
+											</Expander>
+										</Grid>
+										<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
+											<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
+												<TextBlock Text="" FontWeight="500"
                                                            FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-                                                <TextBlock FontSize="12" Foreground="#6A6B6F"
+												<TextBlock FontSize="12" Foreground="#6A6B6F"
                                                            TextWrapping="Wrap" />
-                                            </StackPanel>
-                                            <Expander x:Name="ViewExpander" Grid.Column="1" IsExpanded="False"
+											</StackPanel>
+											<Expander x:Name="ViewExpander" Grid.Column="1" IsExpanded="False"
                                                       ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
                                                       Padding="0" Background="#F5F5F5">
-                                                <Expander.Header>
-                                                    <Grid ColumnDefinitions="Auto,*">
-                                                        <RadioButton Grid.Column="0" GroupName="CompletionProvider"
+												<Expander.Header>
+													<Grid ColumnDefinitions="Auto,*">
+														<RadioButton Grid.Column="0" GroupName="CompletionProvider"
                                                                      x:Name="ViewCompletionProvider"
                                                                      VerticalAlignment="Center" />
-                                                        <TextBlock Grid.Column="1" Text="View Settings"
+														<TextBlock Grid.Column="1" Text="View Settings"
                                                                    VerticalAlignment="Center"
                                                                    HorizontalAlignment="Center" FontWeight="500"
                                                                    FontSize="13" />
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <StackPanel Margin="0,10,0,10" Spacing="8">
-                                                    <TextBlock Text="Embeddings API Key" Padding="8,0,0,0"
+													</Grid>
+												</Expander.Header>
+												<StackPanel Margin="0,10,0,10" Spacing="8">
+													<TextBlock Text="Embeddings API Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="ViewApiKey" Text="YOUR_EMBEDDINGS_API_KEY"
+													<TextBox x:Name="ViewApiKey" Text="YOUR_EMBEDDINGS_API_KEY"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Enter your View embeddings API key." />
-                                                    <TextBlock Text="View Endpoint" Padding="8,0,0,0"
+													<TextBlock Text="View Endpoint" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
+													<TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Set the View API endpoint URL." />
-                                                    <TextBlock Text="Ollama Host Name" Padding="8,0,0,0"
+													<TextBlock Text="Ollama Host Name" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
+													<TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Enter the Ollama host name or URL." />
-                                                    <TextBlock Text="Access Key" Padding="8,0,0,0"
+													<TextBlock Text="Access Key" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY"
+													<TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Enter your View access key for authentication." />
-                                                    <TextBlock Text="Tenant Guid" Padding="8,0,0,0"
+													<TextBlock Text="Tenant Guid" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID"
+													<TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Enter your View tenant GUID for multi-tenant environments." />
-                                                    <TextBlock Text="Completion Model" Padding="8,0,0,0"
+													<TextBlock Text="Completion Model" Padding="8,0,0,0"
                                                                VerticalAlignment="Center" Margin="0,0,16,0"
                                                                FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-                                                    <TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
+													<TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Specify the View completion model to use, e.g., llama3.1:8b." />
-                                                </StackPanel>
-                                            </Expander>
-                                        </Grid>
-                                        <Border BorderBrush="#EAECF0" BorderThickness="1" />
-                                        <Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,4">
-                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
-                                                <TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
+												</StackPanel>
+											</Expander>
+										</Grid>
+										<Border BorderBrush="#EAECF0" BorderThickness="1" />
+										<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,4">
+											<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+												<TextBlock Text="Embeddings Generation" FontWeight="500" FontSize="14"
                                                            Foreground="#1A1C1E" />
-                                                <TextBlock Margin="0, 0, 0, 4" FontSize="12" Foreground="#6A6B6F"
+												<TextBlock Margin="0, 0, 0, 4" FontSize="12" Foreground="#6A6B6F"
                                                            TextWrapping="Wrap">
-                                                    <Run Text="Select the local or cloud provider" />
-                                                    <LineBreak />
-                                                    <Run Text="embedding model to be used to" />
-                                                    <LineBreak />
-                                                    <Run Text="generate vector embeddings." />
-                                                </TextBlock>
-                                                <TextBlock FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
-                                                    <Run Text="WARNING" TextDecorations="Underline" />
-                                                    <Run Text=": If you update or change" />
-                                                    <LineBreak />
-                                                    <Run Text="your embedding model, you will" />
-                                                    <LineBreak />
-                                                    <Run Text="need to re-import all documents." />
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
-                                                <StackPanel Spacing="36" x:Name="EmbeddingModelGroup">
-                                                    <!-- OpenAI Embedding Model -->
-                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+													<Run Text="Select the local or cloud provider" />
+													<LineBreak />
+													<Run Text="embedding model to be used to" />
+													<LineBreak />
+													<Run Text="generate vector embeddings." />
+												</TextBlock>
+												<TextBlock FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
+													<Run Text="WARNING" TextDecorations="Underline" />
+													<Run Text=": If you update or change" />
+													<LineBreak />
+													<Run Text="your embedding model, you will" />
+													<LineBreak />
+													<Run Text="need to re-import all documents." />
+												</TextBlock>
+											</StackPanel>
+											<StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
+												<StackPanel Spacing="36" x:Name="EmbeddingModelGroup">
+													<!-- OpenAI Embedding Model -->
+													<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
-                                                        <Expander.Header>
-                                                            <Grid ColumnDefinitions="Auto,*">
-                                                                <RadioButton Grid.Column="0"
+														<Expander.Header>
+															<Grid ColumnDefinitions="Auto,*">
+																<RadioButton Grid.Column="0"
                                                                              GroupName="EmbeddingProvider"
                                                                              x:Name="OpenAIEmbeddingModel2"
                                                                              VerticalAlignment="Center"
                                                                              Margin="0,0,6,0"
                                                                              Checked="EmbeddingModel_Checked" />
-                                                                <TextBlock Grid.Column="1"
+																<TextBlock Grid.Column="1"
                                                                            Text="OpenAI Embedding Model"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Center"
                                                                            FontWeight="500" FontSize="13" />
-                                                            </Grid>
-                                                        </Expander.Header>
-                                                        <StackPanel Orientation="Vertical" Spacing="8"
+															</Grid>
+														</Expander.Header>
+														<StackPanel Orientation="Vertical" Spacing="8"
                                                                     Margin="16,10,8,10">
-                                                            <TextBlock Text="Model Name" FontSize="12"
+															<TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingModel"
+															<TextBox x:Name="OpenAIEmbeddingModel"
                                                                      Text="text-embedding-3-small" Classes="no-shadow"
                                                                      ToolTip.Tip="Specify the OpenAI embedding model to use, e.g., text-embedding-3-small." />
-                                                            <TextBlock Text="Dimensionality" FontSize="12"
+															<TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536"
+															<TextBox x:Name="OpenAIEmbeddingDimensions" Text="1536"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
-                                                            <TextBlock Text="Max Tokens" FontSize="12"
+															<TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000"
+															<TextBox x:Name="OpenAIEmbeddingMaxTokens" Text="1000"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
-                                                        </StackPanel>
-                                                    </Expander>
-                                                    <!-- VoyageAI Embedding Model -->
-                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+														</StackPanel>
+													</Expander>
+													<!-- VoyageAI Embedding Model -->
+													<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
-                                                        <Expander.Header>
-                                                            <Grid ColumnDefinitions="Auto,*">
-                                                                <RadioButton Grid.Column="0"
+														<Expander.Header>
+															<Grid ColumnDefinitions="Auto,*">
+																<RadioButton Grid.Column="0"
                                                                              GroupName="EmbeddingProvider"
                                                                              x:Name="VoyageEmbeddingModel2"
                                                                              VerticalAlignment="Center"
                                                                              Margin="0,0,6,0"
                                                                              Checked="EmbeddingModel_Checked" />
-                                                                <TextBlock Grid.Column="1"
+																<TextBlock Grid.Column="1"
                                                                            Text="VoyageAI Embedding Model"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Center"
                                                                            FontWeight="500" FontSize="13" />
-                                                            </Grid>
-                                                        </Expander.Header>
-                                                        <StackPanel Orientation="Vertical" Spacing="8"
+															</Grid>
+														</Expander.Header>
+														<StackPanel Orientation="Vertical" Spacing="8"
                                                                     Margin="16,10,8,10">
-                                                            <TextBlock Text="Model Name" FontSize="12"
+															<TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingModel" Text="voyage-3"
+															<TextBox x:Name="VoyageEmbeddingModel" Text="voyage-3"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="Specify the VoyageAI embedding model to use, e.g., voyage-3." />
-                                                            <TextBlock Text="Dimensionality" FontSize="12"
+															<TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingDimensions" Text="1536"
+															<TextBox x:Name="VoyageEmbeddingDimensions" Text="1536"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
-                                                            <TextBlock Text="Max Tokens" FontSize="12"
+															<TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000"
+															<TextBox x:Name="VoyageEmbeddingMaxTokens" Text="1000"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
-                                                            <TextBlock Text="API Key" FontSize="12"
+															<TextBlock Text="API Key" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here"
+															<TextBox x:Name="VoyageApiKey" Text="Your-API-Key-Here"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="Enter your VoyageAI API key for authentication." />
-                                                            <TextBlock Text="Endpoint" FontSize="12"
+															<TextBlock Text="Endpoint" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="VoyageEndpoint"
+															<TextBox x:Name="VoyageEndpoint"
                                                                      Text="https://api.voyageai.com/"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="Set the VoyageAI API endpoint URL." />
-                                                        </StackPanel>
-                                                    </Expander>
-                                                    <!-- Ollama Embedding Model -->
-                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+														</StackPanel>
+													</Expander>
+													<!-- Ollama Embedding Model -->
+													<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
-                                                        <Expander.Header>
-                                                            <Grid ColumnDefinitions="Auto,*">
-                                                                <RadioButton Grid.Column="0"
+														<Expander.Header>
+															<Grid ColumnDefinitions="Auto,*">
+																<RadioButton Grid.Column="0"
                                                                              GroupName="EmbeddingProvider"
                                                                              x:Name="OllamaEmbeddingModel"
                                                                              VerticalAlignment="Center"
                                                                              Margin="0,0,6,0"
                                                                              Checked="EmbeddingModel_Checked" />
-                                                                <TextBlock Grid.Column="1"
+																<TextBlock Grid.Column="1"
                                                                            Text="Ollama Embedding Model"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Center"
                                                                            FontWeight="500" FontSize="13" />
-                                                            </Grid>
-                                                        </Expander.Header>
-                                                        <StackPanel Orientation="Vertical" Spacing="8"
+															</Grid>
+														</Expander.Header>
+														<StackPanel Orientation="Vertical" Spacing="8"
                                                                     Margin="16,10,8,10">
-                                                            <TextBlock Text="Model Name" FontSize="12"
+															<TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaModel"
+															<TextBox x:Name="OllamaModel"
                                                                      Text="sentence-transformers/all-MiniLM-L6-v2"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="Specify the Ollama embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2." />
-                                                            <TextBlock Text="Dimensionality" FontSize="12"
+															<TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingDimensions" Text="1536"
+															<TextBox x:Name="OllamaEmbeddingDimensions" Text="1536"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
-                                                            <TextBlock Text="Max Tokens" FontSize="12"
+															<TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000"
+															<TextBox x:Name="OllamaEmbeddingMaxTokens" Text="1000"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
-                                                        </StackPanel>
-                                                    </Expander>
-                                                    <!-- View Embedding Model -->
-                                                    <Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+														</StackPanel>
+													</Expander>
+													<!-- View Embedding Model -->
+													<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
                                                               BorderThickness="0">
-                                                        <Expander.Header>
-                                                            <Grid ColumnDefinitions="Auto,*">
-                                                                <RadioButton Grid.Column="0"
+														<Expander.Header>
+															<Grid ColumnDefinitions="Auto,*">
+																<RadioButton Grid.Column="0"
                                                                              GroupName="EmbeddingProvider"
                                                                              x:Name="ViewEmbeddingModel2"
                                                                              VerticalAlignment="Center"
                                                                              Margin="0,0,6,0"
                                                                              Checked="EmbeddingModel_Checked" />
-                                                                <TextBlock Grid.Column="1" Text="View Embedding Model"
+																<TextBlock Grid.Column="1" Text="View Embedding Model"
                                                                            VerticalAlignment="Center"
                                                                            HorizontalAlignment="Center"
                                                                            FontWeight="500" FontSize="13" />
-                                                            </Grid>
-                                                        </Expander.Header>
-                                                        <StackPanel Orientation="Vertical" Spacing="8"
+															</Grid>
+														</Expander.Header>
+														<StackPanel Orientation="Vertical" Spacing="8"
                                                                     Margin="16,10,8,10">
-                                                            <TextBlock Text="Model Name" FontSize="12"
+															<TextBlock Text="Model Name" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingModel"
+															<TextBox x:Name="ViewEmbeddingModel"
                                                                      Text="sentence-transformers/all-MiniLM-L6-v2"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="Specify the View embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2." />
-                                                            <TextBlock Text="Dimensionality" FontSize="12"
+															<TextBlock Text="Dimensionality" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingDimensions" Text="1536"
+															<TextBox x:Name="ViewEmbeddingDimensions" Text="1536"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The dimensionality of the embedding vectors generated by this model." />
-                                                            <TextBlock Text="Max Tokens" FontSize="12"
+															<TextBlock Text="Max Tokens" FontSize="12"
                                                                        Foreground="#1A1C1E" FontWeight="500" />
-                                                            <TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000"
+															<TextBox x:Name="ViewEmbeddingMaxTokens" Text="1000"
                                                                      Classes="no-shadow"
                                                                      ToolTip.Tip="The maximum number of tokens to process for each embedding operation." />
-                                                        </StackPanel>
-                                                    </Expander>
-                                                </StackPanel>
-                                            </StackPanel>
-                                            <!-- ReSharper disable once Xaml.MissingGridIndex -->
-                                            <StackPanel VerticalAlignment="Bottom">
-                                                <Button Content="Save Settings"
+														</StackPanel>
+													</Expander>
+												</StackPanel>
+											</StackPanel>
+											<!-- ReSharper disable once Xaml.MissingGridIndex -->
+											<StackPanel VerticalAlignment="Bottom">
+												<Button Content="Save Settings"
                                                         Click="SaveSettings2_Click"
                                                         Classes="default"
                                                         HorizontalAlignment="Left"
                                                         Padding="12,8" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </Border>
-                        </TabItem>
-                    </TabControl>
-                </Grid >
-                <StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False"
+											</StackPanel>
+										</Grid>
+									</StackPanel>
+								</ScrollViewer>
+							</Border>
+						</TabItem>
+					</TabControl>
+				</Grid >
+				<StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False"
                             DragDrop.AllowDrop="True"
                             DragDrop.DragOver="MyFilesPanel_DragOver"
                             DragDrop.Drop="MyFilesPanel_Drop">
-                    <StackPanel Spacing="12" Margin="0, 20, 0, 0">
-                        <TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
-                        <Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
-                    </StackPanel>
-                    <Grid Margin="0,0,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+					<StackPanel Spacing="12" Margin="0, 20, 0, 0">
+						<TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
+						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
+					</StackPanel>
+					<Grid Margin="0,0,0,0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                                     Spacing="8">
-                            <Button Click="IngestBrowseButton_Click"
+							<Button Click="IngestBrowseButton_Click"
                                     Classes="flat" VerticalAlignment="Bottom"
                                     Height="41">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <avalonia:MaterialIcon Kind="Plus"
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<avalonia:MaterialIcon Kind="Plus"
                                                            VerticalAlignment="Top"
                                                            Height="16" Width="16" />
-                                    <TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Name="FileOperationsPanel">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
-                            <DataGrid x:Name="FilesDataGrid"
+									<TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+					</Grid>
+					<Grid Name="FileOperationsPanel">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<ScrollViewer Grid.Row="1" Height="400" VerticalScrollBarVisibility="Auto">
+							<DataGrid x:Name="FilesDataGrid"
                                       AutoGenerateColumns="False"
                                       IsReadOnly="True"
                                       CanUserReorderColumns="False"
@@ -992,41 +992,41 @@
                                       BorderThickness="1"
                                       BorderBrush="#EDEDED"
                                       x:DataType="classes:FileViewModel">
-                                <DataGrid.Styles>
-                                    <Style Selector="DataGridColumnHeader">
-                                        <Setter Property="Background" Value="#FAFAFA" />
-                                        <Setter Property="Foreground" Value="#1A1C1E" />
-                                        <Setter Property="FontWeight" Value="500" />
-                                        <Setter Property="FontSize" Value="14.5" />
-                                        <Setter Property="Padding" Value="12 0 8 0" />
-                                        <Setter Property="MinHeight" Value="24" />
-                                        <Setter Property="Height" Value="38" />
-                                    </Style>
-                                    <Style Selector="DataGridColumnHeader:nth-child(5)">
-                                        <Setter Property="SeparatorBrush" Value="Transparent" />
-                                    </Style>
-                                    <Style Selector="DataGridRow">
-                                        <Setter Property="MinHeight" Value="24" />
-                                        <Setter Property="Height" Value="38" />
-                                        <Setter Property="BorderBrush" Value="#EDEDED" />
-                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
-                                    </Style>
-                                </DataGrid.Styles>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+								<DataGrid.Styles>
+									<Style Selector="DataGridColumnHeader">
+										<Setter Property="Background" Value="#FAFAFA" />
+										<Setter Property="Foreground" Value="#1A1C1E" />
+										<Setter Property="FontWeight" Value="500" />
+										<Setter Property="FontSize" Value="14.5" />
+										<Setter Property="Padding" Value="12 0 8 0" />
+										<Setter Property="MinHeight" Value="24" />
+										<Setter Property="Height" Value="38" />
+									</Style>
+									<Style Selector="DataGridColumnHeader:nth-child(5)">
+										<Setter Property="SeparatorBrush" Value="Transparent" />
+									</Style>
+									<Style Selector="DataGridRow">
+										<Setter Property="MinHeight" Value="24" />
+										<Setter Property="Height" Value="38" />
+										<Setter Property="BorderBrush" Value="#EDEDED" />
+										<Setter Property="BorderThickness" Value="0,0,0,1" />
+									</Style>
+								</DataGrid.Styles>
+								<DataGrid.Columns>
+									<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
 
-                                    <DataGridTextColumn Header="Size"
+									<DataGridTextColumn Header="Size"
                                                         Binding="{Binding ContentLength, Converter={StaticResource ByteSizeConverter}}"
                                                         Width="100" />
-                                    <DataGridTextColumn Header="Type" Binding="{Binding DocumentType}"
+									<DataGridTextColumn Header="Type" Binding="{Binding DocumentType}"
                                                         Width="150" />
-                                    <DataGridTextColumn Header="Date Created" Width="190"
+									<DataGridTextColumn Header="Date Created" Width="190"
                                                         Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
 
-                                    <DataGridTemplateColumn Header="" Width="150">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button Click="DeleteFile_Click"
+									<DataGridTemplateColumn Header="" Width="150">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<Button Click="DeleteFile_Click"
                                                         Tag="{Binding}"
                                                         Content="Remove"
                                                         HorizontalAlignment="Center"
@@ -1036,39 +1036,39 @@
                                                         BorderThickness="0"
                                                         Padding="0"
                                                         Cursor="Hand">
-                                                    <Button.Template>
-                                                        <ControlTemplate TargetType="Button">
-                                                            <ContentPresenter Content="{TemplateBinding Content}"
+													<Button.Template>
+														<ControlTemplate TargetType="Button">
+															<ContentPresenter Content="{TemplateBinding Content}"
                                                                               ContentTemplate="{TemplateBinding ContentTemplate}"
                                                                               Padding="{TemplateBinding Padding}"
                                                                               HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                                                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                                                               Background="Transparent" />
-                                                        </ControlTemplate>
-                                                    </Button.Template>
-                                                    <Button.Styles>
-                                                        <Style Selector="Button:pointerover">
-                                                            <Setter Property="Foreground" Value="#6A6B6F" />
+														</ControlTemplate>
+													</Button.Template>
+													<Button.Styles>
+														<Style Selector="Button:pointerover">
+															<Setter Property="Foreground" Value="#6A6B6F" />
 
-                                                        </Style>
-                                                        <Style Selector="Button:pressed">
-                                                            <Setter Property="Foreground" Value="#6A6B6F" />
-                                                        </Style>
-                                                    </Button.Styles>
-                                                </Button>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </ScrollViewer>
-                    </Grid>
+														</Style>
+														<Style Selector="Button:pressed">
+															<Setter Property="Foreground" Value="#6A6B6F" />
+														</Style>
+													</Button.Styles>
+												</Button>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+								</DataGrid.Columns>
+							</DataGrid>
+						</ScrollViewer>
+					</Grid>
 
-                    <Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
+					<Border Name="UploadFilesPanel" Background="#FAFAFA" CornerRadius="24"
                             Margin="0,10,0,20" IsVisible="False">
-                        <Panel>
-                            <Canvas Margin="32">
-                                <Rectangle
+						<Panel>
+							<Canvas Margin="32">
+								<Rectangle
                                     Canvas.Left="0" Canvas.Top="0"
                                     Width="{Binding $parent[Panel].Bounds.Width}"
                                     Height="{Binding $parent[Panel].Bounds.Height}"
@@ -1077,50 +1077,50 @@
                                     StrokeDashArray="4,4"
                                     Fill="Transparent"
                                     RadiusX="16" RadiusY="16" />
-                            </Canvas>
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60"
+							</Canvas>
+							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60"
                                         Spacing="8">
-                                <Border
+								<Border
                                     HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <avalonia:MaterialIcon Kind="PlusCircleOutline" Width="24" Height="24"
+									<avalonia:MaterialIcon Kind="PlusCircleOutline" Width="24" Height="24"
                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
                                                            Foreground="#A6A6A8" />
-                                </Border>
-                                <TextBlock Text="Upload Files" FontSize="20" FontWeight="500"
+								</Border>
+								<TextBlock Text="Upload Files" FontSize="20" FontWeight="500"
                                            HorizontalAlignment="Center" Foreground="#1A1C1E" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="Click to upload" Classes="link" Foreground="#0472EF"
+								<StackPanel Orientation="Horizontal">
+									<Button Content="Click to upload" Classes="link" Foreground="#0472EF"
                                             HorizontalAlignment="Center" Click="IngestBrowseButton_Click" FontSize="14"
                                             Cursor="Hand" />
-                                    <TextBlock Text=" or drag and drop" Foreground="#464A4D"
+									<TextBlock Text=" or drag and drop" Foreground="#464A4D"
                                                HorizontalAlignment="Center" />
-                                </StackPanel>
+								</StackPanel>
 
-                                <TextBlock Text="(max file size 500mb)" Foreground="#6A6B6F" FontSize="12"
+								<TextBlock Text="(max file size 500mb)" Foreground="#6A6B6F" FontSize="12"
                                            HorizontalAlignment="Center" />
-                            </StackPanel>
-                        </Panel>
-                    </Border>
+							</StackPanel>
+						</Panel>
+					</Border>
 
-                    <ProgressBar x:Name="IngestSpinner"
+					<ProgressBar x:Name="IngestSpinner"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Stretch"
                                  IsIndeterminate="True"
                                  IsVisible="False" />
 
-                    <ProgressBar x:Name="ExportSpinner"
+					<ProgressBar x:Name="ExportSpinner"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Stretch"
                                  IsIndeterminate="True"
                                  IsVisible="False" />
-                </StackPanel>
-                <Border x:Name="ChatPanel" Margin="20" IsVisible="False">
-                    <Grid RowDefinitions="Auto,*">
-                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,40">
-                            <TextBlock x:Name="ChatTitleTextBlock" Grid.Row="0" Grid.Column="0"
+				</StackPanel>
+				<Border x:Name="ChatPanel" Margin="20" IsVisible="False">
+					<Grid RowDefinitions="Auto,*">
+						<Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,40">
+							<TextBlock x:Name="ChatTitleTextBlock" Grid.Row="0" Grid.Column="0"
                                        Foreground="#6A6B6F" FontWeight="400" FontSize="16"
                                        VerticalAlignment="Center" />
-                            <Button Grid.Row="0" Grid.Column="1"
+							<Button Grid.Row="0" Grid.Column="1"
                                     x:Name="ChatOptionsButton"
                                     Classes="flat"
                                     FontSize="16"
@@ -1131,33 +1131,33 @@
                                     BorderBrush="Transparent"
                                     BorderThickness="0"
                                     Click="ChatOptionsButton_Click">
-                                <avalonia:MaterialIcon Kind="DotsHorizontal"
+								<avalonia:MaterialIcon Kind="DotsHorizontal"
                                                        Foreground="#A6A6A8"
                                                        Background="Transparent"
                                                        Width="20"
                                                        Height="20"
                                                        VerticalAlignment="Top" />
-                                <Button.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Clear" x:Name="ClearMenuItem" Click="ClearChat_Click" />
-                                        <MenuItem Header="Download" x:Name="DownloadMenuItem"
+								<Button.ContextMenu>
+									<ContextMenu>
+										<MenuItem Header="Clear" x:Name="ClearMenuItem" Click="ClearChat_Click" />
+										<MenuItem Header="Download" x:Name="DownloadMenuItem"
                                                   Click="DownloadChat_Click" />
-                                    </ContextMenu>
-                                </Button.ContextMenu>
-                            </Button>
-                            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+									</ContextMenu>
+								</Button.ContextMenu>
+							</Button>
+							<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                     BorderThickness="0,0,0,1" BorderBrush="#EAECF0" />
-                        </Grid>
-                        <Grid Grid.Row="1" RowDefinitions="*,Auto">
-                            <ScrollViewer x:Name="ChatScrollViewer"
+						</Grid>
+						<Grid Grid.Row="1" RowDefinitions="*,Auto">
+							<ScrollViewer x:Name="ChatScrollViewer"
                                           Grid.Row="0"
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled">
-                                <StackPanel x:Name="ConversationContainer"
+								<StackPanel x:Name="ConversationContainer"
                                             Spacing="5"
                                             VerticalAlignment="Top" />
-                            </ScrollViewer>
-                            <TextBlock x:Name="ChatPlaceholder"
+							</ScrollViewer>
+							<TextBlock x:Name="ChatPlaceholder"
                                        Grid.Row="0"
                                        Text="What do you want to chat about?"
                                        FontSize="16"
@@ -1165,13 +1165,13 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Bottom"
                                        IsVisible="{Binding !Children.Count, ElementName=ConversationContainer}" />
-                            <StackPanel x:Name="ChatInputContainer"
+							<StackPanel x:Name="ChatInputContainer"
                                         Grid.Row="1"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         Margin="0,10,0,46">
-                                <Grid Width="610">
-                                    <TextBox x:Name="ChatInputBox"
+								<Grid Width="610">
+									<TextBox x:Name="ChatInputBox"
                                              Classes="no-shadow"
                                              Watermark="Enter user message..."
                                              AcceptsReturn="False"
@@ -1182,7 +1182,7 @@
                                              Padding="16,5,40,5"
                                              Height="60"
                                              KeyDown="ChatInputBox_KeyDown" />
-                                    <Button x:Name="InlineSendButton"
+									<Button x:Name="InlineSendButton"
                                             Background="#0472EF"
                                             BorderThickness="0"
                                             Margin="0,0,10,0"
@@ -1192,38 +1192,38 @@
                                             Width="28"
                                             Click="SendMessageTest_Click">
 
-                                        <avalonia:MaterialIcon Kind="SendOutline"
+										<avalonia:MaterialIcon Kind="SendOutline"
                                                                Foreground="#FFFFFF"
                                                                Background="#0472EF" />
-                                    </Button>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-                    </Grid>
-                </Border>
-                <TextBlock Name="WorkspaceText" IsVisible="False" />
-            </Grid>
-        </DockPanel>
-        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
-        <!-- Console panel -->
-        <Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"
+									</Button>
+								</Grid>
+							</StackPanel>
+						</Grid>
+					</Grid>
+				</Border>
+				<TextBlock Name="WorkspaceText" IsVisible="False" />
+			</Grid>
+		</DockPanel>
+		<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
+		<!-- Console panel -->
+		<Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"
                 IsVisible="False">
-            <StackPanel Orientation="Vertical" Spacing="10" Margin="20, 4,20,4">
-                <DockPanel>
-                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+			<StackPanel Orientation="Vertical" Spacing="10" Margin="20, 4,20,4">
+				<DockPanel>
+					<Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="CloseConsoleButton_Click">
-                        <avalonia:MaterialIcon Kind="Close" />
-                    </Button>
-                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+						<avalonia:MaterialIcon Kind="Close" />
+					</Button>
+					<Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="ClearConsoleButton_Click" Margin="0,0,5,0" ToolTip.Tip="Clear Console">
-                        <avalonia:MaterialIcon Kind="DeleteOutline" />
-                    </Button>
-                    <Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+						<avalonia:MaterialIcon Kind="DeleteOutline" />
+					</Button>
+					<Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="DownloadConsoleLogsButton_Click" Margin="0,0,5,0" ToolTip.Tip="Download Logs">
-                        <avalonia:MaterialIcon Kind="Download" />
-                    </Button>
-                </DockPanel>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
+						<avalonia:MaterialIcon Kind="Download" />
+					</Button>
+				</DockPanel>
+				<ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
 					<SelectableTextBlock x:Name="ConsoleOutputTextBox"
                                          IsHitTestVisible="True"
                                          IsTabStop="False"
@@ -1234,12 +1234,12 @@
                                          Padding="5" />
 
 				</ScrollViewer>
-            </StackPanel>
-        </Border>
-        <!-- ReSharper disable Xaml.MissingGridIndex -->
-        <WindowNotificationManager x:Name="NotificationManager" />
-        <!-- ReSharper restore Xaml.MissingGridIndex -->
-    </Grid>
-    <!-- ReSharper restore Xaml.StyleClassNotFound -->
-    <!-- ReSharper restore ObsoleteElement -->
+			</StackPanel>
+		</Border>
+		<!-- ReSharper disable Xaml.MissingGridIndex -->
+		<WindowNotificationManager x:Name="NotificationManager" />
+		<!-- ReSharper restore Xaml.MissingGridIndex -->
+	</Grid>
+	<!-- ReSharper restore Xaml.StyleClassNotFound -->
+	<!-- ReSharper restore ObsoleteElement -->
 </Window>
