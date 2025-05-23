@@ -1,6 +1,6 @@
-# macOS Installer (.pkg) for View Personal
+# macOS DMG Installer for View Personal
 
-This directory contains scripts and resources for building a macOS installer (`.pkg`) for the **View Personal** Avalonia application.
+This directory contains the script and resources for building a polished `.dmg` installer for the **View Personal** Avalonia desktop application on macOS.
 
 ---
 
@@ -8,36 +8,50 @@ This directory contains scripts and resources for building a macOS installer (`.
 
 Ensure the following tools are installed on your macOS system:
 
-- **macOS machine** (required to build and sign `.pkg` installers)
+- **macOS system** (required for building `.dmg`)
 - **.NET 9 SDK**  
-  [Download .NET SDK](https://dotnet.microsoft.com/download)
-- **Xcode Command Line Tools** (required for `pkgbuild`)
-  
-  Install via Terminal:
-  ```sh 
+  👉 [Download .NET SDK](https://dotnet.microsoft.com/download)
+- **Xcode Command Line Tools** (for `SetFile`, `Rez`)
+  ```sh
   xcode-select --install
+  ```
+- **create-dmg** (to generate `.dmg` from the `.app`)
+  ```sh
+  brew install create-dmg
+  ```
 
-## How to Build a .pkg Installer for Avalonia App on macOS
+---
 
-### Automated Build
-A build script is provided for convenience:
+## 💿 Building the `.dmg` Installer (Drag & Drop)
 
+### Script:
 ```sh
-chmod +x build_mac_pkg.sh
-./build_mac_pkg.sh 
+chmod +x build_dmg_cleaned.sh
+./build_dmg_cleaned.sh
 ```
 
-This script will:
+### What it does:
 - Publishes the Avalonia app for macOS (x64 and arm64)
-- Merges both into a universal binary
-- Creates a .app bundle inside the correct macOS structure
-- Builds the final .pkg installer using pkgbuild
-- The resulting `.pkg` file will be created in this directory.
+- Creates a universal binary
+- Builds a `.app` bundle with custom icon
+- Generates a clean `.dmg` with:
+  - Custom **app icon**
+  - Proper Finder layout
+- Cleans up all intermediate files after build
 
-### Output
-- After a successful build, you'll find the following inside the Output/ folder:
-   - `ViewPersonalInstaller.pkg`
-- You can double-click ViewPersonalInstaller.pkg to install the app into the /Applications directory.
+---
 
-## Notes
-- All steps must be performed on a Mac.
+## 📁 Output Folder
+
+| File                        | Description                                 |
+|-----------------------------|---------------------------------------------|
+| `ViewPersonalInstaller.dmg` | Final DMG with custom icon and branding     |
+
+You can distribute this `.dmg` file directly. Users can drag the app into `/Applications` from the mounted volume.
+
+---
+
+## ⚠️ Notes
+
+- All steps **must be performed on a Mac**
+
