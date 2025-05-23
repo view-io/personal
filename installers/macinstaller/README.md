@@ -26,8 +26,8 @@ Ensure the following tools are installed on your macOS system:
 
 ### Script:
 ```sh
-chmod +x build_dmg_cleaned.sh
-./build_dmg_cleaned.sh
+chmod +x build_mac_dmg.sh
+./build_mac_dmg.sh
 ```
 
 ### What it does:

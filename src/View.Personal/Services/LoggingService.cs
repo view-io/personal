@@ -12,7 +12,7 @@ namespace View.Personal.Services
     /// </summary>
     public class LoggingService
     {
-        private readonly TextBox _ConsoleOutput;
+        private readonly SelectableTextBlock _ConsoleOutput;
         private readonly Window _Window;
         private readonly LoggingModule _logger;
 
@@ -21,7 +21,7 @@ namespace View.Personal.Services
         /// </summary>
         /// <param name="window">The window hosting the UI console output.</param>
         /// <param name="consoleOutput">The TextBox control for displaying console messages.</param>
-        public LoggingService(Window window, TextBox consoleOutput)
+        public LoggingService(Window window, SelectableTextBlock consoleOutput)
         {
             var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "logs");
             if (!Directory.Exists(logDirectory))
