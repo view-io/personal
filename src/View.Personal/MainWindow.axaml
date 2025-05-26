@@ -17,15 +17,6 @@
 		<classes:WatchedDirectoryBackgroundConverter x:Key="WatchedBackgroundConverter" />
 		<helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
 	</Window.Resources>
-	<Window.Styles>
-		<Style Selector="#ChatHistoryList > ListBoxItem">
-			<Setter Property="Background" Value="#EFF7FF" />
-			<Setter Property="Foreground" Value="#389CFF" />
-			<Setter Property="Padding" Value="12" />
-			<Setter Property="CornerRadius" Value="6" />
-			<Setter Property="BorderThickness" Value="1" />
-		</Style>
-	</Window.Styles>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -104,36 +95,102 @@
 						</ComboBox.Styles>
 					</ComboBox>
 					<StackPanel DockPanel.Dock="Top" Margin="24 24 12 0">
-						<Expander Header="Chat History" Margin="0 8 0 4"
-					              Background="#FFFFFF"
-					              BorderBrush="#DBDBDB"
-					              BorderThickness="0.97"
-					              CornerRadius="8"
-					              assists:ShadowAssist.ShadowDepth="{x:Static assists:ShadowDepth.Depth0}"
-							      IsExpanded="False">
-							<Expander.Styles>
-								<Style Selector="Expander /template/ ToggleButton#PART_toggle">
-									<Setter Property="Background" Value="Transparent"/>
-									<Setter Property="BorderThickness" Value="0"/>
-									<Setter Property="Padding" Value="12,8"/>
+						<ComboBox x:Name="ChatHistoryList" DockPanel.Dock="Top" Margin="0 5 12 0" Width="149"
+                              Theme="{StaticResource MaterialOutlineComboBox}"
+                              assists:ComboBoxAssist.Label="Chat History"
+                              Padding="12,4"
+                              Background="#FFFFFF"
+                              BorderBrush="#DBDBDB"
+                              BorderThickness="0.97"
+                              Foreground="#1A1C1E"
+                              SelectionChanged="ChatHistoryList_SelectionChanged">
+							<ComboBox.Styles>
+								<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+									<Setter Property="MinHeight" Value="36" />
+									<Setter Property="Margin" Value="0,0,0,0" />
+								</Style>
+								<Style Selector="ComboBox /template/ Border#PART_Border">
+									<Setter Property="CornerRadius" Value="8" />
+									<Setter Property="BorderBrush" Value="#DBDBDB" />
+								</Style>
+								<Style Selector="ComboBox /template/ Border#splitBorder">
+									<Setter Property="Margin" Value="0,6" />
+								</Style>
+								<Style Selector="ComboBox /template/ Border#watermarkRoot">
+									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="HorizontalAlignment" Value="Center" />
+									<Setter Property="Margin" Value="0" />
+								</Style>
+								<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+									<Setter Property="Foreground" Value="#1A1C1E" />
+									<Setter Property="HorizontalAlignment" Value="Center" />
+									<Setter Property="TextAlignment" Value="Center" />
+								</Style>
+								<Style Selector="ComboBox /template/ Popup">
+									<Setter Property="Width" Value="{Binding $parent[ComboBox].Bounds.Width}" />
+									<Setter Property="MaxWidth" Value="{Binding $parent[ComboBox].Bounds.Width}" />
+								</Style>
+								<Style Selector="ComboBox /template/ Popup > Border">
+									<Setter Property="Width" Value="{Binding $parent[ComboBox].Bounds.Width}" />
+									<Setter Property="MaxWidth" Value="{Binding $parent[ComboBox].Bounds.Width}" />
 								</Style>
 
-								<Style Selector="Expander:not(:expanded) /template/ ToggleButton#PART_toggle">
-									<Setter Property="Foreground" Value="#6A6B6F" />
-									<Setter Property="FontWeight" Value="400" />
+								<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+									<Setter Property="BorderBrush" Value="#DBDBDB" />
+									<Setter Property="BorderThickness" Value="0.97" />
 								</Style>
-								<Style Selector="Expander:expanded /template/ ToggleButton#PART_toggle">
-									<Setter Property="Foreground" Value="#6A6B6F" />
-									<Setter Property="FontWeight" Value="400" />
+								<Style Selector="ComboBoxItem">
+									<Setter Property="Height" Value="36" />
+									<Setter Property="Padding" Value="0" />
+									<Setter Property="FontSize" Value="13" />
+									<Setter Property="BorderBrush" Value="#E0E0E0" />
+									<Setter Property="Background" Value="#EFF7FF" />
+									<Setter Property="Foreground" Value="#389CFF" />
+									<Setter Property="CornerRadius" Value="0" />
+									<Setter Property="BorderThickness" Value="0,0,0,1" />
+									<Setter Property="HorizontalContentAlignment" Value="Left" />
+									<Setter Property="VerticalContentAlignment" Value="Center" />
+									<Setter Property="Template">
+										<ControlTemplate>
+											<Border Background="{TemplateBinding Background}"
+													BorderBrush="{TemplateBinding BorderBrush}"
+													BorderThickness="{TemplateBinding BorderThickness}"
+													CornerRadius="0">
+												<ContentPresenter
+													Content="{TemplateBinding Content}"
+												Margin="{TemplateBinding Padding}"
+												HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+												VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+												Foreground="{TemplateBinding Foreground}" />
+											</Border>
+										</ControlTemplate>
+									</Setter>
 								</Style>
-
-								<Style Selector="Expander /template/ ContentPresenter#PART_ContentPresenter">
-									<Setter Property="Margin" Value="12,0,12,12" />
+								<Style Selector="ComboBox /template/ ContentPresenter">
+									<Setter Property="FontSize" Value="13" />
+									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="HorizontalAlignment" Value="Center" />
 								</Style>
-							</Expander.Styles>
-							<ListBox Name="ChatHistoryList" SelectionChanged="ChatHistoryList_SelectionChanged"
-									 Margin="0 8 0 0" MaxHeight="300" />
-						</Expander>
+								<Style Selector="ComboBox /template/ Path#arrow">
+									<Setter Property="Fill" Value="#1A1C1E" />
+								</Style>
+								<Style Selector="ComboBox /template/ Popup > Border">
+									<Setter Property="Width" Value="{Binding $parent[ComboBox].Bounds.Width}" />
+									<Setter Property="MaxWidth" Value="{Binding $parent[ComboBox].Bounds.Width}" />
+									<Setter Property="CornerRadius" Value="0" />
+									<Setter Property="Background" Value="#FFFFFF" />
+									<Setter Property="BorderBrush" Value="#CCCCCC" />
+									<Setter Property="BorderThickness" Value="1" />
+								</Style>
+								<Style Selector="ComboBoxItem:selected">
+									<Setter Property="Background" Value="#DDE6ED" />
+									<Setter Property="Foreground" Value="#389CFF" />
+									<Setter Property="BorderBrush" Value="#C5D3E0" />
+									<Setter Property="BorderThickness" Value="1" />
+									<Setter Property="FontWeight" Value="Normal"/>
+								</Style>
+							</ComboBox.Styles>
+						</ComboBox>
 					</StackPanel>
 					<ListBox DockPanel.Dock="Bottom" x:Name="NavList" SelectionChanged="NavList_SelectionChanged"
                              Margin="16 0 16 32">

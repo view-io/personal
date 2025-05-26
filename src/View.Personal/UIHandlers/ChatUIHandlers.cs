@@ -89,7 +89,7 @@ namespace View.Personal.UIHandlers
             if (currentMessages.Count == 1)
             {
                 mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
-                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
                     var newItem = new ListBoxItem
@@ -98,6 +98,7 @@ namespace View.Personal.UIHandlers
                         Tag = mainWindow.CurrentChatSession
                     };
                     chatHistoryList.Items.Add(newItem);
+                    chatHistoryList.SelectedItem = newItem;
                 }
             }
 
@@ -219,7 +220,7 @@ namespace View.Personal.UIHandlers
                 mainWindow.CurrentChatSession.Messages.Clear();
 
                 // Find the chat history list control in the UI
-                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
                     // Find the ListBoxItem associated with the current chat session
