@@ -184,6 +184,16 @@ namespace View.Personal.Services
             if (window is MainWindow mw)
             {
                 FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
+                var filesDataGrid = mw.FindControl<DataGrid>("FilesDataGrid");
+                if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
+                {
+                    var fileCount = items.Cast<object>().Count();
+                    var uploadFilesPanel = mw.FindControl<Border>("UploadFilesPanel");
+                    var fileOperationsPanel = mw.FindControl<Grid>("FileOperationsPanel");
+
+                    uploadFilesPanel.IsVisible = fileCount == 0;
+                    fileOperationsPanel.IsVisible = fileCount > 0;
+                }
                 mw.ShowNotification("Files Deleted", $"{files.Count()} files were deleted successfully!", NotificationType.Success);
             }
         }
