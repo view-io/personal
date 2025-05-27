@@ -557,6 +557,505 @@ namespace View.Personal.Services
             }
         }
 
+
+        /// <summary>
+        /// Re-ingests a previously deleted or updated file into the LiteGraph system. This method performs the same steps as
+        /// initial ingestion: detecting file type, extracting content into atoms (chunks), generating graph nodes and edges,
+        /// and embedding content vectors using the selected embedding provider. It updates the application state and UI accordingly,
+        /// including visibility of progress indicators and notifications.
+        /// </summary>
+        /// <param name="filePath">The full path to the file to be re-ingested.</param>
+        /// <param name="typeDetector">An instance of <see cref="TypeDetector"/> used to determine the type of the file.</param>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> used to interact with the graph database.</param>
+        /// <param name="tenantGuid">The unique identifier of the tenant in the LiteGraph system.</param>
+        /// <param name="graphGuid">The unique identifier of the graph where the file will be stored.</param>
+        /// <param name="window">The parent <see cref="Window"/>, expected to be <see cref="MainWindow"/>, for UI updates and notifications.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous re-ingestion operation.</returns>
+
+        public static async Task ReIngestFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
+          Guid tenantGuid, Guid graphGuid, Window window)
+        {
+            var appSettings = ((App)Application.Current).ApplicationSettings;
+            var app = (App)Application.Current;
+
+            // ToDo: Go back over this and make sure this is working as expected
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null) return;
+
+            var fileName = Path.GetFileName(filePath);
+            if (fileName == ".DS_Store")
+            {
+                app.Log($"[INFO] Skipping system file: {filePath}");
+                return;
+            }
+
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            if (!SupportedExtensions.Contains(extension))
+            {
+                app.Log($"[WARNING] Unsupported file extension: {extension}");
+                mainWindow.ShowNotification("Re-ingestion Error", "Unsupported file type.", NotificationType.Error);
+                return;
+            }
+
+            var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
+
+            var spinner = window.FindControl<ProgressBar>("IngestSpinner");
+
+            if (spinner != null)
+            {
+                spinner.IsVisible = true;
+                spinner.IsIndeterminate = true;
+            }
+
+            try
+            {
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    mainWindow.ShowNotification("Re-ingestion Error", "No file selected.", NotificationType.Error);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(embeddingProvider))
+                {
+                    await MsBox.Avalonia.MessageBoxManager
+                        .GetMessageBoxStandard("Error", "Please select an embedding provider", ButtonEnum.Ok,
+                            Icon.Error)
+                        .ShowAsync();
+                    return;
+                }
+
+                int maxTokens;
+                switch (embeddingProvider)
+                {
+                    case "Ollama":
+                        maxTokens = appSettings.Embeddings.OllamaEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] Ollama max tokens: {maxTokens}");
+                        break;
+                    case "View":
+                        maxTokens = appSettings.Embeddings.ViewEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] View max tokens: {maxTokens}");
+                        break;
+                    case "OpenAI":
+                        maxTokens = appSettings.Embeddings.OpenAIEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] OpenAI max tokens: {maxTokens}");
+                        break;
+                    case "VoyageAI":
+                        maxTokens = appSettings.Embeddings.VoyageEmbeddingModelMaxTokens;
+                        app.Log($"[INFO] VoyageAI max tokens: {maxTokens}");
+                        break;
+                    default:
+                        throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
+                }
+
+                string? contentType = null;
+                var typeResult = typeDetector.Process(filePath, contentType);
+                var isXlsFile = Path.GetExtension(filePath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+                app.Log($"[INFO] Detected Type: {typeResult.Type}");
+
+                var atoms = new List<Atom>();
+                await Task.Run(async () =>
+                {
+                    if (isXlsFile)
+                    {
+                        typeResult = new DocumentAtom.TypeDetection.TypeResult
+                        {
+                            Type = DocumentTypeEnum.Xlsx
+                        };
+                        atoms = Extract(filePath);
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel (.xls) file"));
+                    }
+                    else
+                    {
+                        switch (typeResult.Type)
+                        {
+                            case DocumentTypeEnum.Pdf:
+                                {
+                                    var processorSettings = new PdfProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var pdfProcessor = new PdfProcessor(processorSettings);
+                                    atoms = pdfProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF"));
+                                    break;
+                                }
+                            case DocumentTypeEnum.Text:
+                                {
+                                    var textSettings = new TextProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var textProcessor = new TextProcessor(textSettings);
+                                    atoms = textProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file"));
+                                    break;
+                                }
+                            case DocumentTypeEnum.Pptx:
+                                {
+                                    var processorSettings = new PptxProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var pptxProcessor = new PptxProcessor(processorSettings);
+                                    atoms = pptxProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint"));
+                                    break;
+                                }
+                            case DocumentTypeEnum.Docx:
+                                {
+                                    var processorSettings = new DocxProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var docxProcessor = new DocxProcessor(processorSettings);
+                                    atoms = docxProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document"));
+                                    break;
+                                }
+                            case DocumentTypeEnum.Markdown:
+                                {
+                                    var processorSettings = new MarkdownProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 384
+                                        }
+                                    };
+                                    using (var markdownProcessor = new MarkdownProcessor(processorSettings))
+                                    {
+                                        atoms = markdownProcessor.Extract(filePath).ToList();
+                                    }
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file"));
+                                    break;
+                                }
+                            case DocumentTypeEnum.Xlsx:
+                                {
+                                    var processorSettings = new XlsxProcessorSettings
+                                    {
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 384
+                                        }
+                                    };
+                                    using (var xlsxProcessor = new XlsxProcessor(processorSettings))
+                                    {
+                                        atoms = xlsxProcessor.Extract(filePath).ToList();
+                                    }
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file"));
+                                    break;
+                                }
+                            default:
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
+                                        mainWindow.ShowNotification("Re-ingestion Error",
+                                            "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                            NotificationType.Error);
+                                    });
+                                    return;
+                                }
+                        }
+                    }
+
+                    const int overlap = 50;
+
+                    var finalAtoms = new List<Atom>();
+                    using (var tokenExtractor = new TokenExtractor())
+                    {
+                        tokenExtractor.WordRemover.WordsToRemove = new string[0];
+                        foreach (var atom in atoms)
+                        {
+                            var tokens = tokenExtractor.Process(atom.Text).ToList();
+                            var tokenCount = tokens.Count;
+                            if (tokenCount <= maxTokens)
+                            {
+                                finalAtoms.Add(atom);
+                            }
+                            else
+                            {
+                                var chunks = SplitIntoTokenChunks(atom.Text, maxTokens, overlap, tokenExtractor);
+                                foreach (var chunk in chunks)
+                                    if (!string.IsNullOrWhiteSpace(chunk))
+                                    {
+                                        var newAtom = new Atom
+                                        {
+                                            Text = chunk
+                                        };
+                                        finalAtoms.Add(newAtom);
+                                    }
+                            }
+                        }
+                    }
+
+                    var fileNode =
+                        MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
+                    liteGraph.Node.Create(fileNode);
+                    app.Log($"[INFO] Created file document node {fileNode.GUID}");
+
+                    var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
+                    liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
+                    app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes.");
+
+                    var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
+                        chunkNodes);
+                    liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
+                    app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
+
+                    var validChunkNodes = chunkNodes
+                        .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                        .ToList();
+                    var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
+
+                    if (!chunkTexts.Any())
+                        app.Log("[WARNING] No valid text content found in atoms for embedding.");
+                    else
+                        switch (embeddingProvider)
+                        {
+                            case "OpenAI":
+                                if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
+                                    string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
+                                {
+                                    mainWindow.ShowNotification("Re-ingestion Error",
+                                        "OpenAI embedding settings incomplete.",
+                                        NotificationType.Error);
+                                    return;
+                                }
+
+                                var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
+                                    appSettings.OpenAI.ApiKey);
+                                var openAIEmbeddingsRequest = new EmbeddingsRequest
+                                {
+                                    Model = appSettings.Embeddings.OpenAIEmbeddingModel,
+                                    Contents = chunkTexts
+                                };
+                                var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
+                                if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) return;
+                                for (var j = 0; j < validChunkNodes.Count; j++)
+                                {
+                                    var chunkNode = validChunkNodes[j];
+                                    chunkNode.Vectors = new List<VectorMetadata>
+                                    {
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.OpenAIEmbeddingModel,
+                                            Dimensionality = embeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                            Vectors = embeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
+                                    liteGraph.Node.Update(chunkNode);
+                                }
+
+                                app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                                break;
+
+                            case "Ollama":
+                                if (string.IsNullOrEmpty(appSettings.Embeddings.OllamaEmbeddingModel))
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Re-ingestion Error",
+                                        "Local embedding model not configured.",
+                                        NotificationType.Error);
+                                    });
+                                    return;
+                                }
+
+                                var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint, "");
+                                var ollamaEmbeddingsRequest = new EmbeddingsRequest
+                                {
+                                    Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                                    Contents = chunkTexts
+                                };
+                                var ollamaEmbeddingsResult =
+                                    await ollamaSdk.GenerateEmbeddings(ollamaEmbeddingsRequest);
+                                if (!CheckEmbeddingsResult(mainWindow, ollamaEmbeddingsResult, validChunkNodes.Count))
+                                    return;
+                                for (var j = 0; j < validChunkNodes.Count; j++)
+                                {
+                                    var chunkNode = validChunkNodes[j];
+                                    chunkNode.Vectors = new List<VectorMetadata>
+                                    {
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                                            Dimensionality = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                                .Count,
+                                            Vectors = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
+                                    liteGraph.Node.Update(chunkNode);
+                                }
+
+                                app.Log(
+                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings.");
+                                break;
+
+                            case "VoyageAI":
+                                if (string.IsNullOrEmpty(appSettings.Embeddings.VoyageApiKey) ||
+                                    string.IsNullOrEmpty(appSettings.Embeddings.VoyageEmbeddingModel))
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Re-ingestion Error",
+                                        "VoyageAI embedding settings incomplete.", NotificationType.Error);
+                                    });
+                                    return;
+                                }
+
+                                var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
+                                    appSettings.Embeddings.VoyageApiKey);
+                                var voyageEmbeddingsRequest = new EmbeddingsRequest
+                                {
+                                    Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                                    Contents = chunkTexts
+                                };
+                                var voyageEmbeddingsResult =
+                                    await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
+                                if (!CheckEmbeddingsResult(mainWindow, voyageEmbeddingsResult, validChunkNodes.Count))
+                                    return;
+                                for (var j = 0; j < validChunkNodes.Count; j++)
+                                {
+                                    var chunkNode = validChunkNodes[j];
+                                    chunkNode.Vectors = new List<VectorMetadata>
+                                    {
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                                            Dimensionality = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                                .Count,
+                                            Vectors = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
+                                    liteGraph.Node.Update(chunkNode);
+                                }
+
+                                app.Log(
+                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
+                                break;
+
+                            case "View":
+                                if (string.IsNullOrEmpty(appSettings.View.Endpoint) ||
+                                    string.IsNullOrEmpty(appSettings.View.AccessKey) ||
+                                    string.IsNullOrEmpty(appSettings.View.ApiKey) ||
+                                    string.IsNullOrEmpty(appSettings.Embeddings.ViewEmbeddingModel))
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        mainWindow.ShowNotification("Re-ingestion Error",
+                                        "View embedding settings incomplete.",
+                                        NotificationType.Error);
+                                    });
+                                    return;
+                                }
+
+                                var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
+                                    appSettings.View.Endpoint,
+                                    appSettings.View.AccessKey);
+                                var viewEmbeddingsRequest = new EmbeddingsRequest
+                                {
+                                    // ToDo: eventually want to remove hardcoded values
+                                    EmbeddingsRule = new EmbeddingsRule
+                                    {
+                                        EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
+                                        EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                        EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
+                                        BatchSize = 2,
+                                        MaxGeneratorTasks = 4,
+                                        MaxRetries = 3,
+                                        MaxFailures = 3
+                                    },
+                                    Model = appSettings.Embeddings.ViewEmbeddingModel,
+                                    Contents = chunkTexts
+                                };
+                                var viewEmbeddingsResult =
+                                    await viewEmbeddingsSdk.GenerateEmbeddings(viewEmbeddingsRequest);
+                                if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count))
+                                    return;
+                                for (var j = 0; j < validChunkNodes.Count; j++)
+                                {
+                                    var chunkNode = validChunkNodes[j];
+                                    chunkNode.Vectors = new List<VectorMetadata>
+                                    {
+                                        new()
+                                        {
+                                            TenantGUID = tenantGuid,
+                                            GraphGUID = graphGuid,
+                                            NodeGUID = chunkNode.GUID,
+                                            Model = appSettings.Embeddings.ViewEmbeddingModel,
+                                            Dimensionality = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                            Vectors = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                            Content = (chunkNode.Data as Atom)?.Text
+                                        }
+                                    };
+                                    liteGraph.Node.Update(chunkNode);
+                                }
+
+                                app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
+                                break;
+
+                            default:
+                                throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
+                        }
+                });
+
+                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
+                if (filePathTextBox != null)
+                    filePathTextBox.Text = "";
+                app.Log($"[INFO] File {filePath} ingested successfully!");
+                var filename = Path.GetFileName(filePath);
+            }
+            catch (Exception ex)
+            {
+                app.Log($"[ERROR] Error re-ingesting file {filePath}: {ex.Message}");
+                app.LogExceptionToFile(ex, $"[ERROR] Error re-ingesting file {filePath}");
+                mainWindow.ShowNotification("Re-ingestion Error", $"Something went wrong: {ex.Message}",
+                    NotificationType.Error);
+            }
+            finally
+            {
+                if (spinner != null)
+                    spinner.IsVisible = false;
+            }
+        }
+
         #endregion
 
         #region Private-Methods
