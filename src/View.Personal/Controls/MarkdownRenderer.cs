@@ -498,7 +498,7 @@ namespace View.Personal.Controls
                         {
                             Text = code.Content,
                             FontFamily = new FontFamily("Consolas, Menlo, Monaco, 'Courier New', monospace"),
-                            TextWrapping = TextWrapping.Wrap, // ADDED THIS LINE
+                            TextWrapping = TextWrapping.Wrap,
                             VerticalAlignment = VerticalAlignment.Center
                         }
                     };
@@ -527,7 +527,6 @@ namespace View.Personal.Controls
             {
                 Text = text,
                 TextWrapping = TextWrapping.Wrap,
-                //MaxWidth = 610
             };
 
             if (emphasis.DelimiterCount == 2)
