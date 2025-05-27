@@ -62,26 +62,32 @@ namespace View.Personal.UIHandlers
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            // Use the current chat session's message list for consistency
             var currentMessages = mainWindow.CurrentChatSession.Messages;
             var app = (App)App.Current;
 
-            // Retrieve UI controls
             var inputBox = mainWindow.FindControl<TextBox>("ChatInputBox");
+            var emptyInputBox = mainWindow.FindControl<TextBox>("EmptyChatInputBox");
             var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
             var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
 
-            // Validate input
-            if (inputBox == null || string.IsNullOrWhiteSpace(inputBox.Text))
+            string userText = "";
+            if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
+            {
+                userText = inputBox.Text.Trim();
+                inputBox.Text = string.Empty;
+            }
+            else if (emptyInputBox != null && !string.IsNullOrWhiteSpace(emptyInputBox.Text))
+            {
+                userText = emptyInputBox.Text.Trim();
+                emptyInputBox.Text = string.Empty;
+            }
+            else
             {
                 app.Log("[WARN] User tried to send an empty or null message.");
                 return;
             }
 
             // Process user input
-            var userText = inputBox.Text.Trim();
-            inputBox.Text = string.Empty;
-
             var userMessage = new ChatMessage { Role = "user", Content = userText };
             currentMessages.Add(userMessage);
 
@@ -89,7 +95,7 @@ namespace View.Personal.UIHandlers
             if (currentMessages.Count == 1)
             {
                 mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
-                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
                     var newItem = new ListBoxItem
@@ -98,6 +104,7 @@ namespace View.Personal.UIHandlers
                         Tag = mainWindow.CurrentChatSession
                     };
                     chatHistoryList.Items.Add(newItem);
+                    chatHistoryList.SelectedItem = newItem;
                 }
             }
 
@@ -219,7 +226,7 @@ namespace View.Personal.UIHandlers
                 mainWindow.CurrentChatSession.Messages.Clear();
 
                 // Find the chat history list control in the UI
-                var chatHistoryList = mainWindow.FindControl<ListBox>("ChatHistoryList");
+                var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
                     // Find the ListBoxItem associated with the current chat session

@@ -437,7 +437,7 @@ namespace View.Personal
 
             var navList = this.FindControl<ListBox>("NavList");
             if (navList != null) navList.SelectedIndex = -1;
-            var chatHistoryList = this.FindControl<ListBox>("ChatHistoryList");
+            var chatHistoryList = this.FindControl<ComboBox>("ChatHistoryList");
             if (chatHistoryList != null) chatHistoryList.SelectedIndex = -1;
         }
 
@@ -563,8 +563,8 @@ namespace View.Personal
 
         private void ChatHistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as ListBox;
-            if (listBox.SelectedItem is ListBoxItem selectedItem)
+            var comboBox = sender as ComboBox;
+            if (comboBox?.SelectedItem is ListBoxItem selectedItem)
             {
                 var chatSession = selectedItem.Tag as ChatSession;
                 if (chatSession != null)

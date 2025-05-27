@@ -452,10 +452,9 @@ namespace View.Personal.Controls
         /// </summary>
         private static Control RenderInlines(ContainerInline container)
         {
-            var panel = new StackPanel
+            var panel = new WrapPanel
             {
                 Orientation = Orientation.Horizontal,
-                Spacing = 0
             };
 
             var currentInline = container.FirstChild;
@@ -482,7 +481,7 @@ namespace View.Personal.Controls
             switch (inline)
             {
                 case LiteralInline literal:
-                    return new SelectableTextBlock { Text = literal.Content.ToString(), TextWrapping = TextWrapping.Wrap, MaxWidth = 610 };
+                    return new SelectableTextBlock { Text = literal.Content.ToString(), TextWrapping = TextWrapping.Wrap };
                 case EmphasisInline emphasis:
                     return RenderEmphasis(emphasis);
                 case LineBreakInline _:
@@ -499,6 +498,8 @@ namespace View.Personal.Controls
                         {
                             Text = code.Content,
                             FontFamily = new FontFamily("Consolas, Menlo, Monaco, 'Courier New', monospace"),
+                            TextWrapping = TextWrapping.Wrap,
+                            VerticalAlignment = VerticalAlignment.Center
                         }
                     };
                 case LinkInline link:
@@ -526,7 +527,6 @@ namespace View.Personal.Controls
             {
                 Text = text,
                 TextWrapping = TextWrapping.Wrap,
-                MaxWidth = 610
             };
 
             if (emphasis.DelimiterCount == 2)
