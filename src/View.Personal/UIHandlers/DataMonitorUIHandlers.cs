@@ -729,7 +729,7 @@ namespace View.Personal.UIHandlers
         /// <param name="mainWindow">The main application window containing UI controls.</param>
         public static void LogWatchedPaths(MainWindow mainWindow)
         {
-            var consoleOutput = mainWindow.FindControl<TextBox>("ConsoleOutputTextBox");
+            var consoleOutput = mainWindow.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
             if (consoleOutput != null)
             {
                 var logMessage = $"[INFO] Watched paths ({mainWindow.WatchedPaths.Count}):\n" +
