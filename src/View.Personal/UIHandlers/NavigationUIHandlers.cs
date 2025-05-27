@@ -40,7 +40,7 @@ namespace View.Personal.UIHandlers
         {
             if (sender is ListBox listBox)
             {
-                var chatHistoryList = window.FindControl<ListBox>("ChatHistoryList");
+                var chatHistoryList = window.FindControl<ComboBox>("ChatHistoryList");
                 var mainWindow = window as MainWindow;
                 var consolePanel = window.FindControl<Border>("ConsolePanel");
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
