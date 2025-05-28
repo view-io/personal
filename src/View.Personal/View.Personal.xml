@@ -955,6 +955,41 @@
             The Ignore button was clicked.
             </summary>
         </member>
+        <member name="T:View.Personal.Enums.MessageBoxButtons">
+            <summary>
+            Represents the type of buttons to display in a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.Ok">
+            <summary>
+            The message box contains an OK button.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.OkCancel">
+            <summary>
+            The message box contains OK and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.YesNo">
+            <summary>
+            The message box contains Yes and No buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.YesNoCancel">
+            <summary>
+            The message box contains Yes, No, and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.AbortRetryIgnore">
+            <summary>
+            The message box contains Abort, Retry, and Ignore buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.RetryCancel">
+            <summary>
+            The message box contains Retry and Cancel buttons.
+            </summary>
+        </member>
         <member name="T:View.Personal.Enums.MessageBoxIcon">
             <summary>
             Represents the icon to display in a message box.
@@ -1019,7 +1054,7 @@
             Helper class for creating styled message boxes that match the application's UI.
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Helpers.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
             <summary>
             Shows a styled standard message box asynchronously.
             </summary>
@@ -1058,47 +1093,12 @@
             <param name="windowStartupLocation">The startup location of the window.</param>
             <returns>A task that represents the asynchronous operation.</returns>
         </member>
-        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.GetButtonDefinitions(View.Personal.Helpers.MessageBoxButtons)">
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.GetButtonDefinitions(View.Personal.Enums.MessageBoxButtons)">
             <summary>
             Gets the button definitions based on the button type.
             </summary>
             <param name="buttons">The button type.</param>
             <returns>A list of button definitions.</returns>
-        </member>
-        <member name="T:View.Personal.Helpers.MessageBoxButtons">
-            <summary>
-            Represents the type of buttons to display in a message box.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.Ok">
-            <summary>
-            The message box contains an OK button.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.OkCancel">
-            <summary>
-            The message box contains OK and Cancel buttons.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.YesNo">
-            <summary>
-            The message box contains Yes and No buttons.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.YesNoCancel">
-            <summary>
-            The message box contains Yes, No, and Cancel buttons.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.AbortRetryIgnore">
-            <summary>
-            The message box contains Abort, Retry, and Ignore buttons.
-            </summary>
-        </member>
-        <member name="F:View.Personal.Helpers.MessageBoxButtons.RetryCancel">
-            <summary>
-            The message box contains Retry and Cancel buttons.
-            </summary>
         </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>

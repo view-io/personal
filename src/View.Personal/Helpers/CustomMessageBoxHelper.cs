@@ -13,6 +13,16 @@ namespace View.Personal.Helpers
     /// </summary>
     public static class CustomMessageBoxHelper
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Public-Methods
+
         /// <summary>
         /// Shows a styled standard message box asynchronously.
         /// </summary>
@@ -88,6 +98,10 @@ namespace View.Personal.Helpers
             return ShowMessageBoxAsync(title, text, MessageBoxButtons.Ok, MessageBoxIcon.Warning, windowStartupLocation);
         }
 
+        #endregion
+
+        #region Private-Methods
+
         /// <summary>
         /// Gets the button definitions based on the button type.
         /// </summary>
@@ -128,41 +142,7 @@ namespace View.Personal.Helpers
 
             return buttonDefinitions;
         }
-    }
 
-    /// <summary>
-    /// Represents the type of buttons to display in a message box.
-    /// </summary>
-    public enum MessageBoxButtons
-    {
-        /// <summary>
-        /// The message box contains an OK button.
-        /// </summary>
-        Ok,
-
-        /// <summary>
-        /// The message box contains OK and Cancel buttons.
-        /// </summary>
-        OkCancel,
-
-        /// <summary>
-        /// The message box contains Yes and No buttons.
-        /// </summary>
-        YesNo,
-
-        /// <summary>
-        /// The message box contains Yes, No, and Cancel buttons.
-        /// </summary>
-        YesNoCancel,
-
-        /// <summary>
-        /// The message box contains Abort, Retry, and Ignore buttons.
-        /// </summary>
-        AbortRetryIgnore,
-
-        /// <summary>
-        /// The message box contains Retry and Cancel buttons.
-        /// </summary>
-        RetryCancel
+        #endregion
     }
 }

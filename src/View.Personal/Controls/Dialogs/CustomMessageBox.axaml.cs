@@ -6,7 +6,6 @@ using Avalonia.Platform;
 using Avalonia.VisualTree;
 using Material.Icons;
 using Material.Icons.Avalonia;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using View.Personal.Classes;
 using View.Personal.Enums;
@@ -18,6 +17,16 @@ namespace View.Personal.Controls.Dialogs
     /// </summary>
     public partial class CustomMessageBox : UserControl
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomMessageBox"/> class.
         /// </summary>
@@ -25,6 +34,10 @@ namespace View.Personal.Controls.Dialogs
         {
             InitializeComponent();
         }
+
+        #endregion
+
+        #region Public-Methods
 
         /// <summary>
         /// Shows a message box with the specified parameters.
@@ -67,13 +80,10 @@ namespace View.Personal.Controls.Dialogs
             };
 
             var tcs = new TaskCompletionSource<ButtonResult>();
-
-            // Set the TaskCompletionSource as the window's DataContext
             window.DataContext = tcs;
 
             window.Closed += (_, _) =>
             {
-                // If window is closed without a button click, return Cancel
                 if (!tcs.Task.IsCompleted)
                     tcs.SetResult(ButtonResult.Cancel);
             };
@@ -81,6 +91,10 @@ namespace View.Personal.Controls.Dialogs
             window.Show();
             return tcs.Task;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         /// <summary>
         /// Creates the message box content layout.
@@ -243,5 +257,7 @@ namespace View.Personal.Controls.Dialogs
             contentBorder.Child = mainPanel;
             return contentBorder;
         }
-    }   
+
+        #endregion
+    }
 }
