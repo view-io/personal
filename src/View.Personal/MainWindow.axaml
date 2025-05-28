@@ -197,7 +197,6 @@
 						<ListBoxItem Tag="Files">
 							<StackPanel Orientation="Horizontal" Spacing="10">
 								<avalonia:MaterialIcon Kind="FileOutline" Foreground="#6A6B6F"
-
                                                        Height="18" Width="18" />
 								<TextBlock Text="Files" Foreground="#6A6B6F" />
 							</StackPanel>
@@ -1030,6 +1029,16 @@
 									<TextBlock Text="Upload Files" Foreground="#1A1C1E" FontWeight="400" />
 								</StackPanel>
 							</Button>
+							<Button x:Name="RemoveSelectedFilesButton"
+		                            Click="RemoveSelectedFiles_Click"
+		                            Classes="flat"
+		                            VerticalAlignment="Bottom"
+		                            Height="41">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<avalonia:MaterialIcon Kind="DeleteOutline" VerticalAlignment="Center" Width="16" Height="16" />
+									<TextBlock Text="Remove Selected Files" Foreground="#1A1C1E" FontWeight="400" />
+								</StackPanel>
+							</Button>
 						</StackPanel>
 					</Grid>
 					<Grid Name="FileOperationsPanel">
@@ -1048,6 +1057,7 @@
                                       HorizontalGridLinesBrush="#EDEDED"
                                       BorderThickness="1"
                                       BorderBrush="#EDEDED"
+                                      SelectionMode="Extended"
                                       x:DataType="classes:FileViewModel">
 								<DataGrid.Styles>
 									<Style Selector="DataGridColumnHeader">
@@ -1059,9 +1069,6 @@
 										<Setter Property="MinHeight" Value="24" />
 										<Setter Property="Height" Value="38" />
 									</Style>
-									<Style Selector="DataGridColumnHeader:nth-child(5)">
-										<Setter Property="SeparatorBrush" Value="Transparent" />
-									</Style>
 									<Style Selector="DataGridRow">
 										<Setter Property="MinHeight" Value="24" />
 										<Setter Property="Height" Value="38" />
@@ -1070,6 +1077,17 @@
 									</Style>
 								</DataGrid.Styles>
 								<DataGrid.Columns>
+									<DataGridTemplateColumn Header="Select" Width="60">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+														  VerticalAlignment="Center" HorizontalAlignment="Center"
+														  Checked="FileCheckBox_Checked"
+														  Unchecked="FileCheckBox_Unchecked"
+														  Width="16" Height="16" />
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
 									<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
 
 									<DataGridTextColumn Header="Size"
@@ -1080,42 +1098,90 @@
 									<DataGridTextColumn Header="Date Created" Width="190"
                                                         Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
 
-									<DataGridTemplateColumn Header="" Width="150">
+									<DataGridTemplateColumn Header="Actions" Width="150">
 										<DataGridTemplateColumn.CellTemplate>
 											<DataTemplate>
-												<Button Click="DeleteFile_Click"
-                                                        Tag="{Binding}"
-                                                        Content="Remove"
-                                                        HorizontalAlignment="Center"
-                                                        ToolTip.Tip="Delete file"
-                                                        Foreground="#6A6B6F"
-                                                        Background="Transparent"
-                                                        BorderThickness="0"
-                                                        Padding="0"
-                                                        Cursor="Hand">
-													<Button.Template>
-														<ControlTemplate TargetType="Button">
-															<ContentPresenter Content="{TemplateBinding Content}"
-                                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                                              Padding="{TemplateBinding Padding}"
-                                                                              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                                                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                                                                              Background="Transparent" />
-														</ControlTemplate>
-													</Button.Template>
-													<Button.Styles>
-														<Style Selector="Button:pointerover">
-															<Setter Property="Foreground" Value="#6A6B6F" />
-
-														</Style>
-														<Style Selector="Button:pressed">
-															<Setter Property="Foreground" Value="#6A6B6F" />
-														</Style>
-													</Button.Styles>
-												</Button>
+												<StackPanel Orientation="Horizontal" Spacing="15">
+													<Button Click="OpenInFileExplorer_Click"
+															Tag="{Binding}"
+															ToolTip.Tip="Open in File Explorer"
+															Background="Transparent"
+															BorderThickness="0"
+															Padding="0"
+															Cursor="Hand">
+														<Button.Template>
+															<ControlTemplate TargetType="Button">
+																<ContentPresenter HorizontalAlignment="Center"
+																				  VerticalAlignment="Center"
+																				  Background="Transparent"
+																				  Content="{TemplateBinding Content}" />
+															</ControlTemplate>
+														</Button.Template>
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+															<Style Selector="Button:pressed">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+														</Button.Styles>
+														<avalonia:MaterialIcon Kind="FolderOpen" Width="18" Height="18" Foreground="#6A6B6F" />
+													</Button>
+													<Button Click="ReprocessFile_Click"
+															Tag="{Binding}"
+															ToolTip.Tip="Reprocess file"
+															Background="Transparent"
+															BorderThickness="0"
+															Padding="0"
+															Cursor="Hand">
+														<Button.Template>
+															<ControlTemplate TargetType="Button">
+																<ContentPresenter HorizontalAlignment="Center"
+																				  VerticalAlignment="Center"
+																				  Background="Transparent"
+																				  Content="{TemplateBinding Content}" />
+															</ControlTemplate>
+														</Button.Template>
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+															<Style Selector="Button:pressed">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+														</Button.Styles>
+														<avalonia:MaterialIcon Kind="Refresh" Width="18" Height="18" Foreground="#6A6B6F" />
+													</Button>
+													<Button Click="DeleteFile_Click"
+															Tag="{Binding}"
+															ToolTip.Tip="Delete file"
+															Background="Transparent"
+															BorderThickness="0"
+															Padding="0"
+															Cursor="Hand">
+														<Button.Template>
+															<ControlTemplate TargetType="Button">
+																<ContentPresenter HorizontalAlignment="Center"
+																				  VerticalAlignment="Center"
+																				  Background="Transparent"
+																				  Content="{TemplateBinding Content}" />
+															</ControlTemplate>
+														</Button.Template>
+														<Button.Styles>
+															<Style Selector="Button:pointerover">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+															<Style Selector="Button:pressed">
+																<Setter Property="Background" Value="Transparent" />
+															</Style>
+														</Button.Styles>
+														<avalonia:MaterialIcon Kind="TrashCanOutline" Width="18" Height="18" Foreground="#6A6B6F" />
+													</Button>
+												</StackPanel>
 											</DataTemplate>
 										</DataGridTemplateColumn.CellTemplate>
 									</DataGridTemplateColumn>
+
 								</DataGrid.Columns>
 							</DataGrid>
 						</ScrollViewer>
@@ -1239,7 +1305,7 @@
                                                      BorderBrush="#DBDBDB"
                                                      BorderThickness="1"
                                                      CornerRadius="12"
-                                                     Padding="20,10,48,10"   
+                                                     Padding="20,10,48,10"
                                                      Height="56"
 													 FontSize="14"
                                                      KeyDown="ChatInputBox_KeyDown" />
@@ -1249,7 +1315,7 @@
                                                     Margin="0,0,10,0"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center"
-                                                    Height="32"    
+                                                    Height="32"
                                                     Width="32"
                                                     CornerRadius="8"
                                                     Click="SendMessageTest_Click">

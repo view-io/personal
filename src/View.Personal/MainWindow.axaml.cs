@@ -251,6 +251,19 @@ namespace View.Personal
         }
 
         /// <summary>
+        /// Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="FileIngester.ReIngestFileAsync"/> method.
+        /// This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
+        /// It serves as a bridge between the UI event handling in <see cref="MainWindow"/> and the file re-ingestion logic in <see cref="FileIngester"/>.
+        /// </summary>
+        /// <param name="filePath">The path to the file to be ingested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of file ingestion.</returns>
+        public async Task ReIngestFileAsync(string filePath)
+        {
+            await FileIngester.ReIngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
+                this);
+        }
+
+        /// <summary>
         /// Updates the chat interface title with the currently selected AI provider and model.
         /// </summary>
         /// <remarks>
@@ -544,6 +557,38 @@ namespace View.Personal
         private void DeleteFile_Click(object sender, RoutedEventArgs e)
         {
             MainWindowUIHandlers.DeleteFile_Click(sender, e, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+        }
+
+        private void OpenInFileExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is FileViewModel fileFromTag)
+                FileOperations.OpenInFileExplorer(fileFromTag, this);
+        }
+
+        private async void ReprocessFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is FileViewModel fileFromTag)
+            {
+                await FileOperations.ReprocessFileAsync(fileFromTag, this);
+            }
+        }
+
+        private async void RemoveSelectedFiles_Click(object? sender, RoutedEventArgs e)
+        {
+            if (FilesDataGrid.ItemsSource is IEnumerable<FileViewModel> allFiles)
+            {
+                var selectedFiles = allFiles
+                    .Where(f => f.IsChecked)
+                    .ToList();
+
+                if (!selectedFiles.Any())
+                {
+                    ShowNotification("No Selection", "Please select at least one file to remove.", NotificationType.Warning);
+                    return;
+                }
+
+                await FileDeleter.DeleteSelectedFilesAsync(selectedFiles, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+            }
         }
 
         private void IngestBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -1245,6 +1290,32 @@ namespace View.Personal
         private void WatchCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             DataMonitorUIHandlers.WatchCheckBox_Unchecked(this, sender, e);
+        }
+
+        /// <summary>
+        /// Handles the Checked event of the file checkbox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void FileCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileViewModel fileViewModel)
+            {
+                fileViewModel.IsChecked = true;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Unchecked event of the file checkbox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void FileCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.DataContext is FileViewModel fileViewModel)
+            {
+                fileViewModel.IsChecked = false;
+            }
         }
 
         /// <summary>

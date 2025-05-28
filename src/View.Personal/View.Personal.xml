@@ -631,6 +631,27 @@
             Gets or sets the node GUID.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.FileViewModel.IsSelected">
+            <summary>
+            Gets or sets a value indicating whether the file is selected in the UI.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.FileViewModel.IsChecked">
+            <summary>
+            Gets or sets a value indicating whether the file is checked in the UI.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Classes.FileViewModel.PropertyChanged">
+            <summary>
+            Event raised when a property value changes.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.FileViewModel.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the PropertyChanged event.
+            </summary>
+            <param name="propertyName">Name of the property that changed.</param>
+        </member>
         <member name="T:View.Personal.Classes.GraphItem">
             <summary>
             Represents a graph item in the application, containing metadata about a knowledgebase.
@@ -987,6 +1008,15 @@
             <param name="filePath">The path to the file to be ingested.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of file ingestion.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.ReIngestFileAsync(System.String)">
+            <summary>
+            Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
+            It serves as a bridge between the UI event handling in <see cref="T:View.Personal.MainWindow"/> and the file re-ingestion logic in <see cref="T:View.Personal.Services.FileIngester"/>.
+            </summary>
+            <param name="filePath">The path to the file to be ingested.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of file ingestion.</returns>
+        </member>
         <member name="M:View.Personal.MainWindow.UpdateChatTitle">
             <summary>
             Updates the chat interface title with the currently selected AI provider and model.
@@ -1182,6 +1212,20 @@
             </summary>
             <param name="e">The event data for the window closing.</param>
         </member>
+        <member name="M:View.Personal.MainWindow.FileCheckBox_Checked(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the Checked event of the file checkbox control.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.FileCheckBox_Unchecked(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the Unchecked event of the file checkbox control.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.LoadGraphComboBox">
             <summary>
             Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
@@ -1303,6 +1347,30 @@
             Task representing the asynchronous operation; no direct return value
             </summary>
         </member>
+        <member name="M:View.Personal.Services.FileDeleter.DeleteSelectedFilesAsync(System.Collections.Generic.IEnumerable{View.Personal.Classes.FileViewModel},LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Deletes multiple selected files from LiteGraph after a user confirmation dialog,
+            handling chunk node deletion, logging, and UI visibility updates.
+            </summary>
+            <param name="files">The collection of files selected for deletion.</param>
+            <param name="liteGraph">The LiteGraphClient instance used to perform deletion operations.</param>
+            <param name="tenantGuid">The tenant GUID under which the files exist.</param>
+            <param name="graphGuid">The graph GUID that contains the file nodes.</param>
+            <param name="window">The parent window for displaying notifications and UI refresh.</param>
+            <returns>A task that completes when all selected files have been processed for deletion.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileDeleter.DeleteFile(View.Personal.Classes.FileViewModel,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Deletes a single file and its associated chunk nodes from LiteGraph,
+            logs operations, and updates UI elements if applicable.
+            </summary>
+            <param name="file">The <see cref="T:View.Personal.Classes.FileViewModel"/> representing the file to delete.</param>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance used to access and delete nodes.</param>
+            <param name="tenantGuid">The unique tenant identifier in which the file resides.</param>
+            <param name="graphGuid">The GUID representing the active graph containing the file.</param>
+            <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/> used for logging and optional UI updates.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> returning <c>true</c> if deletion succeeded; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="T:View.Personal.Services.FileIngester">
             <summary>
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -1324,6 +1392,21 @@
             <param name="graphGuid">The GUID representing the graph in the system.</param>
             <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Re-ingests a previously deleted or updated file into the LiteGraph system. This method performs the same steps as
+            initial ingestion: detecting file type, extracting content into atoms (chunks), generating graph nodes and edges,
+            and embedding content vectors using the selected embedding provider. It updates the application state and UI accordingly,
+            including visibility of progress indicators and notifications.
+            </summary>
+            <param name="filePath">The full path to the file to be re-ingested.</param>
+            <param name="typeDetector">An instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used to determine the type of the file.</param>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> used to interact with the graph database.</param>
+            <param name="tenantGuid">The unique identifier of the tenant in the LiteGraph system.</param>
+            <param name="graphGuid">The unique identifier of the graph where the file will be stored.</param>
+            <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/>, expected to be <see cref="T:View.Personal.MainWindow"/>, for UI updates and notifications.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous re-ingestion operation.</returns>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
             <summary>
@@ -1353,6 +1436,26 @@
             <remarks>
             This method uses NPOI's <see cref="T:NPOI.HSSF.UserModel.HSSFWorkbook"/> to read the contents of the file. It supports only `.xls` format.
             </remarks>
+        </member>
+        <member name="T:View.Personal.Services.FileOperations">
+            <summary>
+            Provides methods for handling various file operations within the application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileOperations.OpenInFileExplorer(View.Personal.Classes.FileViewModel,Avalonia.Controls.Window)">
+            <summary>
+            Opens the file location in the system's file explorer.
+            </summary>
+            <param name="file">The file view model containing the file path.</param>
+            <param name="window">The parent window for displaying notifications.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileOperations.ReprocessFileAsync(View.Personal.Classes.FileViewModel,Avalonia.Controls.Window)">
+            <summary>
+            Reprocesses a file by re-ingesting it into the system.
+            </summary>
+            <param name="file">The file view model to reprocess.</param>
+            <param name="window">The parent window for displaying notifications.</param>
+            <returns>A task representing the asynchronous operation.</returns>
         </member>
         <member name="T:View.Personal.Services.GraphDeleter">
             <summary>
