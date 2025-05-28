@@ -374,6 +374,28 @@
             The endpoint URL for Voyage API requests.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.ButtonDefinition">
+            <summary>
+            Represents a button definition for a custom message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ButtonDefinition.Text">
+            <summary>
+            Gets or sets the text of the button.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ButtonDefinition.Result">
+            <summary>
+            Gets or sets the result of the button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ButtonDefinition.#ctor(System.String,View.Personal.Enums.ButtonResult)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Classes.ButtonDefinition"/> class.
+            </summary>
+            <param name="text">The text of the button.</param>
+            <param name="result">The result of the button.</param>
+        </member>
         <member name="T:View.Personal.Classes.ChatMessage">
             <summary>
             Represents a message in a chat conversation, containing a role and content.
@@ -524,6 +546,36 @@
             <param name="parameter">The converter parameter.</param>
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the foreground color, defaulting to gray (#6A6B6F).</returns>
+        </member>
+        <member name="T:View.Personal.Classes.CustomMessageBoxParams">
+            <summary>
+            Represents the parameters for a custom message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Title">
+            <summary>
+            Gets or sets the title of the message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Message">
+            <summary>
+            Gets or sets the message text.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Icon">
+            <summary>
+            Gets or sets the icon to display.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.WindowStartupLocation">
+            <summary>
+            Gets or sets the window startup location.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Buttons">
+            <summary>
+            Gets or sets the buttons to display.
+            </summary>
         </member>
         <member name="T:View.Personal.Classes.FileSystemEntry">
             <summary>
@@ -749,89 +801,189 @@
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
         </member>
-        <member name="T:View.Personal.Controls.MarkdownRenderer">
+        <member name="T:View.Personal.Controls.Dialogs.CustomMessageBox">
+            <summary>
+            A customizable modal message box for displaying alerts, confirmations, and prompts in the View.Personal application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Controls.Dialogs.CustomMessageBox"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with the specified parameters.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.CreateMessageBoxContent(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Creates the message box content layout.
+            </summary>
+            <param name="params">The parameters for configuring the message box.</param>
+            <returns>A <see cref="T:Avalonia.Controls.Border"/> that wraps the message box content.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+        </member>
+        <member name="T:View.Personal.Controls.Renderer.MarkdownRenderer">
             <summary>
             Provides functionality to render Markdown content as Avalonia UI controls.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.Render(System.String)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.Render(System.String)">
             <summary>
             Renders a Markdown string to Avalonia UI controls.
             </summary>
             <param name="markdown">The Markdown string to render.</param>
             <returns>A control containing the rendered Markdown.</returns>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderDocument(Markdig.Syntax.MarkdownDocument)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderDocument(Markdig.Syntax.MarkdownDocument)">
             <summary>
             Converts a MarkdownDocument into a vertical StackPanel containing rendered blocks.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderBlock(Markdig.Syntax.Block)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderBlock(Markdig.Syntax.Block)">
             <summary>
             Renders a specific Markdown block element into a UI control.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderHeading(Markdig.Syntax.HeadingBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderHeading(Markdig.Syntax.HeadingBlock)">
             <summary>
             Renders a Markdown heading block with dynamic font size.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderParagraph(Markdig.Syntax.ParagraphBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderParagraph(Markdig.Syntax.ParagraphBlock)">
             <summary>
             Renders a Markdown paragraph block with inline elements.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderList(Markdig.Syntax.ListBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderList(Markdig.Syntax.ListBlock)">
             <summary>
             Renders a Markdown list block (ordered or unordered).
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderCodeBlock(Markdig.Syntax.CodeBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderCodeBlock(Markdig.Syntax.CodeBlock)">
             <summary>
             Renders a Markdown code block, styled with monospaced font and border.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderQuoteBlock(Markdig.Syntax.QuoteBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderQuoteBlock(Markdig.Syntax.QuoteBlock)">
             <summary>
             Renders a Markdown blockquote with vertical bar styling.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderTable(Markdig.Extensions.Tables.Table)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderTable(Markdig.Extensions.Tables.Table)">
             <summary>
             Renders a Markdown table into a grid layout.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInlines(Markdig.Syntax.Inlines.ContainerInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderInlines(Markdig.Syntax.Inlines.ContainerInline)">
             <summary>
             Renders all inline elements within a container inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInline(Markdig.Syntax.Inlines.Inline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderInline(Markdig.Syntax.Inlines.Inline)">
             <summary>
             Renders a single Markdown inline element into an Avalonia control.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderEmphasis(Markdig.Syntax.Inlines.EmphasisInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderEmphasis(Markdig.Syntax.Inlines.EmphasisInline)">
             <summary>
             Renders bold or italic Markdown emphasis inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderLink(Markdig.Syntax.Inlines.LinkInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderLink(Markdig.Syntax.Inlines.LinkInline)">
             <summary>
             Renders a Markdown hyperlink inline element.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.ContainerInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.ContainerInline)">
             <summary>
             Recursively retrieves the plain text content from a container inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.Inline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.Inline)">
             <summary>
             Recursively retrieves the plain text content from a Markdown inline element.
             </summary>
             <param name="inline">The Markdown inline element (e.g., LiteralInline, EmphasisInline, CodeInline).</param>
             <returns>A plain text string representation of the inline element and its nested content.</returns>
+        </member>
+        <member name="T:View.Personal.Enums.ButtonResult">
+            <summary>
+            Represents the result of a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Ok">
+            <summary>
+            The OK button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Yes">
+            <summary>
+            The Yes button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.No">
+            <summary>
+            The No button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Cancel">
+            <summary>
+            The Cancel button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Abort">
+            <summary>
+            The Abort button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Retry">
+            <summary>
+            The Retry button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Ignore">
+            <summary>
+            The Ignore button was clicked.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Enums.MessageBoxIcon">
+            <summary>
+            Represents the icon to display in a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.None">
+            <summary>
+            No icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Info">
+            <summary>
+            Information icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Warning">
+            <summary>
+            Warning icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Error">
+            <summary>
+            Error icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Question">
+            <summary>
+            Question icon.
+            </summary>
         </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
@@ -861,6 +1013,92 @@
             <param name="parameter">An optional parameter (not used).</param>
             <param name="culture">The culture to use for formatting (not used).</param>
             <returns>Throws a <see cref="T:System.NotImplementedException"/> as conversion back is not supported.</returns>
+        </member>
+        <member name="T:View.Personal.Helpers.CustomMessageBoxHelper">
+            <summary>
+            Helper class for creating styled message boxes that match the application's UI.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Helpers.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a styled standard message box asynchronously.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The message text.</param>
+            <param name="buttons">The type of buttons to display.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowConfirmationAsync(System.String,System.String,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a confirmation message box with Yes/No buttons.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The message text.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowErrorAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows an error message box.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The error message.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowWarningAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a warning message box.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The warning message.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.GetButtonDefinitions(View.Personal.Helpers.MessageBoxButtons)">
+            <summary>
+            Gets the button definitions based on the button type.
+            </summary>
+            <param name="buttons">The button type.</param>
+            <returns>A list of button definitions.</returns>
+        </member>
+        <member name="T:View.Personal.Helpers.MessageBoxButtons">
+            <summary>
+            Represents the type of buttons to display in a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.Ok">
+            <summary>
+            The message box contains an OK button.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.OkCancel">
+            <summary>
+            The message box contains OK and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.YesNo">
+            <summary>
+            The message box contains Yes and No buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.YesNoCancel">
+            <summary>
+            The message box contains Yes, No, and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.AbortRetryIgnore">
+            <summary>
+            The message box contains Abort, Retry, and Ignore buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.MessageBoxButtons.RetryCancel">
+            <summary>
+            The message box contains Retry and Cancel buttons.
+            </summary>
         </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>

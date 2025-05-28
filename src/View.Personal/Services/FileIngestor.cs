@@ -3,32 +3,31 @@ namespace View.Personal.Services
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using Avalonia.Threading;
     using DocumentAtom.Core;
     using DocumentAtom.Core.Atoms;
-    using DocumentAtom.Word;
+    using DocumentAtom.Excel;
     using DocumentAtom.Markdown;
     using DocumentAtom.Pdf;
     using DocumentAtom.PowerPoint;
     using DocumentAtom.Text;
     using DocumentAtom.TextTools;
     using DocumentAtom.TypeDetection;
-    using DocumentAtom.Excel;
+    using DocumentAtom.Word;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
+    using NPOI.HSSF.UserModel;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
     using Sdk.Embeddings.Providers.VoyageAI;
-    using Helpers;
-    using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
-    using NPOI.HSSF.UserModel;
+    using System;
+    using System.Collections.Generic;
     using System.IO;
-    using Avalonia.Threading;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using View.Personal.Helpers;
+    using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
     /// <summary>
     /// Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -113,10 +112,8 @@ namespace View.Personal.Services
 
                 if (string.IsNullOrEmpty(embeddingProvider))
                 {
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Error", "Please select an embedding provider", ButtonEnum.Ok,
-                            Icon.Error)
-                        .ShowAsync();
+                    await CustomMessageBoxHelper.ShowErrorAsync(
+                        "Error", "Please select an embedding provider");
                     return;
                 }
 
@@ -617,10 +614,8 @@ namespace View.Personal.Services
 
                 if (string.IsNullOrEmpty(embeddingProvider))
                 {
-                    await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Error", "Please select an embedding provider", ButtonEnum.Ok,
-                            Icon.Error)
-                        .ShowAsync();
+                    await CustomMessageBoxHelper.ShowErrorAsync(
+                        "Error", "Please select an embedding provider");
                     return;
                 }
 

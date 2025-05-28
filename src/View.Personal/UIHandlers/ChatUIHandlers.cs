@@ -14,6 +14,7 @@ namespace View.Personal.UIHandlers
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using View.Personal.Controls.Renderer;
 
     /// <summary>
     /// Provides static event handlers and utility methods for managing the chat user interface.
@@ -328,7 +329,7 @@ namespace View.Personal.UIHandlers
                     Control messageContent;
                     if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.Content))
                     {
-                        messageContent = View.Personal.Controls.MarkdownRenderer.Render(msg.Content);
+                        messageContent = MarkdownRenderer.Render(msg.Content);
                     }
                     else
                     {

@@ -1,13 +1,14 @@
 namespace View.Personal.Services
 {
     using Avalonia;
-    using System;
-    using System.Threading.Tasks;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
-    using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using Classes;
+    using LiteGraph;
+    using System;
+    using System.Threading.Tasks;
+    using View.Personal.Enums;
+    using View.Personal.Helpers;
 
     /// <summary>
     /// Provides methods for handling graph deletion operations within the application.
@@ -29,11 +30,10 @@ namespace View.Personal.Services
         {
             try
             {
-                var result = await MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxStandard("Confirm Deletion",
-                        $"Are you sure you want to delete '{graphItem.Name}'?",
-                        ButtonEnum.YesNo, Icon.Warning)
-                    .ShowAsync();
+                var result = await CustomMessageBoxHelper.ShowConfirmationAsync(
+                    "Confirm Deletion",
+                    $"Are you sure you want to delete '{graphItem.Name}'?",
+                    MessageBoxIcon.Warning);
 
                 if (result != ButtonResult.Yes)
                     return;

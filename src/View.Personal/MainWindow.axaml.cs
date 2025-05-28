@@ -30,7 +30,6 @@ namespace View.Personal
     using RestWrapper;
     using Sdk.Embeddings.Providers.VoyageAI;
     using UIHandlers;
-    using View.Personal.Controls;
 
     /// <summary>
     /// Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.

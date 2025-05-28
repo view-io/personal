@@ -6,13 +6,12 @@ namespace View.Personal.Services
     using Classes;
     using Helpers;
     using LiteGraph;
-    using MsBox.Avalonia.Enums;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using static System.Runtime.InteropServices.JavaScript.JSType;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Provides methods for handling file deletion operations within the application.
@@ -39,11 +38,9 @@ namespace View.Personal.Services
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
-                    var result = await MsBox.Avalonia.MessageBoxManager
-                        .GetMessageBoxStandard("Confirm Deletion",
-                            $"Are you sure you want to delete '{file.Name}'?",
-                            ButtonEnum.YesNo, Icon.Warning)
-                        .ShowAsync();
+
+                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
+                                        $"Are you sure you want to delete '{file.Name}'?", MessageBoxIcon.Warning);
 
                     if (result != ButtonResult.Yes)
                         return;
@@ -130,11 +127,8 @@ namespace View.Personal.Services
         {
             if (files == null) return;
 
-            var result = await MsBox.Avalonia.MessageBoxManager
-                       .GetMessageBoxStandard("Confirm Deletion",
-                           $"Are you sure you want to delete {files.Count()} selected files?",
-                           ButtonEnum.YesNo, Icon.Warning)
-                       .ShowAsync();
+            var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
+                           $"Are you sure you want to delete {files.Count()} selected files?", MessageBoxIcon.Warning);
             if (result != ButtonResult.Yes) return;
 
 
