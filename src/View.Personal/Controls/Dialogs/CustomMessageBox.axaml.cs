@@ -62,15 +62,14 @@ namespace View.Personal.Controls.Dialogs
                 CanResize = false,
                 WindowStartupLocation = @params.WindowStartupLocation,
                 MinWidth = 380,
-                //MaxWidth = 540,
                 Classes = { "messageBox" },
                 SystemDecorations = SystemDecorations.None,
                 Background = Brushes.Transparent,
                 TransparencyLevelHint = new[]
                 {
-                      WindowTransparencyLevel.AcrylicBlur, // for Windows 10+
+                      WindowTransparencyLevel.AcrylicBlur,
                       WindowTransparencyLevel.Transparent,
-                      WindowTransparencyLevel.None // safe fallback
+                      WindowTransparencyLevel.None
                 },   
                 ExtendClientAreaToDecorationsHint = true,
                 ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
@@ -149,7 +148,6 @@ namespace View.Personal.Controls.Dialogs
 
             if (@params.Icon != MessageBoxIcon.None)
             {
-                // Use MaterialIcon instead of custom DrawingImage
                 var materialIcon = new MaterialIcon
                 {
                     Width = 64,
@@ -158,7 +156,6 @@ namespace View.Personal.Controls.Dialogs
                     VerticalAlignment = VerticalAlignment.Center
                 };
 
-                // Map MessageBoxIcon to MaterialIconKind
                 materialIcon.Kind = @params.Icon switch
                 {
                     MessageBoxIcon.Info => MaterialIconKind.InformationOutline,
@@ -168,7 +165,6 @@ namespace View.Personal.Controls.Dialogs
                     _ => MaterialIconKind.InformationOutline
                 };
 
-                // Set color based on icon type
                 materialIcon.Foreground = @params.Icon switch
                 {
                     MessageBoxIcon.Info => new SolidColorBrush(Color.Parse("#0472EF")),
