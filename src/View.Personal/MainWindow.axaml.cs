@@ -30,6 +30,7 @@ namespace View.Personal
     using RestWrapper;
     using Sdk.Embeddings.Providers.VoyageAI;
     using UIHandlers;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
@@ -1411,9 +1412,8 @@ namespace View.Personal
         /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new TextInputDialog("Create New Knowledgebase", "Enter Knowledgebase name:");
-            var result = await dialog.ShowDialogAsync(this); // Changed to ShowDialogAsync
-            if (!string.IsNullOrWhiteSpace(result)) CreateNewGraph(result);
+            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:",enableValidation: true,validationErrorMessage: "Please enter a knowledgebase name");
+            if (!string.IsNullOrWhiteSpace(text) && result == ButtonResult.Ok) CreateNewGraph(text);
         }
 
         /// <summary>

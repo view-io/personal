@@ -97,6 +97,42 @@ namespace View.Personal.Helpers
         {
             return ShowMessageBoxAsync(title, text, MessageBoxButtons.Ok, MessageBoxIcon.Warning, windowStartupLocation);
         }
+        
+        /// <summary>
+        /// Shows a dialog with an input field for user text entry.
+        /// </summary>
+        /// <param name="title">The title of the dialog.</param>
+        /// <param name="prompt">The prompt text for the input field.</param>
+        /// <param name="defaultValue">The default value for the input field.</param>
+        /// <param name="enableValidation">Whether to enable input validation to prevent empty or whitespace-only input.</param>
+        /// <param name="validationErrorMessage">The error message to display when validation fails.</param>
+        /// <param name="windowStartupLocation">The startup location of the window.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
+        public static Task<(string Text, ButtonResult Result)> ShowInputDialogAsync(
+            string title = "Input Dialog",
+            string prompt = "Enter value:",
+            string defaultValue = "",
+            bool enableValidation = false,
+            string validationErrorMessage = "Please enter a value",
+            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner)
+        {
+            var parameters = new CustomMessageBoxParams
+            {
+                Title = title,
+                InputPrompt = prompt,
+                InputDefaultValue = defaultValue,
+                WindowStartupLocation = windowStartupLocation,
+                EnableInputValidation = enableValidation,
+                ValidationErrorMessage = validationErrorMessage,
+                Buttons = new List<ButtonDefinition>
+                {
+                    new ButtonDefinition("OK", ButtonResult.Ok),
+                    new ButtonDefinition("Cancel", ButtonResult.Cancel)
+                }
+            };
+
+            return CustomMessageBox.ShowWithInputAsync(parameters);
+        }
 
         #endregion
 

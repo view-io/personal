@@ -577,6 +577,36 @@
             Gets or sets the buttons to display.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.HasInputField">
+            <summary>
+            Gets or sets a value indicating whether the message box should include a text input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.InputPrompt">
+            <summary>
+            Gets or sets the prompt text for the input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.InputDefaultValue">
+            <summary>
+            Gets or sets the default value for the input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.EnableInputValidation">
+            <summary>
+            Gets or sets a value indicating whether input validation is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.ValidationErrorMessage">
+            <summary>
+            Gets or sets the validation error message to display when input is invalid.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.IsInputInvalid">
+            <summary>
+            Gets or sets a value indicating whether the input field is currently in an error state.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.FileSystemEntry">
             <summary>
             Represents a file system entry in the Data Monitor UI, with properties for display and watch status.
@@ -817,6 +847,20 @@
             </summary>
             <param name="params">The parameters for the message box.</param>
             <returns>A task that represents the asynchronous operation. The task result contains the button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowWithInputAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with the specified parameters and an input field.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowAsyncInternal(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Internal method that shows a message box with the specified parameters.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
         </member>
         <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.CreateMessageBoxContent(View.Personal.Classes.CustomMessageBoxParams)">
             <summary>
@@ -1092,6 +1136,18 @@
             <param name="text">The warning message.</param>
             <param name="windowStartupLocation">The startup location of the window.</param>
             <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowInputDialogAsync(System.String,System.String,System.String,System.Boolean,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a dialog with an input field for user text entry.
+            </summary>
+            <param name="title">The title of the dialog.</param>
+            <param name="prompt">The prompt text for the input field.</param>
+            <param name="defaultValue">The default value for the input field.</param>
+            <param name="enableValidation">Whether to enable input validation to prevent empty or whitespace-only input.</param>
+            <param name="validationErrorMessage">The error message to display when validation fails.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
         </member>
         <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.GetButtonDefinitions(View.Personal.Enums.MessageBoxButtons)">
             <summary>
