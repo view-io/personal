@@ -10,7 +10,7 @@ namespace View.Personal.Classes
         /// <summary>
         /// Gets or sets the unique identifier for the model.
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the name of the model.

@@ -457,22 +457,25 @@ namespace View.Personal.Views
                         
                         bool success = await _modelService.DeleteModelAsync(modelId);
                         
-                        // Hide loading indicator
-                        if (loadingIndicator != null)
-                            loadingIndicator.IsVisible = false;
                         
                         if (success)
                         {
+                            if (_modelsDataGrid != null)
+                                _modelsDataGrid.ItemsSource = await _modelService.GetModelsAsync();
+
+                            if (loadingIndicator != null)
+                                loadingIndicator.IsVisible = false;
+
                             mainWindow.ShowNotification(
                                 "Model Deleted", 
                                 $"{modelToDelete.Name} was deleted successfully!", 
-                                Avalonia.Controls.Notifications.NotificationType.Success);
-                            
-                            if (_modelsDataGrid != null)
-                                _modelsDataGrid.ItemsSource = await _modelService.GetModelsAsync();
+                                Avalonia.Controls.Notifications.NotificationType.Success);                            
                         }
                         else
                         {
+                            if (loadingIndicator != null)
+                                loadingIndicator.IsVisible = false;
+
                             mainWindow.ShowNotification(
                                 "Error", 
                                 $"Failed to delete {modelToDelete.Name}. Please try again.", 

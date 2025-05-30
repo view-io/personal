@@ -2004,6 +2004,25 @@
             <param name="modelId">The ID of the model to delete.</param>
             <returns>A task that resolves to true if the operation was successful, false otherwise.</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetOllamaEndpoint">
+            <summary>
+            Gets the normalized Ollama API endpoint URL
+            </summary>
+            <returns>The normalized endpoint URL with trailing slash</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.CreateHttpClient">
+            <summary>
+            Creates a new HttpClient instance
+            </summary>
+            <returns>A new HttpClient instance</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.LogError(System.String,System.Exception)">
+            <summary>
+            Logs an error message and exception
+            </summary>
+            <param name="errorMessage">The error message</param>
+            <param name="ex">The exception</param>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.LoadModelsAsync">
             <summary>
             Loads models from Ollama API
@@ -2015,6 +2034,13 @@
             </summary>
             <returns>A list of local models from Ollama</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.ConvertToLocalModel(View.Personal.Classes.OllamaModel)">
+            <summary>
+            Converts an OllamaModel to a LocalModel
+            </summary>
+            <param name="ollamaModel">The Ollama model to convert</param>
+            <returns>A LocalModel instance</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.PullModelAsync(System.String,System.String,System.Action{View.Personal.Classes.OllamaPullResponse},System.Threading.CancellationToken)">
             <summary>
             Pulls a new model from the provider.
@@ -2024,6 +2050,16 @@
             <param name="progressCallback">Optional callback to report download progress.</param>
             <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
             <returns>The newly pulled model, or null if the operation failed.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.ProcessModelPullStreamAsync(System.Net.Http.HttpResponseMessage,System.String,System.Action{View.Personal.Classes.OllamaPullResponse},System.Threading.CancellationToken)">
+            <summary>
+            Processes the streaming response from the model pull operation
+            </summary>
+            <param name="response">The HTTP response</param>
+            <param name="modelName">The name of the model being pulled</param>
+            <param name="progressCallback">Callback to report progress</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>A task representing the asynchronous operation</returns>
         </member>
         <member name="T:View.Personal.Services.LoggingService">
             <summary>
