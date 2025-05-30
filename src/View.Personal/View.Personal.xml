@@ -607,6 +607,12 @@
             Gets or sets a value indicating whether the input field is currently in an error state.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.TextLines">
+            <summary>
+            Gets or sets a list of text lines to display in the message box.
+            If provided, each string in the list will be displayed on a separate line.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.FileSystemEntry">
             <summary>
             Represents a file system entry in the Data Monitor UI, with properties for display and watch status.
@@ -896,6 +902,46 @@
         <member name="P:View.Personal.Classes.OllamaModelsResponse.Models">
             <summary>
             Gets or sets the list of available Ollama models.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaPullResponse">
+            <summary>
+            Represents a response from the Ollama API during model pulling.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Status">
+            <summary>
+            Gets or sets the status of the pull operation.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Total">
+            <summary>
+            Gets or sets the total number of bytes to download.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Completed">
+            <summary>
+            Gets or sets the number of bytes downloaded so far.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Error">
+            <summary>
+            Gets or sets any error message that occurred during the pull operation.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Digest">
+            <summary>
+            Gets or sets the digest of the model being pulled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.ProgressPercentage">
+            <summary>
+            Gets the download progress as a percentage (0-100).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.HasError">
+            <summary>
+            Gets a value indicating whether the pull operation has an error.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.OnboardingState">
@@ -1233,7 +1279,7 @@
             Helper class for creating styled message boxes that match the application's UI.
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
             <summary>
             Shows a styled standard message box asynchronously.
             </summary>
@@ -1242,9 +1288,10 @@
             <param name="buttons">The type of buttons to display.</param>
             <param name="icon">The icon to display.</param>
             <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
             <returns>A task that represents the asynchronous operation.</returns>
         </member>
-        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowConfirmationAsync(System.String,System.String,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation)">
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowConfirmationAsync(System.String,System.String,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
             <summary>
             Shows a confirmation message box with Yes/No buttons.
             </summary>
@@ -1252,6 +1299,7 @@
             <param name="text">The message text.</param>
             <param name="icon">The icon to display.</param>
             <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
             <returns>A task that represents the asynchronous operation.</returns>
         </member>
         <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowErrorAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
@@ -1949,6 +1997,13 @@
             <param name="isActive">Whether the model should be active.</param>
             <returns>True if the operation was successful, false otherwise.</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.DeleteModelAsync(System.String)">
+            <summary>
+            Deletes a model from the system.
+            </summary>
+            <param name="modelId">The ID of the model to delete.</param>
+            <returns>A task that resolves to true if the operation was successful, false otherwise.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.LoadModelsAsync">
             <summary>
             Loads models from Ollama API
@@ -1960,12 +2015,14 @@
             </summary>
             <returns>A list of local models from Ollama</returns>
         </member>
-        <member name="M:View.Personal.Services.LocalModelService.PullModelAsync(System.String,System.String)">
+        <member name="M:View.Personal.Services.LocalModelService.PullModelAsync(System.String,System.String,System.Action{View.Personal.Classes.OllamaPullResponse},System.Threading.CancellationToken)">
             <summary>
             Pulls a new model from the provider.
             </summary>
             <param name="modelName">The name of the model to pull.</param>
             <param name="provider">The provider of the model.</param>
+            <param name="progressCallback">Optional callback to report download progress.</param>
+            <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
             <returns>The newly pulled model, or null if the operation failed.</returns>
         </member>
         <member name="T:View.Personal.Services.LoggingService">
@@ -2390,14 +2447,26 @@
             Loads models from the service and displays them in the DataGrid.
             </summary>
         </member>
-        <member name="M:View.Personal.Views.LocalModelsView.ModelActiveToggle_Toggled(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
-            <summary>
-            Handles the toggled event for model activation toggle switches.
-            </summary>
-        </member>
         <member name="M:View.Personal.Views.LocalModelsView.PullModel_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
             <summary>
             Handles the click event for the pull model button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.FormatFileSize(System.Int64)">
+            <summary>
+            Formats a file size in bytes to a human-readable string (KB, MB, GB).
+            </summary>
+            <param name="bytes">The size in bytes.</param>
+            <returns>A formatted string representing the file size.</returns>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.CancelPull_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the cancel pull button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.DeleteModel_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the delete model button.
             </summary>
         </member>
         <member name="M:View.Personal.Views.LocalModelsView.InitializeComponent(System.Boolean)">

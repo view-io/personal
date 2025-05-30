@@ -7,6 +7,7 @@ namespace View.Personal.Services
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Threading.Tasks;
+    using System.Text.Json;
     using View.Personal.Classes;
 
     /// <summary>
@@ -77,6 +78,57 @@ namespace View.Personal.Services
             model.IsActive = isActive;
             return true;
         }
+        
+        /// <summary>
+        /// Deletes a model from the system.
+        /// </summary>
+        /// <param name="modelId">The ID of the model to delete.</param>
+        /// <returns>A task that resolves to true if the operation was successful, false otherwise.</returns>
+        public async Task<bool> DeleteModelAsync(string modelId)
+        {
+            var model = _localModels.FirstOrDefault(m => m.Id == modelId);
+            if (model == null)
+            {
+                return false;
+            }
+            
+            var endpoint = _app.ApplicationSettings?.Ollama?.Endpoint;
+            
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                endpoint = "http://localhost:11434/";
+            }
+            
+            if (!endpoint.EndsWith("/"))
+            {
+                endpoint += "/";
+            }
+            
+            try
+            {
+                using var httpClient = new HttpClient();
+                var deleteRequest = new { name = model.Name };
+                var content = JsonContent.Create(deleteRequest);
+                
+                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{endpoint}api/delete")
+                {
+                    Content = content
+                };
+                
+                var response = await httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                
+                // Reload models after deletion
+                await LoadModelsAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _app?.Log($"Error deleting model {model.Name}: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Error deleting model {model.Name}");
+                return false;
+            }
+        }
 
         #endregion
 
@@ -145,6 +197,8 @@ namespace View.Personal.Services
                         
                         var localModel = new LocalModel
                         {
+                            // Use the model name as a stable ID to ensure consistency between fetches
+                            Id = ollamaModel.Name,
                             Name = ollamaModel.Name,
                             Description = $"{ollamaModel.Model} model",
                             Provider = "Ollama",
@@ -177,8 +231,10 @@ namespace View.Personal.Services
         /// </summary>
         /// <param name="modelName">The name of the model to pull.</param>
         /// <param name="provider">The provider of the model.</param>
+        /// <param name="progressCallback">Optional callback to report download progress.</param>
+        /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
         /// <returns>The newly pulled model, or null if the operation failed.</returns>
-        public async Task<LocalModel?> PullModelAsync(string modelName, string provider)
+        public async Task<LocalModel?> PullModelAsync(string modelName, string provider, Action<Classes.OllamaPullResponse>? progressCallback = null, System.Threading.CancellationToken cancellationToken = default)
         {
             var endpoint = _app.ApplicationSettings?.Ollama?.Endpoint;
             
@@ -196,17 +252,92 @@ namespace View.Personal.Services
             {
                 using var httpClient = new HttpClient();
                 var pullRequest = new { name = modelName };
-                var response = await httpClient.PostAsJsonAsync($"{endpoint}api/pull", pullRequest);
+                var content = JsonContent.Create(pullRequest);
                 
-                if (response.IsSuccessStatusCode)
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}api/pull")
                 {
-                    await LoadModelsAsync();
-                    return _localModels.FirstOrDefault(m => m.Name == modelName);
+                    Content = content
+                };
+                
+                HttpResponseMessage response;
+                try
+                {
+                    response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    response.EnsureSuccessStatusCode();
                 }
+                catch (HttpRequestException httpEx)
+                {
+                    _app?.Log($"[ERROR] HTTP error pulling model {modelName}: {httpEx.Message}");
+                    _app?.LogExceptionToFile(httpEx, $"HTTP error pulling model {modelName}");
+                    
+                    var errorResponse = new OllamaPullResponse
+                    {
+                        Status = "error",
+                        Error = httpEx.Message
+                    };
+                    
+                    if (httpEx.Message.Contains("400") || httpEx.Message.Contains("Bad Request"))
+                    {
+                        errorResponse.Error = $"Invalid model name '{modelName}'. Please check if the model name is correct.";
+                    }
+                    
+                    progressCallback?.Invoke(errorResponse);
+                    return null;
+                }
+                
+                using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                using var reader = new StreamReader(stream);
+                
+                while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (string.IsNullOrEmpty(line)) continue;
+                    
+                    try 
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        };
+                        
+                        var pullResponse = JsonSerializer.Deserialize<Classes.OllamaPullResponse>(line, options);
+                        if (pullResponse != null)
+                        {
+                            if (!string.IsNullOrEmpty(pullResponse.Error) && 
+                                pullResponse.Error.Contains("pull model manifest: file does not exist"))
+                            {
+                                _app?.Log($"Invalid model name detected: {modelName}. Model manifest does not exist.");
+                                progressCallback?.Invoke(pullResponse);
+                                
+                                return null;
+                            }
+                            
+                            if (pullResponse.Total == 0 && pullResponse.Completed > 0)
+                            {
+                                pullResponse.Total = pullResponse.Completed;
+                            }
+                            
+                            progressCallback?.Invoke(pullResponse);
+                        }
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        _app?.Log($"[ERROR] JSON parsing error in pull response: {jsonEx.Message}. Line: {line}");
+                        _app?.LogExceptionToFile(jsonEx, $"JSON parsing error in pull response");
+                    }
+                    catch (Exception ex)
+                    {
+                        _app?.Log($"[ERROR] Error processing pull response: {ex.Message}");
+                        _app?.LogExceptionToFile(ex,$"Error processing pull response");
+                    }
+                }
+                
+                await LoadModelsAsync();
+                return _localModels.FirstOrDefault(m => m.Name == modelName);
             }
             catch (Exception ex)
             {
-                _app?.Log($"Error pulling model {modelName}: {ex.Message}");
+                _app?.Log($"[ERROR] Error pulling model {modelName}: {ex.Message}");
                 _app?.LogExceptionToFile(ex,$"Error pulling model {modelName}");
             }
             

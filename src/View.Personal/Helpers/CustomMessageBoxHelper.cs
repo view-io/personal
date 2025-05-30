@@ -31,21 +31,30 @@ namespace View.Personal.Helpers
         /// <param name="buttons">The type of buttons to display.</param>
         /// <param name="icon">The icon to display.</param>
         /// <param name="windowStartupLocation">The startup location of the window.</param>
+        /// <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         public static Task<ButtonResult> ShowMessageBoxAsync(
             string title,
             string text,
             MessageBoxButtons buttons = MessageBoxButtons.Ok,
             MessageBoxIcon icon = MessageBoxIcon.None,
-            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner)
+            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner,
+            List<string> textLines = null!)
         {
+            // If textLines is provided, use it to create the message text
+            if (textLines != null && textLines.Count > 0)
+            {
+                text = string.Join("\n", textLines);
+            }
+            
             var parameters = new CustomMessageBoxParams
             {
                 Title = title,
                 Message = text,
                 Icon = icon,
                 WindowStartupLocation = windowStartupLocation,
-                Buttons = GetButtonDefinitions(buttons)
+                Buttons = GetButtonDefinitions(buttons),
+                TextLines = textLines ?? new List<string>()
             };
 
             return CustomMessageBox.ShowAsync(parameters);
@@ -58,14 +67,31 @@ namespace View.Personal.Helpers
         /// <param name="text">The message text.</param>
         /// <param name="icon">The icon to display.</param>
         /// <param name="windowStartupLocation">The startup location of the window.</param>
+        /// <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         public static Task<ButtonResult> ShowConfirmationAsync(
             string title,
             string text,
             MessageBoxIcon icon = MessageBoxIcon.Question,
-            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner)
+            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner,
+            List<string> textLines = null!)
         {
-            return ShowMessageBoxAsync(title, text, MessageBoxButtons.YesNo, icon, windowStartupLocation);
+            if (textLines != null && textLines.Count > 0)
+            {
+                text += "\n" + string.Join("\n", textLines);
+            }
+
+            var parameters = new CustomMessageBoxParams
+            {
+                Title = title,
+                Message = text,
+                Icon = icon,
+                WindowStartupLocation = windowStartupLocation,
+                Buttons = GetButtonDefinitions(MessageBoxButtons.YesNo),
+                TextLines = textLines ?? new List<string>()
+            };
+
+            return CustomMessageBox.ShowAsync(parameters);
         }
         
         /// <summary>

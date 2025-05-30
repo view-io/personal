@@ -64,5 +64,11 @@ namespace View.Personal.Classes
         /// Gets or sets a value indicating whether the input field is currently in an error state.
         /// </summary>
         public bool IsInputInvalid { get; set; } = false;
+        
+        /// <summary>
+        /// Gets or sets a list of text lines to display in the message box.
+        /// If provided, each string in the list will be displayed on a separate line.
+        /// </summary>
+        public List<string> TextLines { get; set; } = new List<string>();
     }
 }

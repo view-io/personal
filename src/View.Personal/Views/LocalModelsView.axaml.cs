@@ -3,7 +3,16 @@ namespace View.Personal.Views
     using Avalonia.Controls;
     using Avalonia.Interactivity;
     using Avalonia.Markup.Xaml;
+    using Avalonia.Threading;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using View.Personal;
+    using View.Personal.Classes;
+    using View.Personal.Enums;
+    using View.Personal.Helpers;
     using View.Personal.Services;
 
     /// <summary>
@@ -20,6 +29,7 @@ namespace View.Personal.Views
         private LocalModelService _modelService = null!;
         private ItemsControl? _modelsDataGrid = null!;
         private TextBox? _modelNameTextBox = null!;
+        private CancellationTokenSource? _cancellationTokenSource = null;
 
         #endregion
 
@@ -93,27 +103,6 @@ namespace View.Personal.Views
         }
 
         /// <summary>
-        /// Handles the toggled event for model activation toggle switches.
-        /// </summary>
-        private void ModelActiveToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (sender is ToggleSwitch toggleSwitch)
-            {
-                string? modelId = toggleSwitch.Tag as string;
-                bool isActive = toggleSwitch.IsChecked ?? false;
-
-                if (!string.IsNullOrEmpty(modelId))
-                {
-                    bool success = _modelService.SetModelActiveState(modelId, isActive);
-                    if (!success)
-                    {
-                        toggleSwitch.IsChecked = !isActive;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Handles the click event for the pull model button.
         /// </summary>
         private async void PullModel_Click(object sender, RoutedEventArgs e)
@@ -124,36 +113,376 @@ namespace View.Personal.Views
                 return;
             }
 
-            if (sender is Button button)
+            // Get UI elements
+            var pullProgressBar = this.FindControl<ProgressBar>("PullProgressBar");
+            var pullStatusMessage = this.FindControl<TextBlock>("PullStatusMessage");
+            var pullButton = this.FindControl<Button>("PullButton");
+            var cancelButton = this.FindControl<Button>("CancelButton");
+
+            if (pullButton != null)
             {
-                button.IsEnabled = false;
+                pullButton.IsVisible = false;
             }
+            
+            if (cancelButton != null)
+            {
+                cancelButton.IsVisible = true;
+                cancelButton.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#FFFFFF"));
+            }
+            
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            if (pullProgressBar != null)
+            {
+                pullProgressBar.IsVisible = true;
+                pullProgressBar.IsIndeterminate = true;
+                pullProgressBar.Value = 0;
+            }
+
+            if (pullStatusMessage != null)
+            {
+                pullStatusMessage.Text = $"Pulling {modelName}...";
+                pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#0472EF"));
+                pullStatusMessage.IsVisible = true;
+            }
+
+            var processedChunks = new Dictionary<string, bool>();
+            long totalDownloadSize = 0;
+            long completedDownloadSize = 0;
+            bool finalStage = false;
+            LocalModel? newModel = null;
 
             try
             {
-                var newModel = await _modelService.PullModelAsync(modelName, "Ollama");
+                // Run the model pull operation on a background thread
+                newModel = await Task.Run(async () => 
+                {
+                    return await _modelService.PullModelAsync(modelName, "Ollama", pullProgress => 
+                    {
+                        Dispatcher.UIThread.Post(() => 
+                        {
+                            if (pullProgress.HasError)
+                            {
+                                if (pullStatusMessage != null)
+                                {
+                                    if (pullProgress.Error.Contains("pull model manifest: file does not exist"))
+                                    {
+                                        pullStatusMessage.Text = $"Failed to pull {modelName}. Please check if the model name is correct.";
+                                    }
+                                    else
+                                    {
+                                        pullStatusMessage.Text = $"Error pulling model: {pullProgress.Error}";
+                                    }
+                                    pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#D94242"));
+                                    pullStatusMessage.IsVisible = true;
+                                }
+                                return;
+                            }
+                            
+                            if (pullProgress.Status.Contains("verifying") || pullProgress.Status.Contains("writing manifest"))
+                            {
+                                if (pullStatusMessage != null)
+                                {
+                                    pullStatusMessage.Text = $"Pulling {modelName}... {pullProgress.Status}";
+                                }
+                                return;
+                            }
+                            else if (pullProgress.Status == "success")
+                            {
+                                if (pullProgressBar != null)
+                                {
+                                    pullProgressBar.IsIndeterminate = false;
+                                    pullProgressBar.Value = 100;
+                                }
+                                
+                                if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                                {
+                                    var mainWindow = (MainWindow)desktop.MainWindow!;
+                                    mainWindow.ShowNotification("Model Downloaded", $"{modelName} was pulled successfully!", Avalonia.Controls.Notifications.NotificationType.Success);
+                                }
+                                
+                                Dispatcher.UIThread.Post(() => LoadModels());
+                                Dispatcher.UIThread.Post(() => _modelNameTextBox!.Text = string.Empty);
+                                
+                                if (pullStatusMessage != null)
+                                {
+                                    pullStatusMessage.IsVisible = false;
+                                    pullStatusMessage.Text = string.Empty;
+                                }
+                                if (pullProgressBar != null)
+                                {
+                                    pullProgressBar.IsVisible = false;
+                                }
+                                
+                                return;
+                            }
+                            
+                            if (pullProgress.Total > 0 && !finalStage)
+                            {
+                                if (!string.IsNullOrEmpty(pullProgress.Digest))
+                                {
+                                    if (!processedChunks.ContainsKey(pullProgress.Digest))
+                                    {
+                                        processedChunks[pullProgress.Digest] = true;
+                                        totalDownloadSize += pullProgress.Total;
+                                    }
+                                    
+                                    long chunkProgress = pullProgress.Completed - (completedDownloadSize % Math.Max(1, pullProgress.Total));
+                                    completedDownloadSize += chunkProgress;
+                                    completedDownloadSize = Math.Min(completedDownloadSize, totalDownloadSize);
+                                }
+                                else if (pullProgress.Completed > 0)
+                                {
+                                    completedDownloadSize = pullProgress.Completed;
+                                    totalDownloadSize = Math.Max(totalDownloadSize, pullProgress.Total);
+                                }
+                            }
+                            
+                            if (pullProgressBar != null && totalDownloadSize > 0)
+                            {
+                                pullProgressBar.IsIndeterminate = false;
+                                double overallProgress = Math.Min((double)completedDownloadSize / totalDownloadSize * 100, 100);
+                                pullProgressBar.Value = overallProgress;
+                            }
+                            
+                            if (pullStatusMessage != null)
+                            {
+                                string downloadedSize = FormatFileSize(completedDownloadSize);
+                                string totalSize = FormatFileSize(totalDownloadSize);
+                                
+                                if (totalDownloadSize > 0 && completedDownloadSize > 0)
+                                {
+                                    double overallProgress = Math.Min((double)completedDownloadSize / totalDownloadSize * 100, 100);
+                                    pullStatusMessage.Text = $"Pulling {modelName}... {downloadedSize} of {totalSize} ({overallProgress:F1}%)";
+                                }
+                                else
+                                {
+                                    pullStatusMessage.Text = $"Pulling {modelName}... {pullProgress.Status}";
+                                }
+                            }
+                        }, DispatcherPriority.Background);
+                    }, _cancellationTokenSource.Token);
+                });
+                
                 if (newModel != null)
                 {
-                    LoadModels();
+                    if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                    {
+                        var mainWindow = (MainWindow)desktop.MainWindow!;
+                        mainWindow.ShowNotification("Model Downloaded", $"{modelName} pulled successfully!", Avalonia.Controls.Notifications.NotificationType.Success);
+                    }
+                    
                     _modelNameTextBox!.Text = string.Empty;
+                    
+                    if (pullProgressBar != null)
+                    {
+                        pullProgressBar.Value = 100;
+                        pullProgressBar.IsVisible = false;
+                    }
+
+                    if (pullStatusMessage != null)
+                    {
+                        pullStatusMessage.IsVisible = false;
+                        pullStatusMessage.Text = string.Empty;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 var app = App.Current as App;
-                app?.Log($"Error pulling model: {ex.Message}");
+                app?.Log($"[ERROR] Error pulling model: {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error pulling model");
+
+                // Show error message
+                if (pullStatusMessage != null)
+                {
+                    pullStatusMessage.Text = $"Error pulling model: {ex.Message}";
+                    pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#D94242"));
+                    pullStatusMessage.IsVisible = true;
+                }
             }
             finally
             {
-                // Re-enable the button
-                if (sender is Button pullButton)
+                // Only hide progress bar if there was an error
+                // For successful downloads, we've already hidden it in the success case
+                if (newModel == null)
                 {
+                    if (pullProgressBar != null)
+                    {
+                        pullProgressBar.IsVisible = false;
+                    }
+                    
+                    if (pullStatusMessage != null && !string.IsNullOrEmpty(pullStatusMessage.Text))
+                    {
+                        pullStatusMessage.IsVisible = true;
+                    }
+                }
+                else
+                {
+                    if (pullStatusMessage != null)
+                    {
+                        pullStatusMessage.IsVisible = false;
+                        pullStatusMessage.Text = string.Empty;
+                    }
+                }
+
+                // Show the pull button again and hide cancel button
+                if (pullButton != null)
+                {
+                    pullButton.IsVisible = true;
                     pullButton.IsEnabled = true;
+                }
+                
+                if (cancelButton != null)
+                {
+                    cancelButton.IsVisible = false;
+                }
+                
+                // Dispose the cancellation token source
+                if (_cancellationTokenSource != null)
+                {
+                    _cancellationTokenSource.Dispose();
+                    _cancellationTokenSource = null;
                 }
             }
         }
 
+        /// <summary>
+        /// Formats a file size in bytes to a human-readable string (KB, MB, GB).
+        /// </summary>
+        /// <param name="bytes">The size in bytes.</param>
+        /// <returns>A formatted string representing the file size.</returns>
+        private string FormatFileSize(long bytes)
+        {
+            if (bytes <= 0)
+            {
+                return "0.0 B";
+            }
+            
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+            int counter = 0;
+            decimal number = bytes;
+            
+            while (Math.Round(number / 1024) >= 1)
+            {
+                number /= 1024;
+                counter++;
+            }
+            
+            return $"{number:n1} {suffixes[counter]}";
+        }
+        
+        /// <summary>
+        /// Handles the click event for the cancel pull button.
+        /// </summary>
+        private void CancelPull_Click(object sender, RoutedEventArgs e)
+        {
+            // Cancel the ongoing pull operation
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+                            
+                var pullProgressBar = this.FindControl<ProgressBar>("PullProgressBar");
+                if (pullProgressBar != null)
+                {
+                    pullProgressBar.IsVisible = false;
+                }
+                
+                // Hide the pull status message
+                var pullStatusMessage = this.FindControl<TextBlock>("PullStatusMessage");
+                if (pullStatusMessage != null)
+                {
+                    pullStatusMessage.IsVisible = false;
+                    pullStatusMessage.Text = string.Empty; // Clear the text
+                }
+                
+                // Re-enable and show pull button, hide cancel button
+                var pullButton = this.FindControl<Button>("PullButton");
+                if (pullButton != null)
+                {
+                    pullButton.IsVisible = true;
+                    pullButton.IsEnabled = true;
+                }
+                
+                var cancelButton = this.FindControl<Button>("CancelButton");
+                if (cancelButton != null)
+                {
+                    cancelButton.IsVisible = false;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Handles the click event for the delete model button.
+        /// </summary>
+        private async void DeleteModel_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is string modelId)
+            {
+                var loadingIndicator = this.FindControl<ProgressBar>("LoadingIndicator");
+                if (loadingIndicator != null)
+                    loadingIndicator.IsVisible = true;
+                var models = await _modelService.GetModelsAsync();
+                var modelToDelete = models.FirstOrDefault(m => m.Id == modelId);
+                
+                var app = App.Current as App;                
+                if (modelToDelete == null)
+                {                    
+                    modelToDelete = models.FirstOrDefault(m => m.Name == modelId);
+                }
+                
+                if (modelToDelete == null)
+                {
+                    return;
+                }
+                
+                // Show confirmation dialog
+                if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    if (loadingIndicator != null)
+                        loadingIndicator.IsVisible = false;
+                    var mainWindow = (MainWindow)desktop.MainWindow!;
+                    var textLines = new List<string> { "This action cannot be undone." };
+                    
+                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Delete Model",
+                                 $"Are you sure you want to delete the model '{modelToDelete.Name}'?", 
+                                 icon: MessageBoxIcon.Warning, 
+                                 textLines: textLines);
+                    
+                    if (result == ButtonResult.Yes)
+                    {
+                        
+                        if (loadingIndicator != null)
+                            loadingIndicator.IsVisible = true;
+                        
+                        bool success = await _modelService.DeleteModelAsync(modelId);
+                        
+                        // Hide loading indicator
+                        if (loadingIndicator != null)
+                            loadingIndicator.IsVisible = false;
+                        
+                        if (success)
+                        {
+                            mainWindow.ShowNotification(
+                                "Model Deleted", 
+                                $"{modelToDelete.Name} was deleted successfully!", 
+                                Avalonia.Controls.Notifications.NotificationType.Success);
+                            
+                            if (_modelsDataGrid != null)
+                                _modelsDataGrid.ItemsSource = await _modelService.GetModelsAsync();
+                        }
+                        else
+                        {
+                            mainWindow.ShowNotification(
+                                "Error", 
+                                $"Failed to delete {modelToDelete.Name}. Please try again.", 
+                                Avalonia.Controls.Notifications.NotificationType.Error);
+                        }
+                    }
+                }
+            }
+        }
+        
         #endregion
     }
 }

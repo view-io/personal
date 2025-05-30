@@ -8,23 +8,31 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="View.Personal.Views.LocalModelsView"
              Background="White">
-	
+
 	<UserControl.Resources>
 		<helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
 	</UserControl.Resources>
 
-	<Grid RowDefinitions="Auto,*,Auto" Margin="20,20,20,0">
+	<Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20,20,20,0">
 		<!-- Loading Indicator -->
-		<ProgressBar x:Name="LoadingIndicator" 
+		<ProgressBar x:Name="LoadingIndicator"
 					 VerticalAlignment="Center"
 					 HorizontalAlignment="Stretch"
 					 IsIndeterminate="True"
 					 Grid.Row="0"
-					 Margin="0,0,0,10"
+					 Margin="0,0,0,5"
 					 IsVisible="False" />
-		
+
+		<!-- Status Message -->
+		<TextBlock x:Name="StatusMessage"
+				  Grid.Row="1"
+				  Margin="0,0,0,10"
+				  TextWrapping="Wrap"
+				  IsVisible="False"
+				  Foreground="#D94242" />
+
 		<!-- Models Section -->
-		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
 			<StackPanel Orientation="Vertical" Spacing="24">
 				<!-- Pull New Model Section -->
 				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
@@ -35,18 +43,56 @@
 					</StackPanel>
 
 					<!-- Right Column - Input and Button -->
-					<Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
-						<TextBox Grid.Column="0" x:Name="ModelNameTextBox"
+					<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
+						<TextBox Grid.Row="0" Grid.Column="0" x:Name="ModelNameTextBox"
                                  Watermark="Enter Ollama compatible model tag (e.g. qwen2.5:7b)"
                                  Margin="0,0,8,0"
                                  Height="36" />
-						<Button Grid.Column="1" Content="Pull"
-                                Click="PullModel_Click"
-                                Background="#007BFF"
-                                Foreground="White"
-                                Padding="16,8"
-                                Height="36"
-                                CornerRadius="4" />
+						<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+							
+							<Button x:Name="PullButton"
+								    Click="PullModel_Click"
+								    Classes="flat"
+								    CornerRadius="4"
+								    Background="#007BFF"
+                                    Foreground="White"
+                                    Padding="16,8"
+                                    Height="36" >
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<TextBlock Text="Pull" Foreground="White" FontWeight="400" />
+								</StackPanel>
+							</Button>
+							<Button x:Name="CancelButton"
+									IsVisible="False"
+		                            Click="CancelPull_Click"
+		                            Classes="flat"
+		                            CornerRadius="4"
+									Content="Cancel"
+		                            Height="36">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<TextBlock Text="Cancel" Foreground="#1A1C1E" FontWeight="400" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+
+						<!-- Pull Progress Bar -->
+						<ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                     x:Name="PullProgressBar"
+                                     IsIndeterminate="False"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="0"
+                                     Margin="0,8,0,0"
+                                     Height="6"
+                                     IsVisible="False" />
+
+						<!-- Pull Status Message -->
+						<TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                   x:Name="PullStatusMessage"
+                                   Margin="0,4,0,0"
+                                   TextWrapping="Wrap"
+                                   IsVisible="False"
+                                   FontSize="12" />
 					</Grid>
 				</Grid>
 
@@ -54,7 +100,7 @@
 				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
 					<!-- Left Column - Title and Description -->
 					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Top">
-						<TextBlock Text="Existing models" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+						<TextBlock Text="Downloaded models" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 						<TextBlock Text="Choose from existing models" FontSize="12" Foreground="#6A6B6F" />
 					</StackPanel>
 
@@ -63,20 +109,25 @@
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="0,12">
-									<Grid ColumnDefinitions="*,Auto">
+									<Grid ColumnDefinitions="*,Auto,Auto">
 										<!-- Model Info -->
 										<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
 											<TextBlock Text="{Binding Name}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 											<TextBlock Text="{Binding ParameterCount, StringFormat='parameter size: {0}'}"
                                                        FontSize="12" Foreground="#6A6B6F" />
 										</StackPanel>
-										<ToggleSwitch Grid.Column="1"
-                                                      IsChecked="{Binding IsActive}"
-                                                      IsCheckedChanged="ModelActiveToggle_Toggled"
-                                                      OnContent="" OffContent=""
-                                                      Tag="{Binding Id}"
-                                                      Margin="0">
-										</ToggleSwitch>
+										<!-- Delete Button -->
+										<Button Grid.Column="1" 
+                                            Classes="flat" 
+                                            Padding="8" 
+                                            Margin="8,0,0,0"
+                                            Click="DeleteModel_Click"
+                                            CommandParameter="{Binding Id}">
+											<avalonia:MaterialIcon Kind="Delete" 
+                                                       Width="20" 
+                                                       Height="20" 
+                                                       Foreground="#D94242" />
+										</Button>
 									</Grid>
 								</Border>
 							</DataTemplate>
