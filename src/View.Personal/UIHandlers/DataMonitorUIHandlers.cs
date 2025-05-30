@@ -9,16 +9,15 @@ namespace View.Personal.UIHandlers
     using Classes;
     using Helpers;
     using LiteGraph;
-    using MsBox.Avalonia;
-    using MsBox.Avalonia.Dto;
-    using MsBox.Avalonia.Enums;
-    using MsBox.Avalonia.Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Timers;
+    using View.Personal.Controls;
+    using View.Personal.Controls.Dialogs;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Provides utility methods for handling Data Monitor UI interactions and file system watching.
@@ -510,11 +509,10 @@ namespace View.Personal.UIHandlers
                 fileCount = 1;
             }
 
-            var result = await MessageBoxManager
-                .GetMessageBoxStandard("Confirm Watch",
-                    $"Watch '{entry.Name}'? This will ingest {fileCount} file{(fileCount == 1 ? "" : "s")}.",
-                    ButtonEnum.YesNo, Icon.Question)
-                .ShowWindowAsync();
+            var result = await CustomMessageBoxHelper.ShowConfirmationAsync(
+                "Confirm Watch",
+                $"Watch '{entry.Name}'? This will ingest {fileCount} file{(fileCount == 1 ? "" : "s")}.",
+                MessageBoxIcon.Question);
 
             if (result == ButtonResult.Yes)
             {
@@ -638,23 +636,30 @@ namespace View.Personal.UIHandlers
             else
                 fileCount = 1;
 
-            var messageBoxCustom = MessageBoxManager.GetMessageBoxCustom(
-                new MessageBoxCustomParams
+            // Create custom message box parameters with custom buttons
+            var parameters = new CustomMessageBoxParams
+            {
+                Title = "Confirm Unwatch",
+                Message = $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
+                Icon = MessageBoxIcon.Question,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Buttons = new List<ButtonDefinition>
                 {
-                    ContentTitle = "Confirm Unwatch",
-                    ContentMessage =
-                        $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
-                    ButtonDefinitions = new[]
-                    {
-                        new ButtonDefinition { Name = "Unwatch Only", IsDefault = true },
-                        new ButtonDefinition { Name = "Unwatch and Delete" },
-                        new ButtonDefinition { Name = "Cancel", IsCancel = true }
-                    },
-                    Icon = Icon.Question,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                });
+                    new ButtonDefinition("Unwatch Only", ButtonResult.Yes),
+                    new ButtonDefinition("Unwatch and Delete", ButtonResult.No),
+                    new ButtonDefinition("Cancel", ButtonResult.Cancel)
+                }
+            };
 
-            var result = await messageBoxCustom.ShowWindowAsync();
+            var buttonResult = await CustomMessageBox.ShowAsync(parameters);
+            
+            // Map the button result to the expected string result
+            string result = buttonResult switch
+            {
+                ButtonResult.Yes => "Unwatch Only",
+                ButtonResult.No => "Unwatch and Delete",
+                _ => "Cancel"
+            };
 
             switch (result)
             {

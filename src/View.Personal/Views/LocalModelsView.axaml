@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:classes="clr-namespace:View.Personal.Classes"
+             xmlns:helpers="clr-namespace:View.Personal.Helpers"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="View.Personal.Views.LocalModelsView"
+             Background="White">
+
+	<UserControl.Resources>
+		<helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
+	</UserControl.Resources>
+
+	<Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20,20,20,0">
+		<!-- Loading Indicator -->
+		<ProgressBar x:Name="LoadingIndicator"
+					 VerticalAlignment="Center"
+					 HorizontalAlignment="Stretch"
+					 IsIndeterminate="True"
+					 Grid.Row="0"
+					 Margin="0,0,0,5"
+					 IsVisible="False" />
+
+		<!-- Status Message -->
+		<TextBlock x:Name="StatusMessage"
+				  Grid.Row="1"
+				  Margin="0,0,0,10"
+				  TextWrapping="Wrap"
+				  IsVisible="False"
+				  Foreground="#D94242" />
+
+		<!-- Models Section -->
+		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+			<StackPanel Orientation="Vertical" Spacing="24">
+				<!-- Pull New Model Section -->
+				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
+					<!-- Left Column - Title and Description -->
+					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Center">
+						<TextBlock Text="Pull a new model" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+						<TextBlock Text="Click here to explore available models" FontSize="12" Foreground="#6A6B6F" />
+					</StackPanel>
+
+					<!-- Right Column - Input and Button -->
+					<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
+						<TextBox Grid.Row="0" Grid.Column="0" x:Name="ModelNameTextBox"
+                                 Watermark="Enter Ollama compatible model tag (e.g. qwen2.5:7b)"
+                                 Margin="0,0,8,0"
+                                 Height="36" />
+						<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+							
+							<Button x:Name="PullButton"
+								    Click="PullModel_Click"
+								    Classes="flat"
+								    CornerRadius="4"
+								    Background="#007BFF"
+                                    Foreground="White"
+                                    Padding="16,8"
+                                    Height="36" >
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<TextBlock Text="Pull" Foreground="White" FontWeight="400" />
+								</StackPanel>
+							</Button>
+							<Button x:Name="CancelButton"
+									IsVisible="False"
+		                            Click="CancelPull_Click"
+		                            Classes="flat"
+		                            CornerRadius="4"
+									Content="Cancel"
+		                            Height="36">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<TextBlock Text="Cancel" Foreground="#1A1C1E" FontWeight="400" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+
+						<!-- Pull Progress Bar -->
+						<ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                     x:Name="PullProgressBar"
+                                     IsIndeterminate="False"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="0"
+                                     Margin="0,8,0,0"
+                                     Height="6"
+                                     IsVisible="False" />
+
+						<!-- Pull Status Message -->
+						<TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                   x:Name="PullStatusMessage"
+                                   Margin="0,4,0,0"
+                                   TextWrapping="Wrap"
+                                   IsVisible="False"
+                                   FontSize="12" />
+					</Grid>
+				</Grid>
+
+				<!-- Existing Models Section -->
+				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
+					<!-- Left Column - Title and Description -->
+					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Top">
+						<TextBlock Text="Downloaded models" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+						<TextBlock Text="Choose from existing models" FontSize="12" Foreground="#6A6B6F" />
+					</StackPanel>
+
+					<!-- Right Column - Models List -->
+					<ItemsControl Grid.Column="1" x:Name="ModelsDataGrid" Margin="40,0,0,0">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="0,12">
+									<Grid ColumnDefinitions="*,Auto,Auto">
+										<!-- Model Info -->
+										<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+											<TextBlock Text="{Binding Name}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+											<TextBlock Text="{Binding ParameterCount, StringFormat='parameter size: {0}'}"
+                                                       FontSize="12" Foreground="#6A6B6F" />
+										</StackPanel>
+										<!-- Delete Button -->
+										<Button Grid.Column="1" 
+                                            Classes="flat" 
+                                            Padding="8" 
+                                            Margin="8,0,0,0"
+                                            Click="DeleteModel_Click"
+                                            CommandParameter="{Binding Id}">
+											<avalonia:MaterialIcon Kind="Delete" 
+                                                       Width="20" 
+                                                       Height="20" 
+                                                       Foreground="#D94242" />
+										</Button>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Grid>
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
