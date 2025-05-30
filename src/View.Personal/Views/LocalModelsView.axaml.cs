@@ -16,7 +16,9 @@ namespace View.Personal.Views
     using View.Personal.Services;
 
     /// <summary>
-    /// View for managing locally pulled AI models.
+    /// View for managing locally pulled AI models. This view allows users to view, pull, and delete
+    /// AI models from the Ollama service. It provides a user interface for interacting with the
+    /// LocalModelService to manage models on the local system.
     /// </summary>
     public partial class LocalModelsView : UserControl
     {
@@ -36,7 +38,9 @@ namespace View.Personal.Views
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalModelsView"/> class.
+        /// Initializes a new instance of the <see cref="LocalModelsView"/> class. This constructor
+        /// sets up the view and initializes the component, attaching necessary event handlers for
+        /// loading models when the view is attached to the visual tree.
         /// </summary>
         public LocalModelsView()
         {
@@ -74,7 +78,9 @@ namespace View.Personal.Views
         #region Private-Methods
 
         /// <summary>
-        /// Loads models from the service and displays them in the DataGrid.
+        /// Loads models from the service and displays them in the DataGrid. This method fetches
+        /// the list of available models from the LocalModelService and updates the UI to display them.
+        /// It shows a loading indicator during the fetch operation and handles any exceptions that occur.
         /// </summary>
         private async void LoadModels()
         {
@@ -103,8 +109,13 @@ namespace View.Personal.Views
         }
 
         /// <summary>
-        /// Handles the click event for the pull model button.
+        /// Handles the click event for the pull model button. This method initiates the download of a new
+        /// model from the Ollama service based on the model name entered by the user. It updates the UI
+        /// to show download progress, handles errors, and provides feedback to the user about the operation's
+        /// status. The method supports cancellation through a cancellation token.
         /// </summary>
+        /// <param name="sender">The source of the event, typically the pull button.</param>
+        /// <param name="e">The event arguments containing information about the click event.</param>
         private async void PullModel_Click(object sender, RoutedEventArgs e)
         {
             string modelName = _modelNameTextBox!.Text?.Trim() ?? string.Empty;
@@ -348,10 +359,12 @@ namespace View.Personal.Views
         }
 
         /// <summary>
-        /// Formats a file size in bytes to a human-readable string (KB, MB, GB).
+        /// Formats a file size in bytes to a human-readable string (KB, MB, GB). This method converts
+        /// a raw byte count into a more user-friendly representation with appropriate size units.
+        /// It handles different size magnitudes and formats the output with one decimal place precision.
         /// </summary>
-        /// <param name="bytes">The size in bytes.</param>
-        /// <returns>A formatted string representing the file size.</returns>
+        /// <param name="bytes">The size in bytes to be formatted.</param>
+        /// <returns>A formatted string representing the file size with appropriate units (B, KB, MB, GB, TB).</returns>
         private string FormatFileSize(long bytes)
         {
             if (bytes <= 0)
@@ -373,8 +386,12 @@ namespace View.Personal.Views
         }
         
         /// <summary>
-        /// Handles the click event for the cancel pull button.
+        /// Handles the click event for the cancel pull button. This method cancels an ongoing model pull
+        /// operation by signaling the cancellation token and updating the UI to reflect the cancelled state.
+        /// It hides progress indicators, resets status messages, and restores the UI to its pre-pull state.
         /// </summary>
+        /// <param name="sender">The source of the event, typically the cancel button.</param>
+        /// <param name="e">The event arguments containing information about the click event.</param>
         private void CancelPull_Click(object sender, RoutedEventArgs e)
         {
             // Cancel the ongoing pull operation
@@ -413,8 +430,13 @@ namespace View.Personal.Views
         }
         
         /// <summary>
-        /// Handles the click event for the delete model button.
+        /// Handles the click event for the delete model button. This method initiates the deletion of a model
+        /// from the local system. It shows a confirmation dialog to the user, and if confirmed, calls the
+        /// LocalModelService to delete the model. The method provides feedback to the user about the operation's
+        /// success or failure through notifications and updates the UI to reflect the changes.
         /// </summary>
+        /// <param name="sender">The source of the event, typically the delete button with the model ID as CommandParameter.</param>
+        /// <param name="e">The event arguments containing information about the click event.</param>
         private async void DeleteModel_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.CommandParameter is string modelId)

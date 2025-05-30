@@ -125,9 +125,10 @@ namespace View.Personal.Services
         #region Private-Methods
 
         /// <summary>
-        /// Gets the normalized Ollama API endpoint URL
+        /// Gets the normalized Ollama API endpoint URL. This method ensures that the endpoint URL
+        /// always ends with a trailing slash and uses the default endpoint if none is configured.
         /// </summary>
-        /// <returns>The normalized endpoint URL with trailing slash</returns>
+        /// <returns>The normalized endpoint URL with trailing slash.</returns>
         private string GetOllamaEndpoint()
         {
             var endpoint = _app.ApplicationSettings?.Ollama?.Endpoint;
@@ -146,19 +147,19 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Creates a new HttpClient instance
+        /// Creates a new HttpClient instance for making HTTP requests to the Ollama API.
         /// </summary>
-        /// <returns>A new HttpClient instance</returns>
+        /// <returns>A new HttpClient instance configured for Ollama API communication.</returns>
         private HttpClient CreateHttpClient()
         {
             return new HttpClient();
         }
 
         /// <summary>
-        /// Logs an error message and exception
+        /// Logs an error message and exception to both the application log and the exception log file.
         /// </summary>
-        /// <param name="errorMessage">The error message</param>
-        /// <param name="ex">The exception</param>
+        /// <param name="errorMessage">The error message describing what operation failed.</param>
+        /// <param name="ex">The exception that was thrown during the operation.</param>
         private void LogError(string errorMessage, Exception ex)
         {
             _app?.Log(errorMessage);
@@ -166,7 +167,9 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Loads models from Ollama API
+        /// Loads models from the Ollama API and updates the internal model list. This method
+        /// fetches all available models from the Ollama server and converts them to LocalModel instances.
+        /// If an error occurs during the fetch operation, the model list will be reset to empty.
         /// </summary>
         private async Task LoadModelsAsync()
         {
@@ -185,9 +188,11 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Fetches models from Ollama API
+        /// Fetches models from the Ollama API by making an HTTP request to the tags endpoint.
+        /// This method retrieves all available models from the Ollama server and converts them
+        /// to LocalModel instances. If an error occurs during the fetch operation, an empty list is returned.
         /// </summary>
-        /// <returns>A list of local models from Ollama</returns>
+        /// <returns>A list of LocalModel instances representing the models available on the Ollama server.</returns>
         private async Task<List<LocalModel>> FetchOllamaModelsAsync()
         {
             var models = new List<LocalModel>();
@@ -216,10 +221,12 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Converts an OllamaModel to a LocalModel
+        /// Converts an OllamaModel instance to a LocalModel instance. This method maps properties from
+        /// the Ollama API model representation to the application's internal model representation.
+        /// It also extracts and formats additional information such as parameter count and quantization level.
         /// </summary>
-        /// <param name="ollamaModel">The Ollama model to convert</param>
-        /// <returns>A LocalModel instance</returns>
+        /// <param name="ollamaModel">The Ollama model instance to convert, containing data from the Ollama API.</param>
+        /// <returns>A LocalModel instance populated with data from the OllamaModel.</returns>
         private LocalModel ConvertToLocalModel(OllamaModel ollamaModel)
         {
             string parameterCount = ollamaModel.Details.ParameterSize;
@@ -255,13 +262,16 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Pulls a new model from the provider.
+        /// Pulls a new model from the specified provider. This method initiates a download of the model
+        /// from the Ollama API, processes the streaming response to track download progress, and adds
+        /// the model to the local model list upon successful completion. The method provides progress
+        /// updates through the optional callback and supports cancellation through the cancellation token.
         /// </summary>
-        /// <param name="modelName">The name of the model to pull.</param>
-        /// <param name="provider">The provider of the model.</param>
-        /// <param name="progressCallback">Optional callback to report download progress.</param>
-        /// <param name="cancellationToken">Optional cancellation token to cancel the operation.</param>
-        /// <returns>The newly pulled model, or null if the operation failed.</returns>
+        /// <param name="modelName">The name of the model to pull (e.g., "llama2", "mistral").</param>
+        /// <param name="provider">The provider of the model (currently only "Ollama" is supported).</param>
+        /// <param name="progressCallback">Optional callback to report download progress. The callback receives OllamaPullResponse objects containing status information.</param>
+        /// <param name="cancellationToken">Optional cancellation token to cancel the operation if needed.</param>
+        /// <returns>The newly pulled model as a LocalModel instance, or null if the operation failed.</returns>
         public async Task<LocalModel?> PullModelAsync(string modelName, string provider, Action<Classes.OllamaPullResponse>? progressCallback = null, CancellationToken cancellationToken = default)
         {
             string endpoint = GetOllamaEndpoint();
@@ -316,13 +326,17 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Processes the streaming response from the model pull operation
+        /// Processes the streaming response from the model pull operation. This method reads the HTTP response
+        /// stream line by line, deserializes each line into an OllamaPullResponse object, and invokes the
+        /// progress callback with the response data. It handles special cases such as error responses and
+        /// adjusts the progress data when needed. The method continues processing until the stream ends
+        /// or the operation is cancelled.
         /// </summary>
-        /// <param name="response">The HTTP response</param>
-        /// <param name="modelName">The name of the model being pulled</param>
-        /// <param name="progressCallback">Callback to report progress</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>A task representing the asynchronous operation</returns>
+        /// <param name="response">The HTTP response containing the streaming data from the Ollama API.</param>
+        /// <param name="modelName">The name of the model being pulled, used for error logging.</param>
+        /// <param name="progressCallback">Callback to report progress updates to the caller.</param>
+        /// <param name="cancellationToken">Cancellation token to stop processing if the operation is cancelled.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private async Task ProcessModelPullStreamAsync(
             HttpResponseMessage response,
             string modelName,
