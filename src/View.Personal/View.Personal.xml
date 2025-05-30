@@ -763,6 +763,141 @@
             Gets or sets the UTC timestamp when the graph was last updated.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.LocalModel">
+            <summary>
+            Represents a locally pulled AI model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Id">
+            <summary>
+            Gets or sets the unique identifier for the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Name">
+            <summary>
+            Gets or sets the name of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Description">
+            <summary>
+            Gets or sets the description of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Provider">
+            <summary>
+            Gets or sets the provider of the model (e.g., Ollama).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.LocalPath">
+            <summary>
+            Gets or sets the local file path where the model is stored.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.SizeInBytes">
+            <summary>
+            Gets or sets the size of the model in bytes.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.PulledDate">
+            <summary>
+            Gets or sets the date when the model was pulled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.IsActive">
+            <summary>
+            Gets or sets a value indicating whether the model is currently active.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Version">
+            <summary>
+            Gets or sets the version of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.ParameterCount">
+            <summary>
+            Gets or sets the parameter count of the model (e.g., 7B, 13B).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Quantization">
+            <summary>
+            Gets or sets the quantization level of the model (e.g., Q4_0).
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModel">
+            <summary>
+            Represents a model entry returned by the Ollama API.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Name">
+            <summary>
+            Gets or sets the name of the model (e.g., "llama2").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Model">
+            <summary>
+            Gets or sets the internal model identifier (e.g., "llama2:7b").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.ModifiedAt">
+            <summary>
+            Gets or sets the timestamp of the last modification to the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Size">
+            <summary>
+            Gets or sets the size of the model in bytes.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Digest">
+            <summary>
+            Gets or sets the digest hash representing the model version.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Details">
+            <summary>
+            Gets or sets detailed information about the model.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModelDetails">
+            <summary>
+            Represents detailed information about an Ollama model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Format">
+            <summary>
+            Gets or sets the model file format (e.g., "gguf").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Family">
+            <summary>
+            Gets or sets the primary model family (e.g., "llama").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Families">
+            <summary>
+            Gets or sets a list of families or variants the model belongs to.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.ParameterSize">
+            <summary>
+            Gets or sets the size of the model in terms of parameters (e.g., "7B", "13B").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.QuantizationLevel">
+            <summary>
+            Gets or sets the quantization level used to reduce model size and memory usage (e.g., "Q4", "Q8").
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModelsResponse">
+            <summary>
+            Represents the response returned from the Ollama API's list models endpoint.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelsResponse.Models">
+            <summary>
+            Gets or sets the list of available Ollama models.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.OnboardingState">
             <summary>
             Represents the onboarding completion state.
@@ -1581,11 +1716,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1781,6 +1917,56 @@
             <param name="filePath">The file path where the GEXF file will be saved.</param>
             <param name="errorMessage">An output parameter that receives the error message if the export fails; null if successful.</param>
             <returns>True if the export succeeds, false if an exception occurs during the process.</returns>
+        </member>
+        <member name="T:View.Personal.Services.LocalModelService">
+            <summary>
+            Service for managing locally pulled AI models.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.#ctor(View.Personal.App)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Services.LocalModelService"/> class.
+            </summary>
+            <param name="app">The application instance.</param>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetModels">
+            <summary>
+            Gets the list of local models.
+            </summary>
+            <returns>A list of local models.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetModelsAsync">
+            <summary>
+            Gets the list of local models asynchronously.
+            </summary>
+            <returns>A task that resolves to a list of local models.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.SetModelActiveState(System.String,System.Boolean)">
+            <summary>
+            Activates or deactivates a model.
+            </summary>
+            <param name="modelId">The ID of the model to update.</param>
+            <param name="isActive">Whether the model should be active.</param>
+            <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.LoadModelsAsync">
+            <summary>
+            Loads models from Ollama API
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.FetchOllamaModelsAsync">
+            <summary>
+            Fetches models from Ollama API
+            </summary>
+            <returns>A list of local models from Ollama</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.PullModelAsync(System.String,System.String)">
+            <summary>
+            Pulls a new model from the provider.
+            </summary>
+            <param name="modelName">The name of the model to pull.</param>
+            <param name="provider">The provider of the model.</param>
+            <returns>The newly pulled model, or null if the operation failed.</returns>
         </member>
         <member name="T:View.Personal.Services.LoggingService">
             <summary>
@@ -2188,6 +2374,37 @@
             <param name="liteGraph">The LiteGraphClient instance for interacting with graph data.</param>
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
+        </member>
+        <member name="T:View.Personal.Views.LocalModelsView">
+            <summary>
+            View for managing locally pulled AI models.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Views.LocalModelsView"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.LoadModels">
+            <summary>
+            Loads models from the service and displays them in the DataGrid.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.ModelActiveToggle_Toggled(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the toggled event for model activation toggle switches.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.PullModel_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the pull model button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
         <member name="T:View.Personal.Views.OnboardingOverlay">
             <summary>
