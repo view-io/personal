@@ -78,6 +78,18 @@ namespace View.Personal.Views
         #region Private-Methods
 
         /// <summary>
+        /// Handles the click event for the explore models button. This method opens the Ollama library URL
+        /// in the default browser to allow users to explore available models.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
+        private void ExploreModelsButton_Click(object sender, RoutedEventArgs e)
+        {
+            const string ollamaLibraryUrl = "https://ollama.com/library";
+            Helpers.BrowserHelper.OpenUrl(ollamaLibraryUrl);
+        }
+
+        /// <summary>
         /// Loads models from the service and displays them in the DataGrid. This method fetches
         /// the list of available models from the LocalModelService and updates the UI to display them.
         /// It shows a loading indicator during the fetch operation and handles any exceptions that occur.

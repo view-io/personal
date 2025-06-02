@@ -1245,6 +1245,18 @@
             Question icon.
             </summary>
         </member>
+        <member name="T:View.Personal.Helpers.BrowserHelper">
+            <summary>
+            Helper class for opening URLs in the default browser.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.BrowserHelper.OpenUrl(System.String)">
+            <summary>
+            Opens the specified URL in the default browser.
+            </summary>
+            <param name="url">The URL to open.</param>
+            <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
             A value converter that transforms a string representing a file size in bytes into a human-readable format (e.g., "1.5 KB", "2.0 MB").
@@ -2495,6 +2507,14 @@
             sets up the view and initializes the component, attaching necessary event handlers for
             loading models when the view is attached to the visual tree.
             </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.ExploreModelsButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the explore models button. This method opens the Ollama library URL
+            in the default browser to allow users to explore available models.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
         </member>
         <member name="M:View.Personal.Views.LocalModelsView.LoadModels">
             <summary>

@@ -39,7 +39,35 @@
 					<!-- Left Column - Title and Description -->
 					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Center">
 						<TextBlock Text="Pull a new model" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
-						<TextBlock Text="Click here to explore available models" FontSize="12" Foreground="#6A6B6F" />
+						<StackPanel Orientation="Horizontal">
+							<Button x:Name="ExploreModelsButton"
+                                   Content="Click here"
+                                   Foreground="#0472EF"
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   Padding="0"
+                                   Cursor="Hand"
+                                   Click="ExploreModelsButton_Click">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Foreground" Value="#0472EF"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                </Button.Styles>
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <TextBlock Text="{TemplateBinding Content}"
+                                                   Foreground="#6A6B6F"
+                                                   TextDecorations="Underline"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="12"/>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+							<TextBlock Text=" to explore available models" 
+                                     Foreground="#6A6B6F"
+                                     FontSize="12"/>
+						</StackPanel>
 					</StackPanel>
 
 					<!-- Right Column - Input and Button -->
