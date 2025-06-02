@@ -374,6 +374,28 @@
             The endpoint URL for Voyage API requests.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.ButtonDefinition">
+            <summary>
+            Represents a button definition for a custom message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ButtonDefinition.Text">
+            <summary>
+            Gets or sets the text of the button.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ButtonDefinition.Result">
+            <summary>
+            Gets or sets the result of the button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ButtonDefinition.#ctor(System.String,View.Personal.Enums.ButtonResult)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Classes.ButtonDefinition"/> class.
+            </summary>
+            <param name="text">The text of the button.</param>
+            <param name="result">The result of the button.</param>
+        </member>
         <member name="T:View.Personal.Classes.ChatMessage">
             <summary>
             Represents a message in a chat conversation, containing a role and content.
@@ -524,6 +546,72 @@
             <param name="parameter">The converter parameter.</param>
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the foreground color, defaulting to gray (#6A6B6F).</returns>
+        </member>
+        <member name="T:View.Personal.Classes.CustomMessageBoxParams">
+            <summary>
+            Represents the parameters for a custom message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Title">
+            <summary>
+            Gets or sets the title of the message box.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Message">
+            <summary>
+            Gets or sets the message text.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Icon">
+            <summary>
+            Gets or sets the icon to display.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.WindowStartupLocation">
+            <summary>
+            Gets or sets the window startup location.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.Buttons">
+            <summary>
+            Gets or sets the buttons to display.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.HasInputField">
+            <summary>
+            Gets or sets a value indicating whether the message box should include a text input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.InputPrompt">
+            <summary>
+            Gets or sets the prompt text for the input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.InputDefaultValue">
+            <summary>
+            Gets or sets the default value for the input field.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.EnableInputValidation">
+            <summary>
+            Gets or sets a value indicating whether input validation is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.ValidationErrorMessage">
+            <summary>
+            Gets or sets the validation error message to display when input is invalid.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.IsInputInvalid">
+            <summary>
+            Gets or sets a value indicating whether the input field is currently in an error state.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.TextLines">
+            <summary>
+            Gets or sets a list of text lines to display in the message box.
+            If provided, each string in the list will be displayed on a separate line.
+            </summary>
         </member>
         <member name="T:View.Personal.Classes.FileSystemEntry">
             <summary>
@@ -681,6 +769,181 @@
             Gets or sets the UTC timestamp when the graph was last updated.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.LocalModel">
+            <summary>
+            Represents a locally pulled AI model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Id">
+            <summary>
+            Gets or sets the unique identifier for the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Name">
+            <summary>
+            Gets or sets the name of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Description">
+            <summary>
+            Gets or sets the description of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Provider">
+            <summary>
+            Gets or sets the provider of the model (e.g., Ollama).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.LocalPath">
+            <summary>
+            Gets or sets the local file path where the model is stored.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.SizeInBytes">
+            <summary>
+            Gets or sets the size of the model in bytes.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.PulledDate">
+            <summary>
+            Gets or sets the date when the model was pulled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.IsActive">
+            <summary>
+            Gets or sets a value indicating whether the model is currently active.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Version">
+            <summary>
+            Gets or sets the version of the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.ParameterCount">
+            <summary>
+            Gets or sets the parameter count of the model (e.g., 7B, 13B).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.LocalModel.Quantization">
+            <summary>
+            Gets or sets the quantization level of the model (e.g., Q4_0).
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModel">
+            <summary>
+            Represents a model entry returned by the Ollama API.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Name">
+            <summary>
+            Gets or sets the name of the model (e.g., "llama2").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Model">
+            <summary>
+            Gets or sets the internal model identifier (e.g., "llama2:7b").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.ModifiedAt">
+            <summary>
+            Gets or sets the timestamp of the last modification to the model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Size">
+            <summary>
+            Gets or sets the size of the model in bytes.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Digest">
+            <summary>
+            Gets or sets the digest hash representing the model version.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModel.Details">
+            <summary>
+            Gets or sets detailed information about the model.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModelDetails">
+            <summary>
+            Represents detailed information about an Ollama model.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Format">
+            <summary>
+            Gets or sets the model file format (e.g., "gguf").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Family">
+            <summary>
+            Gets or sets the primary model family (e.g., "llama").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.Families">
+            <summary>
+            Gets or sets a list of families or variants the model belongs to.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.ParameterSize">
+            <summary>
+            Gets or sets the size of the model in terms of parameters (e.g., "7B", "13B").
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelDetails.QuantizationLevel">
+            <summary>
+            Gets or sets the quantization level used to reduce model size and memory usage (e.g., "Q4", "Q8").
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaModelsResponse">
+            <summary>
+            Represents the response returned from the Ollama API's list models endpoint.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaModelsResponse.Models">
+            <summary>
+            Gets or sets the list of available Ollama models.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.OllamaPullResponse">
+            <summary>
+            Represents a response from the Ollama API during model pulling.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Status">
+            <summary>
+            Gets or sets the status of the pull operation.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Total">
+            <summary>
+            Gets or sets the total number of bytes to download.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Completed">
+            <summary>
+            Gets or sets the number of bytes downloaded so far.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Error">
+            <summary>
+            Gets or sets any error message that occurred during the pull operation.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.Digest">
+            <summary>
+            Gets or sets the digest of the model being pulled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.ProgressPercentage">
+            <summary>
+            Gets the download progress as a percentage (0-100).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.OllamaPullResponse.HasError">
+            <summary>
+            Gets a value indicating whether the pull operation has an error.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.OnboardingState">
             <summary>
             Represents the onboarding completion state.
@@ -749,89 +1012,238 @@
             <param name="culture">The culture to use in the converter.</param>
             <returns>A SolidColorBrush representing the background color, or Transparent if conditions are not met.</returns>
         </member>
-        <member name="T:View.Personal.Controls.MarkdownRenderer">
+        <member name="T:View.Personal.Controls.Dialogs.CustomMessageBox">
+            <summary>
+            A customizable modal message box for displaying alerts, confirmations, and prompts in the View.Personal application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Controls.Dialogs.CustomMessageBox"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with the specified parameters.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowWithInputAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with the specified parameters and an input field.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowAsyncInternal(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Internal method that shows a message box with the specified parameters.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.CreateMessageBoxContent(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Creates the message box content layout.
+            </summary>
+            <param name="params">The parameters for configuring the message box.</param>
+            <returns>A <see cref="T:Avalonia.Controls.Border"/> that wraps the message box content.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+        </member>
+        <member name="T:View.Personal.Controls.Renderer.MarkdownRenderer">
             <summary>
             Provides functionality to render Markdown content as Avalonia UI controls.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.Render(System.String)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.Render(System.String)">
             <summary>
             Renders a Markdown string to Avalonia UI controls.
             </summary>
             <param name="markdown">The Markdown string to render.</param>
             <returns>A control containing the rendered Markdown.</returns>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderDocument(Markdig.Syntax.MarkdownDocument)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderDocument(Markdig.Syntax.MarkdownDocument)">
             <summary>
             Converts a MarkdownDocument into a vertical StackPanel containing rendered blocks.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderBlock(Markdig.Syntax.Block)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderBlock(Markdig.Syntax.Block)">
             <summary>
             Renders a specific Markdown block element into a UI control.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderHeading(Markdig.Syntax.HeadingBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderHeading(Markdig.Syntax.HeadingBlock)">
             <summary>
             Renders a Markdown heading block with dynamic font size.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderParagraph(Markdig.Syntax.ParagraphBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderParagraph(Markdig.Syntax.ParagraphBlock)">
             <summary>
             Renders a Markdown paragraph block with inline elements.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderList(Markdig.Syntax.ListBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderList(Markdig.Syntax.ListBlock)">
             <summary>
             Renders a Markdown list block (ordered or unordered).
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderCodeBlock(Markdig.Syntax.CodeBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderCodeBlock(Markdig.Syntax.CodeBlock)">
             <summary>
             Renders a Markdown code block, styled with monospaced font and border.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderQuoteBlock(Markdig.Syntax.QuoteBlock)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderQuoteBlock(Markdig.Syntax.QuoteBlock)">
             <summary>
             Renders a Markdown blockquote with vertical bar styling.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderTable(Markdig.Extensions.Tables.Table)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderTable(Markdig.Extensions.Tables.Table)">
             <summary>
             Renders a Markdown table into a grid layout.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInlines(Markdig.Syntax.Inlines.ContainerInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderInlines(Markdig.Syntax.Inlines.ContainerInline)">
             <summary>
             Renders all inline elements within a container inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderInline(Markdig.Syntax.Inlines.Inline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderInline(Markdig.Syntax.Inlines.Inline)">
             <summary>
             Renders a single Markdown inline element into an Avalonia control.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderEmphasis(Markdig.Syntax.Inlines.EmphasisInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderEmphasis(Markdig.Syntax.Inlines.EmphasisInline)">
             <summary>
             Renders bold or italic Markdown emphasis inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.RenderLink(Markdig.Syntax.Inlines.LinkInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.RenderLink(Markdig.Syntax.Inlines.LinkInline)">
             <summary>
             Renders a Markdown hyperlink inline element.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.ContainerInline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.ContainerInline)">
             <summary>
             Recursively retrieves the plain text content from a container inline.
             </summary>
         </member>
-        <member name="M:View.Personal.Controls.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.Inline)">
+        <member name="M:View.Personal.Controls.Renderer.MarkdownRenderer.GetInlineText(Markdig.Syntax.Inlines.Inline)">
             <summary>
             Recursively retrieves the plain text content from a Markdown inline element.
             </summary>
             <param name="inline">The Markdown inline element (e.g., LiteralInline, EmphasisInline, CodeInline).</param>
             <returns>A plain text string representation of the inline element and its nested content.</returns>
+        </member>
+        <member name="T:View.Personal.Enums.ButtonResult">
+            <summary>
+            Represents the result of a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Ok">
+            <summary>
+            The OK button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Yes">
+            <summary>
+            The Yes button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.No">
+            <summary>
+            The No button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Cancel">
+            <summary>
+            The Cancel button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Abort">
+            <summary>
+            The Abort button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Retry">
+            <summary>
+            The Retry button was clicked.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.ButtonResult.Ignore">
+            <summary>
+            The Ignore button was clicked.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Enums.MessageBoxButtons">
+            <summary>
+            Represents the type of buttons to display in a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.Ok">
+            <summary>
+            The message box contains an OK button.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.OkCancel">
+            <summary>
+            The message box contains OK and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.YesNo">
+            <summary>
+            The message box contains Yes and No buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.YesNoCancel">
+            <summary>
+            The message box contains Yes, No, and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.AbortRetryIgnore">
+            <summary>
+            The message box contains Abort, Retry, and Ignore buttons.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxButtons.RetryCancel">
+            <summary>
+            The message box contains Retry and Cancel buttons.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Enums.MessageBoxIcon">
+            <summary>
+            Represents the icon to display in a message box.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.None">
+            <summary>
+            No icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Info">
+            <summary>
+            Information icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Warning">
+            <summary>
+            Warning icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Error">
+            <summary>
+            Error icon.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.MessageBoxIcon.Question">
+            <summary>
+            Question icon.
+            </summary>
         </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
@@ -861,6 +1273,71 @@
             <param name="parameter">An optional parameter (not used).</param>
             <param name="culture">The culture to use for formatting (not used).</param>
             <returns>Throws a <see cref="T:System.NotImplementedException"/> as conversion back is not supported.</returns>
+        </member>
+        <member name="T:View.Personal.Helpers.CustomMessageBoxHelper">
+            <summary>
+            Helper class for creating styled message boxes that match the application's UI.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowMessageBoxAsync(System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
+            <summary>
+            Shows a styled standard message box asynchronously.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The message text.</param>
+            <param name="buttons">The type of buttons to display.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowConfirmationAsync(System.String,System.String,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
+            <summary>
+            Shows a confirmation message box with Yes/No buttons.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The message text.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowErrorAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows an error message box.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The error message.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowWarningAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a warning message box.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="text">The warning message.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowInputDialogAsync(System.String,System.String,System.String,System.Boolean,System.String,Avalonia.Controls.WindowStartupLocation)">
+            <summary>
+            Shows a dialog with an input field for user text entry.
+            </summary>
+            <param name="title">The title of the dialog.</param>
+            <param name="prompt">The prompt text for the input field.</param>
+            <param name="defaultValue">The default value for the input field.</param>
+            <param name="enableValidation">Whether to enable input validation to prevent empty or whitespace-only input.</param>
+            <param name="validationErrorMessage">The error message to display when validation fails.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.GetButtonDefinitions(View.Personal.Enums.MessageBoxButtons)">
+            <summary>
+            Gets the button definitions based on the button type.
+            </summary>
+            <param name="buttons">The button type.</param>
+            <returns>A list of button definitions.</returns>
         </member>
         <member name="T:View.Personal.Helpers.DateTimeFormatConverter">
             <summary>
@@ -1287,11 +1764,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1487,6 +1965,115 @@
             <param name="filePath">The file path where the GEXF file will be saved.</param>
             <param name="errorMessage">An output parameter that receives the error message if the export fails; null if successful.</param>
             <returns>True if the export succeeds, false if an exception occurs during the process.</returns>
+        </member>
+        <member name="T:View.Personal.Services.LocalModelService">
+            <summary>
+            Service for managing locally pulled AI models.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.#ctor(View.Personal.App)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Services.LocalModelService"/> class.
+            </summary>
+            <param name="app">The application instance.</param>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetModels">
+            <summary>
+            Gets the list of local models.
+            </summary>
+            <returns>A list of local models.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetModelsAsync">
+            <summary>
+            Gets the list of local models asynchronously.
+            </summary>
+            <returns>A task that resolves to a list of local models.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.SetModelActiveState(System.String,System.Boolean)">
+            <summary>
+            Activates or deactivates a model.
+            </summary>
+            <param name="modelId">The ID of the model to update.</param>
+            <param name="isActive">Whether the model should be active.</param>
+            <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.DeleteModelAsync(System.String)">
+            <summary>
+            Deletes a model from the system.
+            </summary>
+            <param name="modelId">The ID of the model to delete.</param>
+            <returns>A task that resolves to true if the operation was successful, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.GetOllamaEndpoint">
+            <summary>
+            Gets the normalized Ollama API endpoint URL. This method ensures that the endpoint URL
+            always ends with a trailing slash and uses the default endpoint if none is configured.
+            </summary>
+            <returns>The normalized endpoint URL with trailing slash.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.CreateHttpClient">
+            <summary>
+            Creates a new HttpClient instance for making HTTP requests to the Ollama API.
+            </summary>
+            <returns>A new HttpClient instance configured for Ollama API communication.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.LogError(System.String,System.Exception)">
+            <summary>
+            Logs an error message and exception to both the application log and the exception log file.
+            </summary>
+            <param name="errorMessage">The error message describing what operation failed.</param>
+            <param name="ex">The exception that was thrown during the operation.</param>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.LoadModelsAsync">
+            <summary>
+            Loads models from the Ollama API and updates the internal model list. This method
+            fetches all available models from the Ollama server and converts them to LocalModel instances.
+            If an error occurs during the fetch operation, the model list will be reset to empty.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.FetchOllamaModelsAsync">
+            <summary>
+            Fetches models from the Ollama API by making an HTTP request to the tags endpoint.
+            This method retrieves all available models from the Ollama server and converts them
+            to LocalModel instances. If an error occurs during the fetch operation, an empty list is returned.
+            </summary>
+            <returns>A list of LocalModel instances representing the models available on the Ollama server.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.ConvertToLocalModel(View.Personal.Classes.OllamaModel)">
+            <summary>
+            Converts an OllamaModel instance to a LocalModel instance. This method maps properties from
+            the Ollama API model representation to the application's internal model representation.
+            It also extracts and formats additional information such as parameter count and quantization level.
+            </summary>
+            <param name="ollamaModel">The Ollama model instance to convert, containing data from the Ollama API.</param>
+            <returns>A LocalModel instance populated with data from the OllamaModel.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.PullModelAsync(System.String,System.String,System.Action{View.Personal.Classes.OllamaPullResponse},System.Threading.CancellationToken)">
+            <summary>
+            Pulls a new model from the specified provider. This method initiates a download of the model
+            from the Ollama API, processes the streaming response to track download progress, and adds
+            the model to the local model list upon successful completion. The method provides progress
+            updates through the optional callback and supports cancellation through the cancellation token.
+            </summary>
+            <param name="modelName">The name of the model to pull (e.g., "llama2", "mistral").</param>
+            <param name="provider">The provider of the model (currently only "Ollama" is supported).</param>
+            <param name="progressCallback">Optional callback to report download progress. The callback receives OllamaPullResponse objects containing status information.</param>
+            <param name="cancellationToken">Optional cancellation token to cancel the operation if needed.</param>
+            <returns>The newly pulled model as a LocalModel instance, or null if the operation failed.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.ProcessModelPullStreamAsync(System.Net.Http.HttpResponseMessage,System.String,System.Action{View.Personal.Classes.OllamaPullResponse},System.Threading.CancellationToken)">
+            <summary>
+            Processes the streaming response from the model pull operation. This method reads the HTTP response
+            stream line by line, deserializes each line into an OllamaPullResponse object, and invokes the
+            progress callback with the response data. It handles special cases such as error responses and
+            adjusts the progress data when needed. The method continues processing until the stream ends
+            or the operation is cancelled.
+            </summary>
+            <param name="response">The HTTP response containing the streaming data from the Ollama API.</param>
+            <param name="modelName">The name of the model being pulled, used for error logging.</param>
+            <param name="progressCallback">Callback to report progress updates to the caller.</param>
+            <param name="cancellationToken">Cancellation token to stop processing if the operation is cancelled.</param>
+            <returns>A task representing the asynchronous operation.</returns>
         </member>
         <member name="T:View.Personal.Services.LoggingService">
             <summary>
@@ -1894,6 +2481,71 @@
             <param name="liteGraph">The LiteGraphClient instance for interacting with graph data.</param>
             <param name="tenantGuid">The GUID identifying the tenant.</param>
             <param name="graphGuid">The GUID identifying the graph.</param>
+        </member>
+        <member name="T:View.Personal.Views.LocalModelsView">
+            <summary>
+            View for managing locally pulled AI models. This view allows users to view, pull, and delete
+            AI models from the Ollama service. It provides a user interface for interacting with the
+            LocalModelService to manage models on the local system.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Views.LocalModelsView"/> class. This constructor
+            sets up the view and initializes the component, attaching necessary event handlers for
+            loading models when the view is attached to the visual tree.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.LoadModels">
+            <summary>
+            Loads models from the service and displays them in the DataGrid. This method fetches
+            the list of available models from the LocalModelService and updates the UI to display them.
+            It shows a loading indicator during the fetch operation and handles any exceptions that occur.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.PullModel_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the pull model button. This method initiates the download of a new
+            model from the Ollama service based on the model name entered by the user. It updates the UI
+            to show download progress, handles errors, and provides feedback to the user about the operation's
+            status. The method supports cancellation through a cancellation token.
+            </summary>
+            <param name="sender">The source of the event, typically the pull button.</param>
+            <param name="e">The event arguments containing information about the click event.</param>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.FormatFileSize(System.Int64)">
+            <summary>
+            Formats a file size in bytes to a human-readable string (KB, MB, GB). This method converts
+            a raw byte count into a more user-friendly representation with appropriate size units.
+            It handles different size magnitudes and formats the output with one decimal place precision.
+            </summary>
+            <param name="bytes">The size in bytes to be formatted.</param>
+            <returns>A formatted string representing the file size with appropriate units (B, KB, MB, GB, TB).</returns>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.CancelPull_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the cancel pull button. This method cancels an ongoing model pull
+            operation by signaling the cancellation token and updating the UI to reflect the cancelled state.
+            It hides progress indicators, resets status messages, and restores the UI to its pre-pull state.
+            </summary>
+            <param name="sender">The source of the event, typically the cancel button.</param>
+            <param name="e">The event arguments containing information about the click event.</param>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.DeleteModel_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the delete model button. This method initiates the deletion of a model
+            from the local system. It shows a confirmation dialog to the user, and if confirmed, calls the
+            LocalModelService to delete the model. The method provides feedback to the user about the operation's
+            success or failure through notifications and updates the UI to reflect the changes.
+            </summary>
+            <param name="sender">The source of the event, typically the delete button with the model ID as CommandParameter.</param>
+            <param name="e">The event arguments containing information about the click event.</param>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
         <member name="T:View.Personal.Views.OnboardingOverlay">
             <summary>

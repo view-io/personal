@@ -1002,6 +1002,11 @@
 								</ScrollViewer>
 							</Border>
 						</TabItem>
+						<TabItem Header="Local Models">
+							<Border Padding="0,0,0,0">
+								<controls:LocalModelsView />
+							</Border>
+						</TabItem>
 					</TabControl>
 				</Grid >
 				<StackPanel Name="MyFilesPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False"

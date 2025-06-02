@@ -1,4 +1,4 @@
-namespace View.Personal.Controls
+namespace View.Personal.Controls.Renderer
 {
     using System;
     using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace View.Personal.Controls
 
             try
             {
-                var document = Markdig.Markdown.Parse(markdown, Pipeline);
+                var document = Markdown.Parse(markdown, Pipeline);
                 return RenderDocument(document);
 
             }
@@ -351,8 +351,8 @@ namespace View.Personal.Controls
             // Create a ScrollViewer to handle overflow
             var scrollViewer = new ScrollViewer
             {
-                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
                 Content = grid
             };
 

@@ -8,8 +8,7 @@ namespace View.Personal
     using LiteGraph;
     using LiteGraph.GraphRepositories;
     using LiteGraph.GraphRepositories.Sqlite;
-    using MsBox.Avalonia;
-    using MsBox.Avalonia.Enums;
+    using View.Personal.Helpers;
     using Services;
     using SyslogLogging;
     using System;
@@ -243,13 +242,10 @@ namespace View.Personal
                 {
                     _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
                     _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
-                    var messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(
+                    CustomMessageBoxHelper.ShowErrorAsync(
                         "Unable to start View Personal",
                         "View Personal was unable to start due to the following exception:" + Environment.NewLine +
-                        Environment.NewLine + e.Message,
-                        ButtonEnum.Ok,
-                        Icon.Error);
-                    messageBoxStandardWindow.ShowAsync().Wait();
+                        Environment.NewLine + e.Message).Wait();
                     Environment.Exit(1);
                 }
         }
