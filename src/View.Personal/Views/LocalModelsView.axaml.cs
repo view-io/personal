@@ -145,8 +145,8 @@ namespace View.Personal.Views
             _cancellationTokenSource = new CancellationTokenSource();
 
             pullProgressBar!.IsVisible = true;
-            pullProgressBar.IsIndeterminate = true;
             pullProgressBar.Value = 0;
+            pullProgressBar.IsIndeterminate = true;
 
             pullStatusMessage!.Text = $"Pulling {modelName}...";
             pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#888888"));
@@ -224,6 +224,7 @@ namespace View.Personal.Views
 
                                 _cancellationTokenSource.Dispose();
                                 _cancellationTokenSource = null;
+                                pullProgressBar.Value = 0;
                                 return;
                             }
 
@@ -348,6 +349,7 @@ namespace View.Personal.Views
                 if (pullProgressBar != null)
                 {
                     pullProgressBar.IsVisible = false;
+                    pullProgressBar.Value = 0;
                 }
 
                 // Hide the pull status message
@@ -355,7 +357,7 @@ namespace View.Personal.Views
                 if (pullStatusMessage != null)
                 {
                     pullStatusMessage.IsVisible = false;
-                    pullStatusMessage.Text = string.Empty; // Clear the text
+                    pullStatusMessage.Text = string.Empty;
                 }
 
                 // Re-enable and show pull button, hide cancel button
