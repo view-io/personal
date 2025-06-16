@@ -165,7 +165,7 @@ namespace View.Personal.Views
             if (pullStatusMessage != null)
             {
                 pullStatusMessage.Text = $"Pulling {modelName}...";
-                pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#0472EF"));
+                pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#888888"));
                 pullStatusMessage.IsVisible = true;
             }
 
