@@ -165,6 +165,9 @@ namespace View.Personal.Views
                 {
                     pullProgressBar!.IsVisible = false;
                     pullStatusMessage.IsVisible = false;
+                    pullButton.IsVisible = true;
+                    pullButton.IsEnabled = true;
+                    cancelButton.IsVisible = false;
                     const string ollamaDownloadUrl = "https://ollama.com/download";
                     var textLines = new List<string> { "You need to install Ollama to pull and use AI models." };
                     await CustomMessageBoxHelper.ShowServiceNotInstalledAsync("Ollama Not Installed",
