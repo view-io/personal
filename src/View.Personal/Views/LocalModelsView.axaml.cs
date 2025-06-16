@@ -159,7 +159,7 @@ namespace View.Personal.Views
             LocalModel? newModel = null;
 
             bool isOllamaAvailable = await _modelService.IsOllamaAvailableAsync();
-            if (isOllamaAvailable)
+            if (!isOllamaAvailable)
             {
                 if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                 {
