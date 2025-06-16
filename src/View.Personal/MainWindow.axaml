@@ -991,11 +991,22 @@
 											</StackPanel>
 											<!-- ReSharper disable once Xaml.MissingGridIndex -->
 											<StackPanel VerticalAlignment="Bottom">
-												<Button Content="Save Settings"
+												<Button x:Name="SaveSettingsButton"
                                                         Click="SaveSettings2_Click"
                                                         Classes="default"
                                                         HorizontalAlignment="Left"
-                                                        Padding="12,8" />
+                                                        Padding="12,8">
+                                                    <Button.Content>
+                                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                                            <avalonia:MaterialIcon x:Name="SaveSettingsSpinner" 
+                                                                                 Kind="Refresh" 
+                                                                                 Height="16" 
+                                                                                 Width="16" 
+                                                                                 IsVisible="False" />
+                                                            <TextBlock x:Name="SaveSettingsText" Text="Save Settings" />
+                                                        </StackPanel>
+                                                    </Button.Content>
+                                                </Button>
 											</StackPanel>
 										</Grid>
 									</StackPanel>

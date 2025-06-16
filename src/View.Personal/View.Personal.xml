@@ -602,6 +602,18 @@
             Gets or sets the validation error message to display when input is invalid.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.LinkText">
+            <summary>
+            Gets or sets the display text for the optional hyperlink in the message box.
+            When set, this text will be shown as a clickable link.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.LinkUrl">
+            <summary>
+            Gets or sets the URL to navigate to when the hyperlink is clicked.
+            This should be a valid web address (e.g., https://example.com).
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.CustomMessageBoxParams.IsInputInvalid">
             <summary>
             Gets or sets a value indicating whether the input field is currently in an error state.
@@ -1043,6 +1055,13 @@
             <param name="params">The parameters for the message box.</param>
             <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
         </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowServiceNotInstalledAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with a clickable link to download or install a service.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
         <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.CreateMessageBoxContent(View.Personal.Classes.CustomMessageBoxParams)">
             <summary>
             Creates the message box content layout.
@@ -1245,6 +1264,18 @@
             Question icon.
             </summary>
         </member>
+        <member name="T:View.Personal.Helpers.BrowserHelper">
+            <summary>
+            Helper class for opening URLs in the default browser.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.BrowserHelper.OpenUrl(System.String)">
+            <summary>
+            Opens the specified URL in the default browser.
+            </summary>
+            <param name="url">The URL to open.</param>
+            <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
         <member name="T:View.Personal.Helpers.ByteSizeConverter">
             <summary>
             A value converter that transforms a string representing a file size in bytes into a human-readable format (e.g., "1.5 KB", "2.0 MB").
@@ -1309,6 +1340,20 @@
             <param name="title">The title of the message box.</param>
             <param name="text">The error message.</param>
             <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowServiceNotInstalledAsync(System.String,System.String,System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
+            <summary>
+            Shows a message box with a clickable link to download or install a service.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="message">The message text.</param>
+            <param name="linkText">The text for the clickable link.</param>
+            <param name="linkUrl">The URL to open when the link is clicked.</param>
+            <param name="buttons">The type of buttons to display.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
             <returns>A task that represents the asynchronous operation.</returns>
         </member>
         <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowWarningAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
@@ -1474,6 +1519,17 @@
             </summary>
             <param name="title">The title of the notification.</param>
             <param name="message">The message to display in the notification.</param>
+            <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
+        </member>
+        <member name="M:View.Personal.MainWindow.ShowNotificationWithLink(System.String,System.String,System.String,System.String,Avalonia.Controls.Notifications.NotificationType)">
+            <summary>
+            Displays a notification with the specified title, message, link, and type using the window's notification manager.
+            The notification includes a clickable link that opens in the default browser.
+            </summary>
+            <param name="title">The title of the notification.</param>
+            <param name="message">The message to display in the notification.</param>
+            <param name="linkText">The text to display for the clickable link.</param>
+            <param name="linkUrl">The URL to open when the link is clicked.</param>
             <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         </member>
         <member name="M:View.Personal.MainWindow.IngestFileAsync(System.String)">
@@ -1989,6 +2045,12 @@
             </summary>
             <returns>A task that resolves to a list of local models.</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.IsOllamaAvailableAsync">
+            <summary>
+            Checks if Ollama service is available and running.
+            </summary>
+            <returns>A task that resolves to true if Ollama is available, false otherwise.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.SetModelActiveState(System.String,System.Boolean)">
             <summary>
             Activates or deactivates a model.
@@ -2495,6 +2557,14 @@
             sets up the view and initializes the component, attaching necessary event handlers for
             loading models when the view is attached to the visual tree.
             </summary>
+        </member>
+        <member name="M:View.Personal.Views.LocalModelsView.ExploreModelsButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the explore models button. This method opens the Ollama library URL
+            in the default browser to allow users to explore available models.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
         </member>
         <member name="M:View.Personal.Views.LocalModelsView.LoadModels">
             <summary>

@@ -63,6 +63,31 @@ namespace View.Personal.Services
         }
 
         /// <summary>
+        /// Checks if Ollama service is available and running.
+        /// </summary>
+        /// <returns>A task that resolves to true if Ollama is available, false otherwise.</returns>
+        public async Task<bool> IsOllamaAvailableAsync()
+        {
+            try
+            {
+                string endpoint = GetOllamaEndpoint();
+                using var httpClient = CreateHttpClient();
+                // Set a short timeout to quickly determine if Ollama is available
+                httpClient.Timeout = TimeSpan.FromSeconds(3);
+                
+                // Try to connect to the Ollama API endpoint
+                var response = await httpClient.GetAsync($"{endpoint}api/tags");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _app?.Log($"[Error] Ollama service is not available: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"[Error] Ollama service is not available");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Activates or deactivates a model.
         /// </summary>
         /// <param name="modelId">The ID of the model to update.</param>

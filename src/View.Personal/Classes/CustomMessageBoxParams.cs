@@ -59,7 +59,19 @@ namespace View.Personal.Classes
         /// Gets or sets the validation error message to display when input is invalid.
         /// </summary>
         public string ValidationErrorMessage { get; set; } = "Please enter a value";
-        
+
+        /// <summary>
+        /// Gets or sets the display text for the optional hyperlink in the message box.
+        /// When set, this text will be shown as a clickable link.
+        /// </summary>
+        public string LinkText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the URL to navigate to when the hyperlink is clicked.
+        /// This should be a valid web address (e.g., https://example.com).
+        /// </summary>
+        public string LinkUrl { get; set; } = string.Empty;
+
         /// <summary>
         /// Gets or sets a value indicating whether the input field is currently in an error state.
         /// </summary>
