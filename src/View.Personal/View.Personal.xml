@@ -1521,6 +1521,17 @@
             <param name="message">The message to display in the notification.</param>
             <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
         </member>
+        <member name="M:View.Personal.MainWindow.ShowNotificationWithLink(System.String,System.String,System.String,System.String,Avalonia.Controls.Notifications.NotificationType)">
+            <summary>
+            Displays a notification with the specified title, message, link, and type using the window's notification manager.
+            The notification includes a clickable link that opens in the default browser.
+            </summary>
+            <param name="title">The title of the notification.</param>
+            <param name="message">The message to display in the notification.</param>
+            <param name="linkText">The text to display for the clickable link.</param>
+            <param name="linkUrl">The URL to open when the link is clicked.</param>
+            <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
+        </member>
         <member name="M:View.Personal.MainWindow.IngestFileAsync(System.String)">
             <summary>
             Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
