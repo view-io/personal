@@ -73,6 +73,7 @@
 					<!-- Right Column - Input and Button -->
 					<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
 						<TextBox Grid.Row="0" Grid.Column="0" x:Name="ModelNameTextBox"
+								 Classes="no-shadow"
                                  Watermark="Enter Ollama compatible model tag (e.g. qwen2.5:7b)"
                                  Margin="0,0,8,0"
                                  Height="36" />
