@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -67,7 +68,7 @@ namespace View.Personal.Controls.Dialogs
         /// </summary>
         /// <param name="params">The parameters for the message box.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
-        private static Task<(string Text, ButtonResult Result)> ShowAsyncInternal(CustomMessageBoxParams @params)
+        private static async Task<(string Text, ButtonResult Result)> ShowAsyncInternal(CustomMessageBoxParams @params)
         {
             var window = new Window
             {
@@ -93,11 +94,11 @@ namespace View.Personal.Controls.Dialogs
                       WindowTransparencyLevel.AcrylicBlur,
                       WindowTransparencyLevel.Transparent,
                       WindowTransparencyLevel.None
-                },   
+                },
                 ExtendClientAreaToDecorationsHint = true,
                 ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
-                ShowInTaskbar = true,
-                Icon = null,
+                ShowInTaskbar = false,
+                Topmost = false,
                 WindowState = WindowState.Normal,
             };
 
@@ -110,8 +111,16 @@ namespace View.Personal.Controls.Dialogs
                     tcs.SetResult((string.Empty, ButtonResult.Cancel));
             };
 
-            window.Show();
-            return tcs.Task;
+            var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (desktop?.MainWindow != null)
+            {
+                await window.ShowDialog(desktop.MainWindow);
+            }
+            else
+            {
+                window.Show();
+            }
+            return await tcs.Task;
         }
 
         /// <summary>
@@ -119,7 +128,7 @@ namespace View.Personal.Controls.Dialogs
         /// </summary>
         /// <param name="params">The parameters for the message box.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static Task<ButtonResult> ShowServiceNotInstalledAsync(CustomMessageBoxParams @params)
+        public static async Task<ButtonResult> ShowServiceNotInstalledAsync(CustomMessageBoxParams @params)
         {
             var window = new Window
             {
@@ -150,6 +159,7 @@ namespace View.Personal.Controls.Dialogs
                 ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
                 ShowInTaskbar = true,
                 Icon = null,
+                Topmost = false,
                 WindowState = WindowState.Normal,
             };
 
@@ -162,8 +172,16 @@ namespace View.Personal.Controls.Dialogs
                     tcs.SetResult(ButtonResult.Cancel);
             };
 
-            window.Show();
-            return tcs.Task;
+            var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (desktop?.MainWindow != null)
+            {
+                await window.ShowDialog(desktop.MainWindow);
+            }
+            else
+            {
+                window.Show();
+            }
+            return await tcs.Task;
         }
 
         #endregion
@@ -272,7 +290,7 @@ namespace View.Personal.Controls.Dialogs
             var messageContainer = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
             messageContainer.Children.Add(messageBlock);
             contentPanel.Children.Add(messageContainer);
-            
+
             // Add text input field if requested
             TextBox inputTextBox = null!;
             if (@params.HasInputField)
@@ -293,7 +311,7 @@ namespace View.Personal.Controls.Dialogs
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Spacing = 0
                 };
-                
+
                 inputTextBox = new TextBox
                 {
                     Text = @params.InputDefaultValue,
@@ -305,9 +323,9 @@ namespace View.Personal.Controls.Dialogs
                     Margin = new Thickness(0),
                     BorderBrush = new SolidColorBrush(Color.Parse("#0078D7"))
                 };
-                
+
                 inputContainer.Children.Add(inputTextBox);
-                
+
                 // Create validation error message text block (initially hidden)
                 var validationErrorBlock = new TextBlock
                 {
@@ -317,7 +335,7 @@ namespace View.Personal.Controls.Dialogs
                     IsVisible = false,
                     Margin = new Thickness(0, 4, 0, 0)
                 };
-                
+
                 inputContainer.Children.Add(validationErrorBlock);
                 contentPanel.Children.Add(inputContainer);
             }
@@ -381,10 +399,10 @@ namespace View.Personal.Controls.Dialogs
                         if (window.DataContext is TaskCompletionSource<(string Text, ButtonResult Result)> tcs && !tcs.Task.IsCompleted)
                         {
                             string inputText = inputTextBox?.Text ?? string.Empty;
-                            
+
                             // Check if validation is enabled and this is the OK button
-                            if (@params.EnableInputValidation && 
-                                result == ButtonResult.Ok && 
+                            if (@params.EnableInputValidation &&
+                                result == ButtonResult.Ok &&
                                 string.IsNullOrWhiteSpace(inputText))
                             {
                                 // Show validation error
@@ -394,42 +412,42 @@ namespace View.Personal.Controls.Dialogs
                                     var validationErrorBlock = inputContainer.Children
                                         .OfType<TextBlock>()
                                         .FirstOrDefault();
-                                        
+
                                     if (validationErrorBlock != null)
                                     {
                                         validationErrorBlock.IsVisible = true;
                                     }
-                                    
+
                                     // Change input border to red
                                     inputTextBox.BorderBrush = new SolidColorBrush(Color.Parse("#D94242"));
                                 }
-                                
+
                                 // Don't close the dialog
                                 return;
                             }
-                            
+
                             tcs.SetResult((result == ButtonResult.Cancel ? string.Empty : inputText, result));
                         }
                         window.Close();
                     }
                 };
-                
+
                 // If this is an input dialog with validation, add text changed handler to reset validation state
                 if (@params.EnableInputValidation && inputTextBox != null && buttonDef.Result == ButtonResult.Ok)
                 {
                     inputTextBox.TextChanged += (sender, _) =>
                     {
-                        if (sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text) && 
+                        if (sender is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text) &&
                             textBox.Parent is StackPanel inputContainer)
                         {
                             // Reset border color to blue
                             textBox.BorderBrush = new SolidColorBrush(Color.Parse("#0078D7"));
-                            
+
                             // Hide validation error message
                             var validationErrorBlock = inputContainer.Children
                                 .OfType<TextBlock>()
                                 .FirstOrDefault();
-                                
+
                             if (validationErrorBlock != null)
                             {
                                 validationErrorBlock.IsVisible = false;
