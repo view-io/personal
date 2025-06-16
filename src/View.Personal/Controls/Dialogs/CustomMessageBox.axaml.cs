@@ -4,6 +4,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Material.Icons;
 using Material.Icons.Avalonia;
 using System.Linq;
@@ -113,6 +114,58 @@ namespace View.Personal.Controls.Dialogs
             return tcs.Task;
         }
 
+        /// <summary>
+        /// Shows a message box with a clickable link to download or install a service.
+        /// </summary>
+        /// <param name="params">The parameters for the message box.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static Task<ButtonResult> ShowServiceNotInstalledAsync(CustomMessageBoxParams @params)
+        {
+            var window = new Window
+            {
+                Title = @params.Title,
+                Content = new Border
+                {
+                    Background = Brushes.White,
+                    CornerRadius = new CornerRadius(4),
+                    BorderThickness = new Thickness(2),
+                    BorderBrush = new SolidColorBrush(Color.Parse("#CCCCCC")),
+                    ClipToBounds = true,
+                    Child = CreateMessageBoxContent(@params)
+                },
+                SizeToContent = SizeToContent.WidthAndHeight,
+                CanResize = false,
+                WindowStartupLocation = @params.WindowStartupLocation,
+                MinWidth = 380,
+                Classes = { "messageBox" },
+                SystemDecorations = SystemDecorations.None,
+                Background = Brushes.Transparent,
+                TransparencyLevelHint = new[]
+                {
+                      WindowTransparencyLevel.AcrylicBlur,
+                      WindowTransparencyLevel.Transparent,
+                      WindowTransparencyLevel.None
+                },
+                ExtendClientAreaToDecorationsHint = true,
+                ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
+                ShowInTaskbar = true,
+                Icon = null,
+                WindowState = WindowState.Normal,
+            };
+
+            var tcs = new TaskCompletionSource<ButtonResult>();
+            window.DataContext = tcs;
+
+            window.Closed += (_, _) =>
+            {
+                if (!tcs.Task.IsCompleted)
+                    tcs.SetResult(ButtonResult.Cancel);
+            };
+
+            window.Show();
+            return tcs.Task;
+        }
+
         #endregion
 
         #region Private-Methods
@@ -127,7 +180,6 @@ namespace View.Personal.Controls.Dialogs
             var contentBorder = new Border
             {
                 MinWidth = 360,
-                //MaxWidth = 520
             };
 
             var mainPanel = new StackPanel
@@ -269,7 +321,30 @@ namespace View.Personal.Controls.Dialogs
                 inputContainer.Children.Add(validationErrorBlock);
                 contentPanel.Children.Add(inputContainer);
             }
-            
+
+
+            // Add clickable link if LinkText and LinkUrl are set
+            if (!string.IsNullOrWhiteSpace(@params.LinkText) && !string.IsNullOrWhiteSpace(@params.LinkUrl))
+            {
+                var linkTextBlock = new TextBlock
+                {
+                    Text = @params.LinkText,
+                    TextDecorations = TextDecorations.Underline,
+                    Foreground = new SolidColorBrush(Color.Parse("#0472EF")),
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Thickness(0, 8, 0, 8)
+                };
+
+                linkTextBlock.PointerPressed += (_, _) =>
+                {
+                    Helpers.BrowserHelper.OpenUrl(@params.LinkUrl);
+                };
+
+                contentPanel.Children.Add(linkTextBlock);
+            }
+
+
             mainPanel.Children.Add(contentPanel);
 
             var buttonPanel = new WrapPanel
@@ -279,8 +354,6 @@ namespace View.Personal.Controls.Dialogs
                 Margin = new Thickness(24, 8, 24, 24),
                 Orientation = Orientation.Horizontal
             };
-
-
 
             foreach (var buttonDef in @params.Buttons)
             {

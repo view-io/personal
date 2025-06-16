@@ -158,6 +158,24 @@ namespace View.Personal.Views
             bool finalStage = false;
             LocalModel? newModel = null;
 
+            bool isOllamaAvailable = await _modelService.IsOllamaAvailableAsync();
+            if (isOllamaAvailable)
+            {
+                if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    pullProgressBar!.IsVisible = false;
+                    pullStatusMessage.IsVisible = false;
+                    const string ollamaDownloadUrl = "https://ollama.com/download";
+                    var textLines = new List<string> { "You need to install Ollama to pull and use AI models." };
+                    await CustomMessageBoxHelper.ShowServiceNotInstalledAsync("Ollama Not Installed",
+                                                                              "Ollama is not installed or running on your system.",
+                                                                              "Download Ollama",
+                                                                               ollamaDownloadUrl,
+                                                                               textLines: textLines); 
+                }
+                return;
+            }
+
             try
             {
                 newModel = await Task.Run(async () =>
@@ -368,16 +386,12 @@ namespace View.Personal.Views
         {
             if (sender is Button button && button.CommandParameter is string modelId)
             {
-                // Get the model name directly from the DataContext of the button's parent
                 string modelName = "this model";
-
-                // The button is inside a DataTemplate where the DataContext is the LocalModel
                 if (button.DataContext is LocalModel model)
                 {
                     modelName = model.Name;
                 }
 
-                // Show confirmation dialog immediately without any API calls
                 if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     var mainWindow = (MainWindow)desktop.MainWindow!;

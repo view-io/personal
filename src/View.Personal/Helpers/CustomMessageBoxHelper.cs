@@ -46,7 +46,7 @@ namespace View.Personal.Helpers
             {
                 text = string.Join("\n", textLines);
             }
-            
+
             var parameters = new CustomMessageBoxParams
             {
                 Title = title,
@@ -93,7 +93,7 @@ namespace View.Personal.Helpers
 
             return CustomMessageBox.ShowAsync(parameters);
         }
-        
+
         /// <summary>
         /// Shows an error message box.
         /// </summary>
@@ -108,7 +108,48 @@ namespace View.Personal.Helpers
         {
             return ShowMessageBoxAsync(title, text, MessageBoxButtons.Ok, MessageBoxIcon.Error, windowStartupLocation);
         }
-        
+
+        /// <summary>
+        /// Shows a message box with a clickable link to download or install a service.
+        /// </summary>
+        /// <param name="title">The title of the message box.</param>
+        /// <param name="message">The message text.</param>
+        /// <param name="linkText">The text for the clickable link.</param>
+        /// <param name="linkUrl">The URL to open when the link is clicked.</param>
+        /// <param name="buttons">The type of buttons to display.</param>
+        /// <param name="icon">The icon to display.</param>
+        /// <param name="windowStartupLocation">The startup location of the window.</param>
+        /// <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static Task<ButtonResult> ShowServiceNotInstalledAsync(
+            string title,
+            string message,
+            string linkText,
+            string linkUrl,
+            MessageBoxButtons buttons = MessageBoxButtons.Ok,
+            MessageBoxIcon icon = MessageBoxIcon.Warning,
+            WindowStartupLocation windowStartupLocation = WindowStartupLocation.CenterOwner,
+            List<string> textLines = null!)
+        {
+            if (textLines != null && textLines.Count > 0)
+            {
+                message += "\n" + string.Join("\n", textLines);
+            }
+            var parameters = new CustomMessageBoxParams
+            {
+                Title = title,
+                Message = message,
+                Icon = icon,
+                LinkText = linkText,
+                LinkUrl = linkUrl,
+                WindowStartupLocation = windowStartupLocation,
+                TextLines = textLines ?? new List<string>(),
+                Buttons = GetButtonDefinitions(buttons),
+            };
+
+            return CustomMessageBox.ShowServiceNotInstalledAsync(parameters);
+        }
+
         /// <summary>
         /// Shows a warning message box.
         /// </summary>
@@ -123,7 +164,7 @@ namespace View.Personal.Helpers
         {
             return ShowMessageBoxAsync(title, text, MessageBoxButtons.Ok, MessageBoxIcon.Warning, windowStartupLocation);
         }
-        
+
         /// <summary>
         /// Shows a dialog with an input field for user text entry.
         /// </summary>

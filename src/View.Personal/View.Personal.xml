@@ -602,6 +602,18 @@
             Gets or sets the validation error message to display when input is invalid.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.LinkText">
+            <summary>
+            Gets or sets the display text for the optional hyperlink in the message box.
+            When set, this text will be shown as a clickable link.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CustomMessageBoxParams.LinkUrl">
+            <summary>
+            Gets or sets the URL to navigate to when the hyperlink is clicked.
+            This should be a valid web address (e.g., https://example.com).
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.CustomMessageBoxParams.IsInputInvalid">
             <summary>
             Gets or sets a value indicating whether the input field is currently in an error state.
@@ -1043,6 +1055,13 @@
             <param name="params">The parameters for the message box.</param>
             <returns>A task that represents the asynchronous operation. The task result contains the input text and button result.</returns>
         </member>
+        <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.ShowServiceNotInstalledAsync(View.Personal.Classes.CustomMessageBoxParams)">
+            <summary>
+            Shows a message box with a clickable link to download or install a service.
+            </summary>
+            <param name="params">The parameters for the message box.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
         <member name="M:View.Personal.Controls.Dialogs.CustomMessageBox.CreateMessageBoxContent(View.Personal.Classes.CustomMessageBoxParams)">
             <summary>
             Creates the message box content layout.
@@ -1321,6 +1340,20 @@
             <param name="title">The title of the message box.</param>
             <param name="text">The error message.</param>
             <param name="windowStartupLocation">The startup location of the window.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowServiceNotInstalledAsync(System.String,System.String,System.String,System.String,View.Personal.Enums.MessageBoxButtons,View.Personal.Enums.MessageBoxIcon,Avalonia.Controls.WindowStartupLocation,System.Collections.Generic.List{System.String})">
+            <summary>
+            Shows a message box with a clickable link to download or install a service.
+            </summary>
+            <param name="title">The title of the message box.</param>
+            <param name="message">The message text.</param>
+            <param name="linkText">The text for the clickable link.</param>
+            <param name="linkUrl">The URL to open when the link is clicked.</param>
+            <param name="buttons">The type of buttons to display.</param>
+            <param name="icon">The icon to display.</param>
+            <param name="windowStartupLocation">The startup location of the window.</param>
+            <param name="textLines">Optional list of text lines to display in the message box. Each string will be displayed on a separate line.</param>
             <returns>A task that represents the asynchronous operation.</returns>
         </member>
         <member name="M:View.Personal.Helpers.CustomMessageBoxHelper.ShowWarningAsync(System.String,System.String,Avalonia.Controls.WindowStartupLocation)">
@@ -2000,6 +2033,12 @@
             Gets the list of local models asynchronously.
             </summary>
             <returns>A task that resolves to a list of local models.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.IsOllamaAvailableAsync">
+            <summary>
+            Checks if Ollama service is available and running.
+            </summary>
+            <returns>A task that resolves to true if Ollama is available, false otherwise.</returns>
         </member>
         <member name="M:View.Personal.Services.LocalModelService.SetModelActiveState(System.String,System.Boolean)">
             <summary>

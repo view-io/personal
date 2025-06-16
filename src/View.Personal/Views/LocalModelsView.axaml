@@ -14,7 +14,6 @@
 	</UserControl.Resources>
 
 	<Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20,20,20,0">
-		<!-- Loading Indicator -->
 		<ProgressBar x:Name="LoadingIndicator"
 					 VerticalAlignment="Center"
 					 HorizontalAlignment="Stretch"
@@ -23,7 +22,6 @@
 					 Margin="0,0,0,5"
 					 IsVisible="False" />
 
-		<!-- Status Message -->
 		<TextBlock x:Name="StatusMessage"
 				  Grid.Row="1"
 				  Margin="0,0,0,10"
@@ -34,9 +32,7 @@
 		<!-- Models Section -->
 		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
 			<StackPanel Orientation="Vertical" Spacing="24">
-				<!-- Pull New Model Section -->
 				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
-					<!-- Left Column - Title and Description -->
 					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Center">
 						<TextBlock Text="Pull a new model" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 						<StackPanel Orientation="Horizontal">
@@ -148,25 +144,20 @@
 
 				<!-- Existing Models Section -->
 				<Grid ColumnDefinitions="200,*" Margin="0,8,0,0">
-					<!-- Left Column - Title and Description -->
 					<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Top">
 						<TextBlock Text="Downloaded models" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 						<TextBlock Text="Choose from existing models" FontSize="12" Foreground="#6A6B6F" />
 					</StackPanel>
-
-					<!-- Right Column - Models List -->
 					<ItemsControl Grid.Column="1" x:Name="ModelsDataGrid" Margin="40,0,0,0">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="0,12">
 									<Grid ColumnDefinitions="*,Auto,Auto">
-										<!-- Model Info -->
 										<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
 											<TextBlock Text="{Binding Name}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 											<TextBlock Text="{Binding ParameterCount, StringFormat='parameter size: {0}'}"
                                                        FontSize="12" Foreground="#6A6B6F" />
 										</StackPanel>
-										<!-- Delete Button -->
 										<Button Grid.Column="1"
                                             Classes="flat"
                                             Padding="8"
