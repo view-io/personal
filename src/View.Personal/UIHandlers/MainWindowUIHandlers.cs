@@ -283,7 +283,7 @@ namespace View.Personal.UIHandlers
                     if (!isOllamaAvailable)
                     {
                         window.ShowNotificationWithLink("Ollama Not Installed",
-                                                         "Ollama is not installed or running on your system. You need to install Ollama to use it as a provider.",
+                                                         "Ollama is not installed or not running on the system defined in the settings.",
                                                          "Download Ollama", "https://ollama.com/download",
                                                           NotificationType.Warning);
                         return;
