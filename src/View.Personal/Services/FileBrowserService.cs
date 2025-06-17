@@ -74,12 +74,12 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Opens a file picker dialog to select a file to ingest
+        /// Opens a file picker dialog to select one or more files to ingest
         /// </summary>
         /// <param name="window">The parent window</param>
-        /// <param name="fileTypes">The file type to filter (e.g., "pdf")</param>
-        /// <returns>The selected file path or null if canceled</returns>
-        public async Task<string?> BrowseForFileToIngest(
+        /// <param name="fileTypes">The file types to filter (e.g., "pdf")</param>
+        /// <returns>A list of selected file paths or empty list if canceled</returns>
+        public async Task<List<string>> BrowseForFileToIngest(
             Window window,
             IEnumerable<string>? fileTypes = null)
         {
@@ -105,19 +105,35 @@ namespace View.Personal.Services
 
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Select File to Ingest",
-                AllowMultiple = false,
+                Title = "Select Files to Ingest",
+                AllowMultiple = true,
                 FileTypeFilter = filters
             });
 
-            if (files.Count > 0 && !string.IsNullOrEmpty(files[0].Path.LocalPath))
+            var selectedFilePaths = new List<string>();
+            
+            if (files.Count > 0)
             {
-                app.Log($"[INFO] Selected file path: {files[0].Path.LocalPath}");
-                return files[0].Path.LocalPath;
+                foreach (var file in files)
+                {
+                    if (!string.IsNullOrEmpty(file.Path.LocalPath))
+                    {
+                        app.Log($"[INFO] Selected file path: {file.Path.LocalPath}");
+                        selectedFilePaths.Add(file.Path.LocalPath);
+                    }
+                }
             }
-
-            app.Log("[INFO] No file selected.");
-            return null;
+            
+            if (selectedFilePaths.Count == 0)
+            {
+                app.Log("[INFO] No files selected.");
+            }
+            else
+            {
+                app.Log($"[INFO] Selected {selectedFilePaths.Count} file(s).");
+            }
+            
+            return selectedFilePaths;
         }
 
 

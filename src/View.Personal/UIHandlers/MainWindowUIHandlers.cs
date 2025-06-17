@@ -480,26 +480,40 @@ namespace View.Personal.UIHandlers
         }
 
         /// <summary>
-        /// Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
+        /// Handles the click event for an ingest browse button, triggering a file browse operation to select and ingest multiple files.
         /// </summary>
         /// <param name="sender">The object that triggered the event.</param>
         /// <param name="e">The routed event arguments.</param>
         /// <param name="window">The window containing the textbox to update.</param>
-        /// <param name="fileBrowserService">The service used to browse for a file to ingest.</param>
+        /// <param name="fileBrowserService">The service used to browse for files to ingest.</param>
         public static async void IngestBrowseButton_Click(object sender, RoutedEventArgs e, Window window,
             FileBrowserService fileBrowserService)
         {
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            var filePath = await fileBrowserService.BrowseForFileToIngest(window);
-            if (!string.IsNullOrEmpty(filePath))
+            var filePaths = await fileBrowserService.BrowseForFileToIngest(window);
+            if (filePaths.Count > 0)
             {
                 var textBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (textBox != null)
-                    textBox.Text = filePath;
+                {
+                    // Display the first file path in the text box, or indicate multiple files
+                    if (filePaths.Count == 1)
+                    {
+                        textBox.Text = filePaths[0];
+                    }
+                    else
+                    {
+                        textBox.Text = $"{filePaths.Count} files selected";
+                    }
+                }
 
-                await mainWindow.IngestFileAsync(filePath);
+                // Process each selected file
+                foreach (var filePath in filePaths)
+                {
+                    await mainWindow.IngestFileAsync(filePath);
+                }
             }
         }
 

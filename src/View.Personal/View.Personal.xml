@@ -1843,11 +1843,11 @@
         </member>
         <member name="M:View.Personal.Services.FileBrowserService.BrowseForFileToIngest(Avalonia.Controls.Window,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            Opens a file picker dialog to select a file to ingest
+            Opens a file picker dialog to select one or more files to ingest
             </summary>
             <param name="window">The parent window</param>
-            <param name="fileTypes">The file type to filter (e.g., "pdf")</param>
-            <returns>The selected file path or null if canceled</returns>
+            <param name="fileTypes">The file types to filter (e.g., "pdf")</param>
+            <returns>A list of selected file paths or empty list if canceled</returns>
         </member>
         <member name="M:View.Personal.Services.FileBrowserService.BrowseForChatHistorySaveLocation(Avalonia.Controls.Window)">
             <summary>
@@ -2500,12 +2500,12 @@
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IngestBrowseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,View.Personal.Services.FileBrowserService)">
             <summary>
-            Handles the click event for an ingest browse button, triggering a file browse operation to update a textbox.
+            Handles the click event for an ingest browse button, triggering a file browse operation to select and ingest multiple files.
             </summary>
             <param name="sender">The object that triggered the event.</param>
             <param name="e">The routed event arguments.</param>
             <param name="window">The window containing the textbox to update.</param>
-            <param name="fileBrowserService">The service used to browse for a file to ingest.</param>
+            <param name="fileBrowserService">The service used to browse for files to ingest.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.TryParsePositiveInt(View.Personal.MainWindow,System.String,System.String,System.Int32@)">
             <summary>
