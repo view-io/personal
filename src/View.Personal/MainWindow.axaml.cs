@@ -398,7 +398,7 @@ namespace View.Personal
         {
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel2 = this.FindControl<Grid>("SettingsPanel2");
-            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var myFilesPanel = this.FindControl<Grid>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
             var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");

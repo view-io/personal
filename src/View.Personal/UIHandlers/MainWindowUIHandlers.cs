@@ -102,7 +102,7 @@ namespace View.Personal.UIHandlers
             else if (providerSettings.SelectedEmbeddingsProvider == "OpenAI")
                 window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked = true;
             else if (providerSettings.SelectedEmbeddingsProvider == "Voyage")
-                window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked = true; 
+                window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked = true;
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace View.Personal.UIHandlers
             var saveButton = window.FindControl<Button>("SaveSettingsButton");
             var saveText = window.FindControl<TextBlock>("SaveSettingsText");
             var spinner = window.FindControl<MaterialIcon>("SaveSettingsSpinner");
-            
+
             string originalButtonText = "Save Settings";
             saveText.Text = "Saving settings...";
             spinner.IsVisible = true;
@@ -330,9 +330,9 @@ namespace View.Personal.UIHandlers
                 {
                     providerSettings.SelectedEmbeddingsProvider = "Ollama";
                     embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
-                if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
+                    if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
                     embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
-                if (!TryParsePositiveInt(window, "OllamaEmbeddingMaxTokens", "Ollama Embedding Model Max Tokens", out int ollamaTokens)) return;
+                    if (!TryParsePositiveInt(window, "OllamaEmbeddingMaxTokens", "Ollama Embedding Model Max Tokens", out int ollamaTokens)) return;
                     embeddingSettings.OllamaEmbeddingModelMaxTokens = ollamaTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
                     {
@@ -344,9 +344,9 @@ namespace View.Personal.UIHandlers
                 {
                     providerSettings.SelectedEmbeddingsProvider = "View";
                     embeddingSettings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
-                if (!TryParsePositiveInt(window, "ViewEmbeddingDimensions", "View Embedding Model Dimensions", out int viewDims)) return;
+                    if (!TryParsePositiveInt(window, "ViewEmbeddingDimensions", "View Embedding Model Dimensions", out int viewDims)) return;
                     embeddingSettings.ViewEmbeddingModelDimensions = viewDims;
-                if (!TryParsePositiveInt(window, "ViewEmbeddingMaxTokens", "View Embedding Model Max Tokens", out int viewTokens)) return;
+                    if (!TryParsePositiveInt(window, "ViewEmbeddingMaxTokens", "View Embedding Model Max Tokens", out int viewTokens)) return;
                     embeddingSettings.ViewEmbeddingModelMaxTokens = viewTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.ViewEmbeddingModel))
                     {
@@ -358,9 +358,9 @@ namespace View.Personal.UIHandlers
                 {
                     providerSettings.SelectedEmbeddingsProvider = "OpenAI";
                     embeddingSettings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
-                if (!TryParsePositiveInt(window, "OpenAIEmbeddingDimensions", "OpenAI Embedding Model Dimensions", out int openAiDims)) return;
+                    if (!TryParsePositiveInt(window, "OpenAIEmbeddingDimensions", "OpenAI Embedding Model Dimensions", out int openAiDims)) return;
                     embeddingSettings.OpenAIEmbeddingModelDimensions = openAiDims;
-                if (!TryParsePositiveInt(window, "OpenAIEmbeddingMaxTokens", "OpenAI Embedding Model Max Tokens", out int openAiTokens)) return;
+                    if (!TryParsePositiveInt(window, "OpenAIEmbeddingMaxTokens", "OpenAI Embedding Model Max Tokens", out int openAiTokens)) return;
                     embeddingSettings.OpenAIEmbeddingModelMaxTokens = openAiTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.OpenAIEmbeddingModel))
                     {
@@ -374,7 +374,7 @@ namespace View.Personal.UIHandlers
                     embeddingSettings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
                     embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
                     embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
-                if (!TryParsePositiveInt(window, "VoyageEmbeddingDimensions", "Voyage Embedding Model Dimensions", out int voyageDims)) return;
+                    if (!TryParsePositiveInt(window, "VoyageEmbeddingDimensions", "Voyage Embedding Model Dimensions", out int voyageDims)) return;
                     embeddingSettings.VoyageEmbeddingModelDimensions = voyageDims;
                     if (!TryParsePositiveInt(window, "VoyageEmbeddingMaxTokens", "Voyage Embedding Model Max Tokens", out int voyageTokens)) return;
                     embeddingSettings.VoyageEmbeddingModelMaxTokens = voyageTokens;
@@ -408,7 +408,7 @@ namespace View.Personal.UIHandlers
                 saveText.Text = originalButtonText;
                 spinner.IsVisible = false;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 window.ShowNotification("Unexpected Error", ex.Message, NotificationType.Error);
                 var app = App.Current as App;
@@ -499,7 +499,6 @@ namespace View.Personal.UIHandlers
                 var textBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (textBox != null)
                 {
-                    // Display the first file path in the text box, or indicate multiple files
                     if (filePaths.Count == 1)
                     {
                         textBox.Text = filePaths[0];
@@ -509,8 +508,24 @@ namespace View.Personal.UIHandlers
                         textBox.Text = $"{filePaths.Count} files selected";
                     }
                 }
+            }
+            var uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
+            if (uploadSpinner != null)
+            {
+                uploadSpinner.IsVisible = true;
+                uploadSpinner.IsIndeterminate = true;
+            }
 
+            try
+            {
                 await mainWindow.IngestFilesAsync(filePaths);
+            }
+            finally
+            {
+                if (uploadSpinner != null)
+                {
+                    uploadSpinner.IsVisible = false;
+                }
             }
         }
 
