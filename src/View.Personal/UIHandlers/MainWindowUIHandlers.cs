@@ -10,6 +10,7 @@ namespace View.Personal.UIHandlers
     using LiteGraph;
     using System.Text.RegularExpressions;
     using Material.Icons.Avalonia;
+    using System.Linq;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -482,10 +483,10 @@ namespace View.Personal.UIHandlers
         /// <summary>
         /// Handles the click event for an ingest browse button, triggering a file browse operation to select and ingest multiple files.
         /// </summary>
-        /// <param name="sender">The object that triggered the event.</param>
-        /// <param name="e">The routed event arguments.</param>
-        /// <param name="window">The window containing the textbox to update.</param>
-        /// <param name="fileBrowserService">The service used to browse for files to ingest.</param>
+        /// <param name="sender">The object that triggered the event, typically the ingest browse button.</param>
+        /// <param name="e">The routed event arguments containing event data.</param>
+        /// <param name="window">The window containing the UI controls.</param>
+        /// <param name="fileBrowserService">The service used to browse for files.</param>
         public static async void IngestBrowseButton_Click(object sender, RoutedEventArgs e, Window window,
             FileBrowserService fileBrowserService)
         {
@@ -509,11 +510,7 @@ namespace View.Personal.UIHandlers
                     }
                 }
 
-                // Process each selected file
-                foreach (var filePath in filePaths)
-                {
-                    await mainWindow.IngestFileAsync(filePath);
-                }
+                await mainWindow.IngestFilesAsync(filePaths);
             }
         }
 

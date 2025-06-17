@@ -75,7 +75,7 @@ namespace View.Personal.Services
                         else
                             app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
-                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
 
                         var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
                         if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
@@ -177,7 +177,7 @@ namespace View.Personal.Services
             }
             if (window is MainWindow mw)
             {
-                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
                 var filesDataGrid = mw.FindControl<DataGrid>("FilesDataGrid");
                 if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
                 {

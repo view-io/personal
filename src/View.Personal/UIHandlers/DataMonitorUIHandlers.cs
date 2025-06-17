@@ -404,7 +404,7 @@ namespace View.Personal.UIHandlers
             var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
             {
-                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
                 mainWindow.LogToConsole("[INFO] Refreshed Files panel after sync.");
             }
 
@@ -709,7 +709,7 @@ namespace View.Personal.UIHandlers
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
                         mainWindow.LogToConsole("[INFO] Refreshed Files panel after unwatch and delete.");
                     }
 
@@ -914,14 +914,14 @@ namespace View.Personal.UIHandlers
                             mainWindow.LogToConsole(
                                 $"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
 
-                            Dispatcher.UIThread.InvokeAsync(() =>
+                            Dispatcher.UIThread.InvokeAsync(async () =>
                             {
                                 LoadFileSystem(mainWindow, mainWindow._CurrentPath);
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after file deletion.");
+                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
                                 }
                             });
                         }
@@ -947,13 +947,13 @@ namespace View.Personal.UIHandlers
                                     $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
                             }
 
-                            Dispatcher.UIThread.InvokeAsync(() =>
+                            Dispatcher.UIThread.InvokeAsync(async () =>
                             {
                                 LoadFileSystem(mainWindow, mainWindow._CurrentPath);
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
                                     mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
                                 }
                             });
@@ -1107,11 +1107,11 @@ namespace View.Personal.UIHandlers
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        FileListHelper.RefreshFileList(
-                            ((App)Application.Current)._LiteGraph,
-                            ((App)Application.Current)._TenantGuid,
-                            ((App)Application.Current)._GraphGuid,
-                            mainWindow);
+                        await FileListHelper.RefreshFileList(
+                               ((App)Application.Current)._LiteGraph,
+                               ((App)Application.Current)._TenantGuid,
+                               ((App)Application.Current)._GraphGuid,
+                               mainWindow);
                         mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory ingestion.");
                     }
                 }
@@ -1139,10 +1139,10 @@ namespace View.Personal.UIHandlers
                         var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                         if (filesPanel != null && filesPanel.IsVisible)
                         {
-                            FileListHelper.RefreshFileList(
-                                ((App)Application.Current)._LiteGraph,
-                                ((App)Application.Current)._TenantGuid,
-                                ((App)Application.Current)._GraphGuid,
+                            await FileListHelper.RefreshFileList(
+                                    ((App)Application.Current)._LiteGraph,
+                                    ((App)Application.Current)._TenantGuid,
+                                    ((App)Application.Current)._GraphGuid,
                                 mainWindow);
                             mainWindow.LogToConsole("[INFO] Refreshed Files panel after file ingestion.");
                         }

@@ -328,6 +328,18 @@ namespace View.Personal
         }
 
         /// <summary>
+        /// Asynchronously initiates the ingestion of multiple files into the system by delegating to the <see cref="FileIngester.IngestFilesAsync"/> method.
+        /// This method processes all files in batch mode, generating embeddings in a single batch per provider for better performance.
+        /// </summary>
+        /// <param name="filePaths">The list of paths to the files to be ingested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of batch file ingestion.</returns>
+        public async Task IngestFilesAsync(List<string> filePaths)
+        {
+            await FileIngester.IngestFilesAsync(filePaths, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
+               this);
+        }
+
+        /// <summary>
         /// Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="FileIngester.ReIngestFileAsync"/> method.
         /// This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
         /// It serves as a bridge between the UI event handling in <see cref="MainWindow"/> and the file re-ingestion logic in <see cref="FileIngester"/>.
@@ -1435,7 +1447,7 @@ namespace View.Personal
         /// </summary>
         /// <param name="sender">The ComboBox that triggered the event.</param>
         /// <param name="e">The selection changed event arguments containing event data.</param>
-        private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
             if (comboBox.SelectedItem is GraphItem selectedGraph)
@@ -1455,7 +1467,7 @@ namespace View.Personal
 
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
-                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                await FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
 
                 var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
                 var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");

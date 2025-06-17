@@ -1541,6 +1541,14 @@
             <param name="filePath">The path to the file to be ingested.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of file ingestion.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.IngestFilesAsync(System.Collections.Generic.List{System.String})">
+            <summary>
+            Asynchronously initiates the ingestion of multiple files into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            This method processes all files in batch mode, generating embeddings in a single batch per provider for better performance.
+            </summary>
+            <param name="filePaths">The list of paths to the files to be ingested.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of batch file ingestion.</returns>
+        </member>
         <member name="M:View.Personal.MainWindow.ReIngestFileAsync(System.String)">
             <summary>
             Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
@@ -1820,12 +1828,11 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
-            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1941,6 +1948,24 @@
             <param name="graphGuid">The unique identifier of the graph where the file will be stored.</param>
             <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/>, expected to be <see cref="T:View.Personal.MainWindow"/>, for UI updates and notifications.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous re-ingestion operation.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Asynchronously ingests multiple files into the LiteGraph system, processing them concurrently and updating the UI as each file completes.
+            </summary>
+            <param name="filePaths">List of paths to the files to be ingested.</param>
+            <param name="typeDetector">An instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used to determine the type of each file.</param>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance used to interact with the graph database.</param>
+            <param name="tenantGuid">The GUID representing the tenant in the system.</param>
+            <param name="graphGuid">The GUID representing the graph in the system.</param>
+            <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.ProcessSingleFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Processes a single file for ingestion without showing individual UI notifications.
+            This is a helper method for batch processing.
+            </summary>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
             <summary>
@@ -2502,10 +2527,10 @@
             <summary>
             Handles the click event for an ingest browse button, triggering a file browse operation to select and ingest multiple files.
             </summary>
-            <param name="sender">The object that triggered the event.</param>
-            <param name="e">The routed event arguments.</param>
-            <param name="window">The window containing the textbox to update.</param>
-            <param name="fileBrowserService">The service used to browse for files to ingest.</param>
+            <param name="sender">The object that triggered the event, typically the ingest browse button.</param>
+            <param name="e">The routed event arguments containing event data.</param>
+            <param name="window">The window containing the UI controls.</param>
+            <param name="fileBrowserService">The service used to browse for files.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.TryParsePositiveInt(View.Personal.MainWindow,System.String,System.String,System.Int32@)">
             <summary>

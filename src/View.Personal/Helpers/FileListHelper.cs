@@ -1,11 +1,13 @@
 namespace View.Personal.Helpers
 {
+    using Avalonia.Controls;
+    using Avalonia.Threading;
+    using Classes;
+    using LiteGraph;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Avalonia.Controls;
-    using LiteGraph;
-    using Classes;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides helper methods for managing file lists in the application.
@@ -21,45 +23,41 @@ namespace View.Personal.Helpers
         /// Returns:
         /// None; updates the DataGrid's ItemsSource directly
         /// </summary>
-        public static void RefreshFileList(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
+        public static async Task RefreshFileList(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid, Window window)
         {
-            var documentNodes = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" });
+            var documentNodes = await Task.Run(() =>
+                liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
+                ?? new List<Node>());
+
             var ingestedFiles = new List<FileViewModel>();
 
-            if (documentNodes != null)
+            foreach (var node in documentNodes)
             {
-                var documentNodesList = documentNodes.ToList();
-                if (documentNodesList.Any())
-                    foreach (var node in documentNodesList)
-                    {
-                        var filePath = node.Tags?["FilePath"] ?? "Unknown";
-                        var name = node.Name ?? "Unnamed";
-                        var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC");
-                        var documentType = node.Tags?["DocumentType"] ?? "Unknown";
-                        var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
-
-                        ingestedFiles.Add(new FileViewModel
-                        {
-                            Name = name,
-                            CreatedUtc = createdUtc,
-                            FilePath = filePath,
-                            DocumentType = documentType,
-                            ContentLength = contentLength,
-                            NodeGuid = node.GUID
-                        });
-                    }
+                ingestedFiles.Add(new FileViewModel
+                {
+                    Name = node.Name ?? "Unnamed",
+                    CreatedUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC"),
+                    FilePath = node.Tags?["FilePath"] ?? "Unknown",
+                    DocumentType = node.Tags?["DocumentType"] ?? "Unknown",
+                    ContentLength = node.Tags?["ContentLength"] ?? "Unknown",
+                    NodeGuid = node.GUID
+                });
             }
 
-            var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
-            var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
-            var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
-            if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                filesDataGrid.ItemsSource = ingestedFiles;
-                filesDataGrid.IsVisible = true;
-                fileOperationsPanel.IsVisible = true;
-                uploadFilesPanel.IsVisible = false;
-            }
+                var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
+                var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
+                var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
+
+                if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
+                {
+                    filesDataGrid.ItemsSource = ingestedFiles;
+                    filesDataGrid.IsVisible = true;
+                    fileOperationsPanel.IsVisible = true;
+                    uploadFilesPanel.IsVisible = false;
+                }
+            }, DispatcherPriority.Background);
         }
     }
 }
