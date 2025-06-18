@@ -9,6 +9,7 @@ namespace View.Personal.UIHandlers
     using Services;
     using LiteGraph;
     using System.Text.RegularExpressions;
+    using Material.Icons.Avalonia;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -124,265 +125,300 @@ namespace View.Personal.UIHandlers
         /// Displays a success notification upon completion.
         /// </summary>
         /// <param name="window">The MainWindow instance containing the settings UI controls.</param>
-        public static void SaveSettings2_Click(MainWindow window)
+        public static async void SaveSettings2_Click(MainWindow window)
         {
-            var app = (App)Application.Current;
-            var endpointPattern = @"^http://((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|localhost|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+):\d{1,5}/$";
-
-            // Validate Ollama endpoint
-            var ollamaEndpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
-            if (!ollamaEndpoint.EndsWith("/"))
+            var saveButton = window.FindControl<Button>("SaveSettingsButton");
+            var saveText = window.FindControl<TextBlock>("SaveSettingsText");
+            var spinner = window.FindControl<MaterialIcon>("SaveSettingsSpinner");
+            
+            string originalButtonText = "Save Settings";
+            saveText.Text = "Saving settings...";
+            spinner.IsVisible = true;
+            try
             {
-                window.FindControl<TextBox>("OllamaEndpoint").Text += "/";
-                ollamaEndpoint += "/";
-            }
+                var app = (App)Application.Current;
+                var endpointPattern = @"^http://((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|localhost|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+):\d{1,5}/$";
 
-            if (!string.IsNullOrEmpty(ollamaEndpoint) && window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
-            {
-                if (!Regex.IsMatch(ollamaEndpoint, endpointPattern))
+                // Validate Ollama endpoint
+                var ollamaEndpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
+                if (!ollamaEndpoint.EndsWith("/"))
                 {
-                    window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
-                        NotificationType.Error);
-                    return;
+                    window.FindControl<TextBox>("OllamaEndpoint").Text += "/";
+                    ollamaEndpoint += "/";
                 }
 
-                if (!IsHostnameResolvable(ollamaEndpoint))
+                if (!string.IsNullOrEmpty(ollamaEndpoint) && window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
                 {
-                    window.ShowNotification("Unreachable Host", "The Ollama endpoint hostname could not be resolved via DNS.",
-                        NotificationType.Error);
-                    return;
-                }
-            }
+                    if (!Regex.IsMatch(ollamaEndpoint, endpointPattern))
+                    {
+                        window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
+                            NotificationType.Error);
+                        return;
+                    }
 
-            // Validate View endpoint
-            var viewEndpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
-            if (!viewEndpoint.EndsWith("/"))
-            {
-                window.FindControl<TextBox>("ViewEndpoint").Text += "/";
-                viewEndpoint += "/";
-            }
-
-            if (!string.IsNullOrEmpty(viewEndpoint) && window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
-            {
-                if (!Regex.IsMatch(viewEndpoint, endpointPattern))
-                {
-                    window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",
-                        NotificationType.Error);
-                    return;
+                    if (!IsHostnameResolvable(ollamaEndpoint))
+                    {
+                        window.ShowNotification("Unreachable Host", "The Ollama endpoint hostname could not be resolved via DNS.",
+                            NotificationType.Error);
+                        return;
+                    }
                 }
 
-                if (!IsHostnameResolvable(viewEndpoint))
+                var viewEndpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
+                if (!viewEndpoint.EndsWith("/"))
                 {
-                    window.ShowNotification("Unreachable Host", "The View endpoint hostname could not be resolved via DNS.",
-                        NotificationType.Error);
-                    return;
+                    window.FindControl<TextBox>("ViewEndpoint").Text += "/";
+                    viewEndpoint += "/";
                 }
-            }
 
-            var openAiSettings = app.ApplicationSettings.OpenAI;
-            var anthropicSettings = app.ApplicationSettings.Anthropic;
-            var ollamaSettings = app.ApplicationSettings.Ollama;
-            var viewSettings = app.ApplicationSettings.View;
-            var embeddingSettings = app.ApplicationSettings.Embeddings;
-            var providerSettings = app.ApplicationSettings;
+                if (!string.IsNullOrEmpty(viewEndpoint) && window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
+                {
+                    if (!Regex.IsMatch(viewEndpoint, endpointPattern))
+                    {
+                        window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",
+                            NotificationType.Error);
+                        return;
+                    }
 
-            // Update OpenAI settings
-            openAiSettings.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
-            openAiSettings.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
-            openAiSettings.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
-            openAiSettings.IsEnabled =
-                window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
+                    if (!IsHostnameResolvable(viewEndpoint))
+                    {
+                        window.ShowNotification("Unreachable Host", "The View endpoint hostname could not be resolved via DNS.",
+                            NotificationType.Error);
+                        return;
+                    }
+                }
 
-            // Update Anthropic settings
-            anthropicSettings.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
-            anthropicSettings.CompletionModel =
-                window.FindControl<TextBox>("AnthropicCompletionModel").Text;
-            anthropicSettings.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
-            anthropicSettings.IsEnabled =
-                window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
+                var openAiSettings = app.ApplicationSettings.OpenAI;
+                var anthropicSettings = app.ApplicationSettings.Anthropic;
+                var ollamaSettings = app.ApplicationSettings.Ollama;
+                var viewSettings = app.ApplicationSettings.View;
+                var embeddingSettings = app.ApplicationSettings.Embeddings;
+                var providerSettings = app.ApplicationSettings;
 
-            // Update Ollama settings
-            ollamaSettings.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
-            ollamaSettings.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
-            ollamaSettings.IsEnabled =
-                window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
+                // Update OpenAI settings
+                openAiSettings.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
+                openAiSettings.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
+                openAiSettings.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
+                openAiSettings.IsEnabled =
+                    window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
 
-            // Update View settings
-            viewSettings.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
-            viewSettings.Endpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
-            viewSettings.OllamaHostName = window.FindControl<TextBox>("OllamaHostName").Text;
-            viewSettings.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
-            viewSettings.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
-            viewSettings.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
-            viewSettings.IsEnabled =
-                window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
+                // Update Anthropic settings
+                anthropicSettings.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
+                anthropicSettings.CompletionModel =
+                    window.FindControl<TextBox>("AnthropicCompletionModel").Text;
+                anthropicSettings.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
+                anthropicSettings.IsEnabled =
+                    window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
 
-            if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
-            {
-                providerSettings.SelectedProvider = "OpenAI";
-                if (string.IsNullOrWhiteSpace(openAiSettings.ApiKey))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI API Key.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(openAiSettings.CompletionModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Completion Model.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(openAiSettings.Endpoint))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Endpoint.", NotificationType.Error);
-                    return;
-                }
-            }
-            else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
-            {
-                providerSettings.SelectedProvider = "Anthropic";
-                if (string.IsNullOrWhiteSpace(anthropicSettings.ApiKey))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic API Key.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(anthropicSettings.CompletionModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic Completion Model.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(anthropicSettings.Endpoint))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Anthropic Endpoint.", NotificationType.Error);
-                    return;
-                }
-            }
-            else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
-            {
-                providerSettings.SelectedProvider = "Ollama";
-                if (string.IsNullOrWhiteSpace(ollamaSettings.CompletionModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Completion Model.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(ollamaSettings.Endpoint))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Endpoint.", NotificationType.Error);
-                    return;
-                }
-            }
-            else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
-            {
-                providerSettings.SelectedProvider = "View";
-                if (string.IsNullOrWhiteSpace(viewSettings.ApiKey))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the View API Key.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(viewSettings.Endpoint))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the View Endpoint.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(viewSettings.OllamaHostName))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the OllamaHostName.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(viewSettings.AccessKey))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the AccessKey.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(viewSettings.TenantGuid))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the TenantGuid.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(viewSettings.CompletionModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the View Completion Model.", NotificationType.Error);
-                    return;
-                }
-            }
+                // Update Ollama settings
+                ollamaSettings.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
+                ollamaSettings.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
+                ollamaSettings.IsEnabled =
+                    window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
 
-            // Embedding model selection validation
-            if (window.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked == true)
-            {
-                providerSettings.SelectedEmbeddingsProvider = "Ollama";
-                embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+                // Update View settings
+                viewSettings.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
+                viewSettings.Endpoint = window.FindControl<TextBox>("ViewEndpoint").Text;
+                viewSettings.OllamaHostName = window.FindControl<TextBox>("OllamaHostName").Text;
+                viewSettings.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
+                viewSettings.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
+                viewSettings.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
+                viewSettings.IsEnabled =
+                    window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
+
+                if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
+                {
+                    providerSettings.SelectedProvider = "OpenAI";
+                    if (string.IsNullOrWhiteSpace(openAiSettings.ApiKey))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI API Key.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(openAiSettings.CompletionModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Completion Model.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(openAiSettings.Endpoint))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Endpoint.", NotificationType.Error);
+                        return;
+                    }
+                }
+                else if (window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked == true)
+                {
+                    providerSettings.SelectedProvider = "Anthropic";
+                    if (string.IsNullOrWhiteSpace(anthropicSettings.ApiKey))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic API Key.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(anthropicSettings.CompletionModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic Completion Model.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(anthropicSettings.Endpoint))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic Endpoint.", NotificationType.Error);
+                        return;
+                    }
+                }
+                else if (window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked == true)
+                {
+                    providerSettings.SelectedProvider = "Ollama";
+                    if (string.IsNullOrWhiteSpace(ollamaSettings.CompletionModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Completion Model.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(ollamaSettings.Endpoint))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Endpoint.", NotificationType.Error);
+                        return;
+                    }
+
+                    var localModelService = new LocalModelService(app);
+                    bool isOllamaAvailable = await localModelService.IsOllamaAvailableAsync();
+                    if (!isOllamaAvailable)
+                    {
+                        window.ShowNotificationWithLink("Ollama Not Installed",
+                                                         "Ollama is not installed or running on your system. You need to install Ollama to use it as a provider.",
+                                                         "Download Ollama", "https://ollama.com/download",
+                                                          NotificationType.Warning);
+                        return;
+                    }
+                }
+                else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
+                {
+                    providerSettings.SelectedProvider = "View";
+                    if (string.IsNullOrWhiteSpace(viewSettings.ApiKey))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the View API Key.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(viewSettings.Endpoint))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the View Endpoint.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(viewSettings.OllamaHostName))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the OllamaHostName.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(viewSettings.AccessKey))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the AccessKey.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(viewSettings.TenantGuid))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the TenantGuid.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(viewSettings.CompletionModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the View Completion Model.", NotificationType.Error);
+                        return;
+                    }
+                }
+
+                // Embedding model selection validation
+                if (window.FindControl<RadioButton>("OllamaEmbeddingModel").IsChecked == true)
+                {
+                    providerSettings.SelectedEmbeddingsProvider = "Ollama";
+                    embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
                 if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
-                embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
+                    embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
                 if (!TryParsePositiveInt(window, "OllamaEmbeddingMaxTokens", "Ollama Embedding Model Max Tokens", out int ollamaTokens)) return;
-                embeddingSettings.OllamaEmbeddingModelMaxTokens = ollamaTokens;
-                if (string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Ollama Embedding Model.", NotificationType.Error);
-                    return;
+                    embeddingSettings.OllamaEmbeddingModelMaxTokens = ollamaTokens;
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Embedding Model.", NotificationType.Error);
+                        return;
+                    }
                 }
-            }
-            else if (window.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked == true)
-            {
-                providerSettings.SelectedEmbeddingsProvider = "View";
-                embeddingSettings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
+                else if (window.FindControl<RadioButton>("ViewEmbeddingModel2").IsChecked == true)
+                {
+                    providerSettings.SelectedEmbeddingsProvider = "View";
+                    embeddingSettings.ViewEmbeddingModel = window.FindControl<TextBox>("ViewEmbeddingModel").Text;
                 if (!TryParsePositiveInt(window, "ViewEmbeddingDimensions", "View Embedding Model Dimensions", out int viewDims)) return;
-                embeddingSettings.ViewEmbeddingModelDimensions = viewDims;
+                    embeddingSettings.ViewEmbeddingModelDimensions = viewDims;
                 if (!TryParsePositiveInt(window, "ViewEmbeddingMaxTokens", "View Embedding Model Max Tokens", out int viewTokens)) return;
-                embeddingSettings.ViewEmbeddingModelMaxTokens = viewTokens;
-                if (string.IsNullOrWhiteSpace(embeddingSettings.ViewEmbeddingModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the View Embedding Model.", NotificationType.Error);
-                    return;
+                    embeddingSettings.ViewEmbeddingModelMaxTokens = viewTokens;
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.ViewEmbeddingModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the View Embedding Model.", NotificationType.Error);
+                        return;
+                    }
                 }
-            }
-            else if (window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked == true)
-            {
-                providerSettings.SelectedEmbeddingsProvider = "OpenAI";
-                embeddingSettings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
+                else if (window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked == true)
+                {
+                    providerSettings.SelectedEmbeddingsProvider = "OpenAI";
+                    embeddingSettings.OpenAIEmbeddingModel = window.FindControl<TextBox>("OpenAIEmbeddingModel").Text;
                 if (!TryParsePositiveInt(window, "OpenAIEmbeddingDimensions", "OpenAI Embedding Model Dimensions", out int openAiDims)) return;
-                embeddingSettings.OpenAIEmbeddingModelDimensions = openAiDims;
+                    embeddingSettings.OpenAIEmbeddingModelDimensions = openAiDims;
                 if (!TryParsePositiveInt(window, "OpenAIEmbeddingMaxTokens", "OpenAI Embedding Model Max Tokens", out int openAiTokens)) return;
-                embeddingSettings.OpenAIEmbeddingModelMaxTokens = openAiTokens;
-                if (string.IsNullOrWhiteSpace(embeddingSettings.OpenAIEmbeddingModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the OpenAI Embedding Model.", NotificationType.Error);
-                    return;
+                    embeddingSettings.OpenAIEmbeddingModelMaxTokens = openAiTokens;
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.OpenAIEmbeddingModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Embedding Model.", NotificationType.Error);
+                        return;
+                    }
                 }
-            }
-            else if (window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked == true)
-            {
-                providerSettings.SelectedEmbeddingsProvider = "Voyage";
-                embeddingSettings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
-                embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
-                embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
+                else if (window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked == true)
+                {
+                    providerSettings.SelectedEmbeddingsProvider = "Voyage";
+                    embeddingSettings.VoyageEmbeddingModel = window.FindControl<TextBox>("VoyageEmbeddingModel").Text;
+                    embeddingSettings.VoyageApiKey = window.FindControl<TextBox>("VoyageApiKey").Text;
+                    embeddingSettings.VoyageEndpoint = window.FindControl<TextBox>("VoyageEndpoint").Text;
                 if (!TryParsePositiveInt(window, "VoyageEmbeddingDimensions", "Voyage Embedding Model Dimensions", out int voyageDims)) return;
-                embeddingSettings.VoyageEmbeddingModelDimensions = voyageDims;
-                if (!TryParsePositiveInt(window, "VoyageEmbeddingMaxTokens", "Voyage Embedding Model Max Tokens", out int voyageTokens)) return;
-                embeddingSettings.VoyageEmbeddingModelMaxTokens = voyageTokens;
-                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEmbeddingModel))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Voyage Embedding Model.", NotificationType.Error);
-                    return;
+                    embeddingSettings.VoyageEmbeddingModelDimensions = voyageDims;
+                    if (!TryParsePositiveInt(window, "VoyageEmbeddingMaxTokens", "Voyage Embedding Model Max Tokens", out int voyageTokens)) return;
+                    embeddingSettings.VoyageEmbeddingModelMaxTokens = voyageTokens;
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEmbeddingModel))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Voyage Embedding Model.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageApiKey))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Voyage API Key.", NotificationType.Error);
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEndpoint))
+                    {
+                        window.ShowNotification("Validation Error", "Please enter value for the Voyage Endpoint.", NotificationType.Error);
+                        return;
+                    }
                 }
-                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageApiKey))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Voyage API Key.", NotificationType.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEndpoint))
-                {
-                    window.ShowNotification("Validation Error", "Please enter value for the Voyage Endpoint.", NotificationType.Error);
-                    return;
-                }
+
+                var chatPanel = window.FindControl<Border>("ChatPanel");
+                if (chatPanel != null && chatPanel.IsVisible) window.UpdateChatTitle();
+
+                // Save the updated settings
+                app.SaveSettings();
+
+                // Show a success notification
+                window.ShowNotification("Settings Saved", "Your settings have been successfully saved.",
+                    NotificationType.Success);
+
+                saveText.Text = originalButtonText;
+                spinner.IsVisible = false;
             }
-
-            var chatPanel = window.FindControl<Border>("ChatPanel");
-            if (chatPanel != null && chatPanel.IsVisible) window.UpdateChatTitle();
-
-            // Save the updated settings
-            app.SaveSettings();
-
-            // Show a success notification
-            window.ShowNotification("Settings Saved", "Your settings have been successfully saved.",
-                NotificationType.Success);
+            catch(Exception ex)
+            {
+                window.ShowNotification("Unexpected Error", ex.Message, NotificationType.Error);
+                var app = App.Current as App;
+                app?.Log($"[ERROR] Error while saving settings: {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error while saving settings");
+            }
+            finally
+            {
+                saveText.Text = originalButtonText;
+                spinner.IsVisible = false;
+            }
         }
 
         /// <summary>

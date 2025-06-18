@@ -238,6 +238,83 @@ namespace View.Personal
         }
 
         /// <summary>
+        /// Displays a notification with the specified title, message, link, and type using the window's notification manager.
+        /// The notification includes a clickable link that opens in the default browser.
+        /// </summary>
+        /// <param name="title">The title of the notification.</param>
+        /// <param name="message">The message to display in the notification.</param>
+        /// <param name="linkText">The text to display for the clickable link.</param>
+        /// <param name="linkUrl">The URL to open when the link is clicked.</param>
+        /// <param name="notificationType">The type of notification (e.g., Error, Success, Info).</param>
+        public void ShowNotificationWithLink(string title, string message, string linkText, string linkUrl, NotificationType notificationType)
+        {
+            var styleClass = notificationType switch
+            {
+                NotificationType.Success => "success",
+                NotificationType.Error => "error",
+                NotificationType.Warning => "warning",
+                NotificationType.Information => "info",
+                _ => null
+            };
+
+            if (styleClass != null)
+            {
+                var contentPanel = new StackPanel
+                {
+                    Spacing = 4,
+                    Classes = { "NotificationCard", styleClass }
+                };
+
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = title,
+                    FontWeight = FontWeight.Normal,
+                    FontSize = 14
+                });
+
+                contentPanel.Children.Add(new TextBlock
+                {
+                    Text = message,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12
+                });
+
+                // Create a TextBlock with a clickable hyperlink
+                var linkTextBlock = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12
+                };
+
+                var hyperlink = new Avalonia.Controls.Documents.Run(linkText)
+                {
+                    Foreground = new SolidColorBrush(Colors.Blue),
+                    TextDecorations = TextDecorations.Underline
+                };
+
+                linkTextBlock.Inlines = new Avalonia.Controls.Documents.InlineCollection();
+                linkTextBlock.Inlines.Add(hyperlink);
+
+                linkTextBlock.PointerPressed += (_, _) =>
+                {
+                    BrowserHelper.OpenUrl(linkUrl);
+                };
+                linkTextBlock.Cursor = new Cursor(StandardCursorType.Hand);
+                
+                contentPanel.Children.Add(linkTextBlock);
+
+                _WindowNotificationManager.Show(
+                    contentPanel,
+                    notificationType,
+                    TimeSpan.FromSeconds(8),
+                    null,
+                    null,
+                    new[] { "NotificationCard", styleClass }
+                );
+            }
+        }
+
+        /// <summary>
         /// Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="FileIngester.IngestFileAsync"/> method.
         /// This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
         /// It serves as a bridge between the UI event handling in <see cref="MainWindow"/> and the file ingestion logic in <see cref="FileIngester"/>.
