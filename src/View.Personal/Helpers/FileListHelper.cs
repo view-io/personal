@@ -6,6 +6,7 @@ namespace View.Personal.Helpers
     using LiteGraph;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -29,21 +30,6 @@ namespace View.Personal.Helpers
                 liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
                 ?? new List<Node>());
 
-            var ingestedFiles = new List<FileViewModel>();
-
-            foreach (var node in documentNodes)
-            {
-                ingestedFiles.Add(new FileViewModel
-                {
-                    Name = node.Name ?? "Unnamed",
-                    CreatedUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC"),
-                    FilePath = node.Tags?["FilePath"] ?? "Unknown",
-                    DocumentType = node.Tags?["DocumentType"] ?? "Unknown",
-                    ContentLength = node.Tags?["ContentLength"] ?? "Unknown",
-                    NodeGuid = node.GUID
-                });
-            }
-
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
@@ -52,10 +38,32 @@ namespace View.Personal.Helpers
 
                 if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
                 {
-                    filesDataGrid.ItemsSource = ingestedFiles;
+                    if (filesDataGrid.ItemsSource is not ObservableCollection<FileViewModel> ingestedFiles)
+                    {
+                        ingestedFiles = new ObservableCollection<FileViewModel>();
+                        filesDataGrid.ItemsSource = ingestedFiles;
+                    }
                     filesDataGrid.IsVisible = true;
                     fileOperationsPanel.IsVisible = true;
                     uploadFilesPanel.IsVisible = false;
+
+                    // Add only new files
+                    var existingGuids = new HashSet<Guid>(ingestedFiles.Select(f => f.NodeGuid));
+                    foreach (var node in documentNodes)
+                    {
+                        if (!existingGuids.Contains(node.GUID))
+                        {
+                            ingestedFiles.Add(new FileViewModel
+                            {
+                                Name = node.Name ?? "Unnamed",
+                                CreatedUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC"),
+                                FilePath = node.Tags?["FilePath"] ?? "Unknown",
+                                DocumentType = node.Tags?["DocumentType"] ?? "Unknown",
+                                ContentLength = node.Tags?["ContentLength"] ?? "Unknown",
+                                NodeGuid = node.GUID
+                            });
+                        }
+                    }
                 }
             }, DispatcherPriority.Background);
         }
