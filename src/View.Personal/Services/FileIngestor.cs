@@ -1,4 +1,4 @@
-namespace View.Personal.Services
+﻿namespace View.Personal.Services
 {
     using Avalonia;
     using Avalonia.Controls;
@@ -16,16 +16,21 @@ namespace View.Personal.Services
     using DocumentAtom.Word;
     using LiteGraph;
     using NPOI.HSSF.UserModel;
+    using PersistentCollection;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
     using Sdk.Embeddings.Providers.VoyageAI;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
+    using System.Threading;
     using System.Threading.Tasks;
+    using View.Personal.Classes;
     using View.Personal.Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
 
@@ -47,6 +52,11 @@ namespace View.Personal.Services
         {
             ".pdf", ".txt", ".pptx", ".docx", ".md", ".xlsx", ".xls", ".rtf"
         };
+
+        private static readonly string IngestionDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
+
+        private static readonly PersistentQueue<string> IngestionQueue =
+            new PersistentQueue<string>(Path.Combine(IngestionDir, "ingestion-backlog.idx"));
 
         #endregion
 
@@ -73,34 +83,46 @@ namespace View.Personal.Services
             var appSettings = ((App)Application.Current).ApplicationSettings;
             var app = (App)Application.Current;
 
-            // ToDo: Go back over this and make sure this is working as expected
+            if (!IngestionQueue.Contains(filePath))
+                IngestionQueue.Enqueue(filePath);
+
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
             var fileName = Path.GetFileName(filePath);
             if (fileName == ".DS_Store")
             {
-                app.Log($"[INFO] Skipping system file: {filePath}");
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Skipping system file: {filePath}"));
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
+
                 return;
             }
 
             var extension = Path.GetExtension(filePath).ToLowerInvariant();
             if (!SupportedExtensions.Contains(extension))
             {
-                app.Log($"[WARNING] Unsupported file extension: {extension}");
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[WARNING] Unsupported file extension: {extension}"));
                 mainWindow.ShowNotification("Ingestion Error", "Unsupported file type.", NotificationType.Error);
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
                 return;
             }
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
+            ProgressBar spinner = null;
 
-            var spinner = window.FindControl<ProgressBar>("IngestSpinner");
-
-            if (spinner != null)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                spinner.IsVisible = true;
-                spinner.IsIndeterminate = true;
-            }
+                spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
+                {
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+            }, DispatcherPriority.Normal);
 
             try
             {
@@ -114,6 +136,9 @@ namespace View.Personal.Services
                 {
                     await CustomMessageBoxHelper.ShowErrorAsync(
                         "Error", "Please select an embedding provider");
+
+                    if (IngestionQueue.Contains(filePath))
+                        IngestionQueue.Dequeue();
                     return;
                 }
 
@@ -122,19 +147,19 @@ namespace View.Personal.Services
                 {
                     case "Ollama":
                         maxTokens = appSettings.Embeddings.OllamaEmbeddingModelMaxTokens;
-                        app.Log($"[INFO] Ollama max tokens: {maxTokens}");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Ollama max tokens: {maxTokens}"));
                         break;
                     case "View":
                         maxTokens = appSettings.Embeddings.ViewEmbeddingModelMaxTokens;
-                        app.Log($"[INFO] View max tokens: {maxTokens}");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] View max tokens: {maxTokens}"));
                         break;
                     case "OpenAI":
                         maxTokens = appSettings.Embeddings.OpenAIEmbeddingModelMaxTokens;
-                        app.Log($"[INFO] OpenAI max tokens: {maxTokens}");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] OpenAI max tokens: {maxTokens}"));
                         break;
                     case "VoyageAI":
                         maxTokens = appSettings.Embeddings.VoyageEmbeddingModelMaxTokens;
-                        app.Log($"[INFO] VoyageAI max tokens: {maxTokens}");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] VoyageAI max tokens: {maxTokens}"));
                         break;
                     default:
                         throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
@@ -162,116 +187,116 @@ namespace View.Personal.Services
                         switch (typeResult.Type)
                         {
                             case DocumentTypeEnum.Pdf:
-                            {
-                                var processorSettings = new PdfProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var processorSettings = new PdfProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 462
-                                    }
-                                };
-                                var pdfProcessor = new PdfProcessor(processorSettings);
-                                atoms = pdfProcessor.Extract(filePath).ToList();
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF"));
-                                break;
-                            }
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var pdfProcessor = new PdfProcessor(processorSettings);
+                                    atoms = pdfProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF"));
+                                    break;
+                                }
                             case DocumentTypeEnum.Text:
-                            {
-                                var textSettings = new TextProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var textSettings = new TextProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 462
-                                    }
-                                };
-                                var textProcessor = new TextProcessor(textSettings);
-                                atoms = textProcessor.Extract(filePath).ToList();
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file"));
-                                break;
-                            }
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var textProcessor = new TextProcessor(textSettings);
+                                    atoms = textProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file"));
+                                    break;
+                                }
                             case DocumentTypeEnum.Pptx:
-                            {
-                                var processorSettings = new PptxProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var processorSettings = new PptxProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 462
-                                    }
-                                };
-                                var pptxProcessor = new PptxProcessor(processorSettings);
-                                atoms = pptxProcessor.Extract(filePath).ToList();
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint"));
-                                break;
-                            }
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var pptxProcessor = new PptxProcessor(processorSettings);
+                                    atoms = pptxProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint"));
+                                    break;
+                                }
                             case DocumentTypeEnum.Docx:
-                            {
-                                var processorSettings = new DocxProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var processorSettings = new DocxProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 462
-                                    }
-                                };
-                                var docxProcessor = new DocxProcessor(processorSettings);
-                                atoms = docxProcessor.Extract(filePath).ToList();
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document"));
-                                break;
-                            }
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 462
+                                        }
+                                    };
+                                    var docxProcessor = new DocxProcessor(processorSettings);
+                                    atoms = docxProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document"));
+                                    break;
+                                }
                             case DocumentTypeEnum.Markdown:
-                            {
-                                var processorSettings = new MarkdownProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var processorSettings = new MarkdownProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 384
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 384
+                                        }
+                                    };
+                                    using (var markdownProcessor = new MarkdownProcessor(processorSettings))
+                                    {
+                                        atoms = markdownProcessor.Extract(filePath).ToList();
                                     }
-                                };
-                                using (var markdownProcessor = new MarkdownProcessor(processorSettings))
-                                {
-                                    atoms = markdownProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file"));
+                                    break;
                                 }
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file"));
-                                break;
-                            }
                             case DocumentTypeEnum.Xlsx:
-                            {
-                                var processorSettings = new XlsxProcessorSettings
                                 {
-                                    Chunking = new ChunkingSettings
+                                    var processorSettings = new XlsxProcessorSettings
                                     {
-                                        Enable = true,
-                                        MaximumLength = 512,
-                                        ShiftSize = 384
+                                        Chunking = new ChunkingSettings
+                                        {
+                                            Enable = true,
+                                            MaximumLength = 512,
+                                            ShiftSize = 384
+                                        }
+                                    };
+                                    using (var xlsxProcessor = new XlsxProcessor(processorSettings))
+                                    {
+                                        atoms = xlsxProcessor.Extract(filePath).ToList();
                                     }
-                                };
-                                using (var xlsxProcessor = new XlsxProcessor(processorSettings))
-                                {
-                                    atoms = xlsxProcessor.Extract(filePath).ToList();
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file"));
+                                    break;
                                 }
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file"));
-                                break;
-                            }
                             default:
-                            {
-                                await Dispatcher.UIThread.InvokeAsync(() =>
                                 {
-                                    app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
-                                    mainWindow.ShowNotification("Ingestion Error",
-                                        "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
-                                        NotificationType.Error);
-                                });
-                                return;
-                            }
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        app.Log($"[WARNING] Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
+                                        mainWindow.ShowNotification("Ingestion Error",
+                                            "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                            NotificationType.Error);
+                                    });
+                                    return;
+                                }
                         }
                     }
 
@@ -308,16 +333,16 @@ namespace View.Personal.Services
                     var fileNode =
                         MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                     liteGraph.Node.Create(fileNode);
-                    app.Log($"[INFO] Created file document node {fileNode.GUID}");
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Created file document node {fileNode.GUID}"));
 
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
-                    app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes.");
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes."));
 
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
                     liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
-                    app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes.");
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes."));
 
                     var validChunkNodes = chunkNodes
                         .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -325,7 +350,7 @@ namespace View.Personal.Services
                     var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
 
                     if (!chunkTexts.Any())
-                        app.Log("[WARNING] No valid text content found in atoms for embedding.");
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log("[WARNING] No valid text content found in atoms for embedding."));
                     else
                         switch (embeddingProvider)
                         {
@@ -367,7 +392,7 @@ namespace View.Personal.Services
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings."));
                                 break;
 
                             case "Ollama":
@@ -412,8 +437,7 @@ namespace View.Personal.Services
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                app.Log(
-                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings.");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings."));
                                 break;
 
                             case "VoyageAI":
@@ -459,8 +483,8 @@ namespace View.Personal.Services
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                app.Log(
-                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log(
+                                    $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings."));
                                 break;
 
                             case "View":
@@ -520,7 +544,7 @@ namespace View.Personal.Services
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings."));
                                 break;
 
                             default:
@@ -528,11 +552,20 @@ namespace View.Personal.Services
                         }
                 });
 
-                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-                var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
-                if (filePathTextBox != null)
-                    filePathTextBox.Text = "";
-                app.Log($"[INFO] File {filePath} ingested successfully!");
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
+                    if (filePathTextBox != null)
+                        filePathTextBox.Text = "";
+                }, DispatcherPriority.Normal);
+
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] File {filePath} ingested successfully!"));
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
+
                 var filename = Path.GetFileName(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -542,7 +575,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                app.Log($"[ERROR] Error ingesting file {filePath}: {ex.Message}");
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[ERROR] Error ingesting file {filePath}: {ex.Message}"));
                 app.LogExceptionToFile(ex, $"[ERROR] Error ingesting file {filePath}");
                 mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                     NotificationType.Error);
@@ -550,10 +583,14 @@ namespace View.Personal.Services
             finally
             {
                 if (spinner != null)
-                    spinner.IsVisible = false;
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        spinner.IsVisible = false;
+                    }, DispatcherPriority.Normal);
+                }
             }
         }
-
 
         /// <summary>
         /// Re-ingests a previously deleted or updated file into the LiteGraph system. This method performs the same steps as
@@ -568,7 +605,6 @@ namespace View.Personal.Services
         /// <param name="graphGuid">The unique identifier of the graph where the file will be stored.</param>
         /// <param name="window">The parent <see cref="Window"/>, expected to be <see cref="MainWindow"/>, for UI updates and notifications.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous re-ingestion operation.</returns>
-
         public static async Task ReIngestFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
           Guid tenantGuid, Guid graphGuid, Window window)
         {
@@ -1030,7 +1066,7 @@ namespace View.Personal.Services
                         }
                 });
 
-                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
                 var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (filePathTextBox != null)
                     filePathTextBox.Text = "";
@@ -1047,7 +1083,652 @@ namespace View.Personal.Services
             finally
             {
                 if (spinner != null)
-                    spinner.IsVisible = false;
+                    await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously ingests multiple files into the LiteGraph system, processing them concurrently and updating the UI as each file completes.
+        /// </summary>
+        /// <param name="filePaths">List of paths to the files to be ingested.</param>
+        /// <param name="typeDetector">An instance of <see cref="TypeDetector"/> used to determine the type of each file.</param>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> instance used to interact with the graph database.</param>
+        /// <param name="tenantGuid">The GUID representing the tenant in the system.</param>
+        /// <param name="graphGuid">The GUID representing the graph in the system.</param>
+        /// <param name="window">The <see cref="Window"/> object, expected to be an instance of <see cref="MainWindow"/>, used for UI interactions.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task IngestFilesAsync(List<string> filePaths, TypeDetector typeDetector, LiteGraphClient liteGraph,
+           Guid tenantGuid, Guid graphGuid, Window window)
+        {
+            if (filePaths == null || !filePaths.Any())
+                return;
+
+            if (filePaths.Count == 1)
+            {
+                await IngestFileAsync(filePaths[0], typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                return;
+            }
+
+            var app = (App)Application.Current;
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null) return;
+            ProgressBar spinner = null;
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
+                {
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+            }, DispatcherPriority.Normal);
+
+            try
+            {
+                var completedFiles = new ConcurrentBag<string>();
+                var failedFiles = new ConcurrentBag<string>();
+
+                var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4) };
+                var semaphore = new SemaphoreSlim(options.MaxDegreeOfParallelism);
+                var tasks = new List<Task>();
+                foreach (var filePath in filePaths)
+                {
+                    if (!IngestionQueue.Contains(filePath))
+                        IngestionQueue.Enqueue(filePath);
+                }
+                foreach (var filePath in filePaths)
+                {
+                    await semaphore.WaitAsync();
+
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var fileName = Path.GetFileName(filePath);
+                            if (fileName == ".DS_Store")
+                            {
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Skipping system file: {filePath}"));
+                                if (IngestionQueue.Contains(filePath))
+                                    IngestionQueue.Dequeue();
+                                return;
+                            }
+
+                            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+                            if (!SupportedExtensions.Contains(extension))
+                            {
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[WARNING] Unsupported file extension: {extension}"));
+                                failedFiles.Add(filePath);
+                                if (IngestionQueue.Contains(filePath))
+                                    IngestionQueue.Dequeue();
+                                return;
+                            }
+
+                            await ProcessSingleFileAsync(filePath, typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                            completedFiles.Add(filePath);
+
+                            if (IngestionQueue.Contains(filePath))
+                                IngestionQueue.Dequeue();
+                        }
+                        catch (Exception ex)
+                        {
+                            failedFiles.Add(filePath);
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[ERROR] Error ingesting file {filePath}: {ex.Message}"));
+                            app.LogExceptionToFile(ex, $"Error ingesting file {filePath}");
+
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                mainWindow.ShowNotification("Ingestion Error", $"Error ingesting {Path.GetFileName(filePath)}: {ex.Message}", NotificationType.Error);
+                            }, DispatcherPriority.Background);
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+
+                if (spinner != null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        spinner.IsVisible = false;
+                    }, DispatcherPriority.Normal);
+                }
+                var successCount = completedFiles.Count;
+                var failureCount = failedFiles.Count;
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Batch ingestion complete. {successCount} files succeeded, {failureCount} files failed."));
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (failureCount > 0)
+                    {
+                        mainWindow.ShowNotification("Batch Ingestion Complete",
+                            $"Successfully ingested {successCount} files. {failureCount} files failed.",
+                            NotificationType.Warning);
+                    }
+                    else
+                    {
+                        mainWindow.ShowNotification("Batch Ingestion Complete",
+                            $"Successfully ingested all {successCount} files.",
+                            NotificationType.Success);
+                    }
+                }, DispatcherPriority.Normal);
+            }
+            catch (Exception ex)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    app.Log($"[ERROR] Error in batch file ingestion: {ex.Message}");
+                    app.LogExceptionToFile(ex, "[ERROR] Error in batch file ingestion");
+                    mainWindow.ShowNotification("Batch Ingestion Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
+                });
+            }
+            finally
+            {
+                if (spinner != null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        spinner.IsVisible = false;
+                    }, DispatcherPriority.Normal);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processes a single file for ingestion without showing individual UI notifications.
+        /// This is a helper method for batch processing.
+        /// </summary>
+        private static async Task ProcessSingleFileAsync(string filePath, TypeDetector typeDetector, LiteGraphClient liteGraph,
+            Guid tenantGuid, Guid graphGuid, Window window)
+        {
+            var appSettings = ((App)Application.Current).ApplicationSettings;
+            var app = (App)Application.Current;
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null) return;
+
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentException("File path cannot be null or empty");
+
+            var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
+            if (string.IsNullOrEmpty(embeddingProvider))
+                throw new ArgumentException("No embedding provider selected");
+
+            int maxTokens;
+            switch (embeddingProvider)
+            {
+                case "Ollama":
+                    maxTokens = appSettings.Embeddings.OllamaEmbeddingModelMaxTokens;
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Ollama max tokens: {maxTokens}"));
+                    break;
+                case "View":
+                    maxTokens = appSettings.Embeddings.ViewEmbeddingModelMaxTokens;
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] View max tokens: {maxTokens}"));
+                    break;
+                case "OpenAI":
+                    maxTokens = appSettings.Embeddings.OpenAIEmbeddingModelMaxTokens;
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] OpenAI max tokens: {maxTokens}"));
+                    break;
+                case "VoyageAI":
+                    maxTokens = appSettings.Embeddings.VoyageEmbeddingModelMaxTokens;
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] VoyageAI max tokens: {maxTokens}"));
+                    break;
+                default:
+                    throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
+            }
+
+            string? contentType = null;
+            var typeResult = typeDetector.Process(filePath, contentType);
+            var isXlsFile = Path.GetExtension(filePath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+            app.Log($"[INFO] Detected Type for {Path.GetFileName(filePath)}: {typeResult.Type}");
+
+            var atoms = new List<Atom>();
+            await Task.Run(async () =>
+            {
+                if (isXlsFile)
+                {
+                    typeResult = new DocumentAtom.TypeDetection.TypeResult
+                    {
+                        Type = DocumentTypeEnum.Xlsx
+                    };
+                    atoms = Extract(filePath);
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel (.xls) file: {Path.GetFileName(filePath)}"));
+                }
+                else
+                {
+                    switch (typeResult.Type)
+                    {
+                        case DocumentTypeEnum.Pdf:
+                            {
+                                var processorSettings = new PdfProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var pdfProcessor = new PdfProcessor(processorSettings);
+                                atoms = pdfProcessor.Extract(filePath).ToList();
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PDF: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        case DocumentTypeEnum.Text:
+                            {
+                                var textSettings = new TextProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var textProcessor = new TextProcessor(textSettings);
+                                atoms = textProcessor.Extract(filePath).ToList();
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Text file: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        case DocumentTypeEnum.Pptx:
+                            {
+                                var processorSettings = new PptxProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var pptxProcessor = new PptxProcessor(processorSettings);
+                                atoms = pptxProcessor.Extract(filePath).ToList();
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from PowerPoint: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        case DocumentTypeEnum.Docx:
+                            {
+                                var processorSettings = new DocxProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 462
+                                    }
+                                };
+                                var docxProcessor = new DocxProcessor(processorSettings);
+                                atoms = docxProcessor.Extract(filePath).ToList();
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Word document: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        case DocumentTypeEnum.Markdown:
+                            {
+                                var processorSettings = new MarkdownProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 384
+                                    }
+                                };
+                                using (var markdownProcessor = new MarkdownProcessor(processorSettings))
+                                {
+                                    atoms = markdownProcessor.Extract(filePath).ToList();
+                                }
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Markdown file: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        case DocumentTypeEnum.Xlsx:
+                            {
+                                var processorSettings = new XlsxProcessorSettings
+                                {
+                                    Chunking = new ChunkingSettings
+                                    {
+                                        Enable = true,
+                                        MaximumLength = 512,
+                                        ShiftSize = 384
+                                    }
+                                };
+                                using (var xlsxProcessor = new XlsxProcessor(processorSettings))
+                                {
+                                    atoms = xlsxProcessor.Extract(filePath).ToList();
+                                }
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Extracted {atoms.Count} atoms from Excel file: {Path.GetFileName(filePath)}"));
+                                break;
+                            }
+                        default:
+                            {
+                                throw new NotSupportedException($"Unsupported file type: {typeResult.Type}");
+                            }
+                    }
+                }
+
+                const int overlap = 50;
+
+                var finalAtoms = new List<Atom>();
+                using (var tokenExtractor = new TokenExtractor())
+                {
+                    tokenExtractor.WordRemover.WordsToRemove = new string[0];
+                    foreach (var atom in atoms)
+                    {
+                        var tokens = tokenExtractor.Process(atom.Text).ToList();
+                        var tokenCount = tokens.Count;
+                        if (tokenCount <= maxTokens)
+                        {
+                            finalAtoms.Add(atom);
+                        }
+                        else
+                        {
+                            var chunks = SplitIntoTokenChunks(atom.Text, maxTokens, overlap, tokenExtractor);
+                            foreach (var chunk in chunks)
+                                if (!string.IsNullOrWhiteSpace(chunk))
+                                {
+                                    var newAtom = new Atom
+                                    {
+                                        Text = chunk
+                                    };
+                                    finalAtoms.Add(newAtom);
+                                }
+                        }
+                    }
+                }
+
+                var fileNode =
+                    MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
+                liteGraph.Node.Create(fileNode);
+                app.Log($"[INFO] Created file document node {fileNode.GUID} for {Path.GetFileName(filePath)}");
+
+                var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
+                liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
+                app.Log($"[INFO] Created {chunkNodes.Count} chunk nodes for {Path.GetFileName(filePath)}.");
+
+                var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
+                    chunkNodes);
+                liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
+                app.Log($"[INFO] Created {edges.Count} edges from doc -> chunk nodes for {Path.GetFileName(filePath)}.");
+
+                var validChunkNodes = chunkNodes
+                    .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                    .ToList();
+                var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
+
+                if (!chunkTexts.Any())
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[WARNING] No valid text content found in atoms for embedding in {Path.GetFileName(filePath)}."));
+                else
+                    switch (embeddingProvider)
+                    {
+                        case "OpenAI":
+                            if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
+                                string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
+                            {
+                                throw new ArgumentException("OpenAI embedding settings incomplete.");
+                            }
+
+                            var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
+                                appSettings.OpenAI.ApiKey);
+                            var openAIEmbeddingsRequest = new EmbeddingsRequest
+                            {
+                                Model = appSettings.Embeddings.OpenAIEmbeddingModel,
+                                Contents = chunkTexts
+                            };
+                            var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
+                            if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count))
+                                throw new Exception("Failed to generate embeddings with OpenAI.");
+
+                            for (var j = 0; j < validChunkNodes.Count; j++)
+                            {
+                                var chunkNode = validChunkNodes[j];
+                                chunkNode.Vectors = new List<VectorMetadata>
+                                {
+                                    new()
+                                    {
+                                        TenantGUID = tenantGuid,
+                                        GraphGUID = graphGuid,
+                                        NodeGUID = chunkNode.GUID,
+                                        Model = appSettings.Embeddings.OpenAIEmbeddingModel,
+                                        Dimensionality = embeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                        Vectors = embeddingsResult.ContentEmbeddings[j].Embeddings,
+                                        Content = (chunkNode.Data as Atom)?.Text
+                                    }
+                                };
+                                liteGraph.Node.Update(chunkNode);
+                            }
+
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings for {Path.GetFileName(filePath)}."));
+                            break;
+
+                        case "Ollama":
+                            if (string.IsNullOrEmpty(appSettings.Embeddings.OllamaEmbeddingModel))
+                            {
+                                throw new ArgumentException("Ollama embedding settings incomplete.");
+                            }
+
+                            var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint);
+                            var ollamaEmbeddingsRequest = new EmbeddingsRequest
+                            {
+                                Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                                Contents = chunkTexts
+                            };
+                            var ollamaEmbeddingsResult =
+                                await ollamaSdk.GenerateEmbeddings(ollamaEmbeddingsRequest);
+                            if (!CheckEmbeddingsResult(mainWindow, ollamaEmbeddingsResult, validChunkNodes.Count))
+                                throw new Exception("Failed to generate embeddings with Ollama.");
+
+                            for (var j = 0; j < validChunkNodes.Count; j++)
+                            {
+                                var chunkNode = validChunkNodes[j];
+                                chunkNode.Vectors = new List<VectorMetadata>
+                                {
+                                    new()
+                                    {
+                                        TenantGUID = tenantGuid,
+                                        GraphGUID = graphGuid,
+                                        NodeGUID = chunkNode.GUID,
+                                        Model = appSettings.Embeddings.OllamaEmbeddingModel,
+                                        Dimensionality = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                            .Count,
+                                        Vectors = ollamaEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                        Content = (chunkNode.Data as Atom)?.Text
+                                    }
+                                };
+                                liteGraph.Node.Update(chunkNode);
+                            }
+
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log(
+                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings for {Path.GetFileName(filePath)}."));
+                            break;
+
+                        case "VoyageAI":
+                            if (string.IsNullOrEmpty(appSettings.Embeddings.VoyageApiKey) ||
+                                string.IsNullOrEmpty(appSettings.Embeddings.VoyageEmbeddingModel))
+                            {
+                                throw new ArgumentException("VoyageAI embedding settings incomplete.");
+                            }
+
+                            var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
+                                appSettings.Embeddings.VoyageApiKey);
+                            var voyageEmbeddingsRequest = new EmbeddingsRequest
+                            {
+                                Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                                Contents = chunkTexts
+                            };
+                            var voyageEmbeddingsResult =
+                                await voyageSdk.GenerateEmbeddings(voyageEmbeddingsRequest);
+                            if (!CheckEmbeddingsResult(mainWindow, voyageEmbeddingsResult, validChunkNodes.Count))
+                                throw new Exception("Failed to generate embeddings with VoyageAI.");
+
+                            for (var j = 0; j < validChunkNodes.Count; j++)
+                            {
+                                var chunkNode = validChunkNodes[j];
+                                chunkNode.Vectors = new List<VectorMetadata>
+                                {
+                                    new()
+                                    {
+                                        TenantGUID = tenantGuid,
+                                        GraphGUID = graphGuid,
+                                        NodeGUID = chunkNode.GUID,
+                                        Model = appSettings.Embeddings.VoyageEmbeddingModel,
+                                        Dimensionality = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings
+                                            .Count,
+                                        Vectors = voyageEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                        Content = (chunkNode.Data as Atom)?.Text
+                                    }
+                                };
+                                liteGraph.Node.Update(chunkNode);
+                            }
+
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log(
+                                $"[INFO] Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings for {Path.GetFileName(filePath)}."));
+                            break;
+
+                        case "View":
+                            if (string.IsNullOrEmpty(appSettings.View.Endpoint) ||
+                                string.IsNullOrEmpty(appSettings.View.AccessKey) ||
+                                string.IsNullOrEmpty(appSettings.View.ApiKey) ||
+                                string.IsNullOrEmpty(appSettings.Embeddings.ViewEmbeddingModel))
+                            {
+                                throw new ArgumentException("View embedding settings incomplete.");
+                            }
+
+                            var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
+                                appSettings.View.Endpoint,
+                                appSettings.View.AccessKey);
+                            var viewEmbeddingsRequest = new EmbeddingsRequest
+                            {
+                                // ToDo: eventually want to remove hardcoded values
+                                EmbeddingsRule = new EmbeddingsRule
+                                {
+                                    EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
+                                    EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
+                                    EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
+                                    BatchSize = 2,
+                                    MaxGeneratorTasks = 4,
+                                    MaxRetries = 3,
+                                    MaxFailures = 3
+                                },
+                                Model = appSettings.Embeddings.ViewEmbeddingModel,
+                                Contents = chunkTexts
+                            };
+                            var viewEmbeddingsResult =
+                                await viewEmbeddingsSdk.GenerateEmbeddings(viewEmbeddingsRequest);
+                            if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count))
+                                throw new Exception("Failed to generate embeddings with View.");
+
+                            for (var j = 0; j < validChunkNodes.Count; j++)
+                            {
+                                var chunkNode = validChunkNodes[j];
+                                chunkNode.Vectors = new List<VectorMetadata>
+                                {
+                                    new()
+                                    {
+                                        TenantGUID = tenantGuid,
+                                        GraphGUID = graphGuid,
+                                        NodeGUID = chunkNode.GUID,
+                                        Model = appSettings.Embeddings.ViewEmbeddingModel,
+                                        Dimensionality = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings.Count,
+                                        Vectors = viewEmbeddingsResult.ContentEmbeddings[j].Embeddings,
+                                        Content = (chunkNode.Data as Atom)?.Text
+                                    }
+                                };
+                                liteGraph.Node.Update(chunkNode);
+                            }
+
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Updated {validChunkNodes.Count} chunk nodes with View embeddings for {Path.GetFileName(filePath)}."));
+                            break;
+
+                        default:
+                            throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
+                    }
+            });
+
+            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+
+            // Remove file from ingestion queue after successful processing
+            if (IngestionQueue.Contains(filePath))
+            {
+                IngestionQueue.Dequeue();
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Removed {filePath} from ingestion queue after successful ingestion"));
+            }
+
+            app.Log($"[INFO] File {Path.GetFileName(filePath)} ingested successfully and added to file list!");
+        }
+
+        /// <summary>
+        /// Resumes ingestion of files that were previously queued but not successfully processed,
+        /// </summary>
+        /// <param name="typeDetector">Instance of <see cref="TypeDetector"/> used for file type detection during ingestion.</param>
+        /// <param name="liteGraph">Instance of <see cref="LiteGraphClient"/> for graph-related ingestion operations.</param>
+        /// <param name="tenantGuid">The unique identifier of the tenant for which ingestion is being resumed.</param>
+        /// <param name="graphGuid">The unique identifier of the graph where files will be ingested.</param>
+        /// <param name="window">The current Avalonia <see cref="Window"/>, typically the main window, used for UI notifications.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of resuming file ingestion.</returns>
+        public static async Task ResumePendingIngestions(TypeDetector typeDetector, LiteGraphClient liteGraph,
+            Guid tenantGuid, Guid graphGuid, Window window)
+        {
+            var app = (App)Application.Current;
+            var filesToIngest = IngestionQueue.ToList();
+
+            if (filesToIngest.Count > 0)
+            {
+                // Ensure we're accessing UI elements on the UI thread
+                MainWindow mainWindow = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    mainWindow = window as MainWindow;
+                    app.Log($"[INFO] Resuming ingestion of {filesToIngest.Count} pending files from previous session");
+                });
+
+                if (mainWindow != null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                        mainWindow.ShowNotification("Resuming Ingestion",
+                            $"Resuming ingestion of {filesToIngest.Count} pending files from previous session",
+                            NotificationType.Information));
+                }
+
+                try
+                {
+                    ProgressBar uploadSpinner = null;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
+                        if (uploadSpinner != null)
+                        {
+                            uploadSpinner.IsVisible = true;
+                            uploadSpinner.IsIndeterminate = true;
+                        }
+                    }, DispatcherPriority.Normal);
+                    try
+                    {
+                        await IngestFilesAsync(filesToIngest, typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                    }
+                    finally
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            uploadSpinner.IsVisible = false;
+                        }, DispatcherPriority.Normal);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        app.Log($"[ERROR] Error resuming ingestion: {ex.Message}");
+                        app.LogExceptionToFile(ex, "[ERROR] Error resuming ingestion");
+                        if (mainWindow != null)
+                        {
+                            mainWindow.ShowNotification("Ingestion Error",
+                                $"Error resuming ingestion: {ex.Message}",
+                                NotificationType.Error);
+                        }
+                    });
+                }
             }
         }
 

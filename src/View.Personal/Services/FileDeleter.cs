@@ -8,6 +8,7 @@ namespace View.Personal.Services
     using LiteGraph;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -75,25 +76,19 @@ namespace View.Personal.Services
                         else
                             app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
 
-                        FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
 
                         var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
+                        if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
                         {
-                            var fileCount = items.Cast<object>().Count();
+                            var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
+                            if (itemToRemove != null)
+                                fileCollection.Remove(itemToRemove);
+                            var fileCount = fileCollection.Count;
                             var uploadFilesPanel = mainWindow.FindControl<Border>("UploadFilesPanel");
                             var fileOperationsPanel = mainWindow.FindControl<Grid>("FileOperationsPanel");
-
-                            if (fileCount == 0)
-                            {
-                                uploadFilesPanel.IsVisible = true;
-                                fileOperationsPanel.IsVisible = false;
-                            }
-                            else
-                            {
-                                uploadFilesPanel.IsVisible = false;
-                                fileOperationsPanel.IsVisible = true;
-                            }
+                            uploadFilesPanel.IsVisible = fileCount == 0;
+                            fileOperationsPanel.IsVisible = fileCount > 0;
                         }
 
                         mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
@@ -132,7 +127,7 @@ namespace View.Personal.Services
             if (result != ButtonResult.Yes) return;
 
 
-            foreach (var file in files)
+            foreach (var file in files.ToList())
             {
                 try
                 {
@@ -177,14 +172,19 @@ namespace View.Personal.Services
             }
             if (window is MainWindow mw)
             {
-                FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
                 var filesDataGrid = mw.FindControl<DataGrid>("FilesDataGrid");
-                if (filesDataGrid?.ItemsSource is System.Collections.IEnumerable items)
+                if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
                 {
-                    var fileCount = items.Cast<object>().Count();
+                    foreach (var file in files)
+                    {
+                        var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
+                        if (itemToRemove != null)
+                            fileCollection.Remove(itemToRemove);
+                    }
+                    var fileCount = fileCollection.Count;
                     var uploadFilesPanel = mw.FindControl<Border>("UploadFilesPanel");
                     var fileOperationsPanel = mw.FindControl<Grid>("FileOperationsPanel");
-
                     uploadFilesPanel.IsVisible = fileCount == 0;
                     fileOperationsPanel.IsVisible = fileCount > 0;
                 }
