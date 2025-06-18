@@ -53,7 +53,10 @@
             ".pdf", ".txt", ".pptx", ".docx", ".md", ".xlsx", ".xls", ".rtf"
         };
 
-        private static readonly PersistentQueue<string> IngestionQueue = new PersistentQueue<string>("ingestion-backlog.idx");
+        private static readonly string IngestionDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
+
+        private static readonly PersistentQueue<string> IngestionQueue =
+            new PersistentQueue<string>(Path.Combine(IngestionDir, "ingestion-backlog.idx"));
 
         #endregion
 
