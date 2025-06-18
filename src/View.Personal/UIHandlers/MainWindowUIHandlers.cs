@@ -508,23 +508,24 @@ namespace View.Personal.UIHandlers
                         textBox.Text = $"{filePaths.Count} files selected";
                     }
                 }
-            }
-            var uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
-            if (uploadSpinner != null)
-            {
-                uploadSpinner.IsVisible = true;
-                uploadSpinner.IsIndeterminate = true;
-            }
-
-            try
-            {
-                await mainWindow.IngestFilesAsync(filePaths);
-            }
-            finally
-            {
+                
+                var uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
                 if (uploadSpinner != null)
                 {
-                    uploadSpinner.IsVisible = false;
+                    uploadSpinner.IsVisible = true;
+                    uploadSpinner.IsIndeterminate = true;
+                }
+
+                try
+                {
+                    await mainWindow.IngestFilesAsync(filePaths);
+                }
+                finally
+                {
+                    if (uploadSpinner != null)
+                    {
+                        uploadSpinner.IsVisible = false;
+                    }
                 }
             }
         }

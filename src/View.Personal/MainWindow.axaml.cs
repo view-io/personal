@@ -300,7 +300,7 @@ namespace View.Personal
                     BrowserHelper.OpenUrl(linkUrl);
                 };
                 linkTextBlock.Cursor = new Cursor(StandardCursorType.Hand);
-                
+
                 contentPanel.Children.Add(linkTextBlock);
 
                 _WindowNotificationManager.Show(
@@ -1501,7 +1501,7 @@ namespace View.Personal
         /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:",enableValidation: true,validationErrorMessage: "Please enter a knowledgebase name");
+            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:", enableValidation: true, validationErrorMessage: "Please enter a knowledgebase name");
             if (!string.IsNullOrWhiteSpace(text) && result == ButtonResult.Ok) CreateNewGraph(text);
         }
 
@@ -1578,70 +1578,49 @@ namespace View.Personal
         /// <param name="e">The DragEventArgs containing information about the drag operation.</param>
         private void MyFilesPanel_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.FileNames))
+            var app = (App)Application.Current;
+            if (e.Data.Contains(DataFormats.Files))
                 e.DragEffects = DragDropEffects.Copy;
             else
                 e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
         }
 
         /// <summary>
         /// Handles the Drop event for the MyFilesPanel to process dropped files or folders.
-        /// Retrieves the list of dropped paths, processes folders recursively, and ingests each file asynchronously.
-        /// Displays a spinner during the ingestion process and hides it upon completion.
+        /// Retrieves the list of dropped paths and ingests each file asynchronously.
         /// </summary>
         /// <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
         /// <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
         private async void MyFilesPanel_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.FileNames))
-            {
-                var paths = e.Data.GetFileNames().ToList();
-                var spinner = this.FindControl<ProgressBar>("IngestSpinner");
-                if (spinner != null)
-                {
-                    spinner.IsVisible = true;
-                    spinner.IsIndeterminate = true;
-                }
+           
+            var app = (App)Application.Current;
+            var grid = sender as Grid;
 
-                try
+            var formats = e.Data.GetDataFormats();
+
+            try
+            {
+                var paths = e.Data.GetFileNames()?.ToList();
+
+                if (paths != null && paths.Any())
                 {
-                    foreach (var path in paths)
-                        if (Directory.Exists(path))
-                        {
-                            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-                            foreach (var file in files)
-                                try
-                                {
-                                    await IngestFileAsync(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                    var app = (App)Application.Current;
-                                    app.Log($"[ERROR] Failed to ingest file {file}: {ex.Message}");
-                                    ShowNotification("Ingestion Error",
-                                        $"Failed to ingest {Path.GetFileName(file)}: {ex.Message}",
-                                        NotificationType.Error);
-                                }
-                        }
-                        else if (File.Exists(path))
-                        {
-                            try
-                            {
-                                await IngestFileAsync(path);
-                            }
-                            catch (Exception ex)
-                            {
-                                var app = (App)Application.Current;
-                                app.Log($"[ERROR] Failed to ingest file {path}: {ex.Message}");
-                                ShowNotification("Ingestion Error",
-                                    $"Failed to ingest {Path.GetFileName(path)}: {ex.Message}", NotificationType.Error);
-                            }
-                        }
+                    var uploadSpinner = this.FindControl<ProgressBar>("UploadSpinner");
+                    if (uploadSpinner != null)
+                    {
+                        uploadSpinner.IsVisible = true;
+                        uploadSpinner.IsIndeterminate = true;
+                    }
+                    await IngestFilesAsync(paths);
+                    if (uploadSpinner != null) uploadSpinner.IsVisible = false;
+                    e.Handled = true;
                 }
-                finally
-                {
-                    if (spinner != null) spinner.IsVisible = false;
-                }
+            }
+            catch (Exception ex)
+            {
+                app.Log($"[ERROR] Error processing dropped files: {ex.Message}");
+                app.LogExceptionToFile(ex, $"Error processing dropped files");
             }
         }
 

@@ -1021,9 +1021,9 @@
 					</TabControl>
 				</Grid >
 				<Grid Name="MyFilesPanel" Margin="20" IsVisible="False"
-                  DragDrop.AllowDrop="True"
-                  DragDrop.DragOver="MyFilesPanel_DragOver"
-                  DragDrop.Drop="MyFilesPanel_Drop">
+                      DragDrop.AllowDrop="True"
+                      DragDrop.DragOver="MyFilesPanel_DragOver"
+                      DragDrop.Drop="MyFilesPanel_Drop">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />

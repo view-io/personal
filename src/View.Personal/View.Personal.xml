@@ -1815,8 +1815,7 @@
         <member name="M:View.Personal.MainWindow.MyFilesPanel_Drop(System.Object,Avalonia.Input.DragEventArgs)">
             <summary>
             Handles the Drop event for the MyFilesPanel to process dropped files or folders.
-            Retrieves the list of dropped paths, processes folders recursively, and ingests each file asynchronously.
-            Displays a spinner during the ingestion process and hides it upon completion.
+            Retrieves the list of dropped paths and ingests each file asynchronously.
             </summary>
             <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
             <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
