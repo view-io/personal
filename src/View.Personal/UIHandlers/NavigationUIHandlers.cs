@@ -1,11 +1,13 @@
 namespace View.Personal.UIHandlers
 {
-    using System;
-    using System.Linq;
     using Avalonia.Controls;
     using Avalonia.Media;
+    using Avalonia.Threading;
     using Helpers;
     using LiteGraph;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing navigation in the user interface.
@@ -92,21 +94,38 @@ namespace View.Personal.UIHandlers
 
                                 if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
                                 {
-                                    var uniqueFiles =
-                                        MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                                    if (uniqueFiles.Any())
+                                    _ = Task.Run(() =>
                                     {
-                                        filesDataGrid.ItemsSource = uniqueFiles;
-                                        uploadFilesPanel.IsVisible = false;
-                                        filesDataGrid.IsVisible = true;
-                                    }
-                                    else
-                                    {
-                                        filesDataGrid.ItemsSource = null;
-                                        filesDataGrid.IsVisible = false;
-                                        fileOperationsPanel.IsVisible = false;
-                                        uploadFilesPanel.IsVisible = true;
-                                    }
+                                        var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
+
+                                        Dispatcher.UIThread.InvokeAsync(() =>
+                                        {
+                                            if (myFilesPanel.IsVisible)
+                                            {
+                                                var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
+                                                var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
+                                                var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
+
+                                                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                                                {
+                                                    if (uniqueFiles.Any())
+                                                    {
+                                                        filesDataGrid.ItemsSource = uniqueFiles;
+                                                        uploadFilesPanel.IsVisible = false;
+                                                        filesDataGrid.IsVisible = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        filesDataGrid.ItemsSource = null;
+                                                        filesDataGrid.IsVisible = false;
+                                                        fileOperationsPanel.IsVisible = false;
+                                                        uploadFilesPanel.IsVisible = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    });
+
                                 }
                             }
 
