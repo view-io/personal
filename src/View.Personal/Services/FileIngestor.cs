@@ -27,6 +27,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using View.Personal.Classes;
@@ -1689,7 +1690,27 @@
 
                 try
                 {
-                    await IngestFilesAsync(filesToIngest, typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                    ProgressBar uploadSpinner = null;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
+                        if (uploadSpinner != null)
+                        {
+                            uploadSpinner.IsVisible = true;
+                            uploadSpinner.IsIndeterminate = true;
+                        }
+                    }, DispatcherPriority.Normal);
+                    try
+                    {
+                        await IngestFilesAsync(filesToIngest, typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                    }
+                    finally
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            uploadSpinner.IsVisible = false;
+                        }, DispatcherPriority.Normal);
+                    }
                 }
                 catch (Exception ex)
                 {
