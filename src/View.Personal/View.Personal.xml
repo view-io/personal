@@ -1827,11 +1827,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1965,6 +1966,17 @@
             Processes a single file for ingestion without showing individual UI notifications.
             This is a helper method for batch processing.
             </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.ResumePendingIngestions(DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Resumes ingestion of files that were previously queued but not successfully processed,
+            </summary>
+            <param name="typeDetector">Instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used for file type detection during ingestion.</param>
+            <param name="liteGraph">Instance of <see cref="T:LiteGraph.LiteGraphClient"/> for graph-related ingestion operations.</param>
+            <param name="tenantGuid">The unique identifier of the tenant for which ingestion is being resumed.</param>
+            <param name="graphGuid">The unique identifier of the graph where files will be ingested.</param>
+            <param name="window">The current Avalonia <see cref="T:Avalonia.Controls.Window"/>, typically the main window, used for UI notifications.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation of resuming file ingestion.</returns>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ShowErrorNotification(View.Personal.MainWindow,System.String,System.String)">
             <summary>

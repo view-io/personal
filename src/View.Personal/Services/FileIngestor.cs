@@ -16,14 +16,15 @@
     using DocumentAtom.Word;
     using LiteGraph;
     using NPOI.HSSF.UserModel;
+    using PersistentCollection;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
     using Sdk.Embeddings.Providers.VoyageAI;
     using System;
-    using System.Collections.Generic;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -51,6 +52,8 @@
             ".pdf", ".txt", ".pptx", ".docx", ".md", ".xlsx", ".xls", ".rtf"
         };
 
+        private static readonly PersistentQueue<string> IngestionQueue = new PersistentQueue<string>("ingestion-backlog.idx");
+
         #endregion
 
         #region Public-Methods
@@ -76,7 +79,9 @@
             var appSettings = ((App)Application.Current).ApplicationSettings;
             var app = (App)Application.Current;
 
-            // ToDo: Go back over this and make sure this is working as expected
+            if (!IngestionQueue.Contains(filePath))
+                IngestionQueue.Enqueue(filePath);
+
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
@@ -84,6 +89,10 @@
             if (fileName == ".DS_Store")
             {
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Skipping system file: {filePath}"));
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
+
                 return;
             }
 
@@ -92,18 +101,24 @@
             {
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[WARNING] Unsupported file extension: {extension}"));
                 mainWindow.ShowNotification("Ingestion Error", "Unsupported file type.", NotificationType.Error);
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
                 return;
             }
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
+            ProgressBar spinner = null;
 
-            var spinner = window.FindControl<ProgressBar>("IngestSpinner");
-
-            if (spinner != null)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                spinner.IsVisible = true;
-                spinner.IsIndeterminate = true;
-            }
+                spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
+                {
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+            }, DispatcherPriority.Normal);
 
             try
             {
@@ -117,6 +132,9 @@
                 {
                     await CustomMessageBoxHelper.ShowErrorAsync(
                         "Error", "Please select an embedding provider");
+
+                    if (IngestionQueue.Contains(filePath))
+                        IngestionQueue.Dequeue();
                     return;
                 }
 
@@ -531,10 +549,19 @@
                 });
 
                 await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-                var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
-                if (filePathTextBox != null)
-                    filePathTextBox.Text = "";
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
+                    if (filePathTextBox != null)
+                        filePathTextBox.Text = "";
+                }, DispatcherPriority.Normal);
+
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] File {filePath} ingested successfully!"));
+
+                if (IngestionQueue.Contains(filePath))
+                    IngestionQueue.Dequeue();
+
                 var filename = Path.GetFileName(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -552,7 +579,12 @@
             finally
             {
                 if (spinner != null)
-                    spinner.IsVisible = false;
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        spinner.IsVisible = false;
+                    }, DispatcherPriority.Normal);
+                }
             }
         }
 
@@ -600,8 +632,8 @@
 
             if (spinner != null)
             {
-                    spinner.IsVisible = true;
-                    spinner.IsIndeterminate = true;
+                spinner.IsVisible = true;
+                spinner.IsIndeterminate = true;
             }
 
             try
@@ -1076,16 +1108,16 @@
             var app = (App)Application.Current;
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
-
-            var spinner = window.FindControl<ProgressBar>("IngestSpinner");
-            if (spinner != null)
+            ProgressBar spinner = null;
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                await Dispatcher.UIThread.InvokeAsync(() => 
+                spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
                 {
                     spinner.IsVisible = true;
                     spinner.IsIndeterminate = true;
-                }, DispatcherPriority.Normal);
-            }
+                }
+            }, DispatcherPriority.Normal);
 
             try
             {
@@ -1095,7 +1127,11 @@
                 var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4) };
                 var semaphore = new SemaphoreSlim(options.MaxDegreeOfParallelism);
                 var tasks = new List<Task>();
-
+                foreach (var filePath in filePaths)
+                {
+                    if (!IngestionQueue.Contains(filePath))
+                        IngestionQueue.Enqueue(filePath);
+                }
                 foreach (var filePath in filePaths)
                 {
                     await semaphore.WaitAsync();
@@ -1108,6 +1144,8 @@
                             if (fileName == ".DS_Store")
                             {
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Skipping system file: {filePath}"));
+                                if (IngestionQueue.Contains(filePath))
+                                    IngestionQueue.Dequeue();
                                 return;
                             }
 
@@ -1116,11 +1154,16 @@
                             {
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[WARNING] Unsupported file extension: {extension}"));
                                 failedFiles.Add(filePath);
+                                if (IngestionQueue.Contains(filePath))
+                                    IngestionQueue.Dequeue();
                                 return;
                             }
 
                             await ProcessSingleFileAsync(filePath, typeDetector, liteGraph, tenantGuid, graphGuid, window);
                             completedFiles.Add(filePath);
+
+                            if (IngestionQueue.Contains(filePath))
+                                IngestionQueue.Dequeue();
                         }
                         catch (Exception ex)
                         {
@@ -1171,10 +1214,13 @@
             }
             catch (Exception ex)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[ERROR] Error in batch file ingestion: {ex.Message}"));
-                app.LogExceptionToFile(ex, "[ERROR] Error in batch file ingestion");
-                mainWindow.ShowNotification("Batch Ingestion Error", $"Something went wrong: {ex.Message}",
-                    NotificationType.Error);
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    app.Log($"[ERROR] Error in batch file ingestion: {ex.Message}");
+                    app.LogExceptionToFile(ex, "[ERROR] Error in batch file ingestion");
+                    mainWindow.ShowNotification("Batch Ingestion Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
+                });
             }
             finally
             {
@@ -1597,7 +1643,69 @@
             });
 
             await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+
+            // Remove file from ingestion queue after successful processing
+            if (IngestionQueue.Contains(filePath))
+            {
+                IngestionQueue.Dequeue();
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log($"[INFO] Removed {filePath} from ingestion queue after successful ingestion"));
+            }
+
             app.Log($"[INFO] File {Path.GetFileName(filePath)} ingested successfully and added to file list!");
+        }
+
+        /// <summary>
+        /// Resumes ingestion of files that were previously queued but not successfully processed,
+        /// </summary>
+        /// <param name="typeDetector">Instance of <see cref="TypeDetector"/> used for file type detection during ingestion.</param>
+        /// <param name="liteGraph">Instance of <see cref="LiteGraphClient"/> for graph-related ingestion operations.</param>
+        /// <param name="tenantGuid">The unique identifier of the tenant for which ingestion is being resumed.</param>
+        /// <param name="graphGuid">The unique identifier of the graph where files will be ingested.</param>
+        /// <param name="window">The current Avalonia <see cref="Window"/>, typically the main window, used for UI notifications.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of resuming file ingestion.</returns>
+        public static async Task ResumePendingIngestions(TypeDetector typeDetector, LiteGraphClient liteGraph,
+            Guid tenantGuid, Guid graphGuid, Window window)
+        {
+            var app = (App)Application.Current;
+            var filesToIngest = IngestionQueue.ToList();
+
+            if (filesToIngest.Count > 0)
+            {
+                // Ensure we're accessing UI elements on the UI thread
+                MainWindow mainWindow = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    mainWindow = window as MainWindow;
+                    app.Log($"[INFO] Resuming ingestion of {filesToIngest.Count} pending files from previous session");
+                });
+
+                if (mainWindow != null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                        mainWindow.ShowNotification("Resuming Ingestion",
+                            $"Resuming ingestion of {filesToIngest.Count} pending files from previous session",
+                            NotificationType.Information));
+                }
+
+                try
+                {
+                    await IngestFilesAsync(filesToIngest, typeDetector, liteGraph, tenantGuid, graphGuid, window);
+                }
+                catch (Exception ex)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        app.Log($"[ERROR] Error resuming ingestion: {ex.Message}");
+                        app.LogExceptionToFile(ex, "[ERROR] Error resuming ingestion");
+                        if (mainWindow != null)
+                        {
+                            mainWindow.ShowNotification("Ingestion Error",
+                                $"Error resuming ingestion: {ex.Message}",
+                                NotificationType.Error);
+                        }
+                    });
+                }
+            }
         }
 
         #endregion

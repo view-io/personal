@@ -147,7 +147,15 @@ namespace View.Personal
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                     var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
                     graphComboBox.SelectionChanged += GraphComboBox_SelectionChanged;
-                    app.LiteGraphInitialized += (s, e) => LoadGraphComboBox();
+                    app.LiteGraphInitialized += (s, e) =>
+                    {
+                        LoadGraphComboBox();
+                    };
+                    // Resume any pending file ingestions from previous sessions
+                    Task.Run(async () =>
+                    {
+                        await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                    });
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,
@@ -1594,7 +1602,7 @@ namespace View.Personal
         /// <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
         private async void MyFilesPanel_Drop(object sender, DragEventArgs e)
         {
-           
+
             var app = (App)Application.Current;
             var grid = sender as Grid;
 
