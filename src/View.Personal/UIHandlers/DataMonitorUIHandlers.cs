@@ -737,7 +737,7 @@ namespace View.Personal.UIHandlers
             var consoleOutput = mainWindow.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
             if (consoleOutput != null)
             {
-                var logMessage = $"[INFO] Watched paths ({mainWindow.WatchedPaths.Count}):\n" +
+                var logMessage = $"[INFO] Watched paths ({mainWindow.WatchedPaths.Count}): " +
                                  string.Join("\n", mainWindow.WatchedPaths) + "\n";
                 consoleOutput.Text += logMessage;
                 Console.WriteLine(logMessage);

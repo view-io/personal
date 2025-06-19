@@ -96,7 +96,7 @@ namespace View.Personal.Services
                     var liteGraph = app?._LiteGraph ?? throw new InvalidOperationException("LiteGraph instance is null.");
                     var tenantGuid = app?._TenantGuid ?? Guid.Empty;
                     var activeGraphGuid = mainWindowInstance.ActiveGraphGuid;
-                    var result = FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
+                    var result = await FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
                     if (result != false)
                     {
                         await mainWindowInstance.ReIngestFileAsync(file.FilePath);

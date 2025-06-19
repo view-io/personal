@@ -1128,7 +1128,7 @@
                 var completedFiles = new ConcurrentBag<string>();
                 var failedFiles = new ConcurrentBag<string>();
 
-                var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4) };
+                var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 10) };
                 var semaphore = new SemaphoreSlim(options.MaxDegreeOfParallelism);
                 var tasks = new List<Task>();
                 foreach (var filePath in filePaths)
