@@ -289,6 +289,13 @@ namespace View.Personal.UIHandlers
                                                           NotificationType.Warning);
                         return;
                     }
+
+                    // Preload the selected Ollama model to ensure it's ready for use
+                    string modelName = ollamaSettings.CompletionModel;
+                    if (!string.IsNullOrWhiteSpace(modelName))
+                    {
+                        _ = localModelService.PreloadModelAsync(modelName);
+                    }
                 }
                 else if (window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked == true)
                 {
@@ -330,6 +337,12 @@ namespace View.Personal.UIHandlers
                 {
                     providerSettings.SelectedEmbeddingsProvider = "Ollama";
                     embeddingSettings.OllamaEmbeddingModel = window.FindControl<TextBox>("OllamaModel").Text;
+                    if (!string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
+                    {
+                        var localModelService = new LocalModelService(app);
+                        _ = localModelService.PreloadModelAsync(embeddingSettings.OllamaEmbeddingModel);
+                    }
+
                     if (!TryParsePositiveInt(window, "OllamaEmbeddingDimensions", "Ollama Embedding Model Dimensions", out int ollamaDims)) return;
                     embeddingSettings.OllamaEmbeddingModelDimensions = ollamaDims;
                     if (!TryParsePositiveInt(window, "OllamaEmbeddingMaxTokens", "Ollama Embedding Model Max Tokens", out int ollamaTokens)) return;

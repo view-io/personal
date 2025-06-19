@@ -107,6 +107,65 @@ namespace View.Personal.Services
         }
 
         /// <summary>
+        /// Preloads a model to ensure it's ready for use without delay when needed.
+        /// This method can be called when a user selects an Ollama model in settings to prepare it for use.
+        /// </summary>
+        /// <param name="modelName">The name of the model to preload.</param>
+        /// <returns>A task that resolves to true if the preload was successful, false otherwise.</returns>
+        public async Task<bool> PreloadModelAsync(string modelName)
+        {
+            if (string.IsNullOrWhiteSpace(modelName))
+            {
+                _app?.Log(SeverityEnum.Error, "Cannot preload model: Model name is empty");
+                return false;
+            }
+
+            try
+            {
+                // Removed duplicate log message here as it's already logged by the caller
+                string endpoint = GetOllamaEndpoint();
+                using var httpClient = CreateHttpClient();
+
+                // Determine if it's an embedding model
+                bool isEmbeddingModel = await IsEmbeddingModelAsync(httpClient, endpoint, modelName);
+
+                string apiPath = isEmbeddingModel ? "api/embeddings" : "api/generate";
+                HttpContent content;
+
+                if (isEmbeddingModel)
+                {
+                    content = JsonContent.Create(new
+                    {
+                        model = modelName,
+                        prompt = "Hello" // Required field for embedding
+                    });
+                }
+                else
+                {
+                    content = JsonContent.Create(new
+                    {
+                        model = modelName,
+                        prompt = "Hello",
+                        stream = false
+                    });
+                }
+
+                var response = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
+                response.EnsureSuccessStatusCode();
+
+                _app?.Log(SeverityEnum.Info, $"Successfully preloaded Ollama model: {modelName}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _app?.Log(SeverityEnum.Error, $"Error preloading model {modelName}: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Error preloading model {modelName}");
+                return false;
+            }
+        }
+
+
+        /// <summary>
         /// Deletes a model from the system.
         /// </summary>
         /// <param name="modelId">The ID of the model to delete.</param>
@@ -412,6 +471,24 @@ namespace View.Personal.Services
                 {
                     LogError($"Error processing pull response: {ex.Message}", ex);
                 }
+            }
+        }
+
+        private async Task<bool> IsEmbeddingModelAsync(HttpClient client, string endpoint, string modelName)
+        {
+            try
+            {
+                var requestPayload = new { model = modelName };
+                var content = JsonContent.Create(requestPayload);
+                var response = await client.PostAsync($"{endpoint}api/show", content);
+                if (!response.IsSuccessStatusCode) return false;
+
+                var json = await response.Content.ReadAsStringAsync();
+                return json.Contains("\"capabilities\":[\"embedding\"]", StringComparison.OrdinalIgnoreCase) || json.Contains("\"embedding\"", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
             }
         }
     }

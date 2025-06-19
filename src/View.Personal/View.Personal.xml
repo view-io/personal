@@ -2151,6 +2151,14 @@
             <param name="isActive">Whether the model should be active.</param>
             <returns>True if the operation was successful, false otherwise.</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.PreloadModelAsync(System.String)">
+            <summary>
+            Preloads a model to ensure it's ready for use without delay when needed.
+            This method can be called when a user selects an Ollama model in settings to prepare it for use.
+            </summary>
+            <param name="modelName">The name of the model to preload.</param>
+            <returns>A task that resolves to true if the preload was successful, false otherwise.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.DeleteModelAsync(System.String)">
             <summary>
             Deletes a model from the system.
