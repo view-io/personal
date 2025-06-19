@@ -1,4 +1,4 @@
-namespace View.Personal
+﻿namespace View.Personal
 {
     using System;
     using System.Collections.Generic;
@@ -856,11 +856,11 @@ namespace View.Personal
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
                 app.LogWithTimestamp("DEBUG", "Performing vector search");
                 var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
-                if (searchResults == null)
+                if (searchResults == null || !searchResults.GetEnumerator().MoveNext())
                     return "No relevant documents found to answer your question.";
-                app.LogWithTimestamp("DEBUG", $"Vector search completed with {searchResults.Count()} results");
-
+                app.LogWithTimestamp("DEBUG", "BuildContext execution starts");
                 var context = BuildContext(searchResults);
+                app.LogWithTimestamp("DEBUG", $"BuildContext execution completed");
                 var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
 
@@ -984,7 +984,7 @@ namespace View.Personal
             };
 
             var searchResults = _LiteGraph.Vector.Search(searchRequest);
-            app.LogWithTimestamp("INFO", $"Vector search returned {searchResults?.Count() ?? 0} results.");
+            app.LogWithTimestamp("INFO", $"Vector search Completed");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
@@ -999,17 +999,17 @@ namespace View.Personal
             var nodeContents = sortedResults
                 .Select(r =>
                 {
-                    if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                    if (r.Node.Data is Atom atom && atom.Text?.Length > 0)
                         return atom.Text;
-                    if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
-                        !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                    if (r.Node.Vectors?.Count > 0 && r.Node.Vectors[0].Content?.Length > 0)
                         return r.Node.Vectors[0].Content;
                     return r.Node.Tags["Content"] ?? "[No Content]";
-                })
-                .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
-                .ToList();
+                }).Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]");
 
-            var context = string.Join("\n\n", nodeContents);
+            var context = nodeContents.Aggregate(new StringBuilder(),
+                                                (sb, content) => sb.Append(content).Append("\n\n"),
+                                                 sb => sb.ToString());
+
             return context.Length > 4000 ? context.Substring(0, 4000) + "... [truncated]" : context;
         }
 
