@@ -122,7 +122,7 @@ namespace View.Personal.UIHandlers
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
-                app.Log("[DEBUG] Calling GetAIResponse...");
+                app.LogWithTimestamp("DEBUG","Calling GetAIResponse...");
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
@@ -152,7 +152,7 @@ namespace View.Personal.UIHandlers
                 else if (string.IsNullOrEmpty(assistantMsg.Content))
                 {
                     assistantMsg.Content = "No response received from the AI.";
-                    app.Log("[WARN] No content accumulated in assistant message.");
+                    app.LogWithTimestamp("WARN", "No content accumulated in assistant message.");
                 }
 
                 // Final UI update
@@ -162,8 +162,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                app.Log(
-                    $"[ERROR] Exception in SendMessageTest_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                app.LogWithTimestamp("ERROR",$"Exception in SendMessageTest_Click: {ex.Message}\n\nStackTrace: {ex.StackTrace}");
                 app?.LogExceptionToFile(ex, $"[ERROR] Exception in SendMessageTest_Click");
                 if (currentMessages.Last().Role == "assistant")
                     currentMessages.Last().Content = $"Error: {ex.Message}";

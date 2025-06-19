@@ -8,7 +8,6 @@ namespace View.Personal
     using LiteGraph;
     using LiteGraph.GraphRepositories;
     using LiteGraph.GraphRepositories.Sqlite;
-    using View.Personal.Helpers;
     using Services;
     using SyslogLogging;
     using System;
@@ -18,6 +17,8 @@ namespace View.Personal
     using System.Linq;
     using System.Text.Json;
     using Timestamps;
+    using Tmds.DBus.Protocol;
+    using View.Personal.Helpers;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -257,6 +258,33 @@ namespace View.Personal
         public void Log(string message)
         {
             LoggingService?.Log(message);
+        }
+
+        /// <summary>
+        /// Logs a message with a timestamp and severity level to both the application UI and system console.
+        /// </summary>
+        /// <param name="severity">The severity level of the message (e.g., INFO, WARN, ERROR).</param>
+        /// <param name="message">The message content to be logged.</param>
+        public void LogWithTimestamp(string severity, string message)
+        {
+            LoggingService?.Log($"[{severity}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
+        }
+
+        /// <summary>
+        /// Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
+        /// including seconds in the output.
+        /// </summary>
+        /// <param name="dateTime">The DateTime to format.</param>
+        /// <returns>Formatted date time string with seconds.</returns>
+        public string FormatLastModifiedDateTime(DateTime dateTime)
+        {
+            var uses24HourFormat =
+                !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
+
+            var timeFormat = uses24HourFormat ? "HH:mm:ss" : "hh:mm:ss tt";
+            var dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
+
+            return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
         }
 
         /// <summary>

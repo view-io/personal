@@ -65,6 +65,21 @@
             </summary>
             <param name="message">The message to log.</param>
         </member>
+        <member name="M:View.Personal.App.LogWithTimestamp(System.String,System.String)">
+            <summary>
+            Logs a message with a timestamp and severity level to both the application UI and system console.
+            </summary>
+            <param name="severity">The severity level of the message (e.g., INFO, WARN, ERROR).</param>
+            <param name="message">The message content to be logged.</param>
+        </member>
+        <member name="M:View.Personal.App.FormatLastModifiedDateTime(System.DateTime)">
+            <summary>
+            Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
+            including seconds in the output.
+            </summary>
+            <param name="dateTime">The DateTime to format.</param>
+            <returns>Formatted date time string with seconds.</returns>
+        </member>
         <member name="M:View.Personal.App.LogInfoToFile(System.String)">
             <summary>
             Logs an informational message to the file.

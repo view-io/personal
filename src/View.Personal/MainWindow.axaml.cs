@@ -838,34 +838,41 @@ namespace View.Personal
             try
             {
                 var app = (App)Application.Current;
+                app.LogWithTimestamp("DEBUG", $"GetAIResponse started with provider: {app.ApplicationSettings.SelectedProvider}");
                 var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
                 var embeddingsProvider =
                     app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
                 // Generate embeddings with the selected embeddings provider
+                app.LogWithTimestamp("DEBUG", $"Generating embeddings with provider: {embeddingsProvider}");
                 var (sdk, embeddingsRequest) =
                     GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
-                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false); ;
+                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
+                app.LogWithTimestamp("DEBUG", "Embeddings generated successfully");
 
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
+                app.LogWithTimestamp("DEBUG", "Performing vector search");
                 var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
-                if (searchResults == null || !searchResults.Any())
+                if (searchResults == null)
                     return "No relevant documents found to answer your question.";
+                app.LogWithTimestamp("DEBUG", $"Vector search completed with {searchResults.Count()} results");
 
                 var context = BuildContext(searchResults);
                 var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
 
+                app.LogWithTimestamp("DEBUG", $"Sending API request to {selectedProvider}");
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                app.LogWithTimestamp("DEBUG", "API request completed");
                 return result;
             }
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app.Log($"[ERROR] GetAIResponse threw exception: {ex.Message}");
+                app.LogWithTimestamp("ERROR", $"GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -950,9 +957,9 @@ namespace View.Personal
 
             if (!result.Success || result.ContentEmbeddings == null || result.ContentEmbeddings.Count == 0)
             {
-                app.Log($"[ERROR] Prompt embeddings generation failed: {result.StatusCode}");
+                app.LogWithTimestamp("ERROR", $"Prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
-                    app.Log($"[ERROR] {result.Error.Message}");
+                    app.LogWithTimestamp("ERROR", result.Error.Message);
                 return new List<float>();
             }
 
@@ -977,7 +984,7 @@ namespace View.Personal
             };
 
             var searchResults = _LiteGraph.Vector.Search(searchRequest);
-            app.Log($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
+            app.LogWithTimestamp("INFO", $"Vector search returned {searchResults?.Count() ?? 0} results.");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
@@ -1041,7 +1048,7 @@ namespace View.Personal
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.Log($"[INFO] Creating request body for {provider}");
+            app.LogWithTimestamp("INFO", $"Creating request body for {provider}");
             switch (provider)
             {
                 //ToDo: need to grab control settings dynamically
@@ -1107,6 +1114,8 @@ namespace View.Personal
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
             object requestBody, Action<string> onTokenReceived)
         {
+            var app = (App)Application.Current;
+            app.LogWithTimestamp("DEBUG", $"SendApiRequest started for provider: {provider}");
             var requestUri = provider switch
             {
                 "OpenAI" => settings.OpenAIEndpoint,
@@ -1128,6 +1137,7 @@ namespace View.Personal
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
+            app.LogWithTimestamp("DEBUG", $"SendApiRequest completed for provider: {provider}");
             return response;
         }
 
@@ -1179,6 +1189,7 @@ namespace View.Personal
         {
             var sb = new StringBuilder();
             var app = (App)Application.Current;
+            app.LogWithTimestamp("DEBUG", $"ProcessStreamingResponse started for provider: {provider}");
 
             // Create a SynchronizationContext-aware token handler that safely updates the UI
             Action<string> safeTokenHandler = null;
@@ -1249,6 +1260,7 @@ namespace View.Personal
                 }
             }
 
+            app.LogWithTimestamp("DEBUG", $"ProcessStreamingResponse completed for provider: {provider}");
             return sb.ToString();
         }
 
