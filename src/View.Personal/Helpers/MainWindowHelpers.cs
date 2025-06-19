@@ -41,8 +41,7 @@ namespace View.Personal.Helpers
             if (liteGraph == null)
             {
                 var app = (App)App.Current;
-                app.Log(
-                    "[WARN] LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
+                app.Log(Enums.SeverityEnum.Warn, "LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
                 return new List<FileViewModel>();
             }
 
@@ -127,7 +126,7 @@ namespace View.Personal.Helpers
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    app.Log($"[INFO] Skipping empty atom at index {atomIndex}");
+                    app.Log(Enums.SeverityEnum.Info, $"Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }

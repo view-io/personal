@@ -19,6 +19,7 @@ namespace View.Personal
     using Timestamps;
     using Tmds.DBus.Protocol;
     using View.Personal.Helpers;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -252,22 +253,23 @@ namespace View.Personal
         }
 
         /// <summary>
-        /// Logs a message to the console output in the UI and system console.
+        /// Logs a message with a severity level to the console output in the UI and system console.
         /// </summary>
-        /// <param name="message">The message to log.</param>
-        public void Log(string message)
+        /// <param name="severity">The severity level of the message as an enum value.</param>
+        /// <param name="message">The message content to be logged.</param>
+        public void Log(Enums.SeverityEnum severity, string message)
         {
-            LoggingService?.Log(message);
+            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {message}");
         }
 
         /// <summary>
         /// Logs a message with a timestamp and severity level to both the application UI and system console.
         /// </summary>
-        /// <param name="severity">The severity level of the message (e.g., INFO, WARN, ERROR).</param>
+        /// <param name="severity">The severity level of the message as an enum value.</param>
         /// <param name="message">The message content to be logged.</param>
-        public void LogWithTimestamp(string severity, string message)
+        public void LogWithTimestamp(Enums.SeverityEnum severity, string message)
         {
-            LoggingService?.Log($"[{severity}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
+            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
         }
 
         /// <summary>

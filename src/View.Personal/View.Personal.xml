@@ -59,17 +59,18 @@
             - Displaying error messages if initialization fails
             </remarks>
         </member>
-        <member name="M:View.Personal.App.Log(System.String)">
+        <member name="M:View.Personal.App.Log(View.Personal.Enums.SeverityEnum,System.String)">
             <summary>
-            Logs a message to the console output in the UI and system console.
+            Logs a message with a severity level to the console output in the UI and system console.
             </summary>
-            <param name="message">The message to log.</param>
+            <param name="severity">The severity level of the message as an enum value.</param>
+            <param name="message">The message content to be logged.</param>
         </member>
-        <member name="M:View.Personal.App.LogWithTimestamp(System.String,System.String)">
+        <member name="M:View.Personal.App.LogWithTimestamp(View.Personal.Enums.SeverityEnum,System.String)">
             <summary>
             Logs a message with a timestamp and severity level to both the application UI and system console.
             </summary>
-            <param name="severity">The severity level of the message (e.g., INFO, WARN, ERROR).</param>
+            <param name="severity">The severity level of the message as an enum value.</param>
             <param name="message">The message content to be logged.</param>
         </member>
         <member name="M:View.Personal.App.FormatLastModifiedDateTime(System.DateTime)">
@@ -1277,6 +1278,46 @@
         <member name="F:View.Personal.Enums.MessageBoxIcon.Question">
             <summary>
             Question icon.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Enums.SeverityEnum">
+            <summary>
+            Message severity.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Debug">
+            <summary>
+            Debug messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Info">
+            <summary>
+            Informational messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Warn">
+            <summary>
+            Warning messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Error">
+            <summary>
+            Error messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Alert">
+            <summary>
+            Alert messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Critical">
+            <summary>
+            Critical messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Emergency">
+            <summary>
+            Emergency messages.
             </summary>
         </member>
         <member name="T:View.Personal.Helpers.BrowserHelper">

@@ -112,7 +112,7 @@ namespace View.Personal.UIHandlers
         public static void MainWindow_Opened(Window window)
         {
             var app = (App)Application.Current;
-            app.Log("[INFO] Finished MainWindow_Opened.");
+            app.Log(Enums.SeverityEnum.Info, "Finished MainWindow_Opened.");
             var sidebarBorder = window.FindControl<Border>("SidebarBorder");
             var dashboardPanel = window.FindControl<Border>("DashboardPanel");
             if (sidebarBorder != null) sidebarBorder.IsVisible = true;
@@ -412,7 +412,7 @@ namespace View.Personal.UIHandlers
             {
                 window.ShowNotification("Unexpected Error", ex.Message, NotificationType.Error);
                 var app = App.Current as App;
-                app?.Log($"[ERROR] Error while saving settings: {ex.Message}");
+                app?.Log(Enums.SeverityEnum.Error, $"Error while saving settings: {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error while saving settings");
             }
             finally
@@ -465,13 +465,13 @@ namespace View.Personal.UIHandlers
                 if (GraphExporter.TryExportGraphToGexfFile(liteGraph, tenantGuid, graphGuid, filePath,
                         out var errorMessage))
                 {
-                    app.Log($"Graph {graphGuid} exported to {filePath} successfully!");
+                    app.Log(Enums.SeverityEnum.Info, $"Graph {graphGuid} exported to {filePath} successfully!");
                     window.ShowNotification("File Exported", "File was exported successfully!",
                         NotificationType.Success);
                 }
                 else
                 {
-                    app.Log($"Error exporting graph to GEXF: {errorMessage}");
+                    app.Log(Enums.SeverityEnum.Error, $"Error exporting graph to GEXF: {errorMessage}");
                     window.ShowNotification("Export Error", $"Error exporting graph to GEXF: {errorMessage}",
                         NotificationType.Error);
                 }
@@ -508,7 +508,7 @@ namespace View.Personal.UIHandlers
                         textBox.Text = $"{filePaths.Count} files selected";
                     }
                 }
-                
+
                 var uploadSpinner = window.FindControl<ProgressBar>("UploadSpinner");
                 if (uploadSpinner != null)
                 {

@@ -31,6 +31,7 @@
     using Sdk.Embeddings.Providers.VoyageAI;
     using UIHandlers;
     using View.Personal.Enums;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
@@ -130,7 +131,7 @@
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
-                    app.Log("[INFO] MainWindow opened.");
+                    app.Log(SeverityEnum.Info, "MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
                     LoadSettingsFromFile();
@@ -190,7 +191,7 @@
             }
             catch (Exception e)
             {
-                app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
+                app.Log(SeverityEnum.Error, $"MainWindow constructor exception: {e.Message}");
                 app?.LogExceptionToFile(e, "[ViewPersonal] " + "MainWindow constructor exception:");
             }
         }
@@ -523,8 +524,8 @@
                 }
                 catch (Exception ex)
                 {
-                    app.Log($"[ERROR] Error saving console logs: {ex.Message}");
-                    app.LogExceptionToFile(ex, "[ERROR] Error saving console logs");
+                    app.Log(SeverityEnum.Error, $"Error saving console logs: {ex.Message}");
+                    app.LogExceptionToFile(ex, "Error saving console logs");
                     ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
                 }
             }
@@ -780,7 +781,7 @@
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
+            foreach (var graph in graphs) app.Log(SeverityEnum.Info, $"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
                 _TenantGuid, _ActiveGraphGuid);
         }
@@ -838,41 +839,41 @@
             try
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp("DEBUG", $"GetAIResponse started with provider: {app.ApplicationSettings.SelectedProvider}");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"GetAIResponse started with provider: {app.ApplicationSettings.SelectedProvider}");
                 var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
                 var embeddingsProvider =
                     app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
                 // Generate embeddings with the selected embeddings provider
-                app.LogWithTimestamp("DEBUG", $"Generating embeddings with provider: {embeddingsProvider}");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Generating embeddings with provider: {embeddingsProvider}");
                 var (sdk, embeddingsRequest) =
                     GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
                 var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
-                app.LogWithTimestamp("DEBUG", "Embeddings generated successfully");
+                app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
 
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
-                app.LogWithTimestamp("DEBUG", "Performing vector search");
+                app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
                 var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
                 if (searchResults == null || !searchResults.GetEnumerator().MoveNext())
                     return "No relevant documents found to answer your question.";
-                app.LogWithTimestamp("DEBUG", "BuildContext execution starts");
+                app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
                 var context = BuildContext(searchResults);
-                app.LogWithTimestamp("DEBUG", $"BuildContext execution completed");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"BuildContext execution completed");
                 var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
 
-                app.LogWithTimestamp("DEBUG", $"Sending API request to {selectedProvider}");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending API request to {selectedProvider}");
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
-                app.LogWithTimestamp("DEBUG", "API request completed");
+                app.LogWithTimestamp(SeverityEnum.Debug, "API request completed");
                 return result;
             }
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp("ERROR", $"GetAIResponse threw exception: {ex.Message}");
+                app.LogWithTimestamp(SeverityEnum.Error, $"GetAIResponse threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -957,9 +958,9 @@
 
             if (!result.Success || result.ContentEmbeddings == null || result.ContentEmbeddings.Count == 0)
             {
-                app.LogWithTimestamp("ERROR", $"Prompt embeddings generation failed: {result.StatusCode}");
+                app.LogWithTimestamp(SeverityEnum.Error, $"Prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
-                    app.LogWithTimestamp("ERROR", result.Error.Message);
+                    app.LogWithTimestamp(SeverityEnum.Error, result.Error.Message);
                 return new List<float>();
             }
 
@@ -984,7 +985,7 @@
             };
 
             var searchResults = _LiteGraph.Vector.Search(searchRequest);
-            app.LogWithTimestamp("INFO", $"Vector search Completed");
+            app.LogWithTimestamp(SeverityEnum.Info, $"Vector search Completed");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
@@ -1048,7 +1049,7 @@
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.LogWithTimestamp("INFO", $"Creating request body for {provider}");
+            app.LogWithTimestamp(SeverityEnum.Info, $"Creating request body for {provider}");
             switch (provider)
             {
                 //ToDo: need to grab control settings dynamically
@@ -1115,7 +1116,7 @@
             object requestBody, Action<string> onTokenReceived)
         {
             var app = (App)Application.Current;
-            app.LogWithTimestamp("DEBUG", $"SendApiRequest started for provider: {provider}");
+            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest started for provider: {provider}");
             var requestUri = provider switch
             {
                 "OpenAI" => settings.OpenAIEndpoint,
@@ -1137,7 +1138,7 @@
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
-            app.LogWithTimestamp("DEBUG", $"SendApiRequest completed for provider: {provider}");
+            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest completed for provider: {provider}");
             return response;
         }
 
@@ -1189,7 +1190,7 @@
         {
             var sb = new StringBuilder();
             var app = (App)Application.Current;
-            app.LogWithTimestamp("DEBUG", $"ProcessStreamingResponse started for provider: {provider}");
+            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse started for provider: {provider}");
 
             // Create a SynchronizationContext-aware token handler that safely updates the UI
             Action<string> safeTokenHandler = null;
@@ -1228,7 +1229,7 @@
                         }
                         catch (JsonException je)
                         {
-                            Console.WriteLine($"[ERROR] Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
+                            Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
                             app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
                         }
                     }
@@ -1254,13 +1255,13 @@
                     }
                     catch (JsonException je)
                     {
-                        Console.WriteLine($"[ERROR] Invalid JSON in response line: {line}\n{je.Message}");
+                        Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in response line: {line}\n{je.Message}");
                         app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in response line");
                     }
                 }
             }
 
-            app.LogWithTimestamp("DEBUG", $"ProcessStreamingResponse completed for provider: {provider}");
+            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse completed for provider: {provider}");
             return sb.ToString();
         }
 
@@ -1357,7 +1358,7 @@
 
                 app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
-                app.Log($"[INFO] Embedding provider selected: {selectedProvider}");
+                app.Log(SeverityEnum.Info, $"Embedding provider selected: {selectedProvider}");
             }
         }
 
@@ -1556,7 +1557,7 @@
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            Console.WriteLine($"[INFO] Fetched {graphs.Count} graphs.");
+            Console.WriteLine($"{SeverityEnum.Info} Fetched {graphs.Count} graphs.");
 
             var graphItems = graphs.Select(g => new GraphItem
             {
@@ -1569,12 +1570,12 @@
             var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
             if (graphsDataGrid != null)
             {
-                Console.WriteLine("[INFO] Setting ItemsSource for GraphsDataGrid.");
+                Console.WriteLine($"{SeverityEnum.Info} Setting ItemsSource for GraphsDataGrid.");
                 graphsDataGrid.ItemsSource = graphItems;
             }
             else
             {
-                Console.WriteLine("[ERROR] GraphsDataGrid not found.");
+                Console.WriteLine($"{SeverityEnum.Error} GraphsDataGrid not found.");
             }
         }
 
@@ -1639,7 +1640,7 @@
             }
             catch (Exception ex)
             {
-                app.Log($"[ERROR] Error processing dropped files: {ex.Message}");
+                app.Log(SeverityEnum.Error, $"Error processing dropped files: {ex.Message}");
                 app.LogExceptionToFile(ex, $"Error processing dropped files");
             }
         }

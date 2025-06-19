@@ -15,6 +15,7 @@ namespace View.Personal.UIHandlers
     using System.Linq;
     using System.Threading.Tasks;
     using View.Personal.Controls.Renderer;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Provides static event handlers and utility methods for managing the chat user interface.
@@ -84,7 +85,7 @@ namespace View.Personal.UIHandlers
             }
             else
             {
-                app.Log("[WARN] User tried to send an empty or null message.");
+                app.Log(SeverityEnum.Warn, "User tried to send an empty or null message.");
                 return;
             }
 
@@ -122,7 +123,7 @@ namespace View.Personal.UIHandlers
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
-                app.LogWithTimestamp("DEBUG","Calling GetAIResponse...");
+                app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
@@ -152,7 +153,7 @@ namespace View.Personal.UIHandlers
                 else if (string.IsNullOrEmpty(assistantMsg.Content))
                 {
                     assistantMsg.Content = "No response received from the AI.";
-                    app.LogWithTimestamp("WARN", "No content accumulated in assistant message.");
+                    app.LogWithTimestamp(SeverityEnum.Warn, "No content accumulated in assistant message.");
                 }
 
                 // Final UI update
@@ -162,8 +163,8 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                app.LogWithTimestamp("ERROR",$"Exception in SendMessageTest_Click: {ex.Message}\n\nStackTrace: {ex.StackTrace}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Exception in SendMessageTest_Click");
+                app.LogWithTimestamp(SeverityEnum.Error, $"Exception in SendMessageTest_Click: {ex.Message}\n\nStackTrace: {ex.StackTrace}");
+                app?.LogExceptionToFile(ex, $"Exception in SendMessageTest_Click");
                 if (currentMessages.Last().Role == "assistant")
                     currentMessages.Last().Content = $"Error: {ex.Message}";
                 UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
@@ -280,14 +281,14 @@ namespace View.Personal.UIHandlers
                 {
                     await File.WriteAllLinesAsync(filePath,
                         conversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
-                    app.Log($"[INFO] Chat history saved to {filePath}");
+                    app.Log(SeverityEnum.Info, $"Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    app.Log($"[ERROR] Error saving chat history: {ex.Message}");
+                    app.Log(SeverityEnum.Error, $"Error saving chat history: {ex.Message}");
                 }
             else
-                app.Log("[WARN] No file path selected for chat history download.");
+                app.Log(SeverityEnum.Warn, "No file path selected for chat history download.");
         }
 
         /// <summary>

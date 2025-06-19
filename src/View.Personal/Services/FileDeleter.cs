@@ -14,6 +14,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using View.Personal.Enums;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Provides methods for handling file deletion operations within the application.
@@ -48,9 +49,9 @@
 
                     var app = (App)App.Current;
                     var mainWindow = window as MainWindow;
-                    
+
                     bool deleteSuccess = await DeleteFile(file, liteGraph, tenantGuid, graphGuid, window);
-                    
+
                     if (deleteSuccess && mainWindow != null)
                     {
                         await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
@@ -75,8 +76,8 @@
                 catch (Exception ex)
                 {
                     var app = (App)App.Current;
-                    app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                    app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
+                    app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                    app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);
@@ -138,16 +139,16 @@
                         {
                             var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
                             var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                            app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                            app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
 
                             if (chunkNodeGuids.Any())
                             {
                                 liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                                app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
+                                app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
                             }
 
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                            app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                            app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
 
                             if (mainWindow != null)
                             {
@@ -156,7 +157,7 @@
                                         watchedPath == filePath ||
                                         (System.IO.Directory.Exists(watchedPath) &&
                                          filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                                    app?.Log($"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                                    app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
                             }
                         });
 
@@ -175,8 +176,8 @@
                     catch (Exception ex)
                     {
                         failedDeletes.Add(file.Name ?? string.Empty);
-                        app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                        app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
+                        app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                        app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                     }
                 }
 
@@ -216,8 +217,8 @@
             }
             catch (Exception ex)
             {
-                app?.Log($"[ERROR] Error in batch file deletion: {ex.Message}");
-                app?.LogExceptionToFile(ex, "[ERROR] Error in batch file deletion");
+                app?.Log(SeverityEnum.Error, $"Error in batch file deletion: {ex.Message}");
+                app?.LogExceptionToFile(ex, "Error in batch file deletion");
                 if (mainWindow != null)
                     mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);
@@ -247,7 +248,7 @@
             var app = (App)App.Current;
             var mainWindow = window as MainWindow;
             ProgressBar spinner = null;
-            
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 spinner = window.FindControl<ProgressBar>("IngestSpinner");
@@ -256,48 +257,48 @@
                     spinner.IsVisible = true;
                     spinner.IsIndeterminate = true;
                 }
-            },DispatcherPriority.Normal);
-            
+            }, DispatcherPriority.Normal);
+
             try
             {
                 await Task.Run(() =>
                 {
                     var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
                     var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                    app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
-                    app?.LogInfoToFile($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                    app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                    app?.LogInfoToFile($"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
 
                     if (chunkNodeGuids.Any())
                     {
                         liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                        app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
-                        app?.LogInfoToFile($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
+                        app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
+                        app?.LogInfoToFile($"Deleted {chunkNodeGuids.Count} chunk nodes");
                     }
 
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                    app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
-                    app?.LogInfoToFile($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                    app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                    app?.LogInfoToFile($"Deleted document node {file.NodeGuid} for file '{file.Name}'");
                 });
 
                 if (mainWindow != null)
                 {
                     var filePath = file.FilePath;
-                    app?.Log($"[DEBUG] FilePath: '{filePath}'");
-                    app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
+                    app?.Log(SeverityEnum.Debug, $"FilePath: '{filePath}'");
+                    app?.Log(SeverityEnum.Debug, $"WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
 
                     if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
                             watchedPath == filePath ||
                             (System.IO.Directory.Exists(watchedPath) &&
                              filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                        app?.Log($"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                        app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
                     else
-                        app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+                        app?.Log(SeverityEnum.Debug, $"File '{file.Name}' not watched or FilePath unavailable.");
                 }
             }
             catch (Exception ex)
             {
-                app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
+                app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                 return false;
             }
             finally

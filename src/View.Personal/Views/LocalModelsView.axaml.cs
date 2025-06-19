@@ -109,7 +109,7 @@ namespace View.Personal.Views
             catch (Exception ex)
             {
                 var app = App.Current as App;
-                app?.Log($"Error loading models: {ex.Message}");
+                app?.Log(SeverityEnum.Error, $"Error loading models: {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error loading models");
             }
             finally
@@ -174,7 +174,7 @@ namespace View.Personal.Views
                                                                               "Ollama is not installed or not running on the system defined in the settings.",
                                                                               "Download Ollama",
                                                                                ollamaDownloadUrl,
-                                                                               textLines: textLines); 
+                                                                               textLines: textLines);
                 }
                 return;
             }
@@ -290,7 +290,7 @@ namespace View.Personal.Views
             catch (Exception ex)
             {
                 var app = App.Current as App;
-                app?.Log($"[ERROR] Error pulling model: {ex.Message}");
+                app?.Log(SeverityEnum.Error, $"Error pulling model: {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error pulling model");
 
                 pullStatusMessage.Text = $"Error pulling model: {ex.Message}";

@@ -10,6 +10,7 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using System.Text.Json;
     using View.Personal.Classes;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Service for managing locally pulled AI models.
@@ -81,8 +82,8 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Ollama service is not available: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"[Error] Ollama service is not available");
+                _app?.Log(SeverityEnum.Error, $"Ollama service is not available: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Ollama service is not available");
                 return false;
             }
         }
@@ -139,7 +140,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Error deleting model {model.Name}: {ex.Message}");
+                _app?.Log(SeverityEnum.Error, $"Error deleting model {model.Name}: {ex.Message}");
                 _app?.LogExceptionToFile(ex, $"Error deleting model {model.Name}");
                 return false;
             }
@@ -187,7 +188,7 @@ namespace View.Personal.Services
         /// <param name="ex">The exception that was thrown during the operation.</param>
         private void LogError(string errorMessage, Exception ex)
         {
-            _app?.Log(errorMessage);
+            _app?.Log(SeverityEnum.Error, errorMessage);
             _app?.LogExceptionToFile(ex, errorMessage);
         }
 
@@ -205,7 +206,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app.Log($"[Error] Error loading models: {ex.Message}");
+                _app.Log(SeverityEnum.Error, $"Error loading models: {ex.Message}");
                 _app.LogExceptionToFile(ex, $"Error loading models");
 
                 _localModels = new List<LocalModel>();
@@ -238,7 +239,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Error fetching Ollama models: {ex.Message}");
+                _app?.Log(SeverityEnum.Error, $"Error fetching Ollama models: {ex.Message}");
                 _app?.LogExceptionToFile(ex, $"Error fetching Ollama models");
             }
 
@@ -330,7 +331,7 @@ namespace View.Personal.Services
 
                     if (httpEx.Message.Contains("400") || httpEx.Message.Contains("Bad Request"))
                     {
-                        errorResponse.Error = $"[Error] Invalid model name '{modelName}'. Please check if the model name is correct.";
+                        errorResponse.Error = $"Invalid model name '{modelName}'. Please check if the model name is correct.";
                     }
 
                     progressCallback?.Invoke(errorResponse);
@@ -344,7 +345,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                LogError($"[Error] Error pulling model {modelName}: {ex.Message}", ex);
+                LogError($"Error pulling model {modelName}: {ex.Message}", ex);
             }
 
             return null;
@@ -389,7 +390,7 @@ namespace View.Personal.Services
                         if (!string.IsNullOrEmpty(pullResponse.Error) &&
                             pullResponse.Error.Contains("pull model manifest: file does not exist"))
                         {
-                            _app?.Log($"[Error] Invalid model name detected: {modelName}. Model manifest does not exist.");
+                            _app?.Log(SeverityEnum.Error, $"Invalid model name detected: {modelName}. Model manifest does not exist.");
                             progressCallback?.Invoke(pullResponse);
 
                             return;
@@ -405,11 +406,11 @@ namespace View.Personal.Services
                 }
                 catch (JsonException jsonEx)
                 {
-                    LogError($"[Error] JSON parsing error in pull response: {jsonEx.Message}. Line: {line}", jsonEx);
+                    LogError($"JSON parsing error in pull response: {jsonEx.Message}. Line: {line}", jsonEx);
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[Error] Error processing pull response: {ex.Message}", ex);
+                    LogError($"Error processing pull response: {ex.Message}", ex);
                 }
             }
         }
