@@ -49,7 +49,6 @@
                     var app = (App)App.Current;
                     var mainWindow = window as MainWindow;
                     
-                    // Use the async DeleteFile method which handles progress bar
                     bool deleteSuccess = await DeleteFile(file, liteGraph, tenantGuid, graphGuid, window);
                     
                     if (deleteSuccess && mainWindow != null)
@@ -161,7 +160,6 @@
                             }
                         });
 
-                        // Update collection only (skip panel visibility here)
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
                             if (fileCollection != null)
@@ -176,7 +174,7 @@
                     }
                     catch (Exception ex)
                     {
-                        failedDeletes.Add(file.Name);
+                        failedDeletes.Add(file.Name ?? string.Empty);
                         app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
                         app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
                     }
@@ -186,7 +184,6 @@
                 {
                     await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
 
-                    // ✅ Final visibility update
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         var filesDataGridFinal = mainWindow.FindControl<DataGrid>("FilesDataGrid");
@@ -243,7 +240,6 @@
         /// <param name="graphGuid">The GUID representing the active graph containing the file.</param>
         /// <param name="window">The parent <see cref="Window"/> used for logging and optional UI updates.</param>
         /// <returns>A <see cref="Task{Boolean}"/> returning <c>true</c> if deletion succeeded; otherwise, <c>false</c>.</returns>
-
         public static async Task<bool> DeleteFile(FileViewModel file, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
