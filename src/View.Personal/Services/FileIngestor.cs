@@ -55,8 +55,11 @@
 
         private static readonly string IngestionDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
 
-        private static readonly PersistentQueue<string> IngestionQueue =
-            new PersistentQueue<string>(Path.Combine(IngestionDir, "ingestion-backlog.idx"));
+        private static readonly PersistentList<string> IngestionList =
+            new PersistentList<string>(Path.Combine(IngestionDir, "ingestion-backlog.idx"));
+            
+        private static readonly PersistentDictionary<string, bool> CompletedIngestions =
+            new(Path.Combine(IngestionDir, "completed-ingestions.idx"));
 
         #endregion
 
@@ -85,8 +88,8 @@
             var ts = new Timestamp();
             ts.Start = DateTime.UtcNow;
             ts.AddMessage("Start");
-            if (!IngestionQueue.Contains(filePath))
-                IngestionQueue.Enqueue(filePath);
+            if (!IngestionList.Contains(filePath))
+                IngestionList.Add(filePath);
 
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
@@ -96,8 +99,8 @@
             {
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Skipping system file: {filePath}"));
 
-                if (IngestionQueue.Contains(filePath))
-                    IngestionQueue.Dequeue();
+                if (IngestionList.Contains(filePath))
+                    IngestionList.Remove(filePath);
 
                 return;
             }
@@ -108,8 +111,9 @@
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Warn, $"Unsupported file extension: {extension}"));
                 mainWindow.ShowNotification("Ingestion Error", "Unsupported file type.", NotificationType.Error);
 
-                if (IngestionQueue.Contains(filePath))
-                    IngestionQueue.Dequeue();
+                if (IngestionList.Contains(filePath))
+                    IngestionList.Remove(filePath);
+                MarkFilePending(filePath);
                 return;
             }
 
@@ -139,8 +143,9 @@
                     await CustomMessageBoxHelper.ShowErrorAsync(
                         "Error", "Please select an embedding provider");
 
-                    if (IngestionQueue.Contains(filePath))
-                        IngestionQueue.Dequeue();
+                    if (IngestionList.Contains(filePath))
+                        IngestionList.Remove(filePath);
+                    RemoveFileFromCompleted(filePath);
                     return;
                 }
 
@@ -573,8 +578,6 @@
                         }
                 });
 
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
@@ -585,9 +588,10 @@
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"File {filePath} ingested successfully!"));
                 ts.AddMessage($"File {filePath} ingested successfully!");
 
-                if (IngestionQueue.Contains(filePath))
-                    IngestionQueue.Dequeue();
-
+                if (IngestionList.Contains(filePath))
+                    IngestionList.Remove(filePath);
+                MarkFileCompleted(filePath);
+                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
                 var filename = Path.GetFileName(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -1156,13 +1160,15 @@
                 var completedFiles = new ConcurrentBag<string>();
                 var failedFiles = new ConcurrentBag<string>();
 
-                var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 10) };
+                var options = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 5) };
                 var semaphore = new SemaphoreSlim(options.MaxDegreeOfParallelism);
                 var tasks = new List<Task>();
                 foreach (var filePath in filePaths)
                 {
-                    if (!IngestionQueue.Contains(filePath))
-                        IngestionQueue.Enqueue(filePath);
+                    MarkFilePending(filePath);
+
+                    if (!IngestionList.Contains(filePath))
+                        IngestionList.Add(filePath);
                 }
                 foreach (var filePath in filePaths)
                 {
@@ -1176,8 +1182,8 @@
                             if (fileName == ".DS_Store")
                             {
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Skipping system file: {filePath}"));
-                                if (IngestionQueue.Contains(filePath))
-                                    IngestionQueue.Dequeue();
+                                if (IngestionList.Contains(filePath))
+                                    IngestionList.Remove(filePath);
                                 return;
                             }
 
@@ -1186,16 +1192,13 @@
                             {
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Warn, $"Unsupported file extension: {extension}"));
                                 failedFiles.Add(filePath);
-                                if (IngestionQueue.Contains(filePath))
-                                    IngestionQueue.Dequeue();
+                                if (IngestionList.Contains(filePath))
+                                    IngestionList.Remove(filePath);
                                 return;
                             }
 
                             await ProcessSingleFileAsync(filePath, typeDetector, liteGraph, tenantGuid, graphGuid, window);
                             completedFiles.Add(filePath);
-
-                            if (IngestionQueue.Contains(filePath))
-                                IngestionQueue.Dequeue();
                         }
                         catch (Exception ex)
                         {
@@ -1674,20 +1677,62 @@
                     }
             });
 
-            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
-
-            // Remove file from ingestion queue after successful processing
-            if (IngestionQueue.Contains(filePath))
+            MarkFileCompleted(filePath);
+            if (IngestionList.Contains(filePath))
             {
-                IngestionQueue.Dequeue();
-                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Removed {filePath} from ingestion queue after successful ingestion"));
+                IngestionList.Remove(filePath);
+                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Removed {filePath} from ingestion list after successful ingestion"));
             }
-
+            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
             app.Log(Enums.SeverityEnum.Info, $"File {Path.GetFileName(filePath)} ingested successfully and added to file list!");
         }
 
         /// <summary>
-        /// Resumes ingestion of files that were previously queued but not successfully processed,
+        /// Checks if a file has been completely ingested and processed.
+        /// </summary>
+        /// <param name="filePath">The path of the file to check.</param>
+        /// <returns>True if the file has been completely processed, false otherwise.</returns>
+        public static bool IsFileCompleted(string filePath)
+        {
+            return CompletedIngestions.TryGetValue(filePath, out var isDone) && isDone;
+        }
+
+        /// <summary>
+        /// Marks a file as completely ingested and processed.
+        /// </summary>
+        /// <param name="filePath">The path of the file to mark as completed.</param>
+        public static void MarkFileCompleted(string filePath)
+        {
+            CompletedIngestions[filePath] = true;
+        }
+
+        /// <summary>
+        /// Marks a file as pending ingestion by setting its status to <c>false</c> in the CompletedIngestions dictionary.
+        /// </summary>
+        /// <param name="filePath">The full path of the file to mark as pending.</param>
+        public static void MarkFilePending(string filePath)
+        {
+            if (!CompletedIngestions.ContainsKey(filePath))
+            {
+                CompletedIngestions[filePath] = false;
+            }
+        }
+
+        /// <summary>
+        /// Removes a file entry from the CompletedIngestions dictionary if it exists.
+        /// </summary>
+        /// <param name="filePath">The full path of the file to remove.</param>
+        public static void RemoveFileFromCompleted(string filePath)
+        {
+            if (CompletedIngestions.ContainsKey(filePath))
+            {
+                CompletedIngestions.Remove(filePath);
+            }
+        }
+
+
+        /// <summary>
+        /// Resumes ingestion of files that were previously listed but not successfully processed,
         /// </summary>
         /// <param name="typeDetector">Instance of <see cref="TypeDetector"/> used for file type detection during ingestion.</param>
         /// <param name="liteGraph">Instance of <see cref="LiteGraphClient"/> for graph-related ingestion operations.</param>
@@ -1699,7 +1744,7 @@
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             var app = (App)Application.Current;
-            var filesToIngest = IngestionQueue.ToList();
+            var filesToIngest = IngestionList.ToList();
 
             if (filesToIngest.Count > 0)
             {

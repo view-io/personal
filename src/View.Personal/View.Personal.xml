@@ -1883,11 +1883,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -1967,6 +1968,16 @@
             <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/> used for logging and optional UI updates.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> returning <c>true</c> if deletion succeeded; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:View.Personal.Services.FileDeleter.CleanupIncompleteFilesAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Asynchronously removes incomplete file nodes and their associated chunk nodes from the graph,
+            based on the ingestion completion status tracked in <c>FileIngester</c>.
+            </summary>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance used to access and delete graph nodes.</param>
+            <param name="tenantGuid">The unique identifier of the tenant owning the graph data.</param>
+            <param name="graphGuid">The unique identifier of the graph where the document nodes reside.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous cleanup operation.</returns>
+        </member>
         <member name="T:View.Personal.Services.FileIngester">
             <summary>
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -2022,9 +2033,34 @@
             This is a helper method for batch processing.
             </summary>
         </member>
+        <member name="M:View.Personal.Services.FileIngester.IsFileCompleted(System.String)">
+            <summary>
+            Checks if a file has been completely ingested and processed.
+            </summary>
+            <param name="filePath">The path of the file to check.</param>
+            <returns>True if the file has been completely processed, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.MarkFileCompleted(System.String)">
+            <summary>
+            Marks a file as completely ingested and processed.
+            </summary>
+            <param name="filePath">The path of the file to mark as completed.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.MarkFilePending(System.String)">
+            <summary>
+            Marks a file as pending ingestion by setting its status to <c>false</c> in the CompletedIngestions dictionary.
+            </summary>
+            <param name="filePath">The full path of the file to mark as pending.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.RemoveFileFromCompleted(System.String)">
+            <summary>
+            Removes a file entry from the CompletedIngestions dictionary if it exists.
+            </summary>
+            <param name="filePath">The full path of the file to remove.</param>
+        </member>
         <member name="M:View.Personal.Services.FileIngester.ResumePendingIngestions(DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
-            Resumes ingestion of files that were previously queued but not successfully processed,
+            Resumes ingestion of files that were previously listed but not successfully processed,
             </summary>
             <param name="typeDetector">Instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used for file type detection during ingestion.</param>
             <param name="liteGraph">Instance of <see cref="T:LiteGraph.LiteGraphClient"/> for graph-related ingestion operations.</param>

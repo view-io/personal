@@ -8,6 +8,7 @@ namespace View.Personal.UIHandlers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using View.Personal.Services;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing navigation in the user interface.
@@ -94,14 +95,28 @@ namespace View.Personal.UIHandlers
 
                                 if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
                                 {
-                                    _ = Task.Run(() =>
+                                    ProgressBar spinner = null;
+                                    Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                                        if (spinner != null)
+                                        {
+                                            spinner.IsVisible = true;
+                                            spinner.IsIndeterminate = true;
+                                        }
+                                    }, DispatcherPriority.Normal);
+                                    _ = Task.Run(async () =>
                                     {
                                         var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                                        Dispatcher.UIThread.InvokeAsync(() =>
+                                        var completedFiles = uniqueFiles
+                                                             .Where(file => FileIngester.IsFileCompleted(file.FilePath ?? string.Empty))
+                                                             .ToList();
+                                        
+                                        await Dispatcher.UIThread.InvokeAsync(() =>
                                         {
                                             if (uniqueFiles.Any())
                                             {
-                                                filesDataGrid.ItemsSource = uniqueFiles;
+                                                filesDataGrid.ItemsSource = completedFiles;
                                                 filesDataGrid.IsVisible = true;
                                                 uploadFilesPanel.IsVisible = false;
                                                 fileOperationsPanel.IsVisible = true;
@@ -115,6 +130,13 @@ namespace View.Personal.UIHandlers
                                             }
                                         });
                                     });
+                                    if (spinner != null)
+                                    {
+                                        Dispatcher.UIThread.InvokeAsync(() =>
+                                        {
+                                            spinner.IsVisible = false;
+                                        }, DispatcherPriority.Normal);
+                                    }
                                 }
                             }
 

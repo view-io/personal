@@ -9,6 +9,7 @@ namespace View.Personal.Helpers
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
+    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing file lists in the application.
@@ -30,6 +31,14 @@ namespace View.Personal.Helpers
                 liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
                 ?? new List<Node>());
 
+            // Filter only those files marked as completed in the persistent dictionary
+            var completedNodes = documentNodes
+                                 .Where(node =>
+                                 {
+                                      var filePath = node.Tags?["FilePath"];
+                                      return !string.IsNullOrWhiteSpace(filePath) && FileIngester.IsFileCompleted(filePath);
+                                 }).ToList();
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
@@ -43,13 +52,13 @@ namespace View.Personal.Helpers
                         ingestedFiles = new ObservableCollection<FileViewModel>();
                         filesDataGrid.ItemsSource = ingestedFiles;
                     }
+
                     filesDataGrid.IsVisible = true;
                     fileOperationsPanel.IsVisible = true;
                     uploadFilesPanel.IsVisible = false;
 
-                    // Add only new files
                     var existingGuids = new HashSet<Guid>(ingestedFiles.Select(f => f.NodeGuid));
-                    foreach (var node in documentNodes)
+                    foreach (var node in completedNodes)
                     {
                         if (!existingGuids.Contains(node.GUID))
                         {

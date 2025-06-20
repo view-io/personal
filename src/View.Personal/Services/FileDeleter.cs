@@ -63,8 +63,8 @@
 
                     if (deleteSuccess && mainWindow != null)
                     {
+                        FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                         await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-
                         var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
                         if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
                         {
@@ -162,7 +162,7 @@
 
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
                             app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
-
+                            FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                             if (mainWindow != null)
                             {
                                 var filePath = file.FilePath;
@@ -185,6 +185,8 @@
                         }, DispatcherPriority.Background);
 
                         successfulDeletes.Add(file.NodeGuid);
+                        if (mainWindow != null)
+                            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
                     }
                     catch (Exception ex)
                     {
@@ -196,8 +198,6 @@
 
                 if (mainWindow != null)
                 {
-                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         var filesDataGridFinal = mainWindow.FindControl<DataGrid>("FilesDataGrid");
@@ -304,6 +304,62 @@
             }
             return true;
         }
+
+        /// <summary>
+        /// Asynchronously removes incomplete file nodes and their associated chunk nodes from the graph,
+        /// based on the ingestion completion status tracked in <c>FileIngester</c>.
+        /// </summary>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> instance used to access and delete graph nodes.</param>
+        /// <param name="tenantGuid">The unique identifier of the tenant owning the graph data.</param>
+        /// <param name="graphGuid">The unique identifier of the graph where the document nodes reside.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous cleanup operation.</returns>
+        public static async Task CleanupIncompleteFilesAsync(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
+        {
+            var app = (App)App.Current;
+
+            var documentNodes = await Task.Run(() =>
+                liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
+                ?? new List<Node>());
+
+            var incompleteNodes = documentNodes
+                .Where(node =>
+                {
+                    var filePath = node.Tags?["FilePath"];
+                    return !FileIngester.IsFileCompleted(filePath ?? string.Empty);
+                })
+                .GroupBy(node => node.GUID) // prevent multiple deletions of same node
+                .Select(g => g.First())
+                .ToList();
+
+            foreach (var node in incompleteNodes)
+            {
+                var filePath = node.Tags?["FilePath"];
+                try
+                {
+                    app?.Log(SeverityEnum.Warn, $"[Cleanup] Removing incomplete file node: {filePath} ({node.GUID})");
+
+                    // Delete child chunk nodes
+                    var chunkNodes = await Task.Run(() =>
+                        liteGraph.Node.ReadChildren(tenantGuid, graphGuid, node.GUID)?.ToList()
+                        ?? new List<Node>());
+
+                    var chunkGuids = chunkNodes.Select(c => c.GUID).ToList();
+
+                    if (chunkGuids.Any())
+                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkGuids);
+
+                    // Delete parent document node
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
+
+                    app?.Log(SeverityEnum.Info, $"[Cleanup] Removed incomplete file node: {filePath} ({node.GUID})");
+                }
+                catch (Exception ex)
+                {
+                    app?.Log(SeverityEnum.Error, $"[Cleanup Error] {filePath}: {ex.Message}");
+                }
+            }
+        }
+
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }

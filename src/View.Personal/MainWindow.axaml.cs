@@ -155,6 +155,7 @@
                     // Resume any pending file ingestions from previous sessions
                     Task.Run(async () =>
                     {
+                        await FileDeleter.CleanupIncompleteFilesAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                         await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                     });
                 };

@@ -9,6 +9,7 @@ namespace View.Personal.Helpers
     using DocumentAtom.TypeDetection;
     using System.Collections.Specialized;
     using System.IO;
+    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing UI-related tasks and graph operations in the main window.
