@@ -2,6 +2,7 @@ namespace View.Personal.Services
 {
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Threading;
     using Classes;
     using System;
     using System.Diagnostics;
@@ -68,6 +69,7 @@ namespace View.Personal.Services
         /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ReprocessFileAsync(FileViewModel file, Window window)
         {
+            ProgressBar? spinner = null;
             try
             {
                 if (file == null || string.IsNullOrEmpty(file.FilePath))
@@ -89,6 +91,16 @@ namespace View.Personal.Services
                 }
 
                 App? app = App.Current as App;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                    if (spinner != null)
+                    {
+                        spinner.IsVisible = true;
+                        spinner.IsIndeterminate = true;
+                    }
+                }, DispatcherPriority.Normal);
+
                 app?.Log(SeverityEnum.Info, $"Reprocessing file '{file.Name}'.");
                 app?.LogInfoToFile($"{SeverityEnum.Info} Reprocessing file '{file.Name}'.");
 
@@ -115,6 +127,11 @@ namespace View.Personal.Services
                 {
                     mainWindowInstance.ShowNotification("Reprocessing Error", $"Something went wrong: {ex.Message}", NotificationType.Error);
                 }
+            }
+            finally
+            {
+                if (spinner != null)
+                    await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
             }
         }
     }

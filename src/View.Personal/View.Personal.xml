@@ -2125,6 +2125,12 @@
             </summary>
             <param name="app">The application instance.</param>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.PreloadModelsAtStartupAsync">
+            <summary>
+            Preloads models in the background at application startup based on settings.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.GetModels">
             <summary>
             Gets the list of local models.

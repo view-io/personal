@@ -43,6 +43,40 @@ namespace View.Personal.Services
             _app = app;
             _localModels = new List<LocalModel>();
         }
+        
+        /// <summary>
+        /// Preloads models in the background at application startup based on settings.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task PreloadModelsAtStartupAsync()
+        {
+            try
+            {
+                bool isOllamaAvailable = await IsOllamaAvailableAsync();
+                if (!isOllamaAvailable) return;
+                
+               
+                if (_app?.ApplicationSettings?.SelectedProvider == "Ollama" && 
+                    _app?.ApplicationSettings?.Ollama?.IsEnabled == true)
+                {
+                    string completionModel = _app.ApplicationSettings.Ollama.CompletionModel;
+                    if (!string.IsNullOrWhiteSpace(completionModel))
+                        await PreloadModelAsync(completionModel);
+                }
+                
+                if (_app?.ApplicationSettings?.SelectedEmbeddingsProvider == "Ollama")
+                {
+                    string embeddingModel = _app.ApplicationSettings.Embeddings.OllamaEmbeddingModel;
+                    if (!string.IsNullOrWhiteSpace(embeddingModel))
+                        await PreloadModelAsync(embeddingModel);            
+                }
+            }
+            catch (Exception ex)
+            {
+                _app?.Log(SeverityEnum.Error, $"Error preloading models at startup: {ex.Message}");
+                _app?.LogExceptionToFile(ex, "Error preloading models at startup");
+            }
+        }
 
         /// <summary>
         /// Gets the list of local models.

@@ -20,6 +20,7 @@ namespace View.Personal
     using Tmds.DBus.Protocol;
     using View.Personal.Helpers;
     using View.Personal.Enums;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -239,6 +240,13 @@ namespace View.Personal
                     _Logging.Debug(_Header + "Showing MainWindow");
                     _FileLogging.Info(_Header + "Showing MainWindow");
                     desktop.MainWindow.Show();
+                    
+                    // Preload models in background after window is shown
+                    _ = Task.Run(async () =>
+                    {
+                            var localModelService = new Services.LocalModelService(this);
+                            await localModelService.PreloadModelsAtStartupAsync();
+                    });
                 }
                 catch (Exception e)
                 {

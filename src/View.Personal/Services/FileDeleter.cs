@@ -12,6 +12,7 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using View.Personal.Enums;
     using SeverityEnum = Enums.SeverityEnum;
@@ -38,6 +39,7 @@
         public static async Task DeleteFile_ClickAsync(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
+            ProgressBar spinner = null;
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
@@ -46,10 +48,17 @@
 
                     if (result != ButtonResult.Yes)
                         return;
-
                     var app = (App)App.Current;
                     var mainWindow = window as MainWindow;
-
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                        if (spinner != null)
+                        {
+                            spinner.IsVisible = true;
+                            spinner.IsIndeterminate = true;
+                        }
+                    }, DispatcherPriority.Normal);
                     bool deleteSuccess = await DeleteFile(file, liteGraph, tenantGuid, graphGuid, window);
 
                     if (deleteSuccess && mainWindow != null)
@@ -68,7 +77,6 @@
                             uploadFilesPanel.IsVisible = fileCount == 0;
                             fileOperationsPanel.IsVisible = fileCount > 0;
                         }
-
                         mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
                             NotificationType.Success);
                     }
@@ -81,6 +89,11 @@
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);
+                }
+                finally
+                {
+                    if (spinner != null)
+                        await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
                 }
         }
 
@@ -247,18 +260,6 @@
             if (file == null) return false;
             var app = (App)App.Current;
             var mainWindow = window as MainWindow;
-            ProgressBar spinner = null;
-
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                spinner = window.FindControl<ProgressBar>("IngestSpinner");
-                if (spinner != null)
-                {
-                    spinner.IsVisible = true;
-                    spinner.IsIndeterminate = true;
-                }
-            }, DispatcherPriority.Normal);
-
             try
             {
                 await Task.Run(() =>
@@ -300,11 +301,6 @@
                 app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                 return false;
-            }
-            finally
-            {
-                if (spinner != null)
-                    await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
             }
             return true;
         }
