@@ -377,7 +377,7 @@
             var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
             if (chatTitleTextBlock != null)
             {
-                chatTitleTextBlock.Text = $"{model}";
+                chatTitleTextBlock.Text = $"{provider} - {model}";
 
                 if (provider == "View")
                     chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
