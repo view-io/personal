@@ -738,7 +738,7 @@ namespace View.Personal.UIHandlers
             var consoleOutput = mainWindow.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
             if (consoleOutput != null)
             {
-                var logMessage = $"{SeverityEnum.Info} Watched paths ({mainWindow.WatchedPaths.Count}): " +
+                var logMessage = $"[{SeverityEnum.Info}] Watched paths ({mainWindow.WatchedPaths.Count}): " +
                                  string.Join("\n", mainWindow.WatchedPaths) + "\n";
                 consoleOutput.Text += logMessage;
                 Console.WriteLine(logMessage);
@@ -892,7 +892,7 @@ namespace View.Personal.UIHandlers
                     }
 
                     mainWindow.LogToConsole(
-                        $"{SeverityEnum.Info} {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
+                        $"[{SeverityEnum.Info}] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
                 }
             }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
