@@ -29,6 +29,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Timestamps;
     using View.Personal.Enums;
     using View.Personal.Helpers;
     using DocumentTypeEnum = DocumentAtom.TypeDetection.DocumentTypeEnum;
@@ -81,7 +82,9 @@
         {
             var appSettings = ((App)Application.Current).ApplicationSettings;
             var app = (App)Application.Current;
-
+            var ts = new Timestamp();
+            ts.Start = DateTime.UtcNow;
+            ts.AddMessage("Start");
             if (!IngestionQueue.Contains(filePath))
                 IngestionQueue.Enqueue(filePath);
 
@@ -147,18 +150,22 @@
                     case "Ollama":
                         maxTokens = appSettings.Embeddings.OllamaEmbeddingModelMaxTokens;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ollama max tokens: {maxTokens}"));
+                        ts.AddMessage($"Ollama max tokens: {maxTokens}");
                         break;
                     case "View":
                         maxTokens = appSettings.Embeddings.ViewEmbeddingModelMaxTokens;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"View max tokens: {maxTokens}"));
+                        ts.AddMessage($"View max tokens: {maxTokens}");
                         break;
                     case "OpenAI":
                         maxTokens = appSettings.Embeddings.OpenAIEmbeddingModelMaxTokens;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"OpenAI max tokens: {maxTokens}"));
+                        ts.AddMessage($"OpenAI max tokens: {maxTokens}");
                         break;
                     case "VoyageAI":
                         maxTokens = appSettings.Embeddings.VoyageEmbeddingModelMaxTokens;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"VoyageAI max tokens: {maxTokens}"));
+                        ts.AddMessage($"VoyageAI max tokens: {maxTokens}");
                         break;
                     default:
                         throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
@@ -180,6 +187,7 @@
                         };
                         atoms = Extract(filePath);
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel (.xls) file"));
+                        ts.AddMessage($"Extracted {atoms.Count} atoms from Excel (.xls) file");
                     }
                     else
                     {
@@ -199,6 +207,7 @@
                                     var pdfProcessor = new PdfProcessor(processorSettings);
                                     atoms = pdfProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PDF"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from PDF");
                                     break;
                                 }
                             case DocumentTypeEnum.Text:
@@ -215,6 +224,7 @@
                                     var textProcessor = new TextProcessor(textSettings);
                                     atoms = textProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Text file"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from Text file");
                                     break;
                                 }
                             case DocumentTypeEnum.Pptx:
@@ -231,6 +241,7 @@
                                     var pptxProcessor = new PptxProcessor(processorSettings);
                                     atoms = pptxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PowerPoint"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from PowerPoint");
                                     break;
                                 }
                             case DocumentTypeEnum.Docx:
@@ -247,6 +258,7 @@
                                     var docxProcessor = new DocxProcessor(processorSettings);
                                     atoms = docxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Word document"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from Word document");
                                     break;
                                 }
                             case DocumentTypeEnum.Markdown:
@@ -265,6 +277,7 @@
                                         atoms = markdownProcessor.Extract(filePath).ToList();
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Markdown file"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from Markdown file");
                                     break;
                                 }
                             case DocumentTypeEnum.Xlsx:
@@ -283,6 +296,7 @@
                                         atoms = xlsxProcessor.Extract(filePath).ToList();
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel file"));
+                                    ts.AddMessage($"Extracted {atoms.Count} atoms from Excel file");
                                     break;
                                 }
                             default:
@@ -290,6 +304,7 @@
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
                                         app.Log(Enums.SeverityEnum.Warn, $"Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
+                                        ts.AddMessage($"Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
                                         mainWindow.ShowNotification("Ingestion Error",
                                             "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
                                             NotificationType.Error);
@@ -333,15 +348,18 @@
                         MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                     liteGraph.Node.Create(fileNode);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID}"));
+                    ts.AddMessage($"Created file document node {fileNode.GUID}");
 
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes."));
+                    ts.AddMessage($"Created {chunkNodes.Count} chunk nodes.");
 
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
                     liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes."));
+                    ts.AddMessage($"Created {edges.Count} edges from doc -> chunk nodes.");
 
                     var validChunkNodes = chunkNodes
                         .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -392,6 +410,7 @@
                                 }
 
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings."));
+                                ts.AddMessage($"Updated {validChunkNodes.Count} chunk nodes with OpenAI embeddings.");
                                 break;
 
                             case "Ollama":
@@ -437,6 +456,7 @@
                                 }
 
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings."));
+                                ts.AddMessage($"Updated {validChunkNodes.Count} chunk nodes with Local (Ollama) embeddings.");
                                 break;
 
                             case "VoyageAI":
@@ -484,6 +504,7 @@
 
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, 
                                     $"Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings."));
+                                ts.AddMessage($"Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
                                 break;
 
                             case "View":
@@ -544,6 +565,7 @@
                                 }
 
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Updated {validChunkNodes.Count} chunk nodes with View embeddings."));
+                                ts.AddMessage($"Updated {validChunkNodes.Count} chunk nodes with View embeddings.");
                                 break;
 
                             default:
@@ -561,6 +583,7 @@
                 }, DispatcherPriority.Normal);
 
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"File {filePath} ingested successfully!"));
+                ts.AddMessage($"File {filePath} ingested successfully!");
 
                 if (IngestionQueue.Contains(filePath))
                     IngestionQueue.Dequeue();
@@ -588,6 +611,12 @@
                         spinner.IsVisible = false;
                     }, DispatcherPriority.Normal);
                 }
+                var logText = string.Join("\n", ts.Messages.Select(kvp => $"{kvp.Key:HH:mm:ss.fff} - {kvp.Value}"));
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    app.Log(Enums.SeverityEnum.Info, $"Ingestion Timing:\n{logText}");
+                });
             }
         }
 
