@@ -1097,8 +1097,7 @@
                                 throw new ArgumentException($"Unsupported embedding provider: {embeddingProvider}");
                         }
                 });
-
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                await FileListHelper.ReloadFileList(liteGraph, tenantGuid, graphGuid, window);
                 var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (filePathTextBox != null)
                     filePathTextBox.Text = "";

@@ -120,9 +120,23 @@ namespace View.Personal.UIHandlers
                                                 filesDataGrid.IsVisible = true;
                                                 uploadFilesPanel.IsVisible = false;
                                                 fileOperationsPanel.IsVisible = true;
+                                                if (spinner != null)
+                                                {
+                                                    Dispatcher.UIThread.InvokeAsync(() =>
+                                                    {
+                                                        spinner.IsVisible = false;
+                                                    }, DispatcherPriority.Normal);
+                                                }
                                             }
                                             else
                                             {
+                                                if (spinner != null)
+                                                {
+                                                    Dispatcher.UIThread.InvokeAsync(() =>
+                                                    {
+                                                        spinner.IsVisible = false;
+                                                    }, DispatcherPriority.Normal);
+                                                }
                                                 filesDataGrid.ItemsSource = null;
                                                 filesDataGrid.IsVisible = false;
                                                 fileOperationsPanel.IsVisible = false;
@@ -130,13 +144,6 @@ namespace View.Personal.UIHandlers
                                             }
                                         });
                                     });
-                                    if (spinner != null)
-                                    {
-                                        Dispatcher.UIThread.InvokeAsync(() =>
-                                        {
-                                            spinner.IsVisible = false;
-                                        }, DispatcherPriority.Normal);
-                                    }
                                 }
                             }
 

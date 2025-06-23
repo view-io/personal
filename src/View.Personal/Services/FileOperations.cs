@@ -11,6 +11,7 @@ namespace View.Personal.Services
     using System.IO;
     using System.Threading.Tasks;
     using View.Personal.Enums;
+    using View.Personal.Helpers;
     using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
@@ -113,9 +114,10 @@ namespace View.Personal.Services
                     var tenantGuid = app?._TenantGuid ?? Guid.Empty;
                     var activeGraphGuid = mainWindowInstance.ActiveGraphGuid;
                     var result = await FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
+                    await FileListHelper.ReloadFileList(liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
                     if (result != false)
                     {
-                        await mainWindowInstance.ReIngestFileAsync(file.FilePath);
+                        await mainWindowInstance.ReIngestFileAsync(file.FilePath ?? string.Empty);
                         mainWindowInstance.ShowNotification("File Reprocessed", $"{file.Name} was reprocessed successfully!", NotificationType.Success);
                     }
                 }
