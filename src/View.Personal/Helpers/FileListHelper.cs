@@ -78,7 +78,7 @@ namespace View.Personal.Helpers
         }
 
         /// <summary>
-        /// Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
+        /// Reloads the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
         /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
         /// <param name="tenantGuid">The unique identifier for the tenant</param>
         /// <param name="graphGuid">The unique identifier for the graph</param>

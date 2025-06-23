@@ -652,6 +652,118 @@
                                                              Text="https://api.openai.com/v1/chat/completions"
                                                              Margin="8,0,8,0"
                                                              ToolTip.Tip="Set the OpenAI API endpoint." />
+													<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
+														<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+															<TextBlock Text="Batch Size" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="OpenAIBatchSize" Classes="no-shadow"
+                                                                     ToolTip.Tip="Number of requests to process in a single batch." />
+														</StackPanel>
+														<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+															<TextBlock Text="Max Retries" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="OpenAIMaxRetries" Classes="no-shadow"
+                                                                     ToolTip.Tip="Maximum number of retry attempts for failed requests." />
+														</StackPanel>
+													</Grid>
+													<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
+														<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+															<TextBlock Grid.Column="0" Text="Temperature" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBlock Grid.Column="1" x:Name="OpenAITemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+														</Grid>
+														<Grid Margin="0,5,0,0">
+															<Slider x:Name="OpenAITemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																	ToolTip.Tip="Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic." />
+														</Grid>
+													</StackPanel>
+
+													<!-- RAG Settings -->
+													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
+														<StackPanel Spacing="8">
+															<!-- Row 1: Toggle Button only -->
+															<CheckBox x:Name="OpenAIEnableRAG" Content="Enable RAG"
+																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+															<StackPanel x:Name="OpenAIRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableRAG}">
+																<!-- Knowledgebase Source Dropdown -->
+																<StackPanel Spacing="4" Margin="0,0,0,8" >
+																	<TextBlock Text="Knowledgebase Source"
+																			   FontSize="12"
+																			   Foreground="#1A1C1E"
+																			   FontWeight="500" />
+																	<ComboBox x:Name="OpenAIKnowledgeSource"
+																			  Width="300"
+																			  Theme="{StaticResource MaterialOutlineComboBox}"
+																			  assists:ComboBoxAssist.Label=""
+																			  Padding="12, 4"
+																			  Background="#FFFFFF"
+																			  BorderBrush="#DBDBDB"
+																			  BorderThickness="0.97"
+																			  Foreground="#1A1C1E"
+																			  HorizontalAlignment="Left">
+																		<ComboBox.Styles>
+																			<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																				<Setter Property="MinHeight" Value="36" />
+																				<Setter Property="Margin" Value="0,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#PART_Border">
+																				<Setter Property="CornerRadius" Value="8" />
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#splitBorder">
+																				<Setter Property="Margin" Value="0,6" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																				<Setter Property="VerticalAlignment" Value="Center" />
+																				<Setter Property="Margin" Value="12,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																			</Style>
+
+																			<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																				<Setter Property="BorderThickness" Value="0.97" />
+																			</Style>
+																			<Style Selector="ComboBoxItem">
+																				<Setter Property="Padding" Value="12,8" />
+																				<Setter Property="Background" Value="Transparent" />
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ ContentPresenter">
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																				<Setter Property="Background" Value="#F5F5F5" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Path#arrow">
+																				<Setter Property="Fill" Value="#1A1C1E" />
+																			</Style>
+																		</ComboBox.Styles>
+																	</ComboBox>
+																</StackPanel>
+																<!-- Row 3: Top-K and Threshold in same row -->
+																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OpenAITopK" Classes="no-shadow" Text ="3"
+																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
+																	</StackPanel>
+
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																			<TextBlock Grid.Column="1" x:Name="OpenAISimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																		</Grid>
+																		<Grid Margin="0,15,0,0">
+																			<Slider x:Name="OpenAISimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																					ToolTip.Tip="Minimum similarity score required for documents to be included in the context." />
+																		</Grid>
+																	</StackPanel>
+																</Grid>
+															</StackPanel>
+														</StackPanel>
+													</Border>
 												</StackPanel>
 											</Expander>
 										</Grid>
@@ -699,6 +811,118 @@
                                                              Classes="no-shadow"
                                                              Text="https://api.anthropic.com/v1" Margin="8,0,8,0"
 															 ToolTip.Tip="Set the Anthropic API endpoint."/>
+													<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
+														<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+															<TextBlock Text="Batch Size" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="AnthropicBatchSize" Classes="no-shadow"
+																	 ToolTip.Tip="Number of requests to process in a single batch." />
+														</StackPanel>
+														<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+															<TextBlock Text="Max Retries" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="AnthropicMaxRetries" Classes="no-shadow"
+																	 ToolTip.Tip="Maximum number of retry attempts for failed requests." />
+														</StackPanel>
+													</Grid>
+													<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
+														<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+															<TextBlock Grid.Column="0" Text="Temperature" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBlock Grid.Column="1" x:Name="AnthropicTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+														</Grid>
+														<Grid Margin="0,5,0,0">
+															<Slider x:Name="AnthropicTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																	ToolTip.Tip="Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused." />
+														</Grid>
+													</StackPanel>
+
+													<!-- RAG Settings -->
+													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
+														<StackPanel Spacing="8">
+															<!-- Row 1: Toggle Button only -->
+															<CheckBox x:Name="AnthropicEnableRAG" Content="Enable RAG"
+																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+															<StackPanel x:Name="AnthropicRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableRAG}">
+																<!-- Row 2: Knowledgebase Source only -->
+																<StackPanel Spacing="4" Margin="0,0,0,8" >
+																	<TextBlock Text="Knowledgebase Source"
+																			   FontSize="12"
+																			   Foreground="#1A1C1E"
+																			   FontWeight="500" />
+																	<ComboBox x:Name="AnthropicKnowledgeSource"
+																			  Width="300"
+																			  Theme="{StaticResource MaterialOutlineComboBox}"
+																			  assists:ComboBoxAssist.Label=""
+																			  Padding="12, 4"
+																			  Background="#FFFFFF"
+																			  BorderBrush="#DBDBDB"
+																			  BorderThickness="0.97"
+																			  Foreground="#1A1C1E"
+																			  HorizontalAlignment="Left">
+																		<ComboBox.Styles>
+																			<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																				<Setter Property="MinHeight" Value="36" />
+																				<Setter Property="Margin" Value="0,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#PART_Border">
+																				<Setter Property="CornerRadius" Value="8" />
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#splitBorder">
+																				<Setter Property="Margin" Value="0,6" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																				<Setter Property="VerticalAlignment" Value="Center" />
+																				<Setter Property="Margin" Value="12,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																			</Style>
+
+																			<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																				<Setter Property="BorderThickness" Value="0.97" />
+																			</Style>
+																			<Style Selector="ComboBoxItem">
+																				<Setter Property="Padding" Value="12,8" />
+																				<Setter Property="Background" Value="Transparent" />
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ ContentPresenter">
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																				<Setter Property="Background" Value="#F5F5F5" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Path#arrow">
+																				<Setter Property="Fill" Value="#1A1C1E" />
+																			</Style>
+																		</ComboBox.Styles>
+																	</ComboBox>
+																</StackPanel>
+																<!-- Row 3: Top-K and Threshold in same row -->
+																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="AnthropicTopK" Classes="no-shadow" Text ="3"
+																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
+																	</StackPanel>
+
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																			<TextBlock Grid.Column="1" x:Name="AnthropicSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																		</Grid>
+																		<Grid Margin="0,15,0,0">
+																			<Slider x:Name="AnthropicSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																					ToolTip.Tip="Minimum similarity score required for documents to be included in the context." />
+																		</Grid>
+																	</StackPanel>
+																</Grid>
+															</StackPanel>
+														</StackPanel>
+													</Border>
 												</StackPanel>
 											</Expander>
 										</Grid>
@@ -739,6 +963,118 @@
 													<TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Set the Ollama API endpoint." />
+													<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
+														<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+															<TextBlock Text="Batch Size" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="OllamaBatchSize" Classes="no-shadow"
+																	 ToolTip.Tip="Number of requests to process in a single batch." />
+														</StackPanel>
+														<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+															<TextBlock Text="Max Retries" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="OllamaMaxRetries" Classes="no-shadow"
+																	 ToolTip.Tip="Maximum number of retry attempts for failed requests." />
+														</StackPanel>
+													</Grid>
+													<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
+														<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+															<TextBlock Grid.Column="0" Text="Temperature" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBlock Grid.Column="1" x:Name="OllamaTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+														</Grid>
+														<Grid Margin="0,5,0,0">
+															<Slider x:Name="OllamaTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																	ToolTip.Tip="Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused." />
+														</Grid>
+													</StackPanel>
+
+													<!-- RAG Settings -->
+													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
+														<StackPanel Spacing="8">
+															<!-- Row 1: Toggle Button only -->
+															<CheckBox x:Name="OllamaEnableRAG" Content="Enable RAG"
+																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+															<StackPanel x:Name="OllamaRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OllamaEnableRAG}">
+																<!-- Row 2: Knowledgebase Source only -->
+																<StackPanel Spacing="4" Margin="0,0,0,8" >
+																	<TextBlock Text="Knowledgebase Source"
+																			   FontSize="12"
+																			   Foreground="#1A1C1E"
+																			   FontWeight="500" />
+																	<ComboBox x:Name="OllamaKnowledgeSource"
+																			  Width="300"
+																			  Theme="{StaticResource MaterialOutlineComboBox}"
+																			  assists:ComboBoxAssist.Label=""
+																			  Padding="12, 4"
+																			  Background="#FFFFFF"
+																			  BorderBrush="#DBDBDB"
+																			  BorderThickness="0.97"
+																			  Foreground="#1A1C1E"
+																			  HorizontalAlignment="Left">
+																		<ComboBox.Styles>
+																			<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																				<Setter Property="MinHeight" Value="36" />
+																				<Setter Property="Margin" Value="0,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#PART_Border">
+																				<Setter Property="CornerRadius" Value="8" />
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#splitBorder">
+																				<Setter Property="Margin" Value="0,6" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																				<Setter Property="VerticalAlignment" Value="Center" />
+																				<Setter Property="Margin" Value="12,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																			</Style>
+
+																			<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																				<Setter Property="BorderThickness" Value="0.97" />
+																			</Style>
+																			<Style Selector="ComboBoxItem">
+																				<Setter Property="Padding" Value="12,8" />
+																				<Setter Property="Background" Value="Transparent" />
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ ContentPresenter">
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																				<Setter Property="Background" Value="#F5F5F5" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Path#arrow">
+																				<Setter Property="Fill" Value="#1A1C1E" />
+																			</Style>
+																		</ComboBox.Styles>
+																	</ComboBox>
+																</StackPanel>
+																<!-- Row 3: Top-K and Threshold in same row -->
+																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OllamaTopK" Classes="no-shadow" Text ="3"
+																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
+																	</StackPanel>
+
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																			<TextBlock Grid.Column="1" x:Name="OllamaSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																		</Grid>
+																		<Grid Margin="0,15,0,0">
+																			<Slider x:Name="OllamaSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																					ToolTip.Tip="Minimum similarity score required for documents to be included in the context." />
+																		</Grid>
+																	</StackPanel>
+																</Grid>
+															</StackPanel>
+														</StackPanel>
+													</Border>
 												</StackPanel>
 											</Expander>
 										</Grid>
@@ -800,6 +1136,121 @@
 													<TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
                                                              Margin="8,0,8,0" Classes="no-shadow"
                                                              ToolTip.Tip="Specify the View completion model to use, e.g., llama3.1:8b." />
+													<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
+														<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+															<TextBlock Text="Batch Size" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="ViewBatchSize" Classes="no-shadow"
+																	 ToolTip.Tip="Number of requests to process in a single batch." />
+														</StackPanel>
+														<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+															<TextBlock Text="Max Retries" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBox x:Name="ViewMaxRetries" Classes="no-shadow"
+																	 ToolTip.Tip="Maximum number of retry attempts for failed requests." />
+														</StackPanel>
+													</Grid>
+													<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
+														<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+															<TextBlock Grid.Column="0" Text="Temperature" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+															<TextBlock Grid.Column="1" x:Name="ViewTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+														</Grid>
+														<Grid Margin="0,5,0,0">
+															<Slider x:Name="ViewTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																	ToolTip.Tip="Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused." />
+														</Grid>
+													</StackPanel>
+
+													<!-- RAG Settings -->
+													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
+														<StackPanel Spacing="8">
+															<TextBlock Text="RAG Settings" FontSize="12" Foreground="#1A1C1E" FontWeight="500" Padding="0,0,0,4" />
+
+															<!-- Row 1: Toggle Button only -->
+															<CheckBox x:Name="ViewEnableRAG" Content="Enable RAG"
+																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+															<StackPanel x:Name="ViewRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=ViewEnableRAG}">
+																<!-- Row 2: Knowledgebase Source only -->
+																<StackPanel Spacing="4" Margin="0,0,0,8" >
+																	<TextBlock Text="Knowledgebase Source"
+																			   FontSize="12"
+																			   Foreground="#1A1C1E"
+																			   FontWeight="500" />
+																	<ComboBox x:Name="ViewKnowledgeSource"
+													     					  Width="300"
+																			  Theme="{StaticResource MaterialOutlineComboBox}"
+																			  assists:ComboBoxAssist.Label=""
+																			  Padding="12, 4"
+																			  Background="#FFFFFF"
+																			  BorderBrush="#DBDBDB"
+																			  BorderThickness="0.97"
+																			  Foreground="#1A1C1E"
+																			  HorizontalAlignment="Left">
+																		<ComboBox.Styles>
+																			<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																				<Setter Property="MinHeight" Value="36" />
+																				<Setter Property="Margin" Value="0,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#PART_Border">
+																				<Setter Property="CornerRadius" Value="8" />
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#splitBorder">
+																				<Setter Property="Margin" Value="0,6" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																				<Setter Property="VerticalAlignment" Value="Center" />
+																				<Setter Property="Margin" Value="12,0,0,0" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																			</Style>
+
+																			<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																				<Setter Property="BorderBrush" Value="#DBDBDB" />
+																				<Setter Property="BorderThickness" Value="0.97" />
+																			</Style>
+																			<Style Selector="ComboBoxItem">
+																				<Setter Property="Padding" Value="12,8" />
+																				<Setter Property="Background" Value="Transparent" />
+																				<Setter Property="Foreground" Value="#1A1C1E" />
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ ContentPresenter">
+																				<Setter Property="FontSize" Value="13" />
+																			</Style>
+																			<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																				<Setter Property="Background" Value="#F5F5F5" />
+																			</Style>
+																			<Style Selector="ComboBox /template/ Path#arrow">
+																				<Setter Property="Fill" Value="#1A1C1E" />
+																			</Style>
+																		</ComboBox.Styles>
+																	</ComboBox>
+																</StackPanel>
+
+																<!-- Row 3: Top-K and Threshold in same row -->
+																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="ViewTopK" Classes="no-shadow" Text ="3"
+																				 ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
+																	</StackPanel>
+
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																			<TextBlock Grid.Column="1" x:Name="ViewSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																		</Grid>
+																		<Grid Margin="0,15,0,0">
+																			<Slider x:Name="ViewSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																					ToolTip.Tip="Minimum similarity score required for documents to be included in the context." />
+																		</Grid>
+																	</StackPanel>
+																</Grid>
+															</StackPanel>
+														</StackPanel>
+													</Border>
 												</StackPanel>
 											</Expander>
 										</Grid>
@@ -996,17 +1447,17 @@
                                                         Classes="default"
                                                         HorizontalAlignment="Left"
                                                         Padding="12,8">
-                                                    <Button.Content>
-                                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                                            <avalonia:MaterialIcon x:Name="SaveSettingsSpinner" 
-                                                                                 Kind="Refresh" 
-                                                                                 Height="16" 
-                                                                                 Width="16" 
+													<Button.Content>
+														<StackPanel Orientation="Horizontal" Spacing="8">
+															<avalonia:MaterialIcon x:Name="SaveSettingsSpinner"
+                                                                                 Kind="Refresh"
+                                                                                 Height="16"
+                                                                                 Width="16"
                                                                                  IsVisible="False" />
-                                                            <TextBlock x:Name="SaveSettingsText" Text="Save Settings" />
-                                                        </StackPanel>
-                                                    </Button.Content>
-                                                </Button>
+															<TextBlock x:Name="SaveSettingsText" Text="Save Settings" />
+														</StackPanel>
+													</Button.Content>
+												</Button>
 											</StackPanel>
 										</Grid>
 									</StackPanel>
@@ -1031,12 +1482,12 @@
 						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					
+
 					<StackPanel Grid.Row="0" Spacing="12" Margin="0, 20, 0, 0">
 						<TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
 						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
 					</StackPanel>
-					
+
 					<Grid Grid.Row="1" Margin="0,20,0,0">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*" />
@@ -1113,7 +1564,7 @@
 								 IsVisible="False" />
 						</Grid>
 					</Border>
-					
+
 					<Grid Grid.Row="3" Name="FileOperationsPanel">
 						<ProgressBar x:Name="IngestSpinner"
 								 VerticalAlignment="Top"
@@ -1135,131 +1586,131 @@
                                   SelectionMode="Extended"
 								  Margin="0,20,0,0"
                                   x:DataType="classes:FileViewModel">
-								<DataGrid.Styles>
-									<Style Selector="DataGridColumnHeader">
-										<Setter Property="Background" Value="#FAFAFA" />
-										<Setter Property="Foreground" Value="#1A1C1E" />
-										<Setter Property="FontWeight" Value="500" />
-										<Setter Property="FontSize" Value="14.5" />
-										<Setter Property="Padding" Value="12 0 8 0" />
-										<Setter Property="MinHeight" Value="24" />
-										<Setter Property="Height" Value="38" />
-									</Style>
-									<Style Selector="DataGridRow">
-										<Setter Property="MinHeight" Value="24" />
-										<Setter Property="Height" Value="38" />
-										<Setter Property="BorderBrush" Value="#EDEDED" />
-										<Setter Property="BorderThickness" Value="0,0,0,1" />
-									</Style>
-								</DataGrid.Styles>
-								<DataGrid.Columns>
-									<DataGridTemplateColumn Header="Select" Width="60">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
-														  VerticalAlignment="Center" HorizontalAlignment="Center"
-														  Checked="FileCheckBox_Checked"
-														  Unchecked="FileCheckBox_Unchecked"
-														  Width="16" Height="16" />
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
-									<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+							<DataGrid.Styles>
+								<Style Selector="DataGridColumnHeader">
+									<Setter Property="Background" Value="#FAFAFA" />
+									<Setter Property="Foreground" Value="#1A1C1E" />
+									<Setter Property="FontWeight" Value="500" />
+									<Setter Property="FontSize" Value="14.5" />
+									<Setter Property="Padding" Value="12 0 8 0" />
+									<Setter Property="MinHeight" Value="24" />
+									<Setter Property="Height" Value="38" />
+								</Style>
+								<Style Selector="DataGridRow">
+									<Setter Property="MinHeight" Value="24" />
+									<Setter Property="Height" Value="38" />
+									<Setter Property="BorderBrush" Value="#EDEDED" />
+									<Setter Property="BorderThickness" Value="0,0,0,1" />
+								</Style>
+							</DataGrid.Styles>
+							<DataGrid.Columns>
+								<DataGridTemplateColumn Header="Select" Width="60">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+													  VerticalAlignment="Center" HorizontalAlignment="Center"
+													  Checked="FileCheckBox_Checked"
+													  Unchecked="FileCheckBox_Unchecked"
+													  Width="16" Height="16" />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
 
-									<DataGridTextColumn Header="Size"
-                                                        Binding="{Binding ContentLength, Converter={StaticResource ByteSizeConverter}}"
-                                                        Width="100" />
-									<DataGridTextColumn Header="Type" Binding="{Binding DocumentType}"
-                                                        Width="150" />
-									<DataGridTextColumn Header="Date Created" Width="190"
-                                                        Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
+								<DataGridTextColumn Header="Size"
+													Binding="{Binding ContentLength, Converter={StaticResource ByteSizeConverter}}"
+													Width="100" />
+								<DataGridTextColumn Header="Type" Binding="{Binding DocumentType}"
+													Width="150" />
+								<DataGridTextColumn Header="Date Created" Width="190"
+													Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}" />
 
-									<DataGridTemplateColumn Header="Actions" Width="150">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<StackPanel Orientation="Horizontal" Spacing="15">
-													<Button Click="OpenInFileExplorer_Click"
-															Tag="{Binding}"
-															ToolTip.Tip="Open in File Explorer"
-															Background="Transparent"
-															BorderThickness="0"
-															Padding="0"
-															Cursor="Hand">
-														<Button.Template>
-															<ControlTemplate TargetType="Button">
-																<ContentPresenter HorizontalAlignment="Center"
-																				  VerticalAlignment="Center"
-																				  Background="Transparent"
-																				  Content="{TemplateBinding Content}" />
-															</ControlTemplate>
-														</Button.Template>
-														<Button.Styles>
-															<Style Selector="Button:pointerover">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-															<Style Selector="Button:pressed">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-														</Button.Styles>
-														<avalonia:MaterialIcon Kind="FolderOpen" Width="18" Height="18" Foreground="#6A6B6F" />
-													</Button>
-													<Button Click="ReprocessFile_Click"
-															Tag="{Binding}"
-															ToolTip.Tip="Reprocess file"
-															Background="Transparent"
-															BorderThickness="0"
-															Padding="0"
-															Cursor="Hand">
-														<Button.Template>
-															<ControlTemplate TargetType="Button">
-																<ContentPresenter HorizontalAlignment="Center"
-																				  VerticalAlignment="Center"
-																				  Background="Transparent"
-																				  Content="{TemplateBinding Content}" />
-															</ControlTemplate>
-														</Button.Template>
-														<Button.Styles>
-															<Style Selector="Button:pointerover">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-															<Style Selector="Button:pressed">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-														</Button.Styles>
-														<avalonia:MaterialIcon Kind="Refresh" Width="18" Height="18" Foreground="#6A6B6F" />
-													</Button>
-													<Button Click="DeleteFile_Click"
-															Tag="{Binding}"
-															ToolTip.Tip="Delete file"
-															Background="Transparent"
-															BorderThickness="0"
-															Padding="0"
-															Cursor="Hand">
-														<Button.Template>
-															<ControlTemplate TargetType="Button">
-																<ContentPresenter HorizontalAlignment="Center"
-																				  VerticalAlignment="Center"
-																				  Background="Transparent"
-																				  Content="{TemplateBinding Content}" />
-															</ControlTemplate>
-														</Button.Template>
-														<Button.Styles>
-															<Style Selector="Button:pointerover">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-															<Style Selector="Button:pressed">
-																<Setter Property="Background" Value="Transparent" />
-															</Style>
-														</Button.Styles>
-														<avalonia:MaterialIcon Kind="TrashCanOutline" Width="18" Height="18" Foreground="#6A6B6F" />
-													</Button>
-												</StackPanel>
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
+								<DataGridTemplateColumn Header="Actions" Width="150">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<StackPanel Orientation="Horizontal" Spacing="15">
+												<Button Click="OpenInFileExplorer_Click"
+														Tag="{Binding}"
+														ToolTip.Tip="Open in File Explorer"
+														Background="Transparent"
+														BorderThickness="0"
+														Padding="0"
+														Cursor="Hand">
+													<Button.Template>
+														<ControlTemplate TargetType="Button">
+															<ContentPresenter HorizontalAlignment="Center"
+																			  VerticalAlignment="Center"
+																			  Background="Transparent"
+																			  Content="{TemplateBinding Content}" />
+														</ControlTemplate>
+													</Button.Template>
+													<Button.Styles>
+														<Style Selector="Button:pointerover">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+														<Style Selector="Button:pressed">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+													</Button.Styles>
+													<avalonia:MaterialIcon Kind="FolderOpen" Width="18" Height="18" Foreground="#6A6B6F" />
+												</Button>
+												<Button Click="ReprocessFile_Click"
+														Tag="{Binding}"
+														ToolTip.Tip="Reprocess file"
+														Background="Transparent"
+														BorderThickness="0"
+														Padding="0"
+														Cursor="Hand">
+													<Button.Template>
+														<ControlTemplate TargetType="Button">
+															<ContentPresenter HorizontalAlignment="Center"
+																			  VerticalAlignment="Center"
+																			  Background="Transparent"
+																			  Content="{TemplateBinding Content}" />
+														</ControlTemplate>
+													</Button.Template>
+													<Button.Styles>
+														<Style Selector="Button:pointerover">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+														<Style Selector="Button:pressed">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+													</Button.Styles>
+													<avalonia:MaterialIcon Kind="Refresh" Width="18" Height="18" Foreground="#6A6B6F" />
+												</Button>
+												<Button Click="DeleteFile_Click"
+														Tag="{Binding}"
+														ToolTip.Tip="Delete file"
+														Background="Transparent"
+														BorderThickness="0"
+														Padding="0"
+														Cursor="Hand">
+													<Button.Template>
+														<ControlTemplate TargetType="Button">
+															<ContentPresenter HorizontalAlignment="Center"
+																			  VerticalAlignment="Center"
+																			  Background="Transparent"
+																			  Content="{TemplateBinding Content}" />
+														</ControlTemplate>
+													</Button.Template>
+													<Button.Styles>
+														<Style Selector="Button:pointerover">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+														<Style Selector="Button:pressed">
+															<Setter Property="Background" Value="Transparent" />
+														</Style>
+													</Button.Styles>
+													<avalonia:MaterialIcon Kind="TrashCanOutline" Width="18" Height="18" Foreground="#6A6B6F" />
+												</Button>
+											</StackPanel>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 
-								</DataGrid.Columns>
-							</DataGrid>
+							</DataGrid.Columns>
+						</DataGrid>
 					</Grid>
 
 					<ProgressBar x:Name="ExportSpinner"

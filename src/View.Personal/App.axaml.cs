@@ -335,7 +335,7 @@ namespace View.Personal
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never
                 };
                 var json = JsonSerializer.Serialize(ApplicationSettings, options);
                 File.WriteAllText(_SettingsFilePath, json);
@@ -368,18 +368,27 @@ namespace View.Personal
                 {
                     OpenAICompletionApiKey = ApplicationSettings.OpenAI.ApiKey,
                     OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel,
-                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint
+                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint,
+                    BatchSize = ApplicationSettings.OpenAI.BatchSize,
+                    MaxRetries = ApplicationSettings.OpenAI.MaxRetries,
+                    Temperature = ApplicationSettings.OpenAI.Temperature
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
                     AnthropicApiKey = ApplicationSettings.Anthropic.ApiKey,
                     AnthropicCompletionModel = ApplicationSettings.Anthropic.CompletionModel,
-                    AnthropicEndpoint = ApplicationSettings.Anthropic.Endpoint
+                    AnthropicEndpoint = ApplicationSettings.Anthropic.Endpoint,
+                    BatchSize = ApplicationSettings.Anthropic.BatchSize,
+                    MaxRetries = ApplicationSettings.Anthropic.MaxRetries,
+                    Temperature = ApplicationSettings.Anthropic.Temperature
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
                     OllamaCompletionModel = ApplicationSettings.Ollama.CompletionModel,
-                    OllamaEndpoint = ApplicationSettings.Ollama.Endpoint
+                    OllamaEndpoint = ApplicationSettings.Ollama.Endpoint,
+                    BatchSize = ApplicationSettings.Ollama.BatchSize,
+                    MaxRetries = ApplicationSettings.Ollama.MaxRetries,
+                    Temperature = ApplicationSettings.Ollama.Temperature
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
@@ -387,7 +396,10 @@ namespace View.Personal
                     ViewAccessKey = ApplicationSettings.View.AccessKey,
                     ViewEndpoint = ApplicationSettings.View.Endpoint,
                     OllamaHostName = ApplicationSettings.View.OllamaHostName,
-                    ViewCompletionModel = ApplicationSettings.View.CompletionModel
+                    ViewCompletionModel = ApplicationSettings.View.CompletionModel,
+                    BatchSize = ApplicationSettings.View.BatchSize,
+                    MaxRetries = ApplicationSettings.View.MaxRetries,
+                    Temperature = ApplicationSettings.View.Temperature
                 },
                 _ => new CompletionProviderSettings(providerType)
             };

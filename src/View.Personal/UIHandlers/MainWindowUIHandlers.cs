@@ -1,6 +1,7 @@
 namespace View.Personal.UIHandlers
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
@@ -10,7 +11,6 @@ namespace View.Personal.UIHandlers
     using LiteGraph;
     using System.Text.RegularExpressions;
     using Material.Icons.Avalonia;
-    using System.Linq;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.
@@ -50,16 +50,70 @@ namespace View.Personal.UIHandlers
             window.FindControl<TextBox>("OpenAIApiKey").Text = openAiSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("OpenAICompletionModel").Text = openAiSettings.CompletionModel ?? string.Empty;
             window.FindControl<TextBox>("OpenAIEndpoint").Text = openAiSettings.Endpoint ?? string.Empty;
+            window.FindControl<TextBox>("OpenAIBatchSize").Text = openAiSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("OpenAIMaxRetries").Text = openAiSettings.MaxRetries.ToString();
+            window.FindControl<Slider>("OpenAITemperature").Value = openAiSettings.Temperature;
+            window.FindControl<TextBlock>("OpenAITemperatureValue").Text = openAiSettings.Temperature.ToString("F1");
             window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked = openAiSettings.IsEnabled;
+
+            // Load OpenAI RAG settings
+            window.FindControl<CheckBox>("OpenAIEnableRAG").IsChecked = openAiSettings.RAG.EnableRAG;
+            window.FindControl<Slider>("OpenAISimilarityThreshold").Value = openAiSettings.RAG.SimilarityThreshold;
+            window.FindControl<TextBlock>("OpenAISimilarityThresholdValue").Text = openAiSettings.RAG.SimilarityThreshold.ToString("F1");
+            window.FindControl<TextBox>("OpenAITopK").Text = openAiSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
+            var openAiKnowledgeSource = window.FindControl<ComboBox>("OpenAIKnowledgeSource");
+            if (openAiKnowledgeSource != null && !string.IsNullOrEmpty(openAiSettings.RAG.KnowledgeSource))
+            {
+                var knowledgeSourceItem = openAiKnowledgeSource.Items.Cast<object>().FirstOrDefault(item => 
+                    item.ToString() == openAiSettings.RAG.KnowledgeSource);
+                if (knowledgeSourceItem != null)
+                    openAiKnowledgeSource.SelectedItem = knowledgeSourceItem;
+            }
 
             window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
             window.FindControl<TextBox>("AnthropicEndpoint").Text = anthropicSettings.Endpoint ?? string.Empty;
+            window.FindControl<TextBox>("AnthropicBatchSize").Text = anthropicSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("AnthropicMaxRetries").Text = anthropicSettings.MaxRetries.ToString();
+            window.FindControl<Slider>("AnthropicTemperature").Value = anthropicSettings.Temperature;
+            window.FindControl<TextBlock>("AnthropicTemperatureValue").Text = anthropicSettings.Temperature.ToString("F1");
             window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked = anthropicSettings.IsEnabled;
+
+            // Load Anthropic RAG settings
+            window.FindControl<CheckBox>("AnthropicEnableRAG").IsChecked = anthropicSettings.RAG.EnableRAG;
+            window.FindControl<Slider>("AnthropicSimilarityThreshold").Value = anthropicSettings.RAG.SimilarityThreshold;
+            window.FindControl<TextBlock>("AnthropicSimilarityThresholdValue").Text = anthropicSettings.RAG.SimilarityThreshold.ToString("F1");
+            window.FindControl<TextBox>("AnthropicTopK").Text = anthropicSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
+            var anthropicKnowledgeSource = window.FindControl<ComboBox>("AnthropicKnowledgeSource");
+            if (anthropicKnowledgeSource != null && !string.IsNullOrEmpty(anthropicSettings.RAG.KnowledgeSource))
+            {
+                var knowledgeSourceItem = anthropicKnowledgeSource.Items.Cast<object>().FirstOrDefault(item => 
+                    item.ToString() == anthropicSettings.RAG.KnowledgeSource);
+                if (knowledgeSourceItem != null)
+                    anthropicKnowledgeSource.SelectedItem = knowledgeSourceItem;
+            }
 
             window.FindControl<TextBox>("OllamaCompletionModel").Text = ollamaSettings.CompletionModel ?? string.Empty;
             window.FindControl<TextBox>("OllamaEndpoint").Text = ollamaSettings.Endpoint ?? string.Empty;
+            window.FindControl<TextBox>("OllamaBatchSize").Text = ollamaSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("OllamaMaxRetries").Text = ollamaSettings.MaxRetries.ToString();
+            window.FindControl<Slider>("OllamaTemperature").Value = ollamaSettings.Temperature;
+            window.FindControl<TextBlock>("OllamaTemperatureValue").Text = ollamaSettings.Temperature.ToString("F1");
             window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked = ollamaSettings.IsEnabled;
+
+            // Load Ollama RAG settings
+            window.FindControl<CheckBox>("OllamaEnableRAG").IsChecked = ollamaSettings.RAG.EnableRAG;
+            window.FindControl<Slider>("OllamaSimilarityThreshold").Value = ollamaSettings.RAG.SimilarityThreshold;
+            window.FindControl<TextBlock>("OllamaSimilarityThresholdValue").Text = ollamaSettings.RAG.SimilarityThreshold.ToString("F1");
+            window.FindControl<TextBox>("OllamaTopK").Text = ollamaSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
+            var ollamaKnowledgeSource = window.FindControl<ComboBox>("OllamaKnowledgeSource");
+            if (ollamaKnowledgeSource != null && !string.IsNullOrEmpty(ollamaSettings.RAG.KnowledgeSource))
+            {
+                var knowledgeSourceItem = ollamaKnowledgeSource.Items.Cast<object>().FirstOrDefault(item => 
+                    item.ToString() == ollamaSettings.RAG.KnowledgeSource);
+                if (knowledgeSourceItem != null)
+                    ollamaKnowledgeSource.SelectedItem = knowledgeSourceItem;
+            }
 
             window.FindControl<TextBox>("ViewApiKey").Text = viewSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("ViewEndpoint").Text = viewSettings.Endpoint ?? string.Empty;
@@ -67,7 +121,25 @@ namespace View.Personal.UIHandlers
             window.FindControl<TextBox>("ViewAccessKey").Text = viewSettings.AccessKey ?? string.Empty;
             window.FindControl<TextBox>("ViewTenantGUID").Text = viewSettings.TenantGuid ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionModel").Text = viewSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("ViewBatchSize").Text = viewSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("ViewMaxRetries").Text = viewSettings.MaxRetries.ToString();
+            window.FindControl<Slider>("ViewTemperature").Value = viewSettings.Temperature;
+            window.FindControl<TextBlock>("ViewTemperatureValue").Text = viewSettings.Temperature.ToString("F1");
             window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked = viewSettings.IsEnabled;
+
+            // Load View RAG settings
+            window.FindControl<CheckBox>("ViewEnableRAG").IsChecked = viewSettings.RAG.EnableRAG;
+            window.FindControl<Slider>("ViewSimilarityThreshold").Value = viewSettings.RAG.SimilarityThreshold;
+            window.FindControl<TextBlock>("ViewSimilarityThresholdValue").Text = viewSettings.RAG.SimilarityThreshold.ToString("F1");
+            window.FindControl<TextBox>("ViewTopK").Text = viewSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
+            var viewKnowledgeSource = window.FindControl<ComboBox>("ViewKnowledgeSource");
+            if (viewKnowledgeSource != null && !string.IsNullOrEmpty(viewSettings.RAG.KnowledgeSource))
+            {
+                var knowledgeSourceItem = viewKnowledgeSource.Items.Cast<object>().FirstOrDefault(item => 
+                    item.ToString() == viewSettings.RAG.KnowledgeSource);
+                if (knowledgeSourceItem != null)
+                    viewKnowledgeSource.SelectedItem = knowledgeSourceItem;
+            }
 
             // Embedding models
             window.FindControl<TextBox>("OllamaModel").Text = embeddingSettings.OllamaEmbeddingModel ?? string.Empty;
@@ -103,6 +175,129 @@ namespace View.Personal.UIHandlers
                 window.FindControl<RadioButton>("OpenAIEmbeddingModel2").IsChecked = true;
             else if (providerSettings.SelectedEmbeddingsProvider == "Voyage")
                 window.FindControl<RadioButton>("VoyageEmbeddingModel2").IsChecked = true;
+
+            // Setup temperature slider and similarity threshold slider value change handlers
+            SetupTemperatureSliderHandlers(window);
+            SetupSimilarityThresholdSliderHandlers(window);
+        }
+
+        /// <summary>
+        /// Sets up event handlers for temperature sliders to update their corresponding value displays.
+        /// </summary>
+        /// <param name="window">The main window containing the UI controls.</param>
+        private static void SetupTemperatureSliderHandlers(MainWindow window)
+        {
+            var openAITemperature = window.FindControl<Slider>("OpenAITemperature");
+            var openAITemperatureValue = window.FindControl<TextBlock>("OpenAITemperatureValue");
+            if (openAITemperature != null && openAITemperatureValue != null)
+            {
+                openAITemperature.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        openAITemperatureValue.Text = openAITemperature.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var anthropicTemperature = window.FindControl<Slider>("AnthropicTemperature");
+            var anthropicTemperatureValue = window.FindControl<TextBlock>("AnthropicTemperatureValue");
+            if (anthropicTemperature != null && anthropicTemperatureValue != null)
+            {
+                anthropicTemperature.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        anthropicTemperatureValue.Text = anthropicTemperature.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var ollamaTemperature = window.FindControl<Slider>("OllamaTemperature");
+            var ollamaTemperatureValue = window.FindControl<TextBlock>("OllamaTemperatureValue");
+            if (ollamaTemperature != null && ollamaTemperatureValue != null)
+            {
+                ollamaTemperature.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        ollamaTemperatureValue.Text = ollamaTemperature.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var viewTemperature = window.FindControl<Slider>("ViewTemperature");
+            var viewTemperatureValue = window.FindControl<TextBlock>("ViewTemperatureValue");
+            if (viewTemperature != null && viewTemperatureValue != null)
+            {
+                viewTemperature.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        viewTemperatureValue.Text = viewTemperature.Value.ToString("F1");
+                    }
+                };
+            }
+        }
+
+        /// <summary>
+        /// Sets up event handlers for similarity threshold sliders to update their corresponding value displays.
+        /// </summary>
+        /// <param name="window">The main window containing the UI controls.</param>
+        private static void SetupSimilarityThresholdSliderHandlers(MainWindow window)
+        {
+            // Setup similarity threshold sliders
+            var openAISimilarityThreshold = window.FindControl<Slider>("OpenAISimilarityThreshold");
+            var openAISimilarityThresholdValue = window.FindControl<TextBlock>("OpenAISimilarityThresholdValue");
+            if (openAISimilarityThreshold != null && openAISimilarityThresholdValue != null)
+            {
+                openAISimilarityThreshold.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        openAISimilarityThresholdValue.Text = openAISimilarityThreshold.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var anthropicSimilarityThreshold = window.FindControl<Slider>("AnthropicSimilarityThreshold");
+            var anthropicSimilarityThresholdValue = window.FindControl<TextBlock>("AnthropicSimilarityThresholdValue");
+            if (anthropicSimilarityThreshold != null && anthropicSimilarityThresholdValue != null)
+            {
+                anthropicSimilarityThreshold.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        anthropicSimilarityThresholdValue.Text = anthropicSimilarityThreshold.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var ollamaSimilarityThreshold = window.FindControl<Slider>("OllamaSimilarityThreshold");
+            var ollamaSimilarityThresholdValue = window.FindControl<TextBlock>("OllamaSimilarityThresholdValue");
+            if (ollamaSimilarityThreshold != null && ollamaSimilarityThresholdValue != null)
+            {
+                ollamaSimilarityThreshold.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        ollamaSimilarityThresholdValue.Text = ollamaSimilarityThreshold.Value.ToString("F1");
+                    }
+                };
+            }
+
+            var viewSimilarityThreshold = window.FindControl<Slider>("ViewSimilarityThreshold");
+            var viewSimilarityThresholdValue = window.FindControl<TextBlock>("ViewSimilarityThresholdValue");
+            if (viewSimilarityThreshold != null && viewSimilarityThresholdValue != null)
+            {
+                viewSimilarityThreshold.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        viewSimilarityThresholdValue.Text = viewSimilarityThreshold.Value.ToString("F1");
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -200,22 +395,76 @@ namespace View.Personal.UIHandlers
                 openAiSettings.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
                 openAiSettings.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
                 openAiSettings.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
+                if (int.TryParse(window.FindControl<TextBox>("OpenAIBatchSize").Text, out int openAiBatchSize))
+                    openAiSettings.BatchSize = openAiBatchSize <= 0 ? 0 : openAiBatchSize;
+                if (int.TryParse(window.FindControl<TextBox>("OpenAIMaxRetries").Text, out int openAiMaxRetries))
+                    openAiSettings.MaxRetries = openAiMaxRetries <= 0 ? 0 : openAiMaxRetries;
+                openAiSettings.Temperature = window.FindControl<Slider>("OpenAITemperature").Value;
                 openAiSettings.IsEnabled =
                     window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked ?? false;
+
+                // Update OpenAI RAG settings
+                openAiSettings.RAG.EnableRAG = window.FindControl<CheckBox>("OpenAIEnableRAG").IsChecked ?? false;
+
+                if (openAiSettings.RAG.EnableRAG)
+                {
+                    openAiSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("OpenAISimilarityThreshold").Value;
+                    if (int.TryParse(window.FindControl<TextBox>("OpenAITopK").Text, out int openAiTopK))
+                        openAiSettings.RAG.NumberOfDocumentsToRetrieve = openAiTopK <= 0 ? 3 : openAiTopK;
+                    var openAiKnowledgeSource = window.FindControl<ComboBox>("OpenAIKnowledgeSource");
+                    if (openAiKnowledgeSource != null && openAiKnowledgeSource.SelectedItem != null)
+                        openAiSettings.RAG.KnowledgeSource = openAiKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                }
 
                 // Update Anthropic settings
                 anthropicSettings.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
                 anthropicSettings.CompletionModel =
                     window.FindControl<TextBox>("AnthropicCompletionModel").Text;
                 anthropicSettings.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
+                if (int.TryParse(window.FindControl<TextBox>("AnthropicBatchSize").Text, out int anthropicBatchSize))
+                    anthropicSettings.BatchSize = anthropicBatchSize <= 0 ? 0 : anthropicBatchSize;
+
+                if (int.TryParse(window.FindControl<TextBox>("AnthropicMaxRetries").Text, out int anthropicMaxRetries))
+                    anthropicSettings.MaxRetries = anthropicMaxRetries <= 0 ? 0 : anthropicMaxRetries;
+                anthropicSettings.Temperature = window.FindControl<Slider>("AnthropicTemperature").Value;
                 anthropicSettings.IsEnabled =
                     window.FindControl<RadioButton>("AnthropicCompletionProvider").IsChecked ?? false;
+
+                // Update Anthropic RAG settings
+                anthropicSettings.RAG.EnableRAG = window.FindControl<CheckBox>("AnthropicEnableRAG").IsChecked ?? false;
+                if (anthropicSettings.RAG.EnableRAG)
+                {
+                    anthropicSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("AnthropicSimilarityThreshold").Value;
+                    if (int.TryParse(window.FindControl<TextBox>("AnthropicTopK").Text, out int anthropicTopK))
+                        anthropicSettings.RAG.NumberOfDocumentsToRetrieve = anthropicTopK <= 0 ? 3 : anthropicTopK;
+                    var anthropicKnowledgeSource = window.FindControl<ComboBox>("AnthropicKnowledgeSource");
+                    if (anthropicKnowledgeSource != null && anthropicKnowledgeSource.SelectedItem != null)
+                        anthropicSettings.RAG.KnowledgeSource = anthropicKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                }
 
                 // Update Ollama settings
                 ollamaSettings.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
                 ollamaSettings.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
-                ollamaSettings.IsEnabled =
-                    window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
+                if (int.TryParse(window.FindControl<TextBox>("OllamaBatchSize").Text, out int ollamaBatchSize))
+                    ollamaSettings.BatchSize = ollamaBatchSize <= 0 ? 0 : ollamaBatchSize;
+                if (int.TryParse(window.FindControl<TextBox>("OllamaMaxRetries").Text, out int ollamaMaxRetries))
+                    ollamaSettings.MaxRetries = ollamaMaxRetries <= 0 ? 0 : ollamaMaxRetries;
+                ollamaSettings.Temperature = window.FindControl<Slider>("OllamaTemperature").Value;
+                ollamaSettings.IsEnabled = window.FindControl<RadioButton>("OllamaCompletionProvider").IsChecked ?? false;
+
+                // Update Ollama RAG settings
+                ollamaSettings.RAG.EnableRAG = window.FindControl<CheckBox>("OllamaEnableRAG").IsChecked ?? false;
+                if (ollamaSettings.RAG.EnableRAG)
+                {
+                    ollamaSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("OllamaSimilarityThreshold").Value;
+
+                    if (int.TryParse(window.FindControl<TextBox>("OllamaTopK").Text, out int ollamaTopK))
+                        ollamaSettings.RAG.NumberOfDocumentsToRetrieve = ollamaTopK <= 0 ? 3 : ollamaTopK;
+
+                    var ollamaKnowledgeSource = window.FindControl<ComboBox>("OllamaKnowledgeSource");
+                    if (ollamaKnowledgeSource != null && ollamaKnowledgeSource.SelectedItem != null)
+                        ollamaSettings.RAG.KnowledgeSource = ollamaKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                }
 
                 // Update View settings
                 viewSettings.ApiKey = window.FindControl<TextBox>("ViewApiKey").Text;
@@ -224,8 +473,26 @@ namespace View.Personal.UIHandlers
                 viewSettings.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
                 viewSettings.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
                 viewSettings.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
+                if (int.TryParse(window.FindControl<TextBox>("ViewBatchSize").Text, out int viewBatchSize))
+                    viewSettings.BatchSize = viewBatchSize <= 0 ? 0 : viewBatchSize;
+                if (int.TryParse(window.FindControl<TextBox>("ViewMaxRetries").Text, out int viewMaxRetries))
+                    viewSettings.MaxRetries = viewMaxRetries <= 0 ? 0 : viewMaxRetries;
+                viewSettings.Temperature = window.FindControl<Slider>("ViewTemperature").Value;
                 viewSettings.IsEnabled =
                     window.FindControl<RadioButton>("ViewCompletionProvider").IsChecked ?? false;
+
+                // Update View RAG settings
+                viewSettings.RAG.EnableRAG = window.FindControl<CheckBox>("ViewEnableRAG").IsChecked ?? false;
+
+                if (viewSettings.RAG.EnableRAG)
+                {
+                    viewSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("ViewSimilarityThreshold").Value;
+                    if (int.TryParse(window.FindControl<TextBox>("ViewTopK").Text, out int viewTopK))
+                        viewSettings.RAG.NumberOfDocumentsToRetrieve = viewTopK <= 0 ? 3 : viewTopK;
+                    var viewKnowledgeSource = window.FindControl<ComboBox>("ViewKnowledgeSource");
+                    if (viewKnowledgeSource != null && viewKnowledgeSource.SelectedItem != null)
+                        viewSettings.RAG.KnowledgeSource = viewKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                }
 
                 if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
                 {
@@ -414,6 +681,9 @@ namespace View.Personal.UIHandlers
                 // Save the updated settings
                 app.SaveSettings();
 
+                // Update UI to reflect the actual saved values
+                UpdateUIAfterSave(window);
+
                 // Show a success notification
                 window.ShowNotification("Settings Saved", "Your settings have been successfully saved.",
                     NotificationType.Success);
@@ -569,6 +839,44 @@ namespace View.Personal.UIHandlers
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Updates the UI controls to reflect the actual values stored in application settings after saving.
+        /// This ensures that empty or negative values are properly displayed as their default values (0).
+        /// </summary>
+        /// <param name="window">The MainWindow instance containing the UI controls to update.</param>
+        private static void UpdateUIAfterSave(MainWindow window)
+        {
+            var app = (App)Application.Current;
+            var openAiSettings = app.ApplicationSettings.OpenAI;
+            var anthropicSettings = app.ApplicationSettings.Anthropic;
+            var ollamaSettings = app.ApplicationSettings.Ollama;
+            var viewSettings = app.ApplicationSettings.View;
+            var embeddingSettings = app.ApplicationSettings.Embeddings;
+
+            // Update numeric fields to reflect actual saved values
+            window.FindControl<TextBox>("OpenAIBatchSize").Text = openAiSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("OpenAIMaxRetries").Text = openAiSettings.MaxRetries.ToString();
+
+            window.FindControl<TextBox>("AnthropicBatchSize").Text = anthropicSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("AnthropicMaxRetries").Text = anthropicSettings.MaxRetries.ToString();
+
+            window.FindControl<TextBox>("OllamaBatchSize").Text = ollamaSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("OllamaMaxRetries").Text = ollamaSettings.MaxRetries.ToString();
+
+            window.FindControl<TextBox>("ViewBatchSize").Text = viewSettings.BatchSize.ToString();
+            window.FindControl<TextBox>("ViewMaxRetries").Text = viewSettings.MaxRetries.ToString();
+
+            // Update embedding model dimensions and max tokens
+            window.FindControl<TextBox>("OllamaEmbeddingDimensions").Text = embeddingSettings.OllamaEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("OllamaEmbeddingMaxTokens").Text = embeddingSettings.OllamaEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("ViewEmbeddingDimensions").Text = embeddingSettings.ViewEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("ViewEmbeddingMaxTokens").Text = embeddingSettings.ViewEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("OpenAIEmbeddingDimensions").Text = embeddingSettings.OpenAIEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("OpenAIEmbeddingMaxTokens").Text = embeddingSettings.OpenAIEmbeddingModelMaxTokens.ToString();
+            window.FindControl<TextBox>("VoyageEmbeddingDimensions").Text = embeddingSettings.VoyageEmbeddingModelDimensions.ToString();
+            window.FindControl<TextBox>("VoyageEmbeddingMaxTokens").Text = embeddingSettings.VoyageEmbeddingModelMaxTokens.ToString();
         }
 
         /// <remarks>

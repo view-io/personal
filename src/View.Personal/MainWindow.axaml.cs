@@ -1059,6 +1059,7 @@
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 case "Ollama":
@@ -1067,7 +1068,7 @@
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         max_tokens = 4000,
-                        temperature = 0.7,
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 case "View":
@@ -1075,13 +1076,15 @@
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = 0.7,
+                        Temperature = settings.Temperature,
                         TopP = 1.0,
                         MaxTokens = 4000,
                         GenerationProvider = "ollama",
                         GenerationApiKey = settings.ViewApiKey,
                         OllamaHostname = settings.OllamaHostName,
                         OllamaPort = 11434,
+                        BatchSize = settings.BatchSize,
+                        MaxRetries = settings.MaxRetries,
                         Stream = true
                     };
                 case "Anthropic":
@@ -1097,7 +1100,7 @@
                         system = systemContent,
                         messages = conversationMessages,
                         max_tokens = 4000,
-                        temperature = 0.7,
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 default:
@@ -1129,11 +1132,39 @@
 
             using var restRequest = new RestRequest(requestUri, HttpMethod.Post);
             ConfigureRequestHeaders(restRequest, provider, settings);
-
+            
             var jsonPayload = _Serializer.SerializeJson(requestBody);
-            using var resp = await restRequest.SendAsync(jsonPayload);
-
-            if (resp.StatusCode > 299)
+            
+            // Implement retry with proper handling
+            RestResponse resp = null;
+            var retryCount = 0;
+            var maxRetries = settings.MaxRetries <= 0 ? 3 : settings.MaxRetries; // Default to 3 if MaxRetries is 0 or negative
+            
+            while (true)
+            {
+                try
+                {
+                    resp = await restRequest.SendAsync(jsonPayload);
+                    break;
+                }
+                catch (Exception ex) when (retryCount < maxRetries)
+                {
+                    retryCount++;
+                    app.LogWithTimestamp(SeverityEnum.Warn, $"API request failed (attempt {retryCount}/{maxRetries}): {ex.Message}");
+                    app.LogExceptionToFile(ex, $"API request failed (attempt {retryCount}/{maxRetries})");
+                    // Add a small delay before retrying
+                    await Task.Delay(1000 * retryCount); // Exponential backoff
+                }
+                catch (Exception ex)
+                {
+                    // If we've exhausted all retries, log and throw
+                    app.LogWithTimestamp(SeverityEnum.Error, $"API request failed after {maxRetries} attempts: {ex.Message}");
+                    app.LogExceptionToFile(ex, $"API request failed after {maxRetries} attempts");
+                    throw;
+                }
+            }
+            
+            if (resp.StatusCode > 299 || resp == null)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
 
             ValidateResponseStream(provider, resp);
@@ -1454,13 +1485,64 @@
                 return new TextBlock { Text = item?.Name ?? "(no name)" };
             });
 
+            // Populate the RAG knowledge source ComboBoxes
+            var openAIKnowledgeSource = this.FindControl<ComboBox>("OpenAIKnowledgeSource");
+            var anthropicKnowledgeSource = this.FindControl<ComboBox>("AnthropicKnowledgeSource");
+            var ollamaKnowledgeSource = this.FindControl<ComboBox>("OllamaKnowledgeSource");
+            var viewKnowledgeSource = this.FindControl<ComboBox>("ViewKnowledgeSource");
+
+            if (openAIKnowledgeSource != null)
+            {
+                openAIKnowledgeSource.ItemsSource = graphItems;
+                openAIKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (anthropicKnowledgeSource != null)
+            {
+                anthropicKnowledgeSource.ItemsSource = graphItems;
+                anthropicKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (ollamaKnowledgeSource != null)
+            {
+                ollamaKnowledgeSource.ItemsSource = graphItems;
+                ollamaKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (viewKnowledgeSource != null)
+            {
+                viewKnowledgeSource.ItemsSource = graphItems;
+                viewKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+
             // Select the active graph based on saved settings
             var activeGraph = graphItems.FirstOrDefault(g => g.GUID == _ActiveGraphGuid);
             if (activeGraph != null)
+            {
                 graphComboBox.SelectedItem = activeGraph;
+                openAIKnowledgeSource.SelectedItem = activeGraph;
+                anthropicKnowledgeSource.SelectedItem = activeGraph;
+                ollamaKnowledgeSource.SelectedItem = activeGraph;
+                viewKnowledgeSource.SelectedItem = activeGraph;
+            }
             else if (graphItems.Count > 0)
+            {
                 // Default to the first graph if no active graph is found
                 graphComboBox.SelectedIndex = 0;
+                openAIKnowledgeSource.SelectedIndex = 0;
+                anthropicKnowledgeSource.SelectedIndex = 0;
+                ollamaKnowledgeSource.SelectedIndex = 0;
+                viewKnowledgeSource.SelectedIndex = 0;
+            }
             LoadGraphsDataGrid();
         }
 
