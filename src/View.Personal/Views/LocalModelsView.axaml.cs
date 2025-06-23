@@ -171,7 +171,7 @@ namespace View.Personal.Views
                     const string ollamaDownloadUrl = "https://ollama.com/download";
                     var textLines = new List<string> { "You need to install Ollama to pull and use AI models." };
                     await CustomMessageBoxHelper.ShowServiceNotInstalledAsync("Ollama Not Installed",
-                                                                              "Ollama is not installed or running on your system.",
+                                                                              "Ollama is not installed or not running on the system defined in the settings.",
                                                                               "Download Ollama",
                                                                                ollamaDownloadUrl,
                                                                                textLines: textLines); 

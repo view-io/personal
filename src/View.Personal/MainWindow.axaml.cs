@@ -147,7 +147,15 @@ namespace View.Personal
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                     var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
                     graphComboBox.SelectionChanged += GraphComboBox_SelectionChanged;
-                    app.LiteGraphInitialized += (s, e) => LoadGraphComboBox();
+                    app.LiteGraphInitialized += (s, e) =>
+                    {
+                        LoadGraphComboBox();
+                    };
+                    // Resume any pending file ingestions from previous sessions
+                    Task.Run(async () =>
+                    {
+                        await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                    });
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,
@@ -300,7 +308,7 @@ namespace View.Personal
                     BrowserHelper.OpenUrl(linkUrl);
                 };
                 linkTextBlock.Cursor = new Cursor(StandardCursorType.Hand);
-                
+
                 contentPanel.Children.Add(linkTextBlock);
 
                 _WindowNotificationManager.Show(
@@ -325,6 +333,18 @@ namespace View.Personal
         {
             await FileIngester.IngestFileAsync(filePath, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
                 this);
+        }
+
+        /// <summary>
+        /// Asynchronously initiates the ingestion of multiple files into the system by delegating to the <see cref="FileIngester.IngestFilesAsync"/> method.
+        /// This method processes all files in batch mode, generating embeddings in a single batch per provider for better performance.
+        /// </summary>
+        /// <param name="filePaths">The list of paths to the files to be ingested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation of batch file ingestion.</returns>
+        public async Task IngestFilesAsync(List<string> filePaths)
+        {
+            await FileIngester.IngestFilesAsync(filePaths, _TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid,
+               this);
         }
 
         /// <summary>
@@ -386,7 +406,7 @@ namespace View.Personal
         {
             var dashboardPanel = this.FindControl<Border>("DashboardPanel");
             var settingsPanel2 = this.FindControl<Grid>("SettingsPanel2");
-            var myFilesPanel = this.FindControl<StackPanel>("MyFilesPanel");
+            var myFilesPanel = this.FindControl<Grid>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
             var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
@@ -1435,7 +1455,7 @@ namespace View.Personal
         /// </summary>
         /// <param name="sender">The ComboBox that triggered the event.</param>
         /// <param name="e">The selection changed event arguments containing event data.</param>
-        private void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void GraphComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
             if (comboBox.SelectedItem is GraphItem selectedGraph)
@@ -1455,7 +1475,7 @@ namespace View.Personal
 
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
-                FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                await FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
 
                 var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
                 var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");
@@ -1489,7 +1509,7 @@ namespace View.Personal
         /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:",enableValidation: true,validationErrorMessage: "Please enter a knowledgebase name");
+            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:", enableValidation: true, validationErrorMessage: "Please enter a knowledgebase name");
             if (!string.IsNullOrWhiteSpace(text) && result == ButtonResult.Ok) CreateNewGraph(text);
         }
 
@@ -1566,70 +1586,49 @@ namespace View.Personal
         /// <param name="e">The DragEventArgs containing information about the drag operation.</param>
         private void MyFilesPanel_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.FileNames))
+            var app = (App)Application.Current;
+            if (e.Data.Contains(DataFormats.Files))
                 e.DragEffects = DragDropEffects.Copy;
             else
                 e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
         }
 
         /// <summary>
         /// Handles the Drop event for the MyFilesPanel to process dropped files or folders.
-        /// Retrieves the list of dropped paths, processes folders recursively, and ingests each file asynchronously.
-        /// Displays a spinner during the ingestion process and hides it upon completion.
+        /// Retrieves the list of dropped paths and ingests each file asynchronously.
         /// </summary>
         /// <param name="sender">The object that raised the event, typically the MyFilesPanel.</param>
         /// <param name="e">The DragEventArgs containing information about the drop operation, including the dropped data.</param>
         private async void MyFilesPanel_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.FileNames))
-            {
-                var paths = e.Data.GetFileNames().ToList();
-                var spinner = this.FindControl<ProgressBar>("IngestSpinner");
-                if (spinner != null)
-                {
-                    spinner.IsVisible = true;
-                    spinner.IsIndeterminate = true;
-                }
 
-                try
+            var app = (App)Application.Current;
+            var grid = sender as Grid;
+
+            var formats = e.Data.GetDataFormats();
+
+            try
+            {
+                var paths = e.Data.GetFileNames()?.ToList();
+
+                if (paths != null && paths.Any())
                 {
-                    foreach (var path in paths)
-                        if (Directory.Exists(path))
-                        {
-                            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-                            foreach (var file in files)
-                                try
-                                {
-                                    await IngestFileAsync(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                    var app = (App)Application.Current;
-                                    app.Log($"[ERROR] Failed to ingest file {file}: {ex.Message}");
-                                    ShowNotification("Ingestion Error",
-                                        $"Failed to ingest {Path.GetFileName(file)}: {ex.Message}",
-                                        NotificationType.Error);
-                                }
-                        }
-                        else if (File.Exists(path))
-                        {
-                            try
-                            {
-                                await IngestFileAsync(path);
-                            }
-                            catch (Exception ex)
-                            {
-                                var app = (App)Application.Current;
-                                app.Log($"[ERROR] Failed to ingest file {path}: {ex.Message}");
-                                ShowNotification("Ingestion Error",
-                                    $"Failed to ingest {Path.GetFileName(path)}: {ex.Message}", NotificationType.Error);
-                            }
-                        }
+                    var uploadSpinner = this.FindControl<ProgressBar>("UploadSpinner");
+                    if (uploadSpinner != null)
+                    {
+                        uploadSpinner.IsVisible = true;
+                        uploadSpinner.IsIndeterminate = true;
+                    }
+                    await IngestFilesAsync(paths);
+                    if (uploadSpinner != null) uploadSpinner.IsVisible = false;
+                    e.Handled = true;
                 }
-                finally
-                {
-                    if (spinner != null) spinner.IsVisible = false;
-                }
+            }
+            catch (Exception ex)
+            {
+                app.Log($"[ERROR] Error processing dropped files: {ex.Message}");
+                app.LogExceptionToFile(ex, $"Error processing dropped files");
             }
         }
 
