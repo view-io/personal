@@ -939,6 +939,48 @@
         }
 
         /// <summary>
+        /// Asynchronously retrieves an AI-generated summary based on the given prompt, using the currently selected completion provider.
+        /// This is typically used to generate concise summaries for chat history or document content.
+        /// </summary>
+        /// <param name="summaryPrompt">The prompt string that instructs the AI on how to summarize the content.</param>
+        /// <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
+        /// <returns>A task that resolves to the full AI-generated summary string, or an error message if the request fails.</returns>
+        public async Task<string> SummarizeChat(string summaryPrompt, Action<string> onTokenReceived = null)
+        {
+            try
+            {
+                var app = (App)Application.Current;
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Chat summarization started with provider: {app.ApplicationSettings.SelectedProvider}");
+
+                var selectedProvider = app.ApplicationSettings.SelectedProvider;
+                var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
+
+                var finalMessages = new List<ChatMessage>
+                {
+                   new ChatMessage
+                   {
+                      Role = "system",
+                      Content = summaryPrompt
+                   }
+                };
+
+                var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending summarization request to {selectedProvider}");
+
+                var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                app.LogWithTimestamp(SeverityEnum.Debug, "Summarization request completed");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var app = (App)Application.Current;
+                app.LogWithTimestamp(SeverityEnum.Error, $"SummarizeChat threw exception: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        /// <summary>
         /// Creates an SDK instance and an embeddings request for the specified embeddings provider.
         /// </summary>
         /// <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>

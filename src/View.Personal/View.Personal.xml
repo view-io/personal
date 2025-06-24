@@ -1834,6 +1834,15 @@
             <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
             <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.SummarizeChat(System.String,System.Action{System.String})">
+            <summary>
+            Asynchronously retrieves an AI-generated summary based on the given prompt, using the currently selected completion provider.
+            This is typically used to generate concise summaries for chat history or document content.
+            </summary>
+            <param name="summaryPrompt">The prompt string that instructs the AI on how to summarize the content.</param>
+            <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
+            <returns>A task that resolves to the full AI-generated summary string, or an error message if the request fails.</returns>
+        </member>
         <member name="M:View.Personal.MainWindow.GetEmbeddingsSdkAndRequest(System.String,View.Personal.Classes.AppSettings,System.String)">
             <summary>
             Creates an SDK instance and an embeddings request for the specified embeddings provider.
@@ -2493,6 +2502,15 @@
             <param name="message">The full message text to extract a title from.</param>
             <param name="wordCount">The maximum number of words to include in the title. Defaults to 5.</param>
             <returns>A string containing the first wordCount words of the message followed by an ellipsis, or the full message if it contains fewer words than wordCount.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.GenerateConversationSummary(System.Collections.Generic.List{View.Personal.Classes.ChatMessage},View.Personal.MainWindow,System.Int32)">
+            <summary>
+            Generates a summary of the conversation for use as a chat title using AI.
+            </summary>
+            <param name="messages">The list of chat messages to summarize.</param>
+            <param name="mainWindow">An instance of the <see cref="T:View.Personal.MainWindow"/> class used to access the AI summarization method.</param>
+            <param name="maxLength">The maximum length of the summary. Defaults to 20 characters.</param>
+            <returns>A summarized title for the conversation.</returns>
         </member>
         <member name="M:View.Personal.UIHandlers.ChatUIHandlers.ChatInputBox_KeyDown(System.Object,Avalonia.Input.KeyEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
             <summary>
