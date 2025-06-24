@@ -73,6 +73,7 @@ namespace View.Personal.UIHandlers
             var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
 
             string userText = "";
+            string chatTitle = "";
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
                 userText = inputBox.Text.Trim();
@@ -96,8 +97,7 @@ namespace View.Personal.UIHandlers
             // Handle first message in the session
             if (currentMessages.Count == 1)
             {
-                // Set initial title based on user message
-                mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
+                mainWindow.CurrentChatSession.Title = "New Chat";
                 var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
@@ -123,7 +123,7 @@ namespace View.Personal.UIHandlers
                 UpdateConversationWindow(conversationContainer, currentMessages, true, mainWindow); // Show spinner
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-
+                chatTitle = await Task.Run(() => GenerateConversationSummary(currentMessages, mainWindow));
                 app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
@@ -132,14 +132,34 @@ namespace View.Personal.UIHandlers
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
-                        Dispatcher.UIThread.Post(() => {
+                        Dispatcher.UIThread.Post(() =>
+                        {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
+                            mainWindow.CurrentChatSession.Title = chatTitle;
+
+                            // Update the chat history dropdown
+                            var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
+                            if (chatHistoryList != null)
+                            {
+                                var existingItem = chatHistoryList.Items
+                                    .OfType<ListBoxItem>()
+                                    .FirstOrDefault(item => item.Tag == mainWindow.CurrentChatSession);
+                                if (existingItem != null)
+                                {
+                                    existingItem.Content = chatTitle;
+                                    ToolTip.SetTip(existingItem, chatTitle);
+                                    var currentIndex = chatHistoryList.SelectedIndex;
+                                    chatHistoryList.SelectedIndex = -1;
+                                    chatHistoryList.SelectedIndex = currentIndex;
+                                }
+                            }
                         }, DispatcherPriority.Background);
                     }
                     else
                     {
-                        Dispatcher.UIThread.Post(() => {
+                        Dispatcher.UIThread.Post(() =>
+                        {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
                         }, DispatcherPriority.Background);
@@ -155,27 +175,6 @@ namespace View.Personal.UIHandlers
                 {
                     assistantMsg.Content = "No response received from the AI.";
                     app.LogWithTimestamp(SeverityEnum.Warn, "No content accumulated in assistant message.");
-                }
-
-                // Update chat title with conversation summary after AI response
-                if (currentMessages.Count >= 2) // At least user + assistant messages
-                {
-                    var newTitle = await GenerateConversationSummary(currentMessages, mainWindow);
-                    mainWindow.CurrentChatSession.Title = newTitle;
-                    
-                    // Update the chat history dropdown
-                    var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
-                    if (chatHistoryList != null)
-                    {
-                        var existingItem = chatHistoryList.Items
-                            .OfType<ListBoxItem>()
-                            .FirstOrDefault(item => item.Tag == mainWindow.CurrentChatSession);
-                        
-                        if (existingItem != null)
-                        {
-                            existingItem.Content = newTitle;
-                        }
-                    }
                 }
 
                 // Final UI update
@@ -214,12 +213,12 @@ namespace View.Personal.UIHandlers
         /// </summary>
         /// <param name="messages">The list of chat messages to summarize.</param>
         /// <param name="mainWindow">An instance of the <see cref="MainWindow"/> class used to access the AI summarization method.</param>
-        /// <param name="maxLength">The maximum length of the summary. Defaults to 20 characters.</param>
+        /// <param name="maxLength">The maximum length of the summary. Defaults to 30 characters.</param>
         /// <returns>A summarized title for the conversation.</returns>
         public static async Task<string> GenerateConversationSummary(
                 List<ChatMessage> messages,
                 MainWindow mainWindow,
-                int maxLength = 20)
+                int maxLength = 30)
         {
             if (messages == null || messages.Count == 0)
                 return "New Chat";
@@ -227,9 +226,22 @@ namespace View.Personal.UIHandlers
             try
             {
                 var conversationText = string.Join("\n", messages.Select(m => $"{m.Role}: {m.Content}"));
-                var summaryPrompt = $"Summarize the following conversation in {maxLength} characters or less. " +
-                    "Only output the summary string with no explanation or prefix.\n\n" +
-                    $"{conversationText}";
+                var summaryPrompt = $"""
+                                        You will be given a series of user messages from a single chat conversation.
+
+                                        Your task is to create a single, short title that summarizes the main topic(s) of the entire conversation based on these user inputs.
+
+                                        Rules:
+                                        - The title must be under {maxLength} characters.
+                                        - Respond ONLY with the plain text title.
+                                        - Do NOT wrap the title in quotes, asterisks, markdown, or any formatting.
+                                        - Do NOT include prefixes like "Title:" or explanations.
+                                        - Output a single line with just the title.
+
+                                        User Messages:
+                                        {conversationText}
+                                     """;
+
 
                 var summary = await mainWindow.SummarizeChat(summaryPrompt, null!);
 
@@ -473,7 +485,7 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
-
+       
         #endregion
     }
 }

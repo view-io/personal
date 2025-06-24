@@ -2509,7 +2509,7 @@
             </summary>
             <param name="messages">The list of chat messages to summarize.</param>
             <param name="mainWindow">An instance of the <see cref="T:View.Personal.MainWindow"/> class used to access the AI summarization method.</param>
-            <param name="maxLength">The maximum length of the summary. Defaults to 20 characters.</param>
+            <param name="maxLength">The maximum length of the summary. Defaults to 30 characters.</param>
             <returns>A summarized title for the conversation.</returns>
         </member>
         <member name="M:View.Personal.UIHandlers.ChatUIHandlers.ChatInputBox_KeyDown(System.Object,Avalonia.Input.KeyEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">

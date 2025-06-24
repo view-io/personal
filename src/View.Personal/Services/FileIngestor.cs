@@ -1856,21 +1856,21 @@
                 var errorMessage = $"Failed to generate embeddings for chunks with status {result.StatusCode}";
                 if (result.Error != null)
                     errorMessage += $" {result.Error.Message}";
-                ShowErrorNotification(mainWindow, "Ingestion Error", errorMessage);
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error", errorMessage));
                 return false;
             }
 
             if (result.ContentEmbeddings == null)
             {
-                ShowErrorNotification(mainWindow, "Ingestion Error",
-                    "Failed to generate embeddings for chunks: ContentEmbeddings is null");
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error",
+                    "Failed to generate embeddings for chunks: ContentEmbeddings is null"));
                 return false;
             }
 
             if (result.ContentEmbeddings.Count != expectedCount)
             {
-                ShowErrorNotification(mainWindow, "Ingestion Error",
-                    "Failed to generate embeddings for chunks: Incorrect embeddings count");
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error",
+                    "Failed to generate embeddings for chunks: Incorrect embeddings count"));
                 return false;
             }
 

@@ -104,6 +104,13 @@
 					              BorderThickness="0.97"
                               Foreground="#1A1C1E"
                               SelectionChanged="ChatHistoryList_SelectionChanged">
+
+							<!-- Tooltip for each item in the dropdown -->
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding}" ToolTip.Tip="{Binding}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
 							<ComboBox.Styles>
 								<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
 									<Setter Property="MinHeight" Value="36" />
