@@ -1851,6 +1851,19 @@
             <param name="request">The EmbeddingsRequest object containing the model and content to embed.</param>
             <returns>A task that resolves to a list of float values representing the embeddings, or null if generation fails.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single},System.Int32,System.Double)">
+            <summary>
+            Asynchronously performs a vector similarity search using the provided embeddings to retrieve the most relevant results.
+            The search results are filtered based on a minimum similarity threshold and limited to a specified Top-K count.
+            </summary>
+            <param name="embeddings">A list of float values representing the query embeddings.</param>
+            <param name="topK">The maximum number of top results to return, ordered by descending similarity score.</param>
+            <param name="minThreshold">The minimum similarity score required for a result to be considered relevant.</param>
+            <returns>
+            A task that resolves to a filtered and ordered enumerable collection of <see cref="T:LiteGraph.VectorSearchResult"/> objects
+            that meet the similarity threshold and Top-K criteria.
+            </returns>
+        </member>
         <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single})">
             <summary>
             Asynchronously performs a vector search using the provided embeddings to find relevant results.

@@ -1,13 +1,5 @@
 ﻿namespace View.Personal
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
@@ -19,16 +11,25 @@
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using DocumentFormat.OpenXml.InkML;
     using Helpers;
     using LiteGraph;
+    using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
+    using Sdk.Embeddings.Providers.VoyageAI;
     using SerializationHelper;
     using Services;
-    using RestWrapper;
-    using Sdk.Embeddings.Providers.VoyageAI;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
     using UIHandlers;
     using View.Personal.Enums;
     using SeverityEnum = Enums.SeverityEnum;
@@ -857,15 +858,73 @@
 
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
                 app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
-                var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
-                if (searchResults == null || !searchResults.GetEnumerator().MoveNext())
-                    return "No relevant documents found to answer your question.";
-                app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
-                var context = BuildContext(searchResults);
-                app.LogWithTimestamp(SeverityEnum.Debug, $"BuildContext execution completed");
-                var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
-                var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
+                bool ragEnabled = selectedProvider switch
+                {
+                    "OpenAI" => app.ApplicationSettings.OpenAI.RAG.EnableRAG,
+                    "Anthropic" => app.ApplicationSettings.Anthropic.RAG.EnableRAG,
+                    "Ollama" => app.ApplicationSettings.Ollama.RAG.EnableRAG,
+                    "View" => app.ApplicationSettings.View.RAG.EnableRAG,
+                    _ => false
+                };
+                List<ChatMessage> finalMessages = new List<ChatMessage>();
+                if (ragEnabled)
+                {
+                    app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
+                    int topK = selectedProvider switch
+                    {
+                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.NumberOfDocumentsToRetrieve,
+                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.NumberOfDocumentsToRetrieve,
+                        "Ollama" => app.ApplicationSettings.Ollama.RAG.NumberOfDocumentsToRetrieve,
+                        "View" => app.ApplicationSettings.View.RAG.NumberOfDocumentsToRetrieve,
+                        _ => 5
+                    };
 
+                    double minThreshold = selectedProvider switch
+                    {
+                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.SimilarityThreshold,
+                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.SimilarityThreshold,
+                        "Ollama" => app.ApplicationSettings.Ollama.RAG.SimilarityThreshold,
+                        "View" => app.ApplicationSettings.View.RAG.SimilarityThreshold,
+                        _ => 0.75
+                    };
+                    var searchResults = (await PerformVectorSearch(floatEmbeddings, topK, minThreshold))?.ToList();
+                    app.LogWithTimestamp(SeverityEnum.Debug, $"RAG search results count: {searchResults?.Count ?? 0}");
+
+                    if (searchResults == null || searchResults.Count == 0)
+                    {
+                        return "I couldn't find any relevant documents in the knowledge base for your query.";
+                    }
+                    else
+                    {
+                        var context = BuildContext(searchResults);
+                        var promptMessages = BuildPromptMessages();
+
+                        var contextMessage = new ChatMessage
+                        {
+                            Role = "system",
+                            Content = "You are an assistant answering based solely on the provided document context. " +
+                                      "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" + context
+                        };
+
+                        finalMessages = new List<ChatMessage>
+                        {
+                           contextMessage
+                        };
+                        finalMessages.AddRange(promptMessages.Where(m => m.Role != "system"));
+                        finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
+                    }
+                }
+                else
+                {
+                    var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
+                    if (searchResults == null || !searchResults.GetEnumerator().MoveNext())
+                        return "No relevant documents found to answer your question.";
+                    app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
+                    var context = BuildContext(searchResults);
+                    app.LogWithTimestamp(SeverityEnum.Debug, $"BuildContext execution completed");
+                    finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
+                }
+                var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
                 app.LogWithTimestamp(SeverityEnum.Debug, $"Sending API request to {selectedProvider}");
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
                 app.LogWithTimestamp(SeverityEnum.Debug, "API request completed");
@@ -969,6 +1028,38 @@
         }
 
         /// <summary>
+        /// Asynchronously performs a vector similarity search using the provided embeddings to retrieve the most relevant results.
+        /// The search results are filtered based on a minimum similarity threshold and limited to a specified Top-K count.
+        /// </summary>
+        /// <param name="embeddings">A list of float values representing the query embeddings.</param>
+        /// <param name="topK">The maximum number of top results to return, ordered by descending similarity score.</param>
+        /// <param name="minThreshold">The minimum similarity score required for a result to be considered relevant.</param>
+        /// <returns>
+        /// A task that resolves to a filtered and ordered enumerable collection of <see cref="VectorSearchResult"/> objects
+        /// that meet the similarity threshold and Top-K criteria.
+        /// </returns>
+        private Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(List<float> embeddings, int topK, double minThreshold)
+        {
+            var app = (App)Application.Current;
+            var searchRequest = new VectorSearchRequest
+            {
+                TenantGUID = _TenantGuid,
+                GraphGUID = _ActiveGraphGuid,
+                Domain = VectorSearchDomainEnum.Node,
+                SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                Embeddings = embeddings
+            };
+
+            var searchResults = _LiteGraph.Vector.Search(searchRequest);
+            var filtered = searchResults
+                          .Where(r => r.Score >= minThreshold)
+                          .OrderByDescending(r => r.Score)
+                          .Take(topK);
+            app.LogWithTimestamp(SeverityEnum.Info, $"Vector search Completed");
+            return Task.FromResult(filtered ?? Enumerable.Empty<VectorSearchResult>());
+        }
+
+        /// <summary>
         /// Asynchronously performs a vector search using the provided embeddings to find relevant results.
         /// </summary>
         /// <param name="embeddings">A list of float values representing the embeddings to search with.</param>
@@ -1036,6 +1127,7 @@
             var finalMessages = new List<ChatMessage>();
             finalMessages.AddRange(conversationSoFar);
             finalMessages.Add(contextMessage);
+            finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
             return finalMessages;
         }
 
@@ -1132,14 +1224,14 @@
 
             using var restRequest = new RestRequest(requestUri, HttpMethod.Post);
             ConfigureRequestHeaders(restRequest, provider, settings);
-            
+
             var jsonPayload = _Serializer.SerializeJson(requestBody);
-            
+
             // Implement retry with proper handling
             RestResponse resp = null;
             var retryCount = 0;
             var maxRetries = settings.MaxRetries <= 0 ? 3 : settings.MaxRetries; // Default to 3 if MaxRetries is 0 or negative
-            
+
             while (true)
             {
                 try
@@ -1163,7 +1255,7 @@
                     throw;
                 }
             }
-            
+
             if (resp.StatusCode > 299 || resp == null)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
 
