@@ -64,19 +64,7 @@
                     if (deleteSuccess && mainWindow != null)
                     {
                         FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
-                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                        var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
-                        {
-                            var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
-                            if (itemToRemove != null)
-                                fileCollection.Remove(itemToRemove);
-                            var fileCount = fileCollection.Count;
-                            var uploadFilesPanel = mainWindow.FindControl<Border>("UploadFilesPanel");
-                            var fileOperationsPanel = mainWindow.FindControl<Grid>("FileOperationsPanel");
-                            uploadFilesPanel.IsVisible = fileCount == 0;
-                            fileOperationsPanel.IsVisible = fileCount > 0;
-                        }
+                        await FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(liteGraph, tenantGuid, graphGuid, mainWindow, file.NodeGuid);        
                         mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
                             NotificationType.Success);
                     }
@@ -174,19 +162,10 @@
                             }
                         });
 
-                        await Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            if (fileCollection != null)
-                            {
-                                var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
-                                if (itemToRemove != null)
-                                    fileCollection.Remove(itemToRemove);
-                            }
-                        }, DispatcherPriority.Background);
 
-                        successfulDeletes.Add(file.NodeGuid);
                         if (mainWindow != null)
-                            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                            await FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(liteGraph, tenantGuid, graphGuid, mainWindow, file.NodeGuid);
+                        successfulDeletes.Add(file.NodeGuid);
                     }
                     catch (Exception ex)
                     {
@@ -198,22 +177,6 @@
 
                 if (mainWindow != null)
                 {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        var filesDataGridFinal = mainWindow.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGridFinal?.ItemsSource is ObservableCollection<FileViewModel> finalCollection)
-                        {
-                            var fileCount = finalCollection.Count;
-                            var uploadFilesPanel = mainWindow.FindControl<Border>("UploadFilesPanel");
-                            var fileOperationsPanel = mainWindow.FindControl<Grid>("FileOperationsPanel");
-
-                            if (uploadFilesPanel != null)
-                                uploadFilesPanel.IsVisible = fileCount == 0;
-                            if (fileOperationsPanel != null)
-                                fileOperationsPanel.IsVisible = fileCount > 0;
-                        }
-                    });
-
                     if (failedDeletes.Any())
                     {
                         mainWindow.ShowNotification("Deletion Warning",

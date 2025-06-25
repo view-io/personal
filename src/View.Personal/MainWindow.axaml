@@ -1719,7 +1719,122 @@
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
+					<!-- Pagination Controls -->
+					<Border x:Name="FilePaginationControls"
+							IsVisible="False"
+						    Grid.Row="4"
+							BorderThickness="1"
+							BorderBrush="#EDEDED"
+							Background="#FAFAFA"
+							Padding="16,12"
+							Margin="0,10,0,0">
+						<Grid ColumnDefinitions="*,Auto,*">
+							<!-- Left side - Page info -->
+							<StackPanel Grid.Column="0"
+										Orientation="Vertical"
+										Spacing="4"
+										VerticalAlignment="Center">
+								<TextBlock x:Name="PageRangeText"
+										   Text="No items to display"
+										   FontSize="12"
+										   Foreground="#6A6B6F" />
+								<TextBlock x:Name="PageInfoText"
+										   Text="No pages"
+										   FontSize="11"
+										   Foreground="#8E8E93" />
+							</StackPanel>
 
+							<!-- Center - Navigation buttons -->
+							<StackPanel Grid.Column="1"
+										Orientation="Horizontal"
+										Spacing="8"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center">
+								<Button x:Name="FirstPageButton"
+										Classes="flat"
+										Width="32"
+										Height="32"
+										ToolTip.Tip="First page">
+									<avalonia:MaterialIcon Kind="ChevronDoubleLeft" Width="16" Height="16" Foreground="#6A6B6F" />
+								</Button>
+								<Button x:Name="PreviousPageButton"
+										Classes="flat"
+										Width="32"
+										Height="32"
+										ToolTip.Tip="Previous page">
+									<avalonia:MaterialIcon Kind="ChevronLeft" Width="16" Height="16" Foreground="#6A6B6F" />
+								</Button>
+								<Button x:Name="NextPageButton"
+										Classes="flat"
+										Width="32"
+										Height="32"
+										ToolTip.Tip="Next page">
+									<avalonia:MaterialIcon Kind="ChevronRight" Width="16" Height="16" Foreground="#6A6B6F" />
+								</Button>
+								<Button x:Name="LastPageButton"
+										Classes="flat"
+										Width="32"
+										Height="32"
+										ToolTip.Tip="Last page">
+									<avalonia:MaterialIcon Kind="ChevronDoubleRight" Width="16" Height="16" Foreground="#6A6B6F" />
+								</Button>
+							</StackPanel>
+
+							<!-- Right side - Page size selector -->
+							<StackPanel Grid.Column="2"
+										Orientation="Horizontal"
+										Spacing="8"
+										HorizontalAlignment="Right"
+										VerticalAlignment="Center"
+										MinHeight="28">
+								<TextBlock Text="Items per page:"
+										   FontSize="12"
+										   Foreground="#6A6B6F"
+										   VerticalAlignment="Center" />
+								<ComboBox x:Name="PageSizeComboBox"
+										  Width="80"
+										  Height="28"
+										  Padding="12,4"
+										  Background="#FFFFFF"
+										  BorderBrush="#DBDBDB"
+										  BorderThickness="0.97"
+										  VerticalContentAlignment="Center"
+										  Foreground="#1A1C1E"
+										  SelectedIndex="0">
+									<ComboBox.Styles>
+										<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+											<Setter Property="MinHeight" Value="36" />
+											<Setter Property="Margin" Value="0" />
+										</Style>
+										<Style Selector="ComboBox /template/ Border#PART_Border">
+											<Setter Property="CornerRadius" Value="8" />
+											<Setter Property="BorderBrush" Value="#DBDBDB" />
+										</Style>
+										<Style Selector="ComboBox /template/ ContentPresenter">
+											<Setter Property="VerticalAlignment" Value="Center" />
+											<Setter Property="FontSize" Value="13" />
+										</Style>
+										<Style Selector="ComboBoxItem">
+											<Setter Property="Padding" Value="12,8" />
+											<Setter Property="FontSize" Value="13" />
+										</Style>
+										<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+											<Setter Property="Background" Value="#F5F5F5" />
+										</Style>
+										<Style Selector="ComboBox /template/ Path#arrow">
+											<Setter Property="Fill" Value="#1A1C1E" />
+										</Style>
+									</ComboBox.Styles>
+
+									<!-- Sample items -->
+									<ComboBoxItem Content="10" />
+									<ComboBoxItem Content="25" />
+									<ComboBoxItem Content="50" />
+									<ComboBoxItem Content="100" />
+								</ComboBox>
+							</StackPanel>
+						</Grid>
+					</Border>
 					<ProgressBar x:Name="ExportSpinner"
 			                     VerticalAlignment="Center"
 			                     HorizontalAlignment="Stretch"

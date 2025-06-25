@@ -1125,6 +1125,108 @@
             Gets or sets the description displayed in the onboarding tooltip.
             </summary>
         </member>
+        <member name="T:View.Personal.Classes.PaginationInfo">
+            <summary>
+            Represents pagination information for data grids.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.CurrentPage">
+            <summary>
+            Gets or sets the current page number (1-based).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageSize">
+            <summary>
+            Gets or sets the number of items per page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.TotalItems">
+            <summary>
+            Gets or sets the total number of items across all pages.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.RecordsRemaining">
+            <summary>
+            Gets or sets the number of records remaining after the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.FirstItemIndex">
+            <summary>
+            Gets or sets the index (1-based) of the first item on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.ItemsOnCurrentPage">
+            <summary>
+            Gets or sets the number of items on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.LastItemIndex">
+            <summary>
+            Gets the index (1-based) of the last item on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.TotalPages">
+            <summary>
+            Gets the total number of pages based on the total item count and page size.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.StartIndex">
+            <summary>
+            Gets the 0-based index of the first item on the current page (for offset-based paging).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.EndIndex">
+            <summary>
+            Gets the 0-based exclusive end index for the current page (for offset-based paging).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.HasPreviousPage">
+            <summary>
+            Gets a value indicating whether a previous page exists.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.HasNextPage">
+            <summary>
+            Gets a value indicating whether a next page exists.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageRangeText">
+            <summary>
+            Gets a formatted string showing the range of items currently displayed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageInfoText">
+            <summary>
+            Gets a formatted string showing the current page number and total pages.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.NextPage">
+            <summary>
+            Advances to the next page, if available.
+            </summary>
+            <returns><c>true</c> if the page changed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.PreviousPage">
+            <summary>
+            Moves to the previous page, if available.
+            </summary>
+            <returns><c>true</c> if the page changed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.FirstPage">
+            <summary>
+            Sets the current page to the first page.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.LastPage">
+            <summary>
+            Sets the current page to the last page based on <see cref="P:View.Personal.Classes.PaginationInfo.TotalPages"/>.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.Reset">
+            <summary>
+            Resets the pagination state to the first page with no items.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.TextInputDialog">
             <summary>
             A dialog window for collecting text input from the user with OK and Cancel options.
@@ -1623,14 +1725,154 @@
             None; updates the DataGrid's ItemsSource directly
             </summary>
         </member>
+        <member name="T:View.Personal.Helpers.FilePaginationHelper">
+            <summary>
+            Provides helper methods for managing file pagination in the application.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.GetPaginationInfo(System.Guid,System.Int32)">
+            <summary>
+            Gets or creates pagination info for a specific graph.
+            </summary>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="pageSize">The page size to use if creating new pagination</param>
+            <returns>The pagination info for the graph</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.GetContinuationToken(System.Guid)">
+            <summary>
+            Gets the continuation token for a specific graph.
+            </summary>
+            <param name="graphGuid">The graph GUID</param>
+            <returns>The continuation token or null if not available</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.SetContinuationToken(System.Guid,System.Nullable{System.Guid})">
+            <summary>
+            Sets the continuation token for a specific graph.
+            </summary>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="continuationToken">The continuation token</param>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.ClearPaginationState(System.Guid)">
+            <summary>
+            Clears pagination state for a specific graph.
+            </summary>
+            <param name="graphGuid">The graph GUID</param>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Int32,System.Int32)">
+            <summary>
+            Loads a specific page of files for the given graph.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <param name="pageNumber">The page number to load (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadNextPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the next page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadPreviousPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the previous page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadFirstPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the first page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadLastPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the last page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.RefreshGridAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Refreshes Grid.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Guid)">
+            <summary>
+            Refreshes the current page after a file has been deleted from the grid. 
+            If the deletion leaves the page empty and it is not the first page,
+            it automatically navigates to the previous page and reloads the items.
+            Updates the pagination state and UI accordingly.
+            </summary>
+            <param name="liteGraph">The LiteGraph client instance used to fetch file data.</param>
+            <param name="tenantGuid">The GUID of the tenant associated with the current graph.</param>
+            <param name="graphGuid">The GUID of the graph for which files are displayed.</param>
+            <param name="window">The main window instance containing the UI controls.</param>
+            <param name="deletedNodeGuid">The GUID of the node (file) that was deleted.</param>
+            <returns>A task representing the asynchronous UI update operation.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.UpdatePaginationControls(Avalonia.Controls.Window,View.Personal.Classes.PaginationInfo)">
+            <summary>
+            Updates the pagination controls in the UI.
+            </summary>
+            <param name="window">The main window</param>
+            <param name="pagination">The pagination info</param>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.ChangePageSizeAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Int32)">
+            <summary>
+            Changes the page size and reloads the first page.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <param name="newPageSize">The new page size</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
         <member name="T:View.Personal.Helpers.MainWindowHelpers">
             <summary>
             Provides helper methods for managing UI-related tasks and graph operations in the main window.
             </summary>
         </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid,System.Int32,System.Nullable{System.Guid})">
+            <summary>
+            Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects with pagination support
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="pageSize">The number of items to retrieve per page (default: 10)</param>
+            <param name="continuationToken">The continuation token for pagination (default: null)</param>
+            Returns:
+            A tuple containing a List of FileViewModel objects representing the document nodes, PaginationInfo, and continuation token
+            </summary>
+        </member>
         <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
             <summary>
             Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+            This is the original method signature for backward compatibility
             <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
             <param name="tenantGuid">The unique identifier for the tenant</param>
             <param name="graphGuid">The unique identifier for the graph</param>

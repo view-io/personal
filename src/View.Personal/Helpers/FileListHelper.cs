@@ -44,8 +44,8 @@ namespace View.Personal.Helpers
                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
                 var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
                 var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
-
-                if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
+                var filePaginationControls = window.FindControl<Border>("FilePaginationControls");
+                if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null && filePaginationControls != null)
                 {
                     if (filesDataGrid.ItemsSource is not ObservableCollection<FileViewModel> ingestedFiles)
                     {
@@ -54,6 +54,7 @@ namespace View.Personal.Helpers
                     }
 
                     filesDataGrid.IsVisible = true;
+                    filePaginationControls.IsVisible = true;
                     fileOperationsPanel.IsVisible = true;
                     uploadFilesPanel.IsVisible = false;
 
@@ -97,8 +98,8 @@ namespace View.Personal.Helpers
                 var filesDataGrid = window.FindControl<DataGrid>("FilesDataGrid");
                 var fileOperationsPanel = window.FindControl<Grid>("FileOperationsPanel");
                 var uploadFilesPanel = window.FindControl<Border>("UploadFilesPanel");
-
-                if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null)
+                var filePaginationControls = window.FindControl<Border>("FilePaginationControls");
+                if (filesDataGrid != null && fileOperationsPanel != null && uploadFilesPanel != null && filePaginationControls != null)
                 {
                     if (filesDataGrid.ItemsSource is not ObservableCollection<FileViewModel> ingestedFiles)
                     {
@@ -107,6 +108,7 @@ namespace View.Personal.Helpers
                     }
 
                     filesDataGrid.IsVisible = true;
+                    filePaginationControls.IsVisible = true;
                     fileOperationsPanel.IsVisible = true;
                     uploadFilesPanel.IsVisible = false;
 

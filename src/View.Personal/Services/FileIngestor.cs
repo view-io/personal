@@ -591,7 +591,8 @@
                 if (IngestionList.Contains(filePath))
                     IngestionList.Remove(filePath);
                 MarkFileCompleted(filePath);
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+                await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                //await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
                 var filename = Path.GetFileName(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -1682,7 +1683,8 @@
                 IngestionList.Remove(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Removed {filePath} from ingestion list after successful ingestion"));
             }
-            await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
+            await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+            //await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, window);
             app.Log(Enums.SeverityEnum.Info, $"File {Path.GetFileName(filePath)} ingested successfully and added to file list!");
         }
 

@@ -45,6 +45,7 @@ namespace View.Personal.UIHandlers
             {
                 var chatHistoryList = window.FindControl<ComboBox>("ChatHistoryList");
                 var mainWindow = window as MainWindow;
+                if (mainWindow == null) return;
                 var consolePanel = window.FindControl<Border>("ConsolePanel");
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
                 var settingsPanel2 = window.FindControl<Grid>("SettingsPanel2");
@@ -107,42 +108,14 @@ namespace View.Personal.UIHandlers
                                     }, DispatcherPriority.Normal);
                                     _ = Task.Run(async () =>
                                     {
-                                        var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                                        var completedFiles = uniqueFiles
-                                                             .Where(file => FileIngester.IsFileCompleted(file.FilePath ?? string.Empty))
-                                                             .ToList();
-                                        
-                                        await Dispatcher.UIThread.InvokeAsync(() =>
+                                        await FilePaginationHelper.LoadFirstPageAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                        if (spinner != null)
                                         {
-                                            if (uniqueFiles.Any())
+                                            await Dispatcher.UIThread.InvokeAsync(() =>
                                             {
-                                                filesDataGrid.ItemsSource = completedFiles;
-                                                filesDataGrid.IsVisible = true;
-                                                uploadFilesPanel.IsVisible = false;
-                                                fileOperationsPanel.IsVisible = true;
-                                                if (spinner != null)
-                                                {
-                                                    Dispatcher.UIThread.InvokeAsync(() =>
-                                                    {
-                                                        spinner.IsVisible = false;
-                                                    }, DispatcherPriority.Normal);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (spinner != null)
-                                                {
-                                                    Dispatcher.UIThread.InvokeAsync(() =>
-                                                    {
-                                                        spinner.IsVisible = false;
-                                                    }, DispatcherPriority.Normal);
-                                                }
-                                                filesDataGrid.ItemsSource = null;
-                                                filesDataGrid.IsVisible = false;
-                                                fileOperationsPanel.IsVisible = false;
-                                                uploadFilesPanel.IsVisible = true;
-                                            }
-                                        });
+                                                spinner.IsVisible = false;
+                                            }, DispatcherPriority.Normal);
+                                        }
                                     });
                                 }
                             }

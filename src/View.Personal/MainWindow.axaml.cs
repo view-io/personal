@@ -190,6 +190,11 @@
                         onboardingOverlay.Start(this, () => { });
                     }
                 }
+                this.FindControl<Button>("NextPageButton").Click += NextPageButton_Click;
+                this.FindControl<Button>("FirstPageButton").Click += FirstPageButton_Click;
+                this.FindControl<Button>("PreviousPageButton").Click += PreviousPageButton_Click;
+                this.FindControl<Button>("LastPageButton").Click += LastPageButton_Click;
+                this.FindControl<ComboBox>("PageSizeComboBox").SelectionChanged += PageSizeComboBox_SelectionChanged;
             }
             catch (Exception e)
             {
@@ -1710,8 +1715,9 @@
                 var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
                 var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");
                 var fileOperationsPanel = this.FindControl<Grid>("FileOperationsPanel");
+                var filePaginationControls = this.FindControl<Grid>("filePaginationControls");
 
-                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null && filePaginationControls != null)
                 {
                     var uniqueFiles =
                         MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
@@ -1720,12 +1726,14 @@
                         filesDataGrid.ItemsSource = uniqueFiles;
                         uploadFilesPanel.IsVisible = false;
                         filesDataGrid.IsVisible = true;
+                        filePaginationControls.IsVisible = true;
                     }
                     else
                     {
                         filesDataGrid.ItemsSource = null;
                         filesDataGrid.IsVisible = false;
                         fileOperationsPanel.IsVisible = false;
+                        filePaginationControls.IsVisible = false;
                         uploadFilesPanel.IsVisible = true;
                     }
                 }
@@ -1870,6 +1878,52 @@
         private static DateTime ConvertUtcToLocal(DateTime utcDateTime)
         {
             return utcDateTime.ToLocalTime();
+        }
+
+        private async void NextPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadNextPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void FirstPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadFirstPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void PreviousPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadPreviousPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void LastPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadLastPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void PageSizeComboBox_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                if (int.TryParse(selectedItem.Content?.ToString(), out int newPageSize))
+                {
+                    var liteGraph = _LiteGraph;
+                    var tenantGuid = _TenantGuid;
+                    var graphGuid = _ActiveGraphGuid;
+                    await Helpers.FilePaginationHelper.ChangePageSizeAsync(liteGraph, tenantGuid, graphGuid, this, newPageSize);
+                }
+            }
         }
 
         #endregion
