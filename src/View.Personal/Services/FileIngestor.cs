@@ -1731,6 +1731,16 @@
             }
         }
 
+        /// <summary>
+        /// Adds the specified file path to the persistent ingestion list if it is not already queued.
+        /// </summary>
+        /// <param name="filePath">The absolute path of the file to enqueue for ingestion.</param>
+        public static void EnqueueFileForIngestion(string filePath)
+        {
+            if (!IngestionList.Contains(filePath))
+                IngestionList.Add(filePath);
+        }
+
 
         /// <summary>
         /// Resumes ingestion of files that were previously listed but not successfully processed,

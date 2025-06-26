@@ -543,6 +543,8 @@ namespace View.Personal.UIHandlers
                 if (entry.IsDirectory)
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
+                        FileIngester.EnqueueFileForIngestion(filePath);
+                    foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
                         if (!IsTemporaryFile(Path.GetFileName(filePath)))
                         {
                             var existingNode =
@@ -654,7 +656,7 @@ namespace View.Personal.UIHandlers
             };
 
             var buttonResult = await CustomMessageBox.ShowAsync(parameters);
-            
+
             // Map the button result to the expected string result
             string result = buttonResult switch
             {

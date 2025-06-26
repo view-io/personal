@@ -1779,20 +1779,6 @@
             <param name="window">The main window</param>
             <returns>A task representing the asynchronous operation</returns>
         </member>
-        <member name="M:View.Personal.Helpers.FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Guid)">
-            <summary>
-            Refreshes the current page after a file has been deleted from the grid. 
-            If the deletion leaves the page empty and it is not the first page,
-            it automatically navigates to the previous page and reloads the items.
-            Updates the pagination state and UI accordingly.
-            </summary>
-            <param name="liteGraph">The LiteGraph client instance used to fetch file data.</param>
-            <param name="tenantGuid">The GUID of the tenant associated with the current graph.</param>
-            <param name="graphGuid">The GUID of the graph for which files are displayed.</param>
-            <param name="window">The main window instance containing the UI controls.</param>
-            <param name="deletedNodeGuid">The GUID of the node (file) that was deleted.</param>
-            <returns>A task representing the asynchronous UI update operation.</returns>
-        </member>
         <member name="M:View.Personal.Helpers.FilePaginationHelper.UpdatePaginationControls(Avalonia.Controls.Window,View.Personal.Classes.PaginationInfo)">
             <summary>
             Updates the pagination controls in the UI.
@@ -2414,6 +2400,12 @@
             Removes a file entry from the CompletedIngestions dictionary if it exists.
             </summary>
             <param name="filePath">The full path of the file to remove.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.EnqueueFileForIngestion(System.String)">
+            <summary>
+            Adds the specified file path to the persistent ingestion list if it is not already queued.
+            </summary>
+            <param name="filePath">The absolute path of the file to enqueue for ingestion.</param>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ResumePendingIngestions(DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
