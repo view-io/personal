@@ -380,9 +380,9 @@
                                 if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error",
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.ShowNotification("Ingestion Error",
                                         "OpenAI embedding settings incomplete.",
-                                        NotificationType.Error);
+                                        NotificationType.Error));
                                     return;
                                 }
 

@@ -108,7 +108,7 @@ namespace View.Personal.Services
                 string endpoint = GetOllamaEndpoint();
                 using var httpClient = CreateHttpClient();
                 // Set a short timeout to quickly determine if Ollama is available
-                httpClient.Timeout = TimeSpan.FromSeconds(3);
+                httpClient.Timeout = TimeSpan.FromSeconds(30);
                 
                 // Try to connect to the Ollama API endpoint
                 var response = await httpClient.GetAsync($"{endpoint}api/tags");
