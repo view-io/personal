@@ -1738,20 +1738,6 @@
             <param name="pageSize">The page size to use if creating new pagination</param>
             <returns>The pagination info for the graph</returns>
         </member>
-        <member name="M:View.Personal.Helpers.FilePaginationHelper.GetContinuationToken(System.Guid)">
-            <summary>
-            Gets the continuation token for a specific graph.
-            </summary>
-            <param name="graphGuid">The graph GUID</param>
-            <returns>The continuation token or null if not available</returns>
-        </member>
-        <member name="M:View.Personal.Helpers.FilePaginationHelper.SetContinuationToken(System.Guid,System.Nullable{System.Guid})">
-            <summary>
-            Sets the continuation token for a specific graph.
-            </summary>
-            <param name="graphGuid">The graph GUID</param>
-            <param name="continuationToken">The continuation token</param>
-        </member>
         <member name="M:View.Personal.Helpers.FilePaginationHelper.ClearPaginationState(System.Guid)">
             <summary>
             Clears pagination state for a specific graph.
@@ -1857,16 +1843,16 @@
             Provides helper methods for managing UI-related tasks and graph operations in the main window.
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid,System.Int32,System.Nullable{System.Guid})">
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid,System.Int32,System.Int32)">
             <summary>
             Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects with pagination support
             <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
             <param name="tenantGuid">The unique identifier for the tenant</param>
             <param name="graphGuid">The unique identifier for the graph</param>
             <param name="pageSize">The number of items to retrieve per page (default: 10)</param>
-            <param name="continuationToken">The continuation token for pagination (default: null)</param>
+            <param name="skip">The number of records to skip for pagination (default: 0)</param>
             Returns:
-            A tuple containing a List of FileViewModel objects representing the document nodes, PaginationInfo, and continuation token
+            A tuple containing a List of FileViewModel objects representing the document nodes and PaginationInfo
             </summary>
         </member>
         <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">

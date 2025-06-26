@@ -17,7 +17,6 @@ namespace View.Personal.Helpers
     public static class FilePaginationHelper
     {
         private static readonly Dictionary<Guid, PaginationInfo> _paginationState = new();
-        private static readonly Dictionary<Guid, Guid?> _continuationTokens = new();
 
         /// <summary>
         /// Gets or creates pagination info for a specific graph.
@@ -35,40 +34,12 @@ namespace View.Personal.Helpers
         }
 
         /// <summary>
-        /// Gets the continuation token for a specific graph.
-        /// </summary>
-        /// <param name="graphGuid">The graph GUID</param>
-        /// <returns>The continuation token or null if not available</returns>
-        public static Guid? GetContinuationToken(Guid graphGuid)
-        {
-            return _continuationTokens.ContainsKey(graphGuid) ? _continuationTokens[graphGuid] : null;
-        }
-
-        /// <summary>
-        /// Sets the continuation token for a specific graph.
-        /// </summary>
-        /// <param name="graphGuid">The graph GUID</param>
-        /// <param name="continuationToken">The continuation token</param>
-        public static void SetContinuationToken(Guid graphGuid, Guid? continuationToken)
-        {
-            if (!continuationToken.HasValue)
-            {
-                _continuationTokens.Remove(graphGuid);
-            }
-            else
-            {
-                _continuationTokens[graphGuid] = continuationToken;
-            }
-        }
-
-        /// <summary>
         /// Clears pagination state for a specific graph.
         /// </summary>
         /// <param name="graphGuid">The graph GUID</param>
         public static void ClearPaginationState(Guid graphGuid)
         {
             _paginationState.Remove(graphGuid);
-            _continuationTokens.Remove(graphGuid);
         }
 
         /// <summary>
@@ -92,34 +63,21 @@ namespace View.Personal.Helpers
             var pagination = GetPaginationInfo(graphGuid, pageSize);
             pagination.CurrentPage = pageNumber;
 
-            // Reset continuation token on first page
-            if (pageNumber == 1)
-            {
-                SetContinuationToken(graphGuid, null);
-            }
+            // Calculate skip value for the requested page
+            var skip = (pageNumber - 1) * pageSize;
 
             var result = await Task.Run(() =>
-                MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid, pageSize, GetContinuationToken(graphGuid)));
+                MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid, pageSize, skip));
 
             var files = result.Files;
             var newPagination = result.Pagination;
-            var continuationToken = result.ContinuationToken;
 
             // Update pagination state
             pagination.PageSize = pageSize;
-
-            // Only assign TotalItems once to prevent shrinking total
-            if (pageNumber == 1 || pagination.TotalItems == 0)
-            {
-                pagination.TotalItems = newPagination.TotalItems;
-            }
-
+            pagination.TotalItems = newPagination.TotalItems;
             pagination.RecordsRemaining = newPagination.RecordsRemaining;
             pagination.ItemsOnCurrentPage = files.Count;
             pagination.FirstItemIndex = ((pagination.CurrentPage - 1) * pagination.PageSize) + 1;
-
-            // Store continuation token for next page
-            SetContinuationToken(graphGuid, continuationToken);
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -153,7 +111,6 @@ namespace View.Personal.Helpers
                 }
             }, DispatcherPriority.Background);
         }
-
 
         /// <summary>
         /// Loads the next page of files.
@@ -266,8 +223,9 @@ namespace View.Personal.Helpers
                     pagination.CurrentPage--;
                     pagination.FirstItemIndex = ((pagination.CurrentPage - 1) * pagination.PageSize) + 1;
 
+                    var skip = (pagination.CurrentPage - 1) * pagination.PageSize;
                     var result = MainWindowHelpers.GetDocumentNodes(
-                        liteGraph, tenantGuid, graphGuid, pagination.PageSize, null);
+                        liteGraph, tenantGuid, graphGuid, pagination.PageSize, skip);
 
                     ingestedFiles.Clear();
                     foreach (var file in result.Files)
@@ -279,8 +237,6 @@ namespace View.Personal.Helpers
                     pagination.TotalItems = result.Pagination.TotalItems;
                     pagination.RecordsRemaining = result.Pagination.RecordsRemaining;
                     pagination.FirstItemIndex = ((pagination.CurrentPage - 1) * pagination.PageSize) + 1;
-
-                    SetContinuationToken(graphGuid, result.ContinuationToken);
                 }
                 else
                 {
@@ -297,7 +253,6 @@ namespace View.Personal.Helpers
                 UpdatePaginationControls(window, pagination);
             }, DispatcherPriority.Background);
         }
-
 
         /// <summary>
         /// Updates the pagination controls in the UI.
@@ -324,13 +279,13 @@ namespace View.Personal.Helpers
                 previousButton.IsEnabled = pagination.HasPreviousPage;
 
             if (nextButton != null)
-                nextButton.IsEnabled = pagination.RecordsRemaining > 0;
+                nextButton.IsEnabled = pagination.HasNextPage;
 
             if (firstButton != null)
                 firstButton.IsEnabled = pagination.HasPreviousPage;
 
             if (lastButton != null)
-                lastButton.IsEnabled = pagination.RecordsRemaining > 0;
+                lastButton.IsEnabled = pagination.HasNextPage;
 
             if (pageSizeComboBox != null && pageSizeComboBox.Items != null)
             {
@@ -356,7 +311,6 @@ namespace View.Personal.Helpers
             var pagination = GetPaginationInfo(graphGuid);
             pagination.PageSize = newPageSize;
             pagination.Reset();
-            SetContinuationToken(graphGuid, null);
             await LoadPageAsync(liteGraph, tenantGuid, graphGuid, window, 1, newPageSize);
         }
     }
