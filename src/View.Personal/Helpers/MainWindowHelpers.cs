@@ -9,9 +9,6 @@ namespace View.Personal.Helpers
     using System.Collections.Specialized;
     using System.IO;
     using System.Linq;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
-    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing UI-related tasks and graph operations in the main window.
@@ -71,15 +68,7 @@ namespace View.Personal.Helpers
                 Expr = null,
                 Skip = skip,
             };
-
-            string queryJson = JsonSerializer.Serialize(query, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Converters = { new JsonStringEnumConverter() }
-            });
-
             var result = liteGraph.Node.Enumerate(query);
-            var json = JsonSerializer.Serialize(result);
             if (result?.Objects != null)
             {
                 foreach (var node in result.Objects)

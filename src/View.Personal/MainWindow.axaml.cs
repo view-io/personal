@@ -1710,7 +1710,7 @@
 
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
-                await FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                await FilePaginationHelper.RefreshGridAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
 
                 var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
                 var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");

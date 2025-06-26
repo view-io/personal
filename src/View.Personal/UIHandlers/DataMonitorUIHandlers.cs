@@ -18,6 +18,7 @@ namespace View.Personal.UIHandlers
     using View.Personal.Controls;
     using View.Personal.Controls.Dialogs;
     using View.Personal.Enums;
+    using View.Personal.Services;
     using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
@@ -405,7 +406,7 @@ namespace View.Personal.UIHandlers
             var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
             {
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                 mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after sync.");
             }
 
@@ -693,6 +694,7 @@ namespace View.Personal.UIHandlers
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
                     else
@@ -703,14 +705,14 @@ namespace View.Personal.UIHandlers
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
+                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
-
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                    var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                    var filesPanel = mainWindow.FindControl<Grid>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                         mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after unwatch and delete.");
                     }
 
@@ -921,7 +923,7 @@ namespace View.Personal.UIHandlers
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                                     mainWindow.LogToConsole($"[{SeverityEnum.Error}] Refreshed Files panel after directory deletion.");
                                 }
                             });
@@ -954,7 +956,7 @@ namespace View.Personal.UIHandlers
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                                     mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory deletion.");
                                 }
                             });
@@ -1108,7 +1110,7 @@ namespace View.Personal.UIHandlers
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        await FileListHelper.RefreshFileList(
+                        await FilePaginationHelper.RefreshGridAsync(
                                ((App)Application.Current)._LiteGraph,
                                ((App)Application.Current)._TenantGuid,
                                ((App)Application.Current)._GraphGuid,
@@ -1140,7 +1142,7 @@ namespace View.Personal.UIHandlers
                         var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                         if (filesPanel != null && filesPanel.IsVisible)
                         {
-                            await FileListHelper.RefreshFileList(
+                            await FilePaginationHelper.RefreshGridAsync(
                                     ((App)Application.Current)._LiteGraph,
                                     ((App)Application.Current)._TenantGuid,
                                     ((App)Application.Current)._GraphGuid,

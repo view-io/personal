@@ -1714,17 +1714,6 @@
             None; updates the DataGrid's ItemsSource directly
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.FileListHelper.ReloadFileList(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Reloads the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
-            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-            <param name="tenantGuid">The unique identifier for the tenant</param>
-            <param name="graphGuid">The unique identifier for the graph</param>
-            <param name="window">The parent window containing the DataGrid to refresh</param>
-            Returns:
-            None; updates the DataGrid's ItemsSource directly
-            </summary>
-        </member>
         <member name="T:View.Personal.Helpers.FilePaginationHelper">
             <summary>
             Provides helper methods for managing file pagination in the application.
