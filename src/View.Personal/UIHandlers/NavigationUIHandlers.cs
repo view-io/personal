@@ -129,6 +129,7 @@ namespace View.Personal.UIHandlers
                         case "Settings2":
                             if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
                             MainWindowUIHandlers.LoadSettingsToUI((MainWindow)window);
+                            MainWindowUIHandlers.LoadGraphsDataGridToUI((MainWindow)window);
                             break;
                     }
 

@@ -182,6 +182,16 @@ namespace View.Personal.UIHandlers
         }
 
         /// <summary>
+        /// Invokes the loading of graph data into the UI's GraphsDataGrid within the specified <see cref="MainWindow"/>.
+        /// </summary>
+        /// <param name="window">The instance of <see cref="MainWindow"/> where the GraphsDataGrid will be populated.</param>
+        public static void LoadGraphsDataGridToUI(MainWindow window)
+        {
+            if (window == null) return;
+            window.LoadGraphsDataGrid();
+        }
+
+        /// <summary>
         /// Sets up event handlers for temperature sliders to update their corresponding value displays.
         /// </summary>
         /// <param name="window">The main window containing the UI controls.</param>

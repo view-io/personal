@@ -1778,18 +1778,22 @@
         /// <summary>
         /// Populates the DataGrid with a list of all graphs retrieved from the application.
         /// </summary>
-        private void LoadGraphsDataGrid()
+        public void LoadGraphsDataGrid()
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
             Console.WriteLine($"{SeverityEnum.Info} Fetched {graphs.Count} graphs.");
-
-            var graphItems = graphs.Select(g => new GraphItem
+            var graphItems = graphs.Select(g =>
             {
-                Name = g?.Name ?? "(no name)",
-                GUID = g?.GUID ?? Guid.Empty,
-                CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
-                LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc)
+                var statistics = GetGraphStatistics(g?.GUID ?? Guid.Empty);
+                return new GraphItem
+                {
+                    Name = g?.Name ?? "(no name)",
+                    GUID = g?.GUID ?? Guid.Empty,
+                    CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
+                    LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc),
+                    Nodes = statistics?.Nodes ?? 0
+                };
             }).ToList();
 
             var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
@@ -1801,6 +1805,29 @@
             else
             {
                 Console.WriteLine($"{SeverityEnum.Error} GraphsDataGrid not found.");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves statistical information about a specific graph, including node and edge counts,
+        /// by querying the LiteGraph service.
+        /// </summary>
+        /// <param name="graphGuid">The GUID of the graph for which statistics are requested.</param>
+        /// <returns>
+        /// A <see cref="GraphStatistics"/> object containing metrics such as node count and edge count,
+        /// or <c>null</c> if the graph GUID is invalid or the operation fails.
+        /// </returns>
+        private GraphStatistics GetGraphStatistics(Guid graphGuid)
+        {
+            try
+            {
+                if (graphGuid == Guid.Empty) return null;
+                return _LiteGraph.Graph.GetStatistics(_TenantGuid, graphGuid);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{SeverityEnum.Error} Failed to get node count for graph {graphGuid}: {ex.Message}");
+                return null;
             }
         }
 

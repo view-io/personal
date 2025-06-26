@@ -561,6 +561,7 @@
 										<DataGrid.Columns>
 											<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
 											<DataGridTextColumn Header="GUID" Binding="{Binding GUID}" Width="300" />
+											<DataGridTextColumn Header="Nodes" Binding="{Binding Nodes}" Width="80" />
 											<DataGridTextColumn Header="Created"
                                                                 Binding="{Binding CreatedUtc, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"
                                                                 Width="150" />

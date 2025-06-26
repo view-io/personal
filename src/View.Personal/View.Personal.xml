@@ -910,6 +910,11 @@
             Gets or sets the unique identifier (GUID) of the graph.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.GraphItem.Nodes">
+            <summary>
+            Gets or sets the number of nodes in the graph.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.GraphItem.CreatedUtc">
             <summary>
             Gets or sets the UTC timestamp when the graph was created.
@@ -2196,6 +2201,17 @@
             Populates the DataGrid with a list of all graphs retrieved from the application.
             </summary>
         </member>
+        <member name="M:View.Personal.MainWindow.GetGraphStatistics(System.Guid)">
+            <summary>
+            Retrieves statistical information about a specific graph, including node and edge counts,
+            by querying the LiteGraph service.
+            </summary>
+            <param name="graphGuid">The GUID of the graph for which statistics are requested.</param>
+            <returns>
+            A <see cref="T:LiteGraph.GraphStatistics"/> object containing metrics such as node count and edge count,
+            or <c>null</c> if the graph GUID is invalid or the operation fails.
+            </returns>
+        </member>
         <member name="M:View.Personal.MainWindow.RemoveGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
             <summary>
             Handles the click event for the Remove button in the Knowledgebase DataGrid, initiating the deletion of a graph.
@@ -2957,6 +2973,12 @@
             Loads application settings from the App instance into the UI controls.
             </summary>
             <param name="window">The MainWindow instance containing the settings UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.LoadGraphsDataGridToUI(View.Personal.MainWindow)">
+            <summary>
+            Invokes the loading of graph data into the UI's GraphsDataGrid within the specified <see cref="T:View.Personal.MainWindow"/>.
+            </summary>
+            <param name="window">The instance of <see cref="T:View.Personal.MainWindow"/> where the GraphsDataGrid will be populated.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SetupTemperatureSliderHandlers(View.Personal.MainWindow)">
             <summary>
