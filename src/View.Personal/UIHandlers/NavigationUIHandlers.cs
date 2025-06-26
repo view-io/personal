@@ -99,7 +99,7 @@ namespace View.Personal.UIHandlers
                                     ProgressBar spinner = null;
                                     Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                                        spinner = window.FindControl<ProgressBar>("NavigationSpinner");
                                         if (spinner != null)
                                         {
                                             spinner.IsVisible = true;

@@ -1579,6 +1579,12 @@
 								 IsIndeterminate="True"
 								 Margin="0,0,0,10"
 								 IsVisible="False" />
+						<ProgressBar x:Name="NavigationSpinner"
+								 VerticalAlignment="Top"
+								 HorizontalAlignment="Stretch"
+								 IsIndeterminate="True"
+								 Margin="0,0,0,10"
+								 IsVisible="False" />
 						<DataGrid x:Name="FilesDataGrid"
 						          VerticalScrollBarVisibility="Visible"
                                   AutoGenerateColumns="False"
