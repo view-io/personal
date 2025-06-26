@@ -1135,18 +1135,19 @@
         {
             var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
             var nodeContents = sortedResults
-                .Select(r =>
-                {
-                    if (r.Node.Data is Atom atom && atom.Text?.Length > 0)
-                        return atom.Text;
-                    if (r.Node.Vectors?.Count > 0 && r.Node.Vectors[0].Content?.Length > 0)
-                        return r.Node.Vectors[0].Content;
-                    return r.Node.Tags["Content"] ?? "[No Content]";
-                }).Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]");
+            .Select(r =>
+            {
+                if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                    return atom.Text;
+                if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                    !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                    return r.Node.Vectors[0].Content;
+                return r.Node.Tags["Content"] ?? "[No Content]";
+            })
+            .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+            .ToList();
 
-            var context = nodeContents.Aggregate(new StringBuilder(),
-                                                (sb, content) => sb.Append(content).Append("\n\n"),
-                                                 sb => sb.ToString());
+            var context = string.Join("\n\n", nodeContents);
 
             return context.Length > 4000 ? context.Substring(0, 4000) + "... [truncated]" : context;
         }
