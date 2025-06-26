@@ -1384,7 +1384,7 @@
                     var chunkJson = sseEvent.Data;
 
                     // Stop markers
-                    if (chunkJson == "[DONE]" || chunkJson == "[END_OF_TEXT_STREAM]") break;
+                    if (chunkJson == "[DONE]" || chunkJson == "[DONE]\r" || chunkJson == "[END_OF_TEXT_STREAM]") break;
 
                     if (!string.IsNullOrWhiteSpace(chunkJson))
                     {
