@@ -892,7 +892,7 @@
                         "View" => app.ApplicationSettings.View.RAG.SimilarityThreshold,
                         _ => 0.75
                     };
-                    var searchResults = (await PerformVectorSearch(floatEmbeddings, topK, minThreshold));
+                    var searchResults = await PerformVectorSearch(floatEmbeddings, topK, minThreshold).ConfigureAwait(false);
                     if (searchResults == null || !searchResults.Any())
                     {
                         return "I couldn't find any relevant documents in the knowledge base for your query.";
