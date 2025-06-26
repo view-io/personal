@@ -1,13 +1,5 @@
-namespace View.Personal
+﻿namespace View.Personal
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
@@ -19,18 +11,28 @@ namespace View.Personal
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using DocumentFormat.OpenXml.InkML;
     using Helpers;
     using LiteGraph;
+    using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
     using Sdk.Embeddings.Providers.Ollama;
     using Sdk.Embeddings.Providers.OpenAI;
+    using Sdk.Embeddings.Providers.VoyageAI;
     using SerializationHelper;
     using Services;
-    using RestWrapper;
-    using Sdk.Embeddings.Providers.VoyageAI;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
     using UIHandlers;
     using View.Personal.Enums;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Represents the main window of the application, managing UI components, event handlers, and AI interaction logic.
@@ -130,7 +132,7 @@ namespace View.Personal
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
-                    app.Log("[INFO] MainWindow opened.");
+                    app.Log(SeverityEnum.Info, "MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
                     LoadSettingsFromFile();
@@ -154,6 +156,7 @@ namespace View.Personal
                     // Resume any pending file ingestions from previous sessions
                     Task.Run(async () =>
                     {
+                        await FileDeleter.CleanupIncompleteFilesAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                         await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                     });
                 };
@@ -187,10 +190,15 @@ namespace View.Personal
                         onboardingOverlay.Start(this, () => { });
                     }
                 }
+                this.FindControl<Button>("NextPageButton").Click += NextPageButton_Click;
+                this.FindControl<Button>("FirstPageButton").Click += FirstPageButton_Click;
+                this.FindControl<Button>("PreviousPageButton").Click += PreviousPageButton_Click;
+                this.FindControl<Button>("LastPageButton").Click += LastPageButton_Click;
+                this.FindControl<ComboBox>("PageSizeComboBox").SelectionChanged += PageSizeComboBox_SelectionChanged;
             }
             catch (Exception e)
             {
-                app.Log($"[ERROR] MainWindow constructor exception: {e.Message}");
+                app.Log(SeverityEnum.Error, $"MainWindow constructor exception: {e.Message}");
                 app?.LogExceptionToFile(e, "[ViewPersonal] " + "MainWindow constructor exception:");
             }
         }
@@ -376,7 +384,7 @@ namespace View.Personal
             var chatTitleTextBlock = this.FindControl<TextBlock>("ChatTitleTextBlock");
             if (chatTitleTextBlock != null)
             {
-                chatTitleTextBlock.Text = $"{model}";
+                chatTitleTextBlock.Text = $"{provider} - {model}";
 
                 if (provider == "View")
                     chatTitleTextBlock.Foreground = new SolidColorBrush(Color.Parse("#0472EF"));
@@ -523,8 +531,8 @@ namespace View.Personal
                 }
                 catch (Exception ex)
                 {
-                    app.Log($"[ERROR] Error saving console logs: {ex.Message}");
-                    app.LogExceptionToFile(ex, "[ERROR] Error saving console logs");
+                    app.Log(SeverityEnum.Error, $"Error saving console logs: {ex.Message}");
+                    app.LogExceptionToFile(ex, "Error saving console logs");
                     ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
                 }
             }
@@ -780,7 +788,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            foreach (var graph in graphs) app.Log($"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
+            foreach (var graph in graphs) app.Log(SeverityEnum.Info, $"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
                 _TenantGuid, _ActiveGraphGuid);
         }
@@ -838,34 +846,139 @@ namespace View.Personal
             try
             {
                 var app = (App)Application.Current;
+                app.LogWithTimestamp(SeverityEnum.Debug, $"GetAIResponse started with provider: {app.ApplicationSettings.SelectedProvider}");
                 var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
                 var embeddingsProvider =
                     app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
                 // Generate embeddings with the selected embeddings provider
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Generating embeddings with provider: {embeddingsProvider}");
                 var (sdk, embeddingsRequest) =
                     GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
-                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false); ;
+                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
                 if (promptEmbeddings == null)
                     return "Error: Failed to generate embeddings for the prompt.";
+                app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
 
                 var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
-                var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
-                if (searchResults == null || !searchResults.Any())
-                    return "No relevant documents found to answer your question.";
+                app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
+                bool ragEnabled = selectedProvider switch
+                {
+                    "OpenAI" => app.ApplicationSettings.OpenAI.RAG.EnableRAG,
+                    "Anthropic" => app.ApplicationSettings.Anthropic.RAG.EnableRAG,
+                    "Ollama" => app.ApplicationSettings.Ollama.RAG.EnableRAG,
+                    "View" => app.ApplicationSettings.View.RAG.EnableRAG,
+                    _ => false
+                };
+                List<ChatMessage> finalMessages = new List<ChatMessage>();
+                if (ragEnabled)
+                {
+                    app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
+                    int topK = selectedProvider switch
+                    {
+                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.NumberOfDocumentsToRetrieve,
+                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.NumberOfDocumentsToRetrieve,
+                        "Ollama" => app.ApplicationSettings.Ollama.RAG.NumberOfDocumentsToRetrieve,
+                        "View" => app.ApplicationSettings.View.RAG.NumberOfDocumentsToRetrieve,
+                        _ => 5
+                    };
 
-                var context = BuildContext(searchResults);
-                var finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
+                    double minThreshold = selectedProvider switch
+                    {
+                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.SimilarityThreshold,
+                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.SimilarityThreshold,
+                        "Ollama" => app.ApplicationSettings.Ollama.RAG.SimilarityThreshold,
+                        "View" => app.ApplicationSettings.View.RAG.SimilarityThreshold,
+                        _ => 0.75
+                    };
+                    var searchResults = await PerformVectorSearch(floatEmbeddings, topK, minThreshold).ConfigureAwait(false);
+                    if (searchResults == null || !searchResults.Any())
+                    {
+                        return "I couldn't find any relevant documents in the knowledge base for your query.";
+                    }
+                    else
+                    {
+                        var context = BuildContext(searchResults);
+                        var promptMessages = BuildPromptMessages();
+
+                        var contextMessage = new ChatMessage
+                        {
+                            Role = "system",
+                            Content = "You are an assistant answering based solely on the provided document context. " +
+                                      "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" + context
+                        };
+
+                        finalMessages = new List<ChatMessage>
+                        {
+                           contextMessage
+                        };
+                        finalMessages.AddRange(promptMessages.Where(m => m.Role != "system"));
+                        finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
+                    }
+                }
+                else
+                {
+                    var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false);
+                    if (searchResults == null || !searchResults.Any())
+                        return "No relevant documents found to answer your question.";
+                    app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
+                    var context = BuildContext(searchResults);
+                    app.LogWithTimestamp(SeverityEnum.Debug, $"BuildContext execution completed");
+                    finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
+                }
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
-
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending API request to {selectedProvider}");
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                app.LogWithTimestamp(SeverityEnum.Debug, "API request completed");
                 return result;
             }
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app.Log($"[ERROR] GetAIResponse threw exception: {ex.Message}");
+                app.LogWithTimestamp(SeverityEnum.Error, $"GetAIResponse threw exception: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves an AI-generated summary based on the given prompt, using the currently selected completion provider.
+        /// This is typically used to generate concise summaries for chat history or document content.
+        /// </summary>
+        /// <param name="summaryPrompt">The prompt string that instructs the AI on how to summarize the content.</param>
+        /// <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
+        /// <returns>A task that resolves to the full AI-generated summary string, or an error message if the request fails.</returns>
+        public async Task<string> SummarizeChat(string summaryPrompt, Action<string> onTokenReceived = null)
+        {
+            try
+            {
+                var app = (App)Application.Current;
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Chat summarization started with provider: {app.ApplicationSettings.SelectedProvider}");
+
+                var selectedProvider = app.ApplicationSettings.SelectedProvider;
+                var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
+
+                var finalMessages = new List<ChatMessage>
+                {
+                   new ChatMessage
+                   {
+                      Role = "system",
+                      Content = summaryPrompt
+                   }
+                };
+
+                var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending summarization request to {selectedProvider}");
+
+                var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                app.LogWithTimestamp(SeverityEnum.Debug, "Summarization request completed");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var app = (App)Application.Current;
+                app.LogWithTimestamp(SeverityEnum.Error, $"SummarizeChat threw exception: {ex.Message}");
                 return $"Error: {ex.Message}";
             }
         }
@@ -950,13 +1063,45 @@ namespace View.Personal
 
             if (!result.Success || result.ContentEmbeddings == null || result.ContentEmbeddings.Count == 0)
             {
-                app.Log($"[ERROR] Prompt embeddings generation failed: {result.StatusCode}");
+                app.LogWithTimestamp(SeverityEnum.Error, $"Prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
-                    app.Log($"[ERROR] {result.Error.Message}");
+                    app.LogWithTimestamp(SeverityEnum.Error, result.Error.Message);
                 return new List<float>();
             }
 
             return result.ContentEmbeddings[0].Embeddings;
+        }
+
+        /// <summary>
+        /// Asynchronously performs a vector similarity search using the provided embeddings to retrieve the most relevant results.
+        /// The search results are filtered based on a minimum similarity threshold and limited to a specified Top-K count.
+        /// </summary>
+        /// <param name="embeddings">A list of float values representing the query embeddings.</param>
+        /// <param name="topK">The maximum number of top results to return, ordered by descending similarity score.</param>
+        /// <param name="minThreshold">The minimum similarity score required for a result to be considered relevant.</param>
+        /// <returns>
+        /// A task that resolves to a filtered and ordered enumerable collection of <see cref="VectorSearchResult"/> objects
+        /// that meet the similarity threshold and Top-K criteria.
+        /// </returns>
+        private Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(List<float> embeddings, int topK, double minThreshold)
+        {
+            var app = (App)Application.Current;
+            var searchRequest = new VectorSearchRequest
+            {
+                TenantGUID = _TenantGuid,
+                GraphGUID = _ActiveGraphGuid,
+                Domain = VectorSearchDomainEnum.Node,
+                SearchType = VectorSearchTypeEnum.CosineSimilarity,
+                Embeddings = embeddings
+            };
+
+            var searchResults = _LiteGraph.Vector.Search(searchRequest);
+            var filtered = searchResults
+                          .Where(r => r.Score >= minThreshold)
+                          .OrderByDescending(r => r.Score)
+                          .Take(topK);
+            app.LogWithTimestamp(SeverityEnum.Info, $"Vector search Completed");
+            return Task.FromResult(filtered ?? Enumerable.Empty<VectorSearchResult>());
         }
 
         /// <summary>
@@ -977,7 +1122,7 @@ namespace View.Personal
             };
 
             var searchResults = _LiteGraph.Vector.Search(searchRequest);
-            app.Log($"[INFO] Vector search returned {searchResults?.Count() ?? 0} results.");
+            app.LogWithTimestamp(SeverityEnum.Info, $"Vector search Completed");
             return Task.FromResult(searchResults ?? Enumerable.Empty<VectorSearchResult>());
         }
 
@@ -990,19 +1135,20 @@ namespace View.Personal
         {
             var sortedResults = searchResults.OrderByDescending(r => r.Score).Take(5);
             var nodeContents = sortedResults
-                .Select(r =>
-                {
-                    if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
-                        return atom.Text;
-                    if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
-                        !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
-                        return r.Node.Vectors[0].Content;
-                    return r.Node.Tags["Content"] ?? "[No Content]";
-                })
-                .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
-                .ToList();
+            .Select(r =>
+            {
+                if (r.Node.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
+                    return atom.Text;
+                if (r.Node.Vectors != null && r.Node.Vectors.Any() &&
+                    !string.IsNullOrWhiteSpace(r.Node.Vectors[0].Content))
+                    return r.Node.Vectors[0].Content;
+                return r.Node.Tags["Content"] ?? "[No Content]";
+            })
+            .Where(c => !string.IsNullOrEmpty(c) && c != "[No Content]")
+            .ToList();
 
             var context = string.Join("\n\n", nodeContents);
+
             return context.Length > 4000 ? context.Substring(0, 4000) + "... [truncated]" : context;
         }
 
@@ -1027,6 +1173,7 @@ namespace View.Personal
             var finalMessages = new List<ChatMessage>();
             finalMessages.AddRange(conversationSoFar);
             finalMessages.Add(contextMessage);
+            finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
             return finalMessages;
         }
 
@@ -1041,7 +1188,7 @@ namespace View.Personal
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.Log($"[INFO] Creating request body for {provider}");
+            app.LogWithTimestamp(SeverityEnum.Info, $"Creating request body for {provider}");
             switch (provider)
             {
                 //ToDo: need to grab control settings dynamically
@@ -1050,6 +1197,7 @@ namespace View.Personal
                     {
                         model = settings.OpenAICompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 case "Ollama":
@@ -1058,7 +1206,7 @@ namespace View.Personal
                         model = settings.OllamaCompletionModel,
                         messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         max_tokens = 4000,
-                        temperature = 0.7,
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 case "View":
@@ -1066,13 +1214,15 @@ namespace View.Personal
                     {
                         Messages = finalMessages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
                         ModelName = settings.ViewCompletionModel,
-                        Temperature = 0.7,
+                        Temperature = settings.Temperature,
                         TopP = 1.0,
                         MaxTokens = 4000,
                         GenerationProvider = "ollama",
                         GenerationApiKey = settings.ViewApiKey,
                         OllamaHostname = settings.OllamaHostName,
                         OllamaPort = 11434,
+                        BatchSize = settings.BatchSize,
+                        MaxRetries = settings.MaxRetries,
                         Stream = true
                     };
                 case "Anthropic":
@@ -1088,7 +1238,7 @@ namespace View.Personal
                         system = systemContent,
                         messages = conversationMessages,
                         max_tokens = 4000,
-                        temperature = 0.7,
+                        temperature = settings.Temperature,
                         stream = true
                     };
                 default:
@@ -1107,6 +1257,8 @@ namespace View.Personal
         private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
             object requestBody, Action<string> onTokenReceived)
         {
+            var app = (App)Application.Current;
+            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest started for provider: {provider}");
             var requestUri = provider switch
             {
                 "OpenAI" => settings.OpenAIEndpoint,
@@ -1120,14 +1272,43 @@ namespace View.Personal
             ConfigureRequestHeaders(restRequest, provider, settings);
 
             var jsonPayload = _Serializer.SerializeJson(requestBody);
-            using var resp = await restRequest.SendAsync(jsonPayload);
 
-            if (resp.StatusCode > 299)
+            // Implement retry with proper handling
+            RestResponse resp = null;
+            var retryCount = 0;
+            var maxRetries = settings.MaxRetries <= 0 ? 3 : settings.MaxRetries; // Default to 3 if MaxRetries is 0 or negative
+
+            while (true)
+            {
+                try
+                {
+                    resp = await restRequest.SendAsync(jsonPayload);
+                    break;
+                }
+                catch (Exception ex) when (retryCount < maxRetries)
+                {
+                    retryCount++;
+                    app.LogWithTimestamp(SeverityEnum.Warn, $"API request failed (attempt {retryCount}/{maxRetries}): {ex.Message}");
+                    app.LogExceptionToFile(ex, $"API request failed (attempt {retryCount}/{maxRetries})");
+                    // Add a small delay before retrying
+                    await Task.Delay(1000 * retryCount); // Exponential backoff
+                }
+                catch (Exception ex)
+                {
+                    // If we've exhausted all retries, log and throw
+                    app.LogWithTimestamp(SeverityEnum.Error, $"API request failed after {maxRetries} attempts: {ex.Message}");
+                    app.LogExceptionToFile(ex, $"API request failed after {maxRetries} attempts");
+                    throw;
+                }
+            }
+
+            if (resp.StatusCode > 299 || resp == null)
                 throw new Exception($"{provider} call failed with status: {resp.StatusCode}");
 
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
+            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest completed for provider: {provider}");
             return response;
         }
 
@@ -1179,6 +1360,7 @@ namespace View.Personal
         {
             var sb = new StringBuilder();
             var app = (App)Application.Current;
+            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse started for provider: {provider}");
 
             // Create a SynchronizationContext-aware token handler that safely updates the UI
             Action<string> safeTokenHandler = null;
@@ -1201,7 +1383,7 @@ namespace View.Personal
                     var chunkJson = sseEvent.Data;
 
                     // Stop markers
-                    if (chunkJson == "[DONE]" || chunkJson == "[END_OF_TEXT_STREAM]") break;
+                    if (chunkJson == "[DONE]" || chunkJson == "[DONE]\r" || chunkJson == "[END_OF_TEXT_STREAM]") break;
 
                     if (!string.IsNullOrWhiteSpace(chunkJson))
                     {
@@ -1217,7 +1399,7 @@ namespace View.Personal
                         }
                         catch (JsonException je)
                         {
-                            Console.WriteLine($"[ERROR] Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
+                            Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
                             app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
                         }
                     }
@@ -1243,12 +1425,13 @@ namespace View.Personal
                     }
                     catch (JsonException je)
                     {
-                        Console.WriteLine($"[ERROR] Invalid JSON in response line: {line}\n{je.Message}");
+                        Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in response line: {line}\n{je.Message}");
                         app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in response line");
                     }
                 }
             }
 
+            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse completed for provider: {provider}");
             return sb.ToString();
         }
 
@@ -1345,7 +1528,7 @@ namespace View.Personal
 
                 app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
-                app.Log($"[INFO] Embedding provider selected: {selectedProvider}");
+                app.Log(SeverityEnum.Info, $"Embedding provider selected: {selectedProvider}");
             }
         }
 
@@ -1440,13 +1623,64 @@ namespace View.Personal
                 return new TextBlock { Text = item?.Name ?? "(no name)" };
             });
 
+            // Populate the RAG knowledge source ComboBoxes
+            var openAIKnowledgeSource = this.FindControl<ComboBox>("OpenAIKnowledgeSource");
+            var anthropicKnowledgeSource = this.FindControl<ComboBox>("AnthropicKnowledgeSource");
+            var ollamaKnowledgeSource = this.FindControl<ComboBox>("OllamaKnowledgeSource");
+            var viewKnowledgeSource = this.FindControl<ComboBox>("ViewKnowledgeSource");
+
+            if (openAIKnowledgeSource != null)
+            {
+                openAIKnowledgeSource.ItemsSource = graphItems;
+                openAIKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (anthropicKnowledgeSource != null)
+            {
+                anthropicKnowledgeSource.ItemsSource = graphItems;
+                anthropicKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (ollamaKnowledgeSource != null)
+            {
+                ollamaKnowledgeSource.ItemsSource = graphItems;
+                ollamaKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+            if (viewKnowledgeSource != null)
+            {
+                viewKnowledgeSource.ItemsSource = graphItems;
+                viewKnowledgeSource.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
+                {
+                    return new TextBlock { Text = item?.Name ?? "(no name)" };
+                });
+            }
+
             // Select the active graph based on saved settings
             var activeGraph = graphItems.FirstOrDefault(g => g.GUID == _ActiveGraphGuid);
             if (activeGraph != null)
+            {
                 graphComboBox.SelectedItem = activeGraph;
+                openAIKnowledgeSource.SelectedItem = activeGraph;
+                anthropicKnowledgeSource.SelectedItem = activeGraph;
+                ollamaKnowledgeSource.SelectedItem = activeGraph;
+                viewKnowledgeSource.SelectedItem = activeGraph;
+            }
             else if (graphItems.Count > 0)
+            {
                 // Default to the first graph if no active graph is found
                 graphComboBox.SelectedIndex = 0;
+                openAIKnowledgeSource.SelectedIndex = 0;
+                anthropicKnowledgeSource.SelectedIndex = 0;
+                ollamaKnowledgeSource.SelectedIndex = 0;
+                viewKnowledgeSource.SelectedIndex = 0;
+            }
             LoadGraphsDataGrid();
         }
 
@@ -1475,13 +1709,14 @@ namespace View.Personal
 
                 DataMonitorUIHandlers.LoadFileSystem(this, _CurrentPath);
 
-                await FileListHelper.RefreshFileList(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                await FilePaginationHelper.RefreshGridAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
 
                 var filesDataGrid = this.FindControl<DataGrid>("FilesDataGrid");
                 var uploadFilesPanel = this.FindControl<Border>("UploadFilesPanel");
                 var fileOperationsPanel = this.FindControl<Grid>("FileOperationsPanel");
+                var filePaginationControls = this.FindControl<Grid>("filePaginationControls");
 
-                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
+                if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null && filePaginationControls != null)
                 {
                     var uniqueFiles =
                         MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
@@ -1490,12 +1725,14 @@ namespace View.Personal
                         filesDataGrid.ItemsSource = uniqueFiles;
                         uploadFilesPanel.IsVisible = false;
                         filesDataGrid.IsVisible = true;
+                        filePaginationControls.IsVisible = true;
                     }
                     else
                     {
                         filesDataGrid.ItemsSource = null;
                         filesDataGrid.IsVisible = false;
                         fileOperationsPanel.IsVisible = false;
+                        filePaginationControls.IsVisible = false;
                         uploadFilesPanel.IsVisible = true;
                     }
                 }
@@ -1540,29 +1777,56 @@ namespace View.Personal
         /// <summary>
         /// Populates the DataGrid with a list of all graphs retrieved from the application.
         /// </summary>
-        private void LoadGraphsDataGrid()
+        public void LoadGraphsDataGrid()
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            Console.WriteLine($"[INFO] Fetched {graphs.Count} graphs.");
-
-            var graphItems = graphs.Select(g => new GraphItem
+            Console.WriteLine($"{SeverityEnum.Info} Fetched {graphs.Count} graphs.");
+            var graphItems = graphs.Select(g =>
             {
-                Name = g?.Name ?? "(no name)",
-                GUID = g?.GUID ?? Guid.Empty,
-                CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
-                LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc)
+                var statistics = GetGraphStatistics(g?.GUID ?? Guid.Empty);
+                return new GraphItem
+                {
+                    Name = g?.Name ?? "(no name)",
+                    GUID = g?.GUID ?? Guid.Empty,
+                    CreatedUtc = ConvertUtcToLocal(g.CreatedUtc),
+                    LastUpdateUtc = ConvertUtcToLocal(g.LastUpdateUtc),
+                    Nodes = statistics?.Nodes ?? 0
+                };
             }).ToList();
 
             var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
             if (graphsDataGrid != null)
             {
-                Console.WriteLine("[INFO] Setting ItemsSource for GraphsDataGrid.");
+                Console.WriteLine($"{SeverityEnum.Info} Setting ItemsSource for GraphsDataGrid.");
                 graphsDataGrid.ItemsSource = graphItems;
             }
             else
             {
-                Console.WriteLine("[ERROR] GraphsDataGrid not found.");
+                Console.WriteLine($"{SeverityEnum.Error} GraphsDataGrid not found.");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves statistical information about a specific graph, including node and edge counts,
+        /// by querying the LiteGraph service.
+        /// </summary>
+        /// <param name="graphGuid">The GUID of the graph for which statistics are requested.</param>
+        /// <returns>
+        /// A <see cref="GraphStatistics"/> object containing metrics such as node count and edge count,
+        /// or <c>null</c> if the graph GUID is invalid or the operation fails.
+        /// </returns>
+        private GraphStatistics GetGraphStatistics(Guid graphGuid)
+        {
+            try
+            {
+                if (graphGuid == Guid.Empty) return null;
+                return _LiteGraph.Graph.GetStatistics(_TenantGuid, graphGuid);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{SeverityEnum.Error} Failed to get node count for graph {graphGuid}: {ex.Message}");
+                return null;
             }
         }
 
@@ -1627,7 +1891,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                app.Log($"[ERROR] Error processing dropped files: {ex.Message}");
+                app.Log(SeverityEnum.Error, $"Error processing dropped files: {ex.Message}");
                 app.LogExceptionToFile(ex, $"Error processing dropped files");
             }
         }
@@ -1640,6 +1904,52 @@ namespace View.Personal
         private static DateTime ConvertUtcToLocal(DateTime utcDateTime)
         {
             return utcDateTime.ToLocalTime();
+        }
+
+        private async void NextPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadNextPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void FirstPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadFirstPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void PreviousPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadPreviousPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void LastPageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var liteGraph = _LiteGraph;
+            var tenantGuid = _TenantGuid;
+            var graphGuid = _ActiveGraphGuid;
+            await Helpers.FilePaginationHelper.LoadLastPageAsync(liteGraph, tenantGuid, graphGuid, this);
+        }
+
+        private async void PageSizeComboBox_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                if (int.TryParse(selectedItem.Content?.ToString(), out int newPageSize))
+                {
+                    var liteGraph = _LiteGraph;
+                    var tenantGuid = _TenantGuid;
+                    var graphGuid = _ActiveGraphGuid;
+                    await Helpers.FilePaginationHelper.ChangePageSizeAsync(liteGraph, tenantGuid, graphGuid, this, newPageSize);
+                }
+            }
         }
 
         #endregion

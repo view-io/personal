@@ -51,8 +51,8 @@ namespace View.Personal.Helpers
             catch (Exception ex)
             {
                 App? app = App.Current as App;
-                app?.Log($"[ERROR] Failed to open URL: {ex.Message}");
-                app?.LogExceptionToFile(ex,$"[ERROR] Failed to open URL");
+                app?.Log(Enums.SeverityEnum.Error, $"Failed to open URL: {ex.Message}");
+                app?.LogExceptionToFile(ex,$"Failed to open URL");
                 return false;
             }
         }

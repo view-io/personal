@@ -18,6 +18,8 @@ namespace View.Personal.UIHandlers
     using View.Personal.Controls;
     using View.Personal.Controls.Dialogs;
     using View.Personal.Enums;
+    using View.Personal.Services;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Provides utility methods for handling Data Monitor UI interactions and file system watching.
@@ -209,7 +211,7 @@ namespace View.Personal.UIHandlers
 
                 dataGrid.ItemsSource = entries;
                 navigateUpButton.IsEnabled = false;
-                mainWindow.LogToConsole("[INFO] Showing available drives");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Showing available drives");
 
                 // Restore scroll position after the UI has updated with a delay to ensure complete rendering
                 if (scrollViewer != null && verticalOffset.HasValue)
@@ -265,7 +267,7 @@ namespace View.Personal.UIHandlers
                     if (Directory.Exists(enteredPath))
                     {
                         LoadFileSystem(mainWindow, enteredPath);
-                        mainWindow.LogToConsole($"[INFO] Navigated to path: {enteredPath}");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Navigated to path: {enteredPath}");
                     }
                     else
                     {
@@ -303,7 +305,7 @@ namespace View.Personal.UIHandlers
                 return;
             }
 
-            mainWindow.LogToConsole("[INFO] Starting sync of watched files...");
+            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting sync of watched files...");
 
             var liteGraph = ((App)Application.Current)._LiteGraph;
             var tenantGuid = ((App)Application.Current)._TenantGuid;
@@ -321,7 +323,7 @@ namespace View.Personal.UIHandlers
                 {
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.Value);
                     mainWindow.LogToConsole(
-                        $"[INFO] Removed stale node {node.Value} for file {Path.GetFileName(filePath)} ({filePath})");
+                        $"[{SeverityEnum.Info}] Removed stale node {node.Value} for file {Path.GetFileName(filePath)} ({filePath})");
                 }
             }
 
@@ -341,25 +343,25 @@ namespace View.Personal.UIHandlers
                                 {
                                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                                     mainWindow.LogToConsole(
-                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
+                                        $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
 
                                 try
                                 {
                                     await mainWindow.IngestFileAsync(filePath);
                                     mainWindow.LogToConsole(
-                                        $"[INFO] {(existingNode == null ? "Synced new" : "Updated and synced")} file: {Path.GetFileName(filePath)} ({filePath})");
+                                        $"[{SeverityEnum.Info}] {(existingNode == null ? " Synced new" : " Updated and synced")} file: {Path.GetFileName(filePath)} ({filePath})");
                                 }
                                 catch (Exception ex)
                                 {
                                     mainWindow.LogToConsole(
-                                        $"[ERROR] Failed to sync file {Path.GetFileName(filePath)}: {ex.Message}");
+                                        $"[{Enums.SeverityEnum.Error}] Failed to sync file {Path.GetFileName(filePath)}: {ex.Message}");
                                 }
                             }
                             else
                             {
                                 mainWindow.LogToConsole(
-                                    $"[INFO] Skipped sync of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
+                                    $"[{SeverityEnum.Info}] Skipped sync of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
                             }
                         }
                 }
@@ -374,41 +376,41 @@ namespace View.Personal.UIHandlers
                         {
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                             mainWindow.LogToConsole(
-                                $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(watchedPath)}");
+                                $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(watchedPath)}");
                         }
 
                         try
                         {
                             await mainWindow.IngestFileAsync(watchedPath);
                             mainWindow.LogToConsole(
-                                $"[INFO] {(existingNode == null ? "Synced new" : "Updated and synced")} file: {Path.GetFileName(watchedPath)} ({watchedPath})");
+                                $"[{SeverityEnum.Info}] {(existingNode == null ? " Synced new" : " Updated and synced")} file: {Path.GetFileName(watchedPath)} ({watchedPath})");
                         }
                         catch (Exception ex)
                         {
                             mainWindow.LogToConsole(
-                                $"[ERROR] Failed to sync file {Path.GetFileName(watchedPath)}: {ex.Message}");
+                                $"[{SeverityEnum.Error}] Failed to sync file {Path.GetFileName(watchedPath)}: {ex.Message}");
                         }
                     }
                     else
                     {
                         mainWindow.LogToConsole(
-                            $"[INFO] Skipped sync of unchanged file: {Path.GetFileName(watchedPath)} ({watchedPath})");
+                            $"[{SeverityEnum.Info}] Skipped sync of unchanged file: {Path.GetFileName(watchedPath)} ({watchedPath})");
                     }
                 }
                 else
                 {
-                    mainWindow.LogToConsole($"[WARN] Watched path no longer exists: {watchedPath}");
+                    mainWindow.LogToConsole($"[{Enums.SeverityEnum.Warn}] Watched path no longer exists: {watchedPath}");
                 }
 
             LoadFileSystem(mainWindow, mainWindow._CurrentPath);
             var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
             {
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                mainWindow.LogToConsole("[INFO] Refreshed Files panel after sync.");
+                await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after sync.");
             }
 
-            mainWindow.LogToConsole("[INFO] Sync of watched files completed.");
+            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Sync of watched files completed.");
         }
 
         /// <summary>
@@ -427,7 +429,7 @@ namespace View.Personal.UIHandlers
                             entry.FullPath.StartsWith(watchedPath + Path.DirectorySeparatorChar)))
                     {
                         mainWindow.LogToConsole(
-                            $"[INFO] '{entry.Name}' is already implicitly watched by a parent directory.");
+                            $"[{SeverityEnum.Info}] '{entry.Name}' is already implicitly watched by a parent directory.");
                         checkBox.IsChecked = true;
                         return;
                     }
@@ -479,19 +481,19 @@ namespace View.Personal.UIHandlers
 
                     if (fileCount == 0)
                         mainWindow.LogToConsole(
-                            $"[WARN] No accessible files to ingest in directory '{entry.FullPath}'.");
+                            $"[{SeverityEnum.Warn}] No accessible files to ingest in directory '{entry.FullPath}'.");
                 }
                 catch (UnauthorizedAccessException)
                 {
                     mainWindow.ShowNotification("Ingestion Error", $"Access denied to directory: {entry.FullPath}.",
                         NotificationType.Error);
-                    mainWindow.LogToConsole($"[ERROR] Access denied to directory: {entry.FullPath}");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Access denied to directory: {entry.FullPath}");
                     checkBox.IsChecked = false;
                     return;
                 }
                 catch (Exception ex)
                 {
-                    mainWindow.LogToConsole($"[ERROR] Failed to access directory: {entry.FullPath}. {ex.Message}");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to access directory: {entry.FullPath}. {ex.Message}");
                     checkBox.IsChecked = false;
                     return;
                 }
@@ -501,7 +503,7 @@ namespace View.Personal.UIHandlers
                 var (canAccess, error) = CheckFileReadPermission(entry.FullPath);
                 if (!canAccess)
                 {
-                    mainWindow.LogToConsole($"[ERROR] {error}");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] {error}");
                     checkBox.IsChecked = false;
                     return;
                 }
@@ -525,7 +527,7 @@ namespace View.Personal.UIHandlers
                     {
                         mainWindow.WatchedPaths.Remove(subItem);
                         mainWindow.LogToConsole(
-                            $"[INFO] Removed explicit watch on '{subItem}' as it's now implicitly watched by '{entry.FullPath}'.");
+                            $"[{SeverityEnum.Info}] Removed explicit watch on '{subItem}' as it's now implicitly watched by '{entry.FullPath}'.");
                     }
                 }
 
@@ -541,6 +543,8 @@ namespace View.Personal.UIHandlers
                 if (entry.IsDirectory)
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
+                        FileIngester.EnqueueFileForIngestion(filePath);
+                    foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
                         if (!IsTemporaryFile(Path.GetFileName(filePath)))
                         {
                             var existingNode =
@@ -553,25 +557,25 @@ namespace View.Personal.UIHandlers
                                 {
                                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                                     mainWindow.LogToConsole(
-                                        $"[INFO] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
+                                        $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
 
                                 try
                                 {
                                     await mainWindow.IngestFileAsync(filePath);
                                     mainWindow.LogToConsole(
-                                        $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
+                                        $"[{SeverityEnum.Info}] {(existingNode == null ? " Initially ingested" : " Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
                                 }
                                 catch (Exception ex)
                                 {
                                     mainWindow.LogToConsole(
-                                        $"[ERROR] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
+                                        $"[{SeverityEnum.Error}] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
                                 }
                             }
                             else
                             {
                                 mainWindow.LogToConsole(
-                                    $"[INFO] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
+                                    $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
                             }
                         }
                 }
@@ -587,24 +591,24 @@ namespace View.Personal.UIHandlers
                         {
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
                             mainWindow.LogToConsole(
-                                $"[INFO] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
+                                $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
                         }
 
                         try
                         {
                             await mainWindow.IngestFileAsync(entry.FullPath);
                             mainWindow.LogToConsole(
-                                $"[INFO] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
+                                $"[{SeverityEnum.Info}] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
                         }
                         catch (Exception ex)
                         {
-                            mainWindow.LogToConsole($"[ERROR] Failed to ingest file {entry.Name}: {ex.Message}");
+                            mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest file {entry.Name}: {ex.Message}");
                         }
                     }
                     else
                     {
                         mainWindow.LogToConsole(
-                            $"[INFO] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
+                            $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
                     }
                 }
 
@@ -615,7 +619,7 @@ namespace View.Personal.UIHandlers
             else
             {
                 checkBox.IsChecked = false;
-                mainWindow.LogToConsole($"[INFO] Watch cancelled for '{entry.Name}' by user.");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Watch cancelled for '{entry.Name}' by user.");
             }
         }
 
@@ -652,7 +656,7 @@ namespace View.Personal.UIHandlers
             };
 
             var buttonResult = await CustomMessageBox.ShowAsync(parameters);
-            
+
             // Map the button result to the expected string result
             string result = buttonResult switch
             {
@@ -668,7 +672,7 @@ namespace View.Personal.UIHandlers
                     LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                    mainWindow.LogToConsole($"[INFO] Stopped watching '{entry.Name}' without deleting files.");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' without deleting files.");
                     break;
 
                 case "Unwatch and Delete":
@@ -691,7 +695,8 @@ namespace View.Personal.UIHandlers
                         {
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
-                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                                $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
                     else
@@ -701,25 +706,25 @@ namespace View.Personal.UIHandlers
                         {
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
-                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
+                                $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
+                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
-
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                    var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                    var filesPanel = mainWindow.FindControl<Grid>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                        mainWindow.LogToConsole("[INFO] Refreshed Files panel after unwatch and delete.");
+                        await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after unwatch and delete.");
                     }
 
                     mainWindow.LogToConsole(
-                        $"[INFO] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
+                        $"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
                     break;
 
                 case "Cancel":
                     checkBox.IsChecked = true;
-                    mainWindow.LogToConsole($"[INFO] Unwatch cancelled for '{entry.Name}' by user.");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Unwatch cancelled for '{entry.Name}' by user.");
                     return;
             }
 
@@ -737,7 +742,7 @@ namespace View.Personal.UIHandlers
             var consoleOutput = mainWindow.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
             if (consoleOutput != null)
             {
-                var logMessage = $"[INFO] Watched paths ({mainWindow.WatchedPaths.Count}):\n" +
+                var logMessage = $"[{SeverityEnum.Info}] Watched paths ({mainWindow.WatchedPaths.Count}): " +
                                  string.Join("\n", mainWindow.WatchedPaths) + "\n";
                 consoleOutput.Text += logMessage;
                 Console.WriteLine(logMessage);
@@ -806,7 +811,7 @@ namespace View.Personal.UIHandlers
                 var nodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid);
                 if (nodes == null || !nodes.Any())
                 {
-                    mainWindow.LogToConsole("[WARN] No nodes found in LiteGraph for this tenant/graph.");
+                    mainWindow.LogToConsole($"[{Enums.SeverityEnum.Warn}] No nodes found in LiteGraph for this tenant/graph.");
                     return null;
                 }
 
@@ -822,7 +827,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                mainWindow.LogToConsole($"[ERROR] Failed to search LiteGraph for file {filePath}: {ex.Message}");
+                mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to search LiteGraph for file {filePath}: {ex.Message}");
                 return null;
             }
         }
@@ -861,7 +866,7 @@ namespace View.Personal.UIHandlers
                 watcher.Renamed += (s, e) => OnRenamed(mainWindow, s, e);
                 mainWindow._Watchers[dir] = watcher;
 
-                mainWindow.LogToConsole($"[INFO] Started watching directory (recursive): {dir}");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Started watching directory (recursive): {dir}");
             }
         }
 
@@ -891,7 +896,7 @@ namespace View.Personal.UIHandlers
                     }
 
                     mainWindow.LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
+                        $"[{SeverityEnum.Info}] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} created or changed: {e.Name} ({e.FullPath})");
                 }
             }
             else if (e.ChangeType == WatcherChangeTypes.Deleted)
@@ -899,7 +904,7 @@ namespace View.Personal.UIHandlers
                 if (isExplicitlyWatched || isInWatchedDirectory)
                 {
                     mainWindow.LogToConsole(
-                        $"[INFO] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
+                        $"[{SeverityEnum.Error}] {(Directory.Exists(e.FullPath) ? "Directory" : "File")} deleted on disk: {e.Name} ({e.FullPath})");
 
                     var liteGraph = ((App)Application.Current)._LiteGraph;
                     var tenantGuid = ((App)Application.Current)._TenantGuid;
@@ -912,7 +917,7 @@ namespace View.Personal.UIHandlers
                         {
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
-                                $"[INFO] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
+                                $"[{SeverityEnum.Error}] Deleted node {node.GUID} for file {node.Name} ({e.FullPath})");
 
                             Dispatcher.UIThread.InvokeAsync(async () =>
                             {
@@ -920,14 +925,14 @@ namespace View.Personal.UIHandlers
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
+                                    await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Refreshed Files panel after directory deletion.");
                                 }
                             });
                         }
                         else
                         {
-                            mainWindow.LogToConsole($"[WARN] File not found in LiteGraph: {e.Name} ({e.FullPath})");
+                            mainWindow.LogToConsole($"[{SeverityEnum.Warn}] File not found in LiteGraph: {e.Name} ({e.FullPath})");
                         }
                     }
                     else
@@ -944,7 +949,7 @@ namespace View.Personal.UIHandlers
                             {
                                 liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                                 mainWindow.LogToConsole(
-                                    $"[INFO] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
+                                    $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
                             }
 
                             Dispatcher.UIThread.InvokeAsync(async () =>
@@ -953,15 +958,15 @@ namespace View.Personal.UIHandlers
                                 var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
-                                    await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory deletion.");
+                                    await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory deletion.");
                                 }
                             });
                         }
                         else
                         {
                             mainWindow.LogToConsole(
-                                $"[INFO] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
+                                $"[{SeverityEnum.Info}] No files found in LiteGraph under directory: {e.Name} ({e.FullPath})");
                         }
                     }
 
@@ -990,7 +995,7 @@ namespace View.Personal.UIHandlers
 
             if (wasExplicitlyWatched || wasInWatchedDirectory)
             {
-                mainWindow.LogToConsole($"[INFO] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] File renamed from {e.OldName} to {e.Name} ({e.FullPath})");
 
                 var oldNode =
                     FindFileInLiteGraph(mainWindow, e.OldFullPath,
@@ -1004,11 +1009,11 @@ namespace View.Personal.UIHandlers
                         ((App)Application.Current)._GraphGuid,
                         oldNode.GUID);
                     mainWindow.LogToConsole(
-                        $"[INFO] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
+                        $"[{SeverityEnum.Info}] Deleted node {oldNode.GUID} for old file {oldNode.Name} ({e.OldFullPath})");
                 }
                 else
                 {
-                    mainWindow.LogToConsole($"[WARN] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Warn}] Old file not found in LiteGraph: {e.OldName} ({e.OldFullPath})");
                 }
 
                 var isExplicitlyWatchedNew = mainWindow.WatchedPaths.Contains(e.FullPath);
@@ -1071,7 +1076,7 @@ namespace View.Personal.UIHandlers
             var tasks = completedFiles.Select(filePath => Dispatcher.UIThread.InvokeAsync(async Task () =>
             {
                 var fileName = Path.GetFileName(filePath);
-                mainWindow.LogToConsole($"[INFO] Processing file: {fileName} ({filePath})");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Processing file: {fileName} ({filePath})");
 
                 if (Directory.Exists(filePath))
                 {
@@ -1088,31 +1093,31 @@ namespace View.Personal.UIHandlers
                                     ((App)Application.Current)._TenantGuid,
                                     ((App)Application.Current)._GraphGuid,
                                     node.GUID);
-                                mainWindow.LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
+                                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Deleted node {node.GUID} for {node.Name}");
                             }
 
                             try
                             {
                                 await mainWindow.IngestFileAsync(subFilePath);
                                 mainWindow.LogToConsole(
-                                    $"[INFO] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
+                                    $"[{SeverityEnum.Info}] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
                             }
                             catch (Exception ex)
                             {
                                 mainWindow.LogToConsole(
-                                    $"[ERROR] Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
+                                    $"[{SeverityEnum.Error}]  Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
                             }
                         }
 
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
-                        await FileListHelper.RefreshFileList(
+                        await FilePaginationHelper.RefreshGridAsync(
                                ((App)Application.Current)._LiteGraph,
                                ((App)Application.Current)._TenantGuid,
                                ((App)Application.Current)._GraphGuid,
                                mainWindow);
-                        mainWindow.LogToConsole("[INFO] Refreshed Files panel after directory ingestion.");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory ingestion.");
                     }
                 }
                 else if (File.Exists(filePath))
@@ -1123,38 +1128,38 @@ namespace View.Personal.UIHandlers
                         ((App)Application.Current)._GraphGuid);
                     if (node != null)
                     {
-                        mainWindow.LogToConsole($"[INFO] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Found file in LiteGraph: {node.Name} (NodeGuid: {node.GUID})");
                         ((App)Application.Current)._LiteGraph.Node.DeleteByGuid(
                             ((App)Application.Current)._TenantGuid,
                             ((App)Application.Current)._GraphGuid,
                             node.GUID);
-                        mainWindow.LogToConsole($"[INFO] Deleted node {node.GUID} for {node.Name}");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Deleted node {node.GUID} for {node.Name}");
                     }
 
                     try
                     {
                         await mainWindow.IngestFileAsync(filePath);
-                        mainWindow.LogToConsole($"[INFO] Ingested file: {fileName} ({filePath})");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Ingested file: {fileName} ({filePath})");
 
                         var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                         if (filesPanel != null && filesPanel.IsVisible)
                         {
-                            await FileListHelper.RefreshFileList(
+                            await FilePaginationHelper.RefreshGridAsync(
                                     ((App)Application.Current)._LiteGraph,
                                     ((App)Application.Current)._TenantGuid,
                                     ((App)Application.Current)._GraphGuid,
                                 mainWindow);
-                            mainWindow.LogToConsole("[INFO] Refreshed Files panel after file ingestion.");
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after file ingestion.");
                         }
                     }
                     catch (Exception ex)
                     {
-                        mainWindow.LogToConsole($"[ERROR] Failed to ingest file {fileName}: {ex.Message}");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Error}]  Failed to ingest file {fileName}: {ex.Message}");
                     }
                 }
                 else
                 {
-                    mainWindow.LogToConsole($"[WARN] Path no longer exists: {filePath}");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Warn}] Path no longer exists: {filePath}");
                 }
             })).ToList();
 

@@ -9,6 +9,7 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using View.Personal.Enums;
     using View.Personal.Helpers;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Provides methods for handling graph deletion operations within the application.
@@ -47,8 +48,8 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app?.Log($"[ERROR] Error deleting knowledgebase '{graphItem.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Error deleting knowledgebase {graphItem.Name}");
+                app?.Log(SeverityEnum.Error, $"Error deleting knowledgebase '{graphItem.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error deleting knowledgebase {graphItem.Name}");
                 if (window is MainWindow mainWindow)
                     mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);

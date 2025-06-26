@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using View.Personal.Classes;
+using View.Personal.Enums;
 
 namespace View.Personal.Views
 {
@@ -170,7 +171,7 @@ namespace View.Personal.Views
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Failed to save onboarding state: {ex.Message}");
+                Console.WriteLine($"{SeverityEnum.Error} Failed to save onboarding state: {ex.Message}");
             }
 
             _onComplete?.Invoke();

@@ -13,6 +13,23 @@
         public CompletionProviderTypeEnum ProviderType { get; set; }
 
         /// <summary>
+        /// Gets or sets the batch size for processing requests.
+        /// </summary>
+        public int BatchSize { get; set; } = 10;
+
+        /// <summary>
+        /// Gets or sets the maximum number of retry attempts for failed requests.
+        /// </summary>
+        public int MaxRetries { get; set; } = 3;
+
+        /// <summary>
+        /// Gets or sets the temperature value for controlling randomness in completions.
+        /// Higher values (e.g., 0.8) produce more diverse and creative output, 
+        /// while lower values (e.g., 0.2) result in more deterministic and focused responses.
+        /// </summary>
+        public double Temperature { get; set; } = 0.7;
+
+        /// <summary>
         /// Gets or sets the API key for OpenAI completion services.
         /// </summary>
         public string OpenAICompletionApiKey { get; set; } = string.Empty;

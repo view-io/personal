@@ -24,6 +24,11 @@ namespace View.Personal.Classes
         public Guid GUID { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of nodes in the graph.
+        /// </summary>
+        public int Nodes { get; set; }
+
+        /// <summary>
         /// Gets or sets the UTC timestamp when the graph was created.
         /// </summary>
         public DateTime CreatedUtc { get; set; }

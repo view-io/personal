@@ -10,6 +10,7 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using System.Text.Json;
     using View.Personal.Classes;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Service for managing locally pulled AI models.
@@ -42,6 +43,40 @@ namespace View.Personal.Services
             _app = app;
             _localModels = new List<LocalModel>();
         }
+        
+        /// <summary>
+        /// Preloads models in the background at application startup based on settings.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task PreloadModelsAtStartupAsync()
+        {
+            try
+            {
+                bool isOllamaAvailable = await IsOllamaAvailableAsync();
+                if (!isOllamaAvailable) return;
+                
+               
+                if (_app?.ApplicationSettings?.SelectedProvider == "Ollama" && 
+                    _app?.ApplicationSettings?.Ollama?.IsEnabled == true)
+                {
+                    string completionModel = _app.ApplicationSettings.Ollama.CompletionModel;
+                    if (!string.IsNullOrWhiteSpace(completionModel))
+                        await PreloadModelAsync(completionModel);
+                }
+                
+                if (_app?.ApplicationSettings?.SelectedEmbeddingsProvider == "Ollama")
+                {
+                    string embeddingModel = _app.ApplicationSettings.Embeddings.OllamaEmbeddingModel;
+                    if (!string.IsNullOrWhiteSpace(embeddingModel))
+                        await PreloadModelAsync(embeddingModel);            
+                }
+            }
+            catch (Exception ex)
+            {
+                _app?.Log(SeverityEnum.Error, $"Error preloading models at startup: {ex.Message}");
+                _app?.LogExceptionToFile(ex, "Error preloading models at startup");
+            }
+        }
 
         /// <summary>
         /// Gets the list of local models.
@@ -73,7 +108,7 @@ namespace View.Personal.Services
                 string endpoint = GetOllamaEndpoint();
                 using var httpClient = CreateHttpClient();
                 // Set a short timeout to quickly determine if Ollama is available
-                httpClient.Timeout = TimeSpan.FromSeconds(3);
+                httpClient.Timeout = TimeSpan.FromSeconds(30);
                 
                 // Try to connect to the Ollama API endpoint
                 var response = await httpClient.GetAsync($"{endpoint}api/tags");
@@ -81,8 +116,8 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Ollama service is not available: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"[Error] Ollama service is not available");
+                _app?.Log(SeverityEnum.Error, $"Ollama service is not available: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Ollama service is not available");
                 return false;
             }
         }
@@ -104,6 +139,65 @@ namespace View.Personal.Services
             model.IsActive = isActive;
             return true;
         }
+
+        /// <summary>
+        /// Preloads a model to ensure it's ready for use without delay when needed.
+        /// This method can be called when a user selects an Ollama model in settings to prepare it for use.
+        /// </summary>
+        /// <param name="modelName">The name of the model to preload.</param>
+        /// <returns>A task that resolves to true if the preload was successful, false otherwise.</returns>
+        public async Task<bool> PreloadModelAsync(string modelName)
+        {
+            if (string.IsNullOrWhiteSpace(modelName))
+            {
+                _app?.Log(SeverityEnum.Error, "Cannot preload model: Model name is empty");
+                return false;
+            }
+
+            try
+            {
+                // Removed duplicate log message here as it's already logged by the caller
+                string endpoint = GetOllamaEndpoint();
+                using var httpClient = CreateHttpClient();
+
+                // Determine if it's an embedding model
+                bool isEmbeddingModel = await IsEmbeddingModelAsync(httpClient, endpoint, modelName);
+
+                string apiPath = isEmbeddingModel ? "api/embeddings" : "api/generate";
+                HttpContent content;
+
+                if (isEmbeddingModel)
+                {
+                    content = JsonContent.Create(new
+                    {
+                        model = modelName,
+                        prompt = "Hello" // Required field for embedding
+                    });
+                }
+                else
+                {
+                    content = JsonContent.Create(new
+                    {
+                        model = modelName,
+                        prompt = "Hello",
+                        stream = false
+                    });
+                }
+
+                var response = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
+                response.EnsureSuccessStatusCode();
+
+                _app?.Log(SeverityEnum.Info, $"Successfully preloaded Ollama model: {modelName}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _app?.Log(SeverityEnum.Error, $"Error preloading model {modelName}: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Error preloading model {modelName}");
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// Deletes a model from the system.
@@ -139,7 +233,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Error deleting model {model.Name}: {ex.Message}");
+                _app?.Log(SeverityEnum.Error, $"Error deleting model {model.Name}: {ex.Message}");
                 _app?.LogExceptionToFile(ex, $"Error deleting model {model.Name}");
                 return false;
             }
@@ -187,7 +281,7 @@ namespace View.Personal.Services
         /// <param name="ex">The exception that was thrown during the operation.</param>
         private void LogError(string errorMessage, Exception ex)
         {
-            _app?.Log(errorMessage);
+            _app?.Log(SeverityEnum.Error, errorMessage);
             _app?.LogExceptionToFile(ex, errorMessage);
         }
 
@@ -205,7 +299,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app.Log($"[Error] Error loading models: {ex.Message}");
+                _app.Log(SeverityEnum.Error, $"Error loading models: {ex.Message}");
                 _app.LogExceptionToFile(ex, $"Error loading models");
 
                 _localModels = new List<LocalModel>();
@@ -238,7 +332,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log($"[Error] Error fetching Ollama models: {ex.Message}");
+                _app?.Log(SeverityEnum.Error, $"Error fetching Ollama models: {ex.Message}");
                 _app?.LogExceptionToFile(ex, $"Error fetching Ollama models");
             }
 
@@ -330,7 +424,7 @@ namespace View.Personal.Services
 
                     if (httpEx.Message.Contains("400") || httpEx.Message.Contains("Bad Request"))
                     {
-                        errorResponse.Error = $"[Error] Invalid model name '{modelName}'. Please check if the model name is correct.";
+                        errorResponse.Error = $"Invalid model name '{modelName}'. Please check if the model name is correct.";
                     }
 
                     progressCallback?.Invoke(errorResponse);
@@ -344,7 +438,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                LogError($"[Error] Error pulling model {modelName}: {ex.Message}", ex);
+                LogError($"Error pulling model {modelName}: {ex.Message}", ex);
             }
 
             return null;
@@ -389,7 +483,7 @@ namespace View.Personal.Services
                         if (!string.IsNullOrEmpty(pullResponse.Error) &&
                             pullResponse.Error.Contains("pull model manifest: file does not exist"))
                         {
-                            _app?.Log($"[Error] Invalid model name detected: {modelName}. Model manifest does not exist.");
+                            _app?.Log(SeverityEnum.Error, $"Invalid model name detected: {modelName}. Model manifest does not exist.");
                             progressCallback?.Invoke(pullResponse);
 
                             return;
@@ -405,12 +499,30 @@ namespace View.Personal.Services
                 }
                 catch (JsonException jsonEx)
                 {
-                    LogError($"[Error] JSON parsing error in pull response: {jsonEx.Message}. Line: {line}", jsonEx);
+                    LogError($"JSON parsing error in pull response: {jsonEx.Message}. Line: {line}", jsonEx);
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[Error] Error processing pull response: {ex.Message}", ex);
+                    LogError($"Error processing pull response: {ex.Message}", ex);
                 }
+            }
+        }
+
+        private async Task<bool> IsEmbeddingModelAsync(HttpClient client, string endpoint, string modelName)
+        {
+            try
+            {
+                var requestPayload = new { model = modelName };
+                var content = JsonContent.Create(requestPayload);
+                var response = await client.PostAsync($"{endpoint}api/show", content);
+                if (!response.IsSuccessStatusCode) return false;
+
+                var json = await response.Content.ReadAsStringAsync();
+                return json.Contains("\"capabilities\":[\"embedding\"]", StringComparison.OrdinalIgnoreCase) || json.Contains("\"embedding\"", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
             }
         }
     }
