@@ -1798,41 +1798,85 @@
 										   Foreground="#6A6B6F"
 										   VerticalAlignment="Center" />
 								<ComboBox x:Name="PageSizeComboBox"
-										  Width="80"
-										  Height="28"
-										  Padding="12,4"
-										  Background="#FFFFFF"
-										  BorderBrush="#DBDBDB"
-										  BorderThickness="0.97"
-										  VerticalContentAlignment="Center"
-										  Foreground="#1A1C1E"
-										  SelectedIndex="0">
+                                          Width="55"
+                                          Height="28"
+                                          Background="#FFFFFF"
+                                          BorderBrush="#DBDBDB"
+                                          BorderThickness="0.97"
+                                          Foreground="#1A1C1E"
+                                          SelectedIndex="0">
+									<ComboBox.Template>
+										<ControlTemplate TargetType="ComboBox">
+											<Grid>
+												<ToggleButton Name="PART_ToggleButton"
+															  Background="{TemplateBinding Background}"
+															  BorderBrush="{TemplateBinding BorderBrush}"
+															  BorderThickness="{TemplateBinding BorderThickness}"
+															  CornerRadius="8"
+															  IsChecked="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
+															  ClickMode="Press">
+													<ToggleButton.Template>
+														<ControlTemplate TargetType="ToggleButton">
+															<Border Background="{TemplateBinding Background}"
+																	BorderBrush="{TemplateBinding BorderBrush}"
+																	BorderThickness="{TemplateBinding BorderThickness}"
+																	CornerRadius="{TemplateBinding CornerRadius}">
+																<Grid ColumnDefinitions="*,Auto">
+																	<ContentPresenter Grid.Column="0"
+																					  Margin="8,0,0,0"
+																					  VerticalAlignment="Center"
+																					  HorizontalAlignment="Left"
+																					  Content="{Binding $parent[ComboBox].SelectionBoxItem}"
+																					  ContentTemplate="{Binding $parent[ComboBox].ItemTemplate}" />
+
+																	<Border Grid.Column="1"
+																			Width="24"
+																			Background="Transparent">
+																		<Path Width="8" Height="6"
+																			  HorizontalAlignment="Center"
+																			  VerticalAlignment="Center"
+																			  Data="M0,0 L4,4 L8,0 Z"
+																			  Fill="{Binding $parent[ComboBox].Foreground}" />
+																	</Border>
+																</Grid>
+															</Border>
+														</ControlTemplate>
+													</ToggleButton.Template>
+												</ToggleButton>
+
+												<Popup Name="PART_Popup"
+													   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+													   IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
+													   MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+													   MaxHeight="200">
+													<Border Background="White"
+															BorderBrush="#DBDBDB"
+															BorderThickness="1"
+															CornerRadius="8"
+															BoxShadow="0 4 16 0 #19000000">
+														<ScrollViewer>
+															<ItemsPresenter Name="PART_ItemsPresenter" />
+														</ScrollViewer>
+													</Border>
+												</Popup>
+											</Grid>
+										</ControlTemplate>
+									</ComboBox.Template>
+
 									<ComboBox.Styles>
-										<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-											<Setter Property="MinHeight" Value="36" />
-											<Setter Property="Margin" Value="0" />
-										</Style>
-										<Style Selector="ComboBox /template/ Border#PART_Border">
-											<Setter Property="CornerRadius" Value="8" />
-											<Setter Property="BorderBrush" Value="#DBDBDB" />
-										</Style>
-										<Style Selector="ComboBox /template/ ContentPresenter">
-											<Setter Property="VerticalAlignment" Value="Center" />
-											<Setter Property="FontSize" Value="13" />
-										</Style>
 										<Style Selector="ComboBoxItem">
-											<Setter Property="Padding" Value="12,8" />
+											<Setter Property="Padding" Value="8,6" />
 											<Setter Property="FontSize" Value="13" />
+											<Setter Property="Background" Value="Transparent" />
 										</Style>
-										<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+										<Style Selector="ComboBoxItem:pointerover">
 											<Setter Property="Background" Value="#F5F5F5" />
 										</Style>
-										<Style Selector="ComboBox /template/ Path#arrow">
-											<Setter Property="Fill" Value="#1A1C1E" />
+										<Style Selector="ComboBoxItem:selected">
+											<Setter Property="Background" Value="#E3F2FD" />
 										</Style>
 									</ComboBox.Styles>
 
-									<!-- Sample items -->
 									<ComboBoxItem Content="10" />
 									<ComboBoxItem Content="25" />
 									<ComboBoxItem Content="50" />
