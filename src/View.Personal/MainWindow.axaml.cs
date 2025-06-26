@@ -892,10 +892,8 @@
                         "View" => app.ApplicationSettings.View.RAG.SimilarityThreshold,
                         _ => 0.75
                     };
-                    var searchResults = (await PerformVectorSearch(floatEmbeddings, topK, minThreshold))?.ToList();
-                    app.LogWithTimestamp(SeverityEnum.Debug, $"RAG search results count: {searchResults?.Count ?? 0}");
-
-                    if (searchResults == null || searchResults.Count == 0)
+                    var searchResults = (await PerformVectorSearch(floatEmbeddings, topK, minThreshold));
+                    if (searchResults == null || !searchResults.Any())
                     {
                         return "I couldn't find any relevant documents in the knowledge base for your query.";
                     }
@@ -921,8 +919,8 @@
                 }
                 else
                 {
-                    var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false); ;
-                    if (searchResults == null || !searchResults.GetEnumerator().MoveNext())
+                    var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false);
+                    if (searchResults == null || !searchResults.Any())
                         return "No relevant documents found to answer your question.";
                     app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
                     var context = BuildContext(searchResults);
