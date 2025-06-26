@@ -64,7 +64,7 @@
                     if (deleteSuccess && mainWindow != null)
                     {
                         FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
-                        await FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(liteGraph, tenantGuid, graphGuid, mainWindow, file.NodeGuid);        
+                        await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                         mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
                             NotificationType.Success);
                     }
@@ -164,7 +164,7 @@
 
 
                         if (mainWindow != null)
-                            await FilePaginationHelper.RefreshCurrentPageAfterDeleteAsync(liteGraph, tenantGuid, graphGuid, mainWindow, file.NodeGuid);
+                            await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                         successfulDeletes.Add(file.NodeGuid);
                     }
                     catch (Exception ex)

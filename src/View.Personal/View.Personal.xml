@@ -1698,22 +1698,6 @@
             <returns>Nothing, as this method throws an exception.</returns>
             <exception cref="T:System.NotImplementedException">Always thrown as this method is not implemented.</exception>
         </member>
-        <member name="T:View.Personal.Helpers.FileListHelper">
-            <summary>
-            Provides helper methods for managing file lists in the application.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Helpers.FileListHelper.RefreshFileList(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
-            <summary>
-            Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
-            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-            <param name="tenantGuid">The unique identifier for the tenant</param>
-            <param name="graphGuid">The unique identifier for the graph</param>
-            <param name="window">The parent window containing the DataGrid to refresh</param>
-            Returns:
-            None; updates the DataGrid's ItemsSource directly
-            </summary>
-        </member>
         <member name="T:View.Personal.Helpers.FilePaginationHelper">
             <summary>
             Provides helper methods for managing file pagination in the application.
