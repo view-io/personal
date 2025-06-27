@@ -123,7 +123,13 @@ namespace View.Personal.UIHandlers
                 UpdateConversationWindow(conversationContainer, currentMessages, true, mainWindow); // Show spinner
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
-                chatTitle = await Task.Run(() => GenerateConversationSummary(currentMessages, mainWindow));
+
+                var summarizationTask = Task.Run(async () => 
+                {
+                    var title = await GenerateConversationSummary(currentMessages, mainWindow);
+                    return title;
+                });
+                
                 app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
@@ -136,9 +142,9 @@ namespace View.Personal.UIHandlers
                         {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
-                            mainWindow.CurrentChatSession.Title = chatTitle;
-
-                            // Update the chat history dropdown
+                            
+                            mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
+                            
                             var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                             if (chatHistoryList != null)
                             {
@@ -147,8 +153,8 @@ namespace View.Personal.UIHandlers
                                     .FirstOrDefault(item => item.Tag == mainWindow.CurrentChatSession);
                                 if (existingItem != null)
                                 {
-                                    existingItem.Content = chatTitle;
-                                    ToolTip.SetTip(existingItem, chatTitle);
+                                    existingItem.Content = summarizationTask.Result;
+                                    ToolTip.SetTip(existingItem, existingItem.Content);
                                     var currentIndex = chatHistoryList.SelectedIndex;
                                     chatHistoryList.SelectedIndex = -1;
                                     chatHistoryList.SelectedIndex = currentIndex;
