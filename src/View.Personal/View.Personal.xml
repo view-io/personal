@@ -1969,6 +1969,7 @@
         <member name="M:View.Personal.MainWindow.ShowConsolePanel">
             <summary>
             Displays the Console panel and restores its previous height if resized.
+            Adjusts the layout to ensure the console pushes content upward rather than overlapping.
             </summary>
         </member>
         <member name="M:View.Personal.MainWindow.HideConsolePanel">
@@ -2556,6 +2557,13 @@
             <param name="modelId">The ID of the model to update.</param>
             <param name="isActive">Whether the model should be active.</param>
             <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.IsModelPulledAsync(System.String)">
+            <summary>
+            Checks if a model is already pulled and available locally.
+            </summary>
+            <param name="modelName">The name of the model to check.</param>
+            <returns>A task that resolves to true if the model is pulled, false otherwise.</returns>
         </member>
         <member name="M:View.Personal.Services.LocalModelService.PreloadModelAsync(System.String)">
             <summary>

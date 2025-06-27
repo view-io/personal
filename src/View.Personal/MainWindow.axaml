@@ -263,6 +263,16 @@
 								</StackPanel>
 							</StackPanel>
 							<StackPanel Orientation="Horizontal" Spacing="16">
+								<avalonia:MaterialIcon Kind="ArrangeBringToFront" Foreground="#FF6D00"
+                                                       VerticalAlignment="Top"
+                                                       Height="24" Width="24" />
+								<StackPanel>
+									<TextBlock Text="Data Monitor" Classes="default"
+                                               Margin="0" Padding="0" FontWeight="500" />
+									<TextBlock Classes="secondary" Text="Continuously monitor files and folders for ingestion" />
+								</StackPanel>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Spacing="16">
 								<avalonia:MaterialIcon Kind="CogOutline" Foreground="#0472EF" VerticalAlignment="Top"
                                                        Height="24" Width="24" />
 								<StackPanel>
@@ -287,13 +297,17 @@
 						</Grid>
 					</Grid>
 				</Border>
-				<StackPanel x:Name="DataMonitorPanel" Orientation="Vertical" Spacing="20" Margin="20" IsVisible="False">
-					<StackPanel Spacing="12" Margin="0, 20, 0, 0">
+				<Grid x:Name="DataMonitorPanel" Margin="20" IsVisible="False">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<StackPanel Grid.Row="0" Spacing="12" Margin="0, 20, 0, 0">
 						<TextBlock Text="Data Monitor" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
 						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
 					</StackPanel>
 
-					<Grid RowDefinitions="Auto,*">
+					<Grid Grid.Row="1" RowDefinitions="Auto,*" Margin="0,20,0,0">
 						<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="8,0,0,12" VerticalAlignment="Center">
 							<Button x:Name="NavigateUpButton" Grid.Column="0" Click="NavigateUpButton_Click"
                                     Classes="flat" Height="30">
@@ -393,8 +407,8 @@
 							</DataGrid.Columns>
 						</DataGrid>
 					</Grid>
-				</StackPanel>
-				<Grid  Name="SettingsPanel2" RowDefinitions="Auto,*" Margin="40,20,40,20" IsVisible="False">
+				</Grid>
+				<Grid Name="SettingsPanel2" RowDefinitions="Auto,*" Margin="40,20,40,20" IsVisible="False">
 					<StackPanel Spacing="12" Grid.Row="0" Margin="0, 20, 0, 0">
 						<TextBlock Text="Settings" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
 						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,12" />
@@ -2043,7 +2057,7 @@
 						<avalonia:MaterialIcon Kind="Download" />
 					</Button>
 				</DockPanel>
-				<ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" MinHeight="100" MaxHeight="400" Background="Transparent">
 					<SelectableTextBlock x:Name="ConsoleOutputTextBox"
                                          IsHitTestVisible="True"
                                          IsTabStop="False"

@@ -43,7 +43,7 @@ namespace View.Personal.Services
             _app = app;
             _localModels = new List<LocalModel>();
         }
-        
+
         /// <summary>
         /// Preloads models in the background at application startup based on settings.
         /// </summary>
@@ -54,21 +54,42 @@ namespace View.Personal.Services
             {
                 bool isOllamaAvailable = await IsOllamaAvailableAsync();
                 if (!isOllamaAvailable) return;
-                
-               
-                if (_app?.ApplicationSettings?.SelectedProvider == "Ollama" && 
+
+                await LoadModelsAsync();
+
+                if (_app?.ApplicationSettings?.SelectedProvider == "Ollama" &&
                     _app?.ApplicationSettings?.Ollama?.IsEnabled == true)
                 {
                     string completionModel = _app.ApplicationSettings.Ollama.CompletionModel;
                     if (!string.IsNullOrWhiteSpace(completionModel))
-                        await PreloadModelAsync(completionModel);
+                    {
+                        bool modelExists = await IsModelPulledAsync(completionModel);
+                        if (modelExists)
+                        {
+                            await PreloadModelAsync(completionModel);
+                        }
+                        else
+                        {
+                            _app?.Log(SeverityEnum.Warn, $"Selected completion model '{completionModel}' is not pulled. Skipping preload.");
+                        }
+                    }
                 }
-                
+
                 if (_app?.ApplicationSettings?.SelectedEmbeddingsProvider == "Ollama")
                 {
                     string embeddingModel = _app.ApplicationSettings.Embeddings.OllamaEmbeddingModel;
                     if (!string.IsNullOrWhiteSpace(embeddingModel))
-                        await PreloadModelAsync(embeddingModel);            
+                    {
+                        bool modelExists = await IsModelPulledAsync(embeddingModel);
+                        if (modelExists)
+                        {
+                            await PreloadModelAsync(embeddingModel);
+                        }
+                        else
+                        {
+                            _app?.Log(SeverityEnum.Warn, $"Selected embedding model '{embeddingModel}' is not pulled. Skipping preload.");
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -109,7 +130,7 @@ namespace View.Personal.Services
                 using var httpClient = CreateHttpClient();
                 // Set a short timeout to quickly determine if Ollama is available
                 httpClient.Timeout = TimeSpan.FromSeconds(30);
-                
+
                 // Try to connect to the Ollama API endpoint
                 var response = await httpClient.GetAsync($"{endpoint}api/tags");
                 return response.IsSuccessStatusCode;
@@ -141,12 +162,65 @@ namespace View.Personal.Services
         }
 
         /// <summary>
-        /// Preloads a model to ensure it's ready for use without delay when needed.
-        /// This method can be called when a user selects an Ollama model in settings to prepare it for use.
+        /// Checks if a model is already pulled and available locally.
+        /// </summary>
+        /// <param name="modelName">The name of the model to check.</param>
+        /// <returns>A task that resolves to true if the model is pulled, false otherwise.</returns>
+        public async Task<bool> IsModelPulledAsync(string modelName)
+        {
+            if (string.IsNullOrWhiteSpace(modelName)) return false;
+
+            try
+            {
+                await LoadModelsAsync();
+                return _localModels.Any(m =>  m.Name.Equals(modelName, StringComparison.OrdinalIgnoreCase) ||
+                                              m.Name.StartsWith($"{modelName}:", StringComparison.OrdinalIgnoreCase));
+
+            }
+            catch (Exception ex)
+            {
+                _app?.Log(SeverityEnum.Error, $"Error checking if model {modelName} is pulled: {ex.Message}");
+                _app?.LogExceptionToFile(ex, $"Error checking if model {modelName} is pulled");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Preloads the specified Ollama model to ensure it is ready for immediate use.
+        /// Checks if Ollama is available, verifies the model is pulled, and loads it if present.
+        /// Logs a warning if the model is not found.
         /// </summary>
         /// <param name="modelName">The name of the model to preload.</param>
-        /// <returns>A task that resolves to true if the preload was successful, false otherwise.</returns>
+        /// <returns>
+        /// A task resolving to <c>true</c> if the preload succeeded, or <c>false</c> if not.
+        /// </returns>
         public async Task<bool> PreloadModelAsync(string modelName)
+        {
+            if (string.IsNullOrWhiteSpace(modelName))
+            {
+                _app?.Log(SeverityEnum.Error, "Cannot preload model: Model name is empty");
+                return false;
+            }
+            bool isOllamaAvailable = await IsOllamaAvailableAsync();
+            if (!isOllamaAvailable) return false;
+            bool modelExists = await IsModelPulledAsync(modelName);
+            if (modelExists)
+               return await LoadModelAsync(modelName);
+            else
+            {
+                _app?.Log(SeverityEnum.Warn, $"Selected model '{modelName}' is not pulled. Skipping preload.");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Loads (activates) the specified Ollama model by sending a test request to keep it ready in memory.
+        /// </summary>
+        /// <param name="modelName">The name of the model to load.</param>
+        /// <returns>
+        /// A task resolving to <c>true</c> if the load succeeded, or <c>false</c> if not.
+        /// </returns>
+        public async Task<bool> LoadModelAsync(string modelName)
         {
             if (string.IsNullOrWhiteSpace(modelName))
             {
@@ -171,7 +245,7 @@ namespace View.Personal.Services
                     content = JsonContent.Create(new
                     {
                         model = modelName,
-                        prompt = "Hello" // Required field for embedding
+                        prompt = "Hello"
                     });
                 }
                 else
