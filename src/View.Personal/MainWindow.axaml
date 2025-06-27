@@ -263,6 +263,16 @@
 								</StackPanel>
 							</StackPanel>
 							<StackPanel Orientation="Horizontal" Spacing="16">
+								<avalonia:MaterialIcon Kind="ArrangeBringToFront" Foreground="#FF6D00"
+                                                       VerticalAlignment="Top"
+                                                       Height="24" Width="24" />
+								<StackPanel>
+									<TextBlock Text="Data Monitor" Classes="default"
+                                               Margin="0" Padding="0" FontWeight="500" />
+									<TextBlock Classes="secondary" Text="Continuously monitor files and folders for ingestion" />
+								</StackPanel>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Spacing="16">
 								<avalonia:MaterialIcon Kind="CogOutline" Foreground="#0472EF" VerticalAlignment="Top"
                                                        Height="24" Width="24" />
 								<StackPanel>
