@@ -73,7 +73,6 @@ namespace View.Personal.UIHandlers
             var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
 
             string userText = "";
-            string chatTitle = "";
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
                 userText = inputBox.Text.Trim();
