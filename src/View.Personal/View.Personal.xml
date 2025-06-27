@@ -59,11 +59,27 @@
             - Displaying error messages if initialization fails
             </remarks>
         </member>
-        <member name="M:View.Personal.App.Log(System.String)">
+        <member name="M:View.Personal.App.Log(View.Personal.Enums.SeverityEnum,System.String)">
             <summary>
-            Logs a message to the console output in the UI and system console.
+            Logs a message with a severity level to the console output in the UI and system console.
             </summary>
-            <param name="message">The message to log.</param>
+            <param name="severity">The severity level of the message as an enum value.</param>
+            <param name="message">The message content to be logged.</param>
+        </member>
+        <member name="M:View.Personal.App.LogWithTimestamp(View.Personal.Enums.SeverityEnum,System.String)">
+            <summary>
+            Logs a message with a timestamp and severity level to both the application UI and system console.
+            </summary>
+            <param name="severity">The severity level of the message as an enum value.</param>
+            <param name="message">The message content to be logged.</param>
+        </member>
+        <member name="M:View.Personal.App.FormatLastModifiedDateTime(System.DateTime)">
+            <summary>
+            Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
+            including seconds in the output.
+            </summary>
+            <param name="dateTime">The DateTime to format.</param>
+            <returns>Formatted date time string with seconds.</returns>
         </member>
         <member name="M:View.Personal.App.LogInfoToFile(System.String)">
             <summary>
@@ -194,6 +210,26 @@
             The endpoint URL for OpenAI API requests.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.BatchSize">
+            <summary>
+            The batch size for API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.MaxRetries">
+            <summary>
+            The maximum number of retries for failed API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.Temperature">
+            <summary>
+            The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.RAG">
+            <summary>
+            Settings for Retrieval Augmented Generation (RAG).
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings.AnthropicSettings">
             <summary>
             Settings specific to the Anthropic service.
@@ -219,6 +255,26 @@
             The endpoint URL for Anthropic API requests.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.BatchSize">
+            <summary>
+            The batch size for API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.MaxRetries">
+            <summary>
+            The maximum number of retries for failed API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.Temperature">
+            <summary>
+            The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.RAG">
+            <summary>
+            Settings for Retrieval Augmented Generation (RAG).
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings.OllamaSettings">
             <summary>
             Settings specific to the Ollama service.
@@ -237,6 +293,26 @@
         <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.Endpoint">
             <summary>
             The endpoint URL for Ollama API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.BatchSize">
+            <summary>
+            The batch size for API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.MaxRetries">
+            <summary>
+            The maximum number of retries for failed API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.Temperature">
+            <summary>
+            The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.RAG">
+            <summary>
+            Settings for Retrieval Augmented Generation (RAG).
             </summary>
         </member>
         <member name="T:View.Personal.Classes.AppSettings.ViewSettings">
@@ -292,6 +368,52 @@
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.IsEnabled">
             <summary>
             Indicates whether the View provider is enabled.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.BatchSize">
+            <summary>
+            The batch size for API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.MaxRetries">
+            <summary>
+            The maximum number of retries for failed API requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.Temperature">
+            <summary>
+            The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.RAG">
+            <summary>
+            Settings for Retrieval Augmented Generation (RAG).
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.AppSettings.RAGSettings">
+            <summary>
+            Settings for Retrieval Augmented Generation (RAG).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.EnableRAG">
+            <summary>
+            Indicates whether RAG functionality is enabled.
+            This is the master switch for RAG features.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.KnowledgeSource">
+            <summary>
+            The knowledge source to use for RAG queries.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.NumberOfDocumentsToRetrieve">
+            <summary>
+            The number of documents to retrieve (Top-K) during RAG queries.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.SimilarityThreshold">
+            <summary>
+            The similarity threshold for document retrieval during RAG queries.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.AppSettings.EmbeddingsSettings">
@@ -434,6 +556,23 @@
         <member name="P:View.Personal.Classes.CompletionProviderSettings.ProviderType">
             <summary>
             Gets or sets the type of completion provider to use.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.BatchSize">
+            <summary>
+            Gets or sets the batch size for processing requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.MaxRetries">
+            <summary>
+            Gets or sets the maximum number of retry attempts for failed requests.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.CompletionProviderSettings.Temperature">
+            <summary>
+            Gets or sets the temperature value for controlling randomness in completions.
+            Higher values (e.g., 0.8) produce more diverse and creative output, 
+            while lower values (e.g., 0.2) result in more deterministic and focused responses.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.CompletionProviderSettings.OpenAICompletionApiKey">
@@ -771,6 +910,11 @@
             Gets or sets the unique identifier (GUID) of the graph.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.GraphItem.Nodes">
+            <summary>
+            Gets or sets the number of nodes in the graph.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.GraphItem.CreatedUtc">
             <summary>
             Gets or sets the UTC timestamp when the graph was created.
@@ -984,6 +1128,108 @@
         <member name="P:View.Personal.Classes.OnboardingStep.Description">
             <summary>
             Gets or sets the description displayed in the onboarding tooltip.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Classes.PaginationInfo">
+            <summary>
+            Represents pagination information for data grids.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.CurrentPage">
+            <summary>
+            Gets or sets the current page number (1-based).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageSize">
+            <summary>
+            Gets or sets the number of items per page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.TotalItems">
+            <summary>
+            Gets or sets the total number of items across all pages.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.RecordsRemaining">
+            <summary>
+            Gets or sets the number of records remaining after the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.FirstItemIndex">
+            <summary>
+            Gets or sets the index (1-based) of the first item on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.ItemsOnCurrentPage">
+            <summary>
+            Gets or sets the number of items on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.LastItemIndex">
+            <summary>
+            Gets the index (1-based) of the last item on the current page.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.TotalPages">
+            <summary>
+            Gets the total number of pages based on the total item count and page size.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.StartIndex">
+            <summary>
+            Gets the 0-based index of the first item on the current page (for offset-based paging).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.EndIndex">
+            <summary>
+            Gets the 0-based exclusive end index for the current page (for offset-based paging).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.HasPreviousPage">
+            <summary>
+            Gets a value indicating whether a previous page exists.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.HasNextPage">
+            <summary>
+            Gets a value indicating whether a next page exists.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageRangeText">
+            <summary>
+            Gets a formatted string showing the range of items currently displayed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.PaginationInfo.PageInfoText">
+            <summary>
+            Gets a formatted string showing the current page number and total pages.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.NextPage">
+            <summary>
+            Advances to the next page, if available.
+            </summary>
+            <returns><c>true</c> if the page changed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.PreviousPage">
+            <summary>
+            Moves to the previous page, if available.
+            </summary>
+            <returns><c>true</c> if the page changed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.FirstPage">
+            <summary>
+            Sets the current page to the first page.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.LastPage">
+            <summary>
+            Sets the current page to the last page based on <see cref="P:View.Personal.Classes.PaginationInfo.TotalPages"/>.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.PaginationInfo.Reset">
+            <summary>
+            Resets the pagination state to the first page with no items.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.TextInputDialog">
@@ -1264,6 +1510,46 @@
             Question icon.
             </summary>
         </member>
+        <member name="T:View.Personal.Enums.SeverityEnum">
+            <summary>
+            Message severity.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Debug">
+            <summary>
+            Debug messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Info">
+            <summary>
+            Informational messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Warn">
+            <summary>
+            Warning messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Error">
+            <summary>
+            Error messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Alert">
+            <summary>
+            Alert messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Critical">
+            <summary>
+            Critical messages.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Enums.SeverityEnum.Emergency">
+            <summary>
+            Emergency messages.
+            </summary>
+        </member>
         <member name="T:View.Personal.Helpers.BrowserHelper">
             <summary>
             Helper class for opening URLs in the default browser.
@@ -1417,30 +1703,126 @@
             <returns>Nothing, as this method throws an exception.</returns>
             <exception cref="T:System.NotImplementedException">Always thrown as this method is not implemented.</exception>
         </member>
-        <member name="T:View.Personal.Helpers.FileListHelper">
+        <member name="T:View.Personal.Helpers.FilePaginationHelper">
             <summary>
-            Provides helper methods for managing file lists in the application.
+            Provides helper methods for managing file pagination in the application.
             </summary>
         </member>
-        <member name="M:View.Personal.Helpers.FileListHelper.RefreshFileList(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.GetPaginationInfo(System.Guid,System.Int32)">
             <summary>
-            Refreshes the file list in a DataGrid by retrieving document nodes from LiteGraph and populating them as FileViewModel objects
-            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
-            <param name="tenantGuid">The unique identifier for the tenant</param>
-            <param name="graphGuid">The unique identifier for the graph</param>
-            <param name="window">The parent window containing the DataGrid to refresh</param>
-            Returns:
-            None; updates the DataGrid's ItemsSource directly
+            Gets or creates pagination info for a specific graph.
             </summary>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="pageSize">The page size to use if creating new pagination</param>
+            <returns>The pagination info for the graph</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.ClearPaginationState(System.Guid)">
+            <summary>
+            Clears pagination state for a specific graph.
+            </summary>
+            <param name="graphGuid">The graph GUID</param>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Int32,System.Int32)">
+            <summary>
+            Loads a specific page of files for the given graph.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <param name="pageNumber">The page number to load (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadNextPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the next page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadPreviousPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the previous page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadFirstPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the first page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.LoadLastPageAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Loads the last page of files.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.RefreshGridAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+            <summary>
+            Refreshes Grid.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.UpdatePaginationControls(Avalonia.Controls.Window,View.Personal.Classes.PaginationInfo)">
+            <summary>
+            Updates the pagination controls in the UI.
+            </summary>
+            <param name="window">The main window</param>
+            <param name="pagination">The pagination info</param>
+        </member>
+        <member name="M:View.Personal.Helpers.FilePaginationHelper.ChangePageSizeAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Int32)">
+            <summary>
+            Changes the page size and reloads the first page.
+            </summary>
+            <param name="liteGraph">The LiteGraph client</param>
+            <param name="tenantGuid">The tenant GUID</param>
+            <param name="graphGuid">The graph GUID</param>
+            <param name="window">The main window</param>
+            <param name="newPageSize">The new page size</param>
+            <returns>A task representing the asynchronous operation</returns>
         </member>
         <member name="T:View.Personal.Helpers.MainWindowHelpers">
             <summary>
             Provides helper methods for managing UI-related tasks and graph operations in the main window.
             </summary>
         </member>
+        <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects with pagination support
+            <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+            <param name="tenantGuid">The unique identifier for the tenant</param>
+            <param name="graphGuid">The unique identifier for the graph</param>
+            <param name="pageSize">The number of items to retrieve per page (default: 10)</param>
+            <param name="skip">The number of records to skip for pagination (default: 0)</param>
+            Returns:
+            A tuple containing a List of FileViewModel objects representing the document nodes and PaginationInfo
+            </summary>
+        </member>
         <member name="M:View.Personal.Helpers.MainWindowHelpers.GetDocumentNodes(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
             <summary>
             Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+            This is the original method signature for backward compatibility
             <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
             <param name="tenantGuid">The unique identifier for the tenant</param>
             <param name="graphGuid">The unique identifier for the graph</param>
@@ -1644,6 +2026,15 @@
             <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
             <returns>A task that resolves to the AI-generated response string, or an error message if the process fails.</returns>
         </member>
+        <member name="M:View.Personal.MainWindow.SummarizeChat(System.String,System.Action{System.String})">
+            <summary>
+            Asynchronously retrieves an AI-generated summary based on the given prompt, using the currently selected completion provider.
+            This is typically used to generate concise summaries for chat history or document content.
+            </summary>
+            <param name="summaryPrompt">The prompt string that instructs the AI on how to summarize the content.</param>
+            <param name="onTokenReceived">An optional action to handle tokens as they are received from the API.</param>
+            <returns>A task that resolves to the full AI-generated summary string, or an error message if the request fails.</returns>
+        </member>
         <member name="M:View.Personal.MainWindow.GetEmbeddingsSdkAndRequest(System.String,View.Personal.Classes.AppSettings,System.String)">
             <summary>
             Creates an SDK instance and an embeddings request for the specified embeddings provider.
@@ -1660,6 +2051,19 @@
             <param name="sdk">The SDK instance corresponding to the provider (e.g., OpenAI, Ollama, View, Voyage).</param>
             <param name="request">The EmbeddingsRequest object containing the model and content to embed.</param>
             <returns>A task that resolves to a list of float values representing the embeddings, or null if generation fails.</returns>
+        </member>
+        <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single},System.Int32,System.Double)">
+            <summary>
+            Asynchronously performs a vector similarity search using the provided embeddings to retrieve the most relevant results.
+            The search results are filtered based on a minimum similarity threshold and limited to a specified Top-K count.
+            </summary>
+            <param name="embeddings">A list of float values representing the query embeddings.</param>
+            <param name="topK">The maximum number of top results to return, ordered by descending similarity score.</param>
+            <param name="minThreshold">The minimum similarity score required for a result to be considered relevant.</param>
+            <returns>
+            A task that resolves to a filtered and ordered enumerable collection of <see cref="T:LiteGraph.VectorSearchResult"/> objects
+            that meet the similarity threshold and Top-K criteria.
+            </returns>
         </member>
         <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single})">
             <summary>
@@ -1797,6 +2201,17 @@
             Populates the DataGrid with a list of all graphs retrieved from the application.
             </summary>
         </member>
+        <member name="M:View.Personal.MainWindow.GetGraphStatistics(System.Guid)">
+            <summary>
+            Retrieves statistical information about a specific graph, including node and edge counts,
+            by querying the LiteGraph service.
+            </summary>
+            <param name="graphGuid">The GUID of the graph for which statistics are requested.</param>
+            <returns>
+            A <see cref="T:LiteGraph.GraphStatistics"/> object containing metrics such as node count and edge count,
+            or <c>null</c> if the graph GUID is invalid or the operation fails.
+            </returns>
+        </member>
         <member name="M:View.Personal.MainWindow.RemoveGraph_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
             <summary>
             Handles the click event for the Remove button in the Knowledgebase DataGrid, initiating the deletion of a graph.
@@ -1912,6 +2327,16 @@
             <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/> used for logging and optional UI updates.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> returning <c>true</c> if deletion succeeded; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:View.Personal.Services.FileDeleter.CleanupIncompleteFilesAsync(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Asynchronously removes incomplete file nodes and their associated chunk nodes from the graph,
+            based on the ingestion completion status tracked in <c>FileIngester</c>.
+            </summary>
+            <param name="liteGraph">The <see cref="T:LiteGraph.LiteGraphClient"/> instance used to access and delete graph nodes.</param>
+            <param name="tenantGuid">The unique identifier of the tenant owning the graph data.</param>
+            <param name="graphGuid">The unique identifier of the graph where the document nodes reside.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous cleanup operation.</returns>
+        </member>
         <member name="T:View.Personal.Services.FileIngester">
             <summary>
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
@@ -1967,9 +2392,40 @@
             This is a helper method for batch processing.
             </summary>
         </member>
+        <member name="M:View.Personal.Services.FileIngester.IsFileCompleted(System.String)">
+            <summary>
+            Checks if a file has been completely ingested and processed.
+            </summary>
+            <param name="filePath">The path of the file to check.</param>
+            <returns>True if the file has been completely processed, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.MarkFileCompleted(System.String)">
+            <summary>
+            Marks a file as completely ingested and processed.
+            </summary>
+            <param name="filePath">The path of the file to mark as completed.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.MarkFilePending(System.String)">
+            <summary>
+            Marks a file as pending ingestion by setting its status to <c>false</c> in the CompletedIngestions dictionary.
+            </summary>
+            <param name="filePath">The full path of the file to mark as pending.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.RemoveFileFromCompleted(System.String)">
+            <summary>
+            Removes a file entry from the CompletedIngestions dictionary if it exists.
+            </summary>
+            <param name="filePath">The full path of the file to remove.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.EnqueueFileForIngestion(System.String)">
+            <summary>
+            Adds the specified file path to the persistent ingestion list if it is not already queued.
+            </summary>
+            <param name="filePath">The absolute path of the file to enqueue for ingestion.</param>
+        </member>
         <member name="M:View.Personal.Services.FileIngester.ResumePendingIngestions(DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
-            Resumes ingestion of files that were previously queued but not successfully processed,
+            Resumes ingestion of files that were previously listed but not successfully processed,
             </summary>
             <param name="typeDetector">Instance of <see cref="T:DocumentAtom.TypeDetection.TypeDetector"/> used for file type detection during ingestion.</param>
             <param name="liteGraph">Instance of <see cref="T:LiteGraph.LiteGraphClient"/> for graph-related ingestion operations.</param>
@@ -2069,6 +2525,12 @@
             </summary>
             <param name="app">The application instance.</param>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.PreloadModelsAtStartupAsync">
+            <summary>
+            Preloads models in the background at application startup based on settings.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.GetModels">
             <summary>
             Gets the list of local models.
@@ -2094,6 +2556,14 @@
             <param name="modelId">The ID of the model to update.</param>
             <param name="isActive">Whether the model should be active.</param>
             <returns>True if the operation was successful, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.LocalModelService.PreloadModelAsync(System.String)">
+            <summary>
+            Preloads a model to ensure it's ready for use without delay when needed.
+            This method can be called when a user selects an Ollama model in settings to prepare it for use.
+            </summary>
+            <param name="modelName">The name of the model to preload.</param>
+            <returns>A task that resolves to true if the preload was successful, false otherwise.</returns>
         </member>
         <member name="M:View.Personal.Services.LocalModelService.DeleteModelAsync(System.String)">
             <summary>
@@ -2241,6 +2711,15 @@
             <param name="message">The full message text to extract a title from.</param>
             <param name="wordCount">The maximum number of words to include in the title. Defaults to 5.</param>
             <returns>A string containing the first wordCount words of the message followed by an ellipsis, or the full message if it contains fewer words than wordCount.</returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.GenerateConversationSummary(System.Collections.Generic.List{View.Personal.Classes.ChatMessage},View.Personal.MainWindow,System.Int32)">
+            <summary>
+            Generates a summary of the conversation for use as a chat title using AI.
+            </summary>
+            <param name="messages">The list of chat messages to summarize.</param>
+            <param name="mainWindow">An instance of the <see cref="T:View.Personal.MainWindow"/> class used to access the AI summarization method.</param>
+            <param name="maxLength">The maximum length of the summary. Defaults to 30 characters.</param>
+            <returns>A summarized title for the conversation.</returns>
         </member>
         <member name="M:View.Personal.UIHandlers.ChatUIHandlers.ChatInputBox_KeyDown(System.Object,Avalonia.Input.KeyEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
             <summary>
@@ -2495,6 +2974,24 @@
             </summary>
             <param name="window">The MainWindow instance containing the settings UI controls.</param>
         </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.LoadGraphsDataGridToUI(View.Personal.MainWindow)">
+            <summary>
+            Invokes the loading of graph data into the UI's GraphsDataGrid within the specified <see cref="T:View.Personal.MainWindow"/>.
+            </summary>
+            <param name="window">The instance of <see cref="T:View.Personal.MainWindow"/> where the GraphsDataGrid will be populated.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SetupTemperatureSliderHandlers(View.Personal.MainWindow)">
+            <summary>
+            Sets up event handlers for temperature sliders to update their corresponding value displays.
+            </summary>
+            <param name="window">The main window containing the UI controls.</param>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.SetupSimilarityThresholdSliderHandlers(View.Personal.MainWindow)">
+            <summary>
+            Sets up event handlers for similarity threshold sliders to update their corresponding value displays.
+            </summary>
+            <param name="window">The main window containing the UI controls.</param>
+        </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.MainWindow_Opened(Avalonia.Controls.Window)">
             <summary>
             Handles the opened event of the main window, initializing settings and console output.
@@ -2555,6 +3052,13 @@
             <returns>
             <c>true</c> if parsing was successful and the value is greater than zero; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.UpdateUIAfterSave(View.Personal.MainWindow)">
+            <summary>
+            Updates the UI controls to reflect the actual values stored in application settings after saving.
+            This ensures that empty or negative values are properly displayed as their default values (0).
+            </summary>
+            <param name="window">The MainWindow instance containing the UI controls to update.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.MainWindowUIHandlers.IsHostnameResolvable(System.String)">
             <remarks>

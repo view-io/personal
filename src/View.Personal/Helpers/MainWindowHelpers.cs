@@ -1,14 +1,15 @@
 namespace View.Personal.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using LiteGraph;
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
+    using LiteGraph;
+    using System;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.IO;
+    using System.Linq;
+    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing UI-related tasks and graph operations in the main window.
@@ -29,35 +30,58 @@ namespace View.Personal.Helpers
         #region Public-Methods
 
         /// <summary>
-        /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+        /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects with pagination support
         /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
         /// <param name="tenantGuid">The unique identifier for the tenant</param>
         /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// <param name="pageSize">The number of items to retrieve per page (default: 10)</param>
+        /// <param name="skip">The number of records to skip for pagination (default: 0)</param>
         /// Returns:
-        /// A List of FileViewModel objects representing the document nodes; empty if no nodes are found
+        /// A tuple containing a List of FileViewModel objects representing the document nodes and PaginationInfo
         /// </summary>
-        public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
+        public static (List<FileViewModel> Files, PaginationInfo Pagination) GetDocumentNodes(
+            LiteGraphClient liteGraph,
+            Guid tenantGuid,
+            Guid graphGuid,
+            int pageSize = 10,
+            int skip = 0)
         {
+            var uniqueFiles = new List<FileViewModel>();
+            var pagination = new PaginationInfo { PageSize = pageSize };
+
             if (liteGraph == null)
             {
                 var app = (App)App.Current;
-                app.Log(
-                    "[WARN] LiteGraphClient is null in GetDocumentNodes. Returning empty list for preview.");
-                return new List<FileViewModel>();
+                app.Log(Enums.SeverityEnum.Warn, "LiteGraphClient is null in GetDocumentNodes. Returning empty list.");
+                return (uniqueFiles, pagination);
             }
 
-            var documentNodes = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
-                ?.ToList();
-            var uniqueFiles = new List<FileViewModel>();
-
-            if (documentNodes != null && documentNodes.Any())
-                foreach (var node in documentNodes)
+            var query = new EnumerationQuery
+            {
+                TenantGUID = tenantGuid,
+                GraphGUID = graphGuid,
+                Labels = new List<string> { "document" },
+                Ordering = EnumerationOrderEnum.CreatedDescending,
+                MaxResults = pageSize,
+                IncludeData = false,
+                IncludeSubordinates = true,
+                Tags = null,
+                Expr = null,
+                Skip = skip,
+            };
+            var result = liteGraph.Node.Enumerate(query);
+            if (result?.Objects != null)
+            {
+                foreach (var node in result.Objects)
                 {
                     var filePath = node.Tags?["FilePath"] ?? "Unknown";
                     var name = node.Name ?? "Unnamed";
                     var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC");
                     var documentType = node.Tags?["DocumentType"] ?? "Unknown";
                     var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
+
+                    if (!FileIngester.IsFileCompleted(filePath))
+                        continue;
 
                     uniqueFiles.Add(new FileViewModel
                     {
@@ -70,7 +94,25 @@ namespace View.Personal.Helpers
                     });
                 }
 
-            return uniqueFiles;
+                pagination.TotalItems = (int)result.TotalRecords;
+                pagination.RecordsRemaining = (int)result.RecordsRemaining;
+            }
+            return (uniqueFiles, pagination);
+        }
+
+        /// <summary>
+        /// Retrieves document nodes from LiteGraph and converts them into a list of FileViewModel objects
+        /// This is the original method signature for backward compatibility
+        /// <param name="liteGraph">The LiteGraphClient instance for graph operations</param>
+        /// <param name="tenantGuid">The unique identifier for the tenant</param>
+        /// <param name="graphGuid">The unique identifier for the graph</param>
+        /// Returns:
+        /// A List of FileViewModel objects representing the document nodes; empty if no nodes are found
+        /// </summary>
+        public static List<FileViewModel> GetDocumentNodes(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
+        {
+            var (files, _) = GetDocumentNodes(liteGraph, tenantGuid, graphGuid, 10, 0);
+            return files;
         }
 
         /// <summary>
@@ -127,7 +169,7 @@ namespace View.Personal.Helpers
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    app.Log($"[INFO] Skipping empty atom at index {atomIndex}");
+                    app.Log(Enums.SeverityEnum.Info, $"Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }

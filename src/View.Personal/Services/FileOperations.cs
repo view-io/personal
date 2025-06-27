@@ -2,11 +2,17 @@ namespace View.Personal.Services
 {
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
+    using Avalonia.Threading;
     using Classes;
+    using LiteGraph;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
+    using View.Personal.Enums;
+    using View.Personal.Helpers;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Provides methods for handling various file operations within the application.
@@ -43,14 +49,14 @@ namespace View.Personal.Services
                 Process.Start("explorer.exe", $"/select,\"{file.FilePath}\"");
 
                 App? app = App.Current as App;
-                app?.Log($"[INFO] Opened file explorer for '{file.Name}'.");
-                app?.LogInfoToFile($"[INFO] Opened file explorer for '{file.Name}'.");
+                app?.Log(SeverityEnum.Info, $"Opened file explorer for '{file.Name}'.");
+                app?.LogInfoToFile($"{SeverityEnum.Info} Opened file explorer for '{file.Name}'.");
             }
             catch (Exception ex)
             {
                 App? app = App.Current as App;
-                app?.Log($"[ERROR] Error opening file explorer for '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Error opening file explorer for {file.Name}");
+                app?.Log(SeverityEnum.Error, $"Error opening file explorer for '{file.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error opening file explorer for {file.Name}");
 
                 if (window is MainWindow mainWindow)
                 {
@@ -67,6 +73,7 @@ namespace View.Personal.Services
         /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task ReprocessFileAsync(FileViewModel file, Window window)
         {
+            ProgressBar? spinner = null;
             try
             {
                 if (file == null || string.IsNullOrEmpty(file.FilePath))
@@ -88,18 +95,28 @@ namespace View.Personal.Services
                 }
 
                 App? app = App.Current as App;
-                app?.Log($"[INFO] Reprocessing file '{file.Name}'.");
-                app?.LogInfoToFile($"[INFO] Reprocessing file '{file.Name}'.");
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                    if (spinner != null)
+                    {
+                        spinner.IsVisible = true;
+                        spinner.IsIndeterminate = true;
+                    }
+                }, DispatcherPriority.Normal);
+
+                app?.Log(SeverityEnum.Info, $"Reprocessing file '{file.Name}'.");
+                app?.LogInfoToFile($"{SeverityEnum.Info} Reprocessing file '{file.Name}'.");
 
                 if (window is MainWindow mainWindowInstance)
                 {
                     var liteGraph = app?._LiteGraph ?? throw new InvalidOperationException("LiteGraph instance is null.");
                     var tenantGuid = app?._TenantGuid ?? Guid.Empty;
                     var activeGraphGuid = mainWindowInstance.ActiveGraphGuid;
-                    var result = FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
+                    var result = await FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
                     if (result != false)
                     {
-                        await mainWindowInstance.ReIngestFileAsync(file.FilePath);
+                        await mainWindowInstance.ReIngestFileAsync(file.FilePath ?? string.Empty);
                         mainWindowInstance.ShowNotification("File Reprocessed", $"{file.Name} was reprocessed successfully!", NotificationType.Success);
                     }
                 }
@@ -107,13 +124,18 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 App? app = App.Current as App;
-                app?.Log($"[ERROR] Error reprocessing file '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Error reprocessing file {file.Name}");
+                app?.Log(SeverityEnum.Error, $"Error reprocessing file '{file.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error reprocessing file {file.Name}");
 
                 if (window is MainWindow mainWindowInstance)
                 {
                     mainWindowInstance.ShowNotification("Reprocessing Error", $"Something went wrong: {ex.Message}", NotificationType.Error);
                 }
+            }
+            finally
+            {
+                if (spinner != null)
+                    await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
             }
         }
     }

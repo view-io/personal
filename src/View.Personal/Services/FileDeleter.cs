@@ -1,18 +1,21 @@
-namespace View.Personal.Services
+﻿namespace View.Personal.Services
 {
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
+    using Avalonia.Threading;
     using Classes;
     using Helpers;
     using LiteGraph;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using View.Personal.Enums;
+    using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
     /// Provides methods for handling file deletion operations within the application.
@@ -36,61 +39,32 @@ namespace View.Personal.Services
         public static async Task DeleteFile_ClickAsync(object sender, RoutedEventArgs e, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
+            ProgressBar spinner = null;
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
-
                     var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
                                         $"Are you sure you want to delete '{file.Name}'?", MessageBoxIcon.Warning);
 
                     if (result != ButtonResult.Yes)
                         return;
-
                     var app = (App)App.Current;
-
-                    var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
-                    var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                    app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
-
-                    if (chunkNodeGuids.Any())
+                    var mainWindow = window as MainWindow;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                        app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
-                    }
-
-                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                    app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
-
-                    if (window is MainWindow mainWindow)
-                    {
-                        var filePath = file.FilePath;
-                        app?.Log($"[DEBUG] FilePath: '{filePath}'");
-                        app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
-
-                        if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
-                                watchedPath == filePath ||
-                                (Directory.Exists(watchedPath) &&
-                                 filePath.StartsWith(watchedPath + Path.DirectorySeparatorChar))))
-                            app?.Log(
-                                $"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
-                        else
-                            app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
-
-                        await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mainWindow);
-
-                        var filesDataGrid = mainWindow.FindControl<DataGrid>("FilesDataGrid");
-                        if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
+                        spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                        if (spinner != null)
                         {
-                            var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
-                            if (itemToRemove != null)
-                                fileCollection.Remove(itemToRemove);
-                            var fileCount = fileCollection.Count;
-                            var uploadFilesPanel = mainWindow.FindControl<Border>("UploadFilesPanel");
-                            var fileOperationsPanel = mainWindow.FindControl<Grid>("FileOperationsPanel");
-                            uploadFilesPanel.IsVisible = fileCount == 0;
-                            fileOperationsPanel.IsVisible = fileCount > 0;
+                            spinner.IsVisible = true;
+                            spinner.IsIndeterminate = true;
                         }
+                    }, DispatcherPriority.Normal);
+                    bool deleteSuccess = await DeleteFile(file, liteGraph, tenantGuid, graphGuid, window);
 
+                    if (deleteSuccess && mainWindow != null)
+                    {
+                        FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
+                        await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                         mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
                             NotificationType.Success);
                     }
@@ -98,11 +72,16 @@ namespace View.Personal.Services
                 catch (Exception ex)
                 {
                     var app = (App)App.Current;
-                    app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                    app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
+                    app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                    app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                             NotificationType.Error);
+                }
+                finally
+                {
+                    if (spinner != null)
+                        await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
                 }
         }
 
@@ -116,81 +95,117 @@ namespace View.Personal.Services
         /// <param name="graphGuid">The graph GUID that contains the file nodes.</param>
         /// <param name="window">The parent window for displaying notifications and UI refresh.</param>
         /// <returns>A task that completes when all selected files have been processed for deletion.</returns>
-
         public static async Task DeleteSelectedFilesAsync(IEnumerable<FileViewModel> files, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             if (files == null) return;
+            var filesList = files.ToList();
+            if (!filesList.Any()) return;
 
             var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                           $"Are you sure you want to delete {files.Count()} selected files?", MessageBoxIcon.Warning);
+                           $"Are you sure you want to delete {filesList.Count} selected files?", MessageBoxIcon.Warning);
             if (result != ButtonResult.Yes) return;
 
+            var app = (App)App.Current;
+            var mainWindow = window as MainWindow;
+            ProgressBar spinner = null;
 
-            foreach (var file in files.ToList())
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                try
+                spinner = window.FindControl<ProgressBar>("IngestSpinner");
+                if (spinner != null)
                 {
-                    var app = (App)App.Current;
-                    var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
-                    var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                    app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                    spinner.IsVisible = true;
+                    spinner.IsIndeterminate = true;
+                }
+            }, DispatcherPriority.Normal);
 
-                    if (chunkNodeGuids.Any())
+            try
+            {
+                var successfulDeletes = new ConcurrentBag<Guid>();
+                var failedDeletes = new ConcurrentBag<string>();
+                var filesDataGrid = mainWindow?.FindControl<DataGrid>("FilesDataGrid");
+                ObservableCollection<FileViewModel> fileCollection = null;
+
+                if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> collection)
+                {
+                    fileCollection = collection;
+                }
+
+                foreach (var file in filesList)
+                {
+                    try
                     {
-                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                        app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
+                        await Task.Run(() =>
+                        {
+                            var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
+                            var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
+                            app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+
+                            if (chunkNodeGuids.Any())
+                            {
+                                liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
+                                app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
+                            }
+
+                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
+                            app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                            FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
+                            if (mainWindow != null)
+                            {
+                                var filePath = file.FilePath;
+                                if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
+                                        watchedPath == filePath ||
+                                        (System.IO.Directory.Exists(watchedPath) &&
+                                         filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
+                                    app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                            }
+                        });
+
+
+                        if (mainWindow != null)
+                            await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                        successfulDeletes.Add(file.NodeGuid);
                     }
-
-                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                    app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
-
-                    if (window is MainWindow mainWindow)
+                    catch (Exception ex)
                     {
-                        var filePath = file.FilePath;
-                        app?.Log($"[DEBUG] FilePath: '{filePath}'");
-                        app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
-
-                        if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
-                                watchedPath == filePath ||
-                                (System.IO.Directory.Exists(watchedPath) &&
-                                 filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                            app?.Log($"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
-                        else
-                            app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+                        failedDeletes.Add(file.Name ?? string.Empty);
+                        app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                        app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                     }
                 }
-                catch (Exception ex)
+
+                if (mainWindow != null)
                 {
-                    var app = (App)App.Current;
-                    app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                    app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
-                    if (window is MainWindow mainWindow)
-                        mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
-                            NotificationType.Error);
+                    if (failedDeletes.Any())
+                    {
+                        mainWindow.ShowNotification("Deletion Warning",
+                            $"Deleted {successfulDeletes.Count} files. Failed to delete {failedDeletes.Count} files.",
+                            NotificationType.Warning);
+                    }
+                    else
+                    {
+                        mainWindow.ShowNotification("Files Deleted",
+                            $"{successfulDeletes.Count} files were deleted successfully!",
+                            NotificationType.Success);
+                    }
                 }
             }
-            if (window is MainWindow mw)
+            catch (Exception ex)
             {
-                await FileListHelper.RefreshFileList(liteGraph, tenantGuid, graphGuid, mw);
-                var filesDataGrid = mw.FindControl<DataGrid>("FilesDataGrid");
-                if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> fileCollection)
-                {
-                    foreach (var file in files)
-                    {
-                        var itemToRemove = fileCollection.FirstOrDefault(f => f.NodeGuid == file.NodeGuid);
-                        if (itemToRemove != null)
-                            fileCollection.Remove(itemToRemove);
-                    }
-                    var fileCount = fileCollection.Count;
-                    var uploadFilesPanel = mw.FindControl<Border>("UploadFilesPanel");
-                    var fileOperationsPanel = mw.FindControl<Grid>("FileOperationsPanel");
-                    uploadFilesPanel.IsVisible = fileCount == 0;
-                    fileOperationsPanel.IsVisible = fileCount > 0;
-                }
-                mw.ShowNotification("Files Deleted", $"{files.Count()} files were deleted successfully!", NotificationType.Success);
+                app?.Log(SeverityEnum.Error, $"Error in batch file deletion: {ex.Message}");
+                app?.LogExceptionToFile(ex, "Error in batch file deletion");
+                if (mainWindow != null)
+                    mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
+                        NotificationType.Error);
+            }
+            finally
+            {
+                if (spinner != null)
+                    await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
             }
         }
+
 
         /// <summary>
         /// Deletes a single file and its associated chunk nodes from LiteGraph,
@@ -202,53 +217,112 @@ namespace View.Personal.Services
         /// <param name="graphGuid">The GUID representing the active graph containing the file.</param>
         /// <param name="window">The parent <see cref="Window"/> used for logging and optional UI updates.</param>
         /// <returns>A <see cref="Task{Boolean}"/> returning <c>true</c> if deletion succeeded; otherwise, <c>false</c>.</returns>
-
-        public static bool DeleteFile(FileViewModel file, LiteGraphClient liteGraph,
+        public static async Task<bool> DeleteFile(FileViewModel file, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
             if (file == null) return false;
+            var app = (App)App.Current;
+            var mainWindow = window as MainWindow;
             try
             {
-                var app = (App)App.Current;
-                var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
-                var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                app?.Log($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
-                app?.LogInfoToFile($"[INFO] Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
-
-                if (chunkNodeGuids.Any())
+                await Task.Run(() =>
                 {
-                    liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                    app?.Log($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
-                    app?.LogInfoToFile($"[INFO] Deleted {chunkNodeGuids.Count} chunk nodes");
-                }
+                    var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
+                    var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
+                    app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                    app?.LogInfoToFile($"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
 
-                liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                app?.Log($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
-                app?.LogInfoToFile($"[INFO] Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                    if (chunkNodeGuids.Any())
+                    {
+                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
+                        app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
+                        app?.LogInfoToFile($"Deleted {chunkNodeGuids.Count} chunk nodes");
+                    }
 
-                if (window is MainWindow mainWindow)
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
+                    app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                    app?.LogInfoToFile($"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                });
+
+                if (mainWindow != null)
                 {
                     var filePath = file.FilePath;
-                    app?.Log($"[DEBUG] FilePath: '{filePath}'");
-                    app?.Log($"[DEBUG] WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
+                    app?.Log(SeverityEnum.Debug, $"FilePath: '{filePath}'");
+                    app?.Log(SeverityEnum.Debug, $"WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
 
                     if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
                             watchedPath == filePath ||
                             (System.IO.Directory.Exists(watchedPath) &&
                              filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                        app?.Log($"[WARN] File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                        app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
                     else
-                        app?.Log($"[DEBUG] File '{file.Name}' not watched or FilePath unavailable.");
+                        app?.Log(SeverityEnum.Debug, $"File '{file.Name}' not watched or FilePath unavailable.");
                 }
             }
             catch (Exception ex)
             {
-                var app = (App)App.Current;
-                app?.Log($"[ERROR] Error deleting file '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Error deleting file {file.Name}");
+                app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
+                app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
+                return false;
             }
             return true;
         }
+
+        /// <summary>
+        /// Asynchronously removes incomplete file nodes and their associated chunk nodes from the graph,
+        /// based on the ingestion completion status tracked in <c>FileIngester</c>.
+        /// </summary>
+        /// <param name="liteGraph">The <see cref="LiteGraphClient"/> instance used to access and delete graph nodes.</param>
+        /// <param name="tenantGuid">The unique identifier of the tenant owning the graph data.</param>
+        /// <param name="graphGuid">The unique identifier of the graph where the document nodes reside.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous cleanup operation.</returns>
+        public static async Task CleanupIncompleteFilesAsync(LiteGraphClient liteGraph, Guid tenantGuid, Guid graphGuid)
+        {
+            var app = (App)App.Current;
+
+            var documentNodes = await Task.Run(() =>
+                liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
+                ?? new List<Node>());
+
+            var incompleteNodes = documentNodes
+                .Where(node =>
+                {
+                    var filePath = node.Tags?["FilePath"];
+                    return !FileIngester.IsFileCompleted(filePath ?? string.Empty);
+                })
+                .GroupBy(node => node.GUID) // prevent multiple deletions of same node
+                .Select(g => g.First())
+                .ToList();
+
+            foreach (var node in incompleteNodes)
+            {
+                var filePath = node.Tags?["FilePath"];
+                try
+                {
+                    app?.Log(SeverityEnum.Warn, $"[Cleanup] Removing incomplete file node: {filePath} ({node.GUID})");
+
+                    // Delete child chunk nodes
+                    var chunkNodes = await Task.Run(() =>
+                        liteGraph.Node.ReadChildren(tenantGuid, graphGuid, node.GUID)?.ToList()
+                        ?? new List<Node>());
+
+                    var chunkGuids = chunkNodes.Select(c => c.GUID).ToList();
+
+                    if (chunkGuids.Any())
+                        liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkGuids);
+
+                    // Delete parent document node
+                    liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
+
+                    app?.Log(SeverityEnum.Info, $"[Cleanup] Removed incomplete file node: {filePath} ({node.GUID})");
+                }
+                catch (Exception ex)
+                {
+                    app?.Log(SeverityEnum.Error, $"[Cleanup Error] {filePath}: {ex.Message}");
+                }
+            }
+        }
+
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }

@@ -8,6 +8,7 @@ namespace View.Personal.UIHandlers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using View.Personal.Services;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing navigation in the user interface.
@@ -44,6 +45,7 @@ namespace View.Personal.UIHandlers
             {
                 var chatHistoryList = window.FindControl<ComboBox>("ChatHistoryList");
                 var mainWindow = window as MainWindow;
+                if (mainWindow == null) return;
                 var consolePanel = window.FindControl<Border>("ConsolePanel");
                 var dashboardPanel = window.FindControl<Border>("DashboardPanel");
                 var settingsPanel2 = window.FindControl<Grid>("SettingsPanel2");
@@ -94,26 +96,26 @@ namespace View.Personal.UIHandlers
 
                                 if (filesDataGrid != null && uploadFilesPanel != null && fileOperationsPanel != null)
                                 {
-                                    _ = Task.Run(() =>
+                                    ProgressBar spinner = null;
+                                    Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        var uniqueFiles = MainWindowHelpers.GetDocumentNodes(liteGraph, tenantGuid, graphGuid);
-                                        Dispatcher.UIThread.InvokeAsync(() =>
+                                        spinner = window.FindControl<ProgressBar>("NavigationSpinner");
+                                        if (spinner != null)
                                         {
-                                            if (uniqueFiles.Any())
+                                            spinner.IsVisible = true;
+                                            spinner.IsIndeterminate = true;
+                                        }
+                                    }, DispatcherPriority.Normal);
+                                    _ = Task.Run(async () =>
+                                    {
+                                        await FilePaginationHelper.LoadFirstPageAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                                        if (spinner != null)
+                                        {
+                                            await Dispatcher.UIThread.InvokeAsync(() =>
                                             {
-                                                filesDataGrid.ItemsSource = uniqueFiles;
-                                                filesDataGrid.IsVisible = true;
-                                                uploadFilesPanel.IsVisible = false;
-                                                fileOperationsPanel.IsVisible = true;
-                                            }
-                                            else
-                                            {
-                                                filesDataGrid.ItemsSource = null;
-                                                filesDataGrid.IsVisible = false;
-                                                fileOperationsPanel.IsVisible = false;
-                                                uploadFilesPanel.IsVisible = true;
-                                            }
-                                        });
+                                                spinner.IsVisible = false;
+                                            }, DispatcherPriority.Normal);
+                                        }
                                     });
                                 }
                             }
@@ -127,6 +129,7 @@ namespace View.Personal.UIHandlers
                         case "Settings2":
                             if (settingsPanel2 != null) settingsPanel2.IsVisible = true;
                             MainWindowUIHandlers.LoadSettingsToUI((MainWindow)window);
+                            MainWindowUIHandlers.LoadGraphsDataGridToUI((MainWindow)window);
                             break;
                     }
 

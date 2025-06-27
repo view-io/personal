@@ -15,6 +15,7 @@ namespace View.Personal.UIHandlers
     using System.Linq;
     using System.Threading.Tasks;
     using View.Personal.Controls.Renderer;
+    using View.Personal.Enums;
 
     /// <summary>
     /// Provides static event handlers and utility methods for managing the chat user interface.
@@ -72,6 +73,7 @@ namespace View.Personal.UIHandlers
             var scrollViewer = mainWindow.FindControl<ScrollViewer>("ChatScrollViewer");
 
             string userText = "";
+            string chatTitle = "";
             if (inputBox != null && !string.IsNullOrWhiteSpace(inputBox.Text))
             {
                 userText = inputBox.Text.Trim();
@@ -84,7 +86,7 @@ namespace View.Personal.UIHandlers
             }
             else
             {
-                app.Log("[WARN] User tried to send an empty or null message.");
+                app.Log(SeverityEnum.Warn, "User tried to send an empty or null message.");
                 return;
             }
 
@@ -95,7 +97,7 @@ namespace View.Personal.UIHandlers
             // Handle first message in the session
             if (currentMessages.Count == 1)
             {
-                mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
+                mainWindow.CurrentChatSession.Title = "New Chat";
                 var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                 if (chatHistoryList != null)
                 {
@@ -122,7 +124,13 @@ namespace View.Personal.UIHandlers
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
-                app.Log("[DEBUG] Calling GetAIResponse...");
+                var summarizationTask = Task.Run(async () => 
+                {
+                    var title = await GenerateConversationSummary(currentMessages, mainWindow);
+                    return title;
+                });
+                
+                app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
                 var firstTokenReceived = false;
                 var finalResponse = await getAIResponse(userText, (tokenChunk) =>
                 {
@@ -130,14 +138,34 @@ namespace View.Personal.UIHandlers
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
-                        Dispatcher.UIThread.Post(() => {
+                        Dispatcher.UIThread.Post(() =>
+                        {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
+                            
+                            mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
+                            
+                            var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
+                            if (chatHistoryList != null)
+                            {
+                                var existingItem = chatHistoryList.Items
+                                    .OfType<ListBoxItem>()
+                                    .FirstOrDefault(item => item.Tag == mainWindow.CurrentChatSession);
+                                if (existingItem != null)
+                                {
+                                    existingItem.Content = summarizationTask.Result;
+                                    ToolTip.SetTip(existingItem, existingItem.Content);
+                                    var currentIndex = chatHistoryList.SelectedIndex;
+                                    chatHistoryList.SelectedIndex = -1;
+                                    chatHistoryList.SelectedIndex = currentIndex;
+                                }
+                            }
                         }, DispatcherPriority.Background);
                     }
                     else
                     {
-                        Dispatcher.UIThread.Post(() => {
+                        Dispatcher.UIThread.Post(() =>
+                        {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
                         }, DispatcherPriority.Background);
@@ -152,7 +180,7 @@ namespace View.Personal.UIHandlers
                 else if (string.IsNullOrEmpty(assistantMsg.Content))
                 {
                     assistantMsg.Content = "No response received from the AI.";
-                    app.Log("[WARN] No content accumulated in assistant message.");
+                    app.LogWithTimestamp(SeverityEnum.Warn, "No content accumulated in assistant message.");
                 }
 
                 // Final UI update
@@ -162,9 +190,8 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                app.Log(
-                    $"[ERROR] Exception in SendMessageTest_Click: {ex.Message}\nStackTrace: {ex.StackTrace}");
-                app?.LogExceptionToFile(ex, $"[ERROR] Exception in SendMessageTest_Click");
+                app.LogWithTimestamp(SeverityEnum.Error, $"Exception in SendMessageTest_Click: {ex.Message}\n\nStackTrace: {ex.StackTrace}");
+                app?.LogExceptionToFile(ex, $"Exception in SendMessageTest_Click");
                 if (currentMessages.Last().Role == "assistant")
                     currentMessages.Last().Content = $"Error: {ex.Message}";
                 UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
@@ -186,6 +213,83 @@ namespace View.Personal.UIHandlers
                 return message;
             return string.Join(" ", words.Take(wordCount)) + "...";
         }
+
+        /// <summary>
+        /// Generates a summary of the conversation for use as a chat title using AI.
+        /// </summary>
+        /// <param name="messages">The list of chat messages to summarize.</param>
+        /// <param name="mainWindow">An instance of the <see cref="MainWindow"/> class used to access the AI summarization method.</param>
+        /// <param name="maxLength">The maximum length of the summary. Defaults to 30 characters.</param>
+        /// <returns>A summarized title for the conversation.</returns>
+        public static async Task<string> GenerateConversationSummary(
+                List<ChatMessage> messages,
+                MainWindow mainWindow,
+                int maxLength = 30)
+        {
+            if (messages == null || messages.Count == 0)
+                return "New Chat";
+
+            try
+            {
+                var conversationText = string.Join("\n", messages.Select(m => $"{m.Role}: {m.Content}"));
+                var summaryPrompt = $"""
+                                        You will be given a series of user messages from a single chat conversation.
+
+                                        Your task is to create a single, short title that summarizes the main topic(s) of the entire conversation based on these user inputs.
+
+                                        Rules:
+                                        - The title must be under {maxLength} characters.
+                                        - Respond ONLY with the plain text title.
+                                        - Do NOT wrap the title in quotes, asterisks, markdown, or any formatting.
+                                        - Do NOT include prefixes like "Title:" or explanations.
+                                        - Output a single line with just the title.
+
+                                        User Messages:
+                                        {conversationText}
+                                     """;
+
+
+                var summary = await mainWindow.SummarizeChat(summaryPrompt, null!);
+
+                if (!string.IsNullOrEmpty(summary))
+                {
+                    summary = summary.Trim();
+                    if ((summary.StartsWith('"') && summary.EndsWith('"')) ||
+                        (summary.StartsWith("'") && summary.EndsWith("'")))
+                    {
+                        summary = summary.Substring(1, summary.Length - 2);
+                    }
+
+                    return summary;
+                }
+            }
+            catch (Exception ex)
+            {
+                var app = (App)App.Current;
+                app.LogWithTimestamp(SeverityEnum.Error, $"Error generating conversation summary: {ex.Message}");
+            }
+
+            // Fallback logic
+            var firstUserMessage = messages.FirstOrDefault(m => m.Role == "user");
+            if (firstUserMessage != null)
+            {
+                var userContent = firstUserMessage.Content?.Trim() ?? "";
+                if (userContent.Length > maxLength)
+                {
+                    var truncated = userContent.Substring(0, maxLength - 3);
+                    var lastSpace = truncated.LastIndexOf(' ');
+                    if (lastSpace > maxLength * 0.7)
+                    {
+                        truncated = truncated.Substring(0, lastSpace);
+                    }
+                    return truncated + "...";
+                }
+                return userContent;
+            }
+
+            return "New Chat";
+        }
+
 
         /// <summary>
         /// Handles key down events for the chat input box, triggering message sending when the Enter key is pressed.
@@ -220,7 +324,7 @@ namespace View.Personal.UIHandlers
             // Cast the Window parameter to MainWindow to access its members
             var mainWindow = window as MainWindow;
 
-            // Check if the cast succeeded and if there’s a current chat session
+            // Check if the cast succeeded and if there's a current chat session
             if (mainWindow != null)
             {
                 // Clear the messages in the current chat session
@@ -281,14 +385,14 @@ namespace View.Personal.UIHandlers
                 {
                     await File.WriteAllLinesAsync(filePath,
                         conversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
-                    app.Log($"[INFO] Chat history saved to {filePath}");
+                    app.Log(SeverityEnum.Info, $"Chat history saved to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    app.Log($"[ERROR] Error saving chat history: {ex.Message}");
+                    app.Log(SeverityEnum.Error, $"Error saving chat history: {ex.Message}");
                 }
             else
-                app.Log("[WARN] No file path selected for chat history download.");
+                app.Log(SeverityEnum.Warn, "No file path selected for chat history download.");
         }
 
         /// <summary>
@@ -377,8 +481,6 @@ namespace View.Personal.UIHandlers
 
                 }
 
-
-
                 // Ensure scroll viewer scrolls to bottom when new messages are added
                 var scrollViewer = window.FindControl<ScrollViewer>("ChatScrollViewer");
                 if (scrollViewer != null && conversationHistory.Any())
@@ -389,7 +491,7 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
-
+       
         #endregion
     }
 }

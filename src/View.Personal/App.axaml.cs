@@ -8,7 +8,6 @@ namespace View.Personal
     using LiteGraph;
     using LiteGraph.GraphRepositories;
     using LiteGraph.GraphRepositories.Sqlite;
-    using View.Personal.Helpers;
     using Services;
     using SyslogLogging;
     using System;
@@ -18,6 +17,10 @@ namespace View.Personal
     using System.Linq;
     using System.Text.Json;
     using Timestamps;
+    using Tmds.DBus.Protocol;
+    using View.Personal.Helpers;
+    using View.Personal.Enums;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Main application class for View Personal.
@@ -237,6 +240,13 @@ namespace View.Personal
                     _Logging.Debug(_Header + "Showing MainWindow");
                     _FileLogging.Info(_Header + "Showing MainWindow");
                     desktop.MainWindow.Show();
+                    
+                    // Preload models in background after window is shown
+                    _ = Task.Run(async () =>
+                    {
+                            var localModelService = new Services.LocalModelService(this);
+                            await localModelService.PreloadModelsAtStartupAsync();
+                    });
                 }
                 catch (Exception e)
                 {
@@ -251,12 +261,40 @@ namespace View.Personal
         }
 
         /// <summary>
-        /// Logs a message to the console output in the UI and system console.
+        /// Logs a message with a severity level to the console output in the UI and system console.
         /// </summary>
-        /// <param name="message">The message to log.</param>
-        public void Log(string message)
+        /// <param name="severity">The severity level of the message as an enum value.</param>
+        /// <param name="message">The message content to be logged.</param>
+        public void Log(Enums.SeverityEnum severity, string message)
         {
-            LoggingService?.Log(message);
+            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {message}");
+        }
+
+        /// <summary>
+        /// Logs a message with a timestamp and severity level to both the application UI and system console.
+        /// </summary>
+        /// <param name="severity">The severity level of the message as an enum value.</param>
+        /// <param name="message">The message content to be logged.</param>
+        public void LogWithTimestamp(Enums.SeverityEnum severity, string message)
+        {
+            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
+        }
+
+        /// <summary>
+        /// Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
+        /// including seconds in the output.
+        /// </summary>
+        /// <param name="dateTime">The DateTime to format.</param>
+        /// <returns>Formatted date time string with seconds.</returns>
+        public string FormatLastModifiedDateTime(DateTime dateTime)
+        {
+            var uses24HourFormat =
+                !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
+
+            var timeFormat = uses24HourFormat ? "HH:mm:ss" : "hh:mm:ss tt";
+            var dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
+
+            return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -297,7 +335,7 @@ namespace View.Personal
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never
                 };
                 var json = JsonSerializer.Serialize(ApplicationSettings, options);
                 File.WriteAllText(_SettingsFilePath, json);
@@ -330,18 +368,27 @@ namespace View.Personal
                 {
                     OpenAICompletionApiKey = ApplicationSettings.OpenAI.ApiKey,
                     OpenAICompletionModel = ApplicationSettings.OpenAI.CompletionModel,
-                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint
+                    OpenAIEndpoint = ApplicationSettings.OpenAI.Endpoint,
+                    BatchSize = ApplicationSettings.OpenAI.BatchSize,
+                    MaxRetries = ApplicationSettings.OpenAI.MaxRetries,
+                    Temperature = ApplicationSettings.OpenAI.Temperature
                 },
                 CompletionProviderTypeEnum.Anthropic => new CompletionProviderSettings(providerType)
                 {
                     AnthropicApiKey = ApplicationSettings.Anthropic.ApiKey,
                     AnthropicCompletionModel = ApplicationSettings.Anthropic.CompletionModel,
-                    AnthropicEndpoint = ApplicationSettings.Anthropic.Endpoint
+                    AnthropicEndpoint = ApplicationSettings.Anthropic.Endpoint,
+                    BatchSize = ApplicationSettings.Anthropic.BatchSize,
+                    MaxRetries = ApplicationSettings.Anthropic.MaxRetries,
+                    Temperature = ApplicationSettings.Anthropic.Temperature
                 },
                 CompletionProviderTypeEnum.Ollama => new CompletionProviderSettings(providerType)
                 {
                     OllamaCompletionModel = ApplicationSettings.Ollama.CompletionModel,
-                    OllamaEndpoint = ApplicationSettings.Ollama.Endpoint
+                    OllamaEndpoint = ApplicationSettings.Ollama.Endpoint,
+                    BatchSize = ApplicationSettings.Ollama.BatchSize,
+                    MaxRetries = ApplicationSettings.Ollama.MaxRetries,
+                    Temperature = ApplicationSettings.Ollama.Temperature
                 },
                 CompletionProviderTypeEnum.View => new CompletionProviderSettings(providerType)
                 {
@@ -349,7 +396,10 @@ namespace View.Personal
                     ViewAccessKey = ApplicationSettings.View.AccessKey,
                     ViewEndpoint = ApplicationSettings.View.Endpoint,
                     OllamaHostName = ApplicationSettings.View.OllamaHostName,
-                    ViewCompletionModel = ApplicationSettings.View.CompletionModel
+                    ViewCompletionModel = ApplicationSettings.View.CompletionModel,
+                    BatchSize = ApplicationSettings.View.BatchSize,
+                    MaxRetries = ApplicationSettings.View.MaxRetries,
+                    Temperature = ApplicationSettings.View.Temperature
                 },
                 _ => new CompletionProviderSettings(providerType)
             };

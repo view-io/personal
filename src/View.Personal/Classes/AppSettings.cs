@@ -82,6 +82,26 @@ namespace View.Personal.Classes
             /// The endpoint URL for OpenAI API requests.
             /// </summary>
             public string Endpoint { get; set; } = "";
+            
+            /// <summary>
+            /// The batch size for API requests.
+            /// </summary>
+            public int BatchSize { get; set; } = 10;
+            
+            /// <summary>
+            /// The maximum number of retries for failed API requests.
+            /// </summary>
+            public int MaxRetries { get; set; } = 3;
+            
+            /// <summary>
+            /// The temperature setting for controlling randomness in completions.
+            /// </summary>
+            public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// Settings for Retrieval Augmented Generation (RAG).
+            /// </summary>
+            public RAGSettings RAG { get; set; } = new();
         }
 
         /// <summary>
@@ -108,6 +128,26 @@ namespace View.Personal.Classes
             /// The endpoint URL for Anthropic API requests.
             /// </summary>
             public string Endpoint { get; set; } = "";
+            
+            /// <summary>
+            /// The batch size for API requests.
+            /// </summary>
+            public int BatchSize { get; set; } = 10;
+            
+            /// <summary>
+            /// The maximum number of retries for failed API requests.
+            /// </summary>
+            public int MaxRetries { get; set; } = 3;
+            
+            /// <summary>
+            /// The temperature setting for controlling randomness in completions.
+            /// </summary>
+            public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// Settings for Retrieval Augmented Generation (RAG).
+            /// </summary>
+            public RAGSettings RAG { get; set; } = new();
         }
 
         /// <summary>
@@ -129,6 +169,26 @@ namespace View.Personal.Classes
             /// The endpoint URL for Ollama API requests.
             /// </summary>
             public string Endpoint { get; set; } = "";
+            
+            /// <summary>
+            /// The batch size for API requests.
+            /// </summary>
+            public int BatchSize { get; set; } = 10;
+            
+            /// <summary>
+            /// The maximum number of retries for failed API requests.
+            /// </summary>
+            public int MaxRetries { get; set; } = 3;
+            
+            /// <summary>
+            /// The temperature setting for controlling randomness in completions.
+            /// </summary>
+            public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// Settings for Retrieval Augmented Generation (RAG).
+            /// </summary>
+            public RAGSettings RAG { get; set; } = new();
         }
 
         /// <summary>
@@ -185,6 +245,53 @@ namespace View.Personal.Classes
             /// Indicates whether the View provider is enabled.
             /// </summary>
             public bool IsEnabled { get; set; }
+            
+            /// <summary>
+            /// The batch size for API requests.
+            /// </summary>
+            public int BatchSize { get; set; } = 10;
+            
+            /// <summary>
+            /// The maximum number of retries for failed API requests.
+            /// </summary>
+            public int MaxRetries { get; set; } = 3;
+            
+            /// <summary>
+            /// The temperature setting for controlling randomness in completions.
+            /// </summary>
+            public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// Settings for Retrieval Augmented Generation (RAG).
+            /// </summary>
+            public RAGSettings RAG { get; set; } = new();
+        }
+
+        /// <summary>
+        /// Settings for Retrieval Augmented Generation (RAG).
+        /// </summary>
+        public class RAGSettings
+        {
+            /// <summary>
+            /// Indicates whether RAG functionality is enabled.
+            /// This is the master switch for RAG features.
+            /// </summary>
+            public bool EnableRAG { get; set; } = false;
+
+            /// <summary>
+            /// The knowledge source to use for RAG queries.
+            /// </summary>
+            public string KnowledgeSource { get; set; } = "knowledgebase";
+
+            /// <summary>
+            /// The number of documents to retrieve (Top-K) during RAG queries.
+            /// </summary>
+            public int NumberOfDocumentsToRetrieve { get; set; } = 3;
+
+            /// <summary>
+            /// The similarity threshold for document retrieval during RAG queries.
+            /// </summary>
+            public double SimilarityThreshold { get; set; } = 0.7;
         }
 
         /// <summary>
