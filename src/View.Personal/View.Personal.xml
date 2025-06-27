@@ -2558,6 +2558,13 @@
             <param name="isActive">Whether the model should be active.</param>
             <returns>True if the operation was successful, false otherwise.</returns>
         </member>
+        <member name="M:View.Personal.Services.LocalModelService.IsModelPulledAsync(System.String)">
+            <summary>
+            Checks if a model is already pulled and available locally.
+            </summary>
+            <param name="modelName">The name of the model to check.</param>
+            <returns>A task that resolves to true if the model is pulled, false otherwise.</returns>
+        </member>
         <member name="M:View.Personal.Services.LocalModelService.PreloadModelAsync(System.String)">
             <summary>
             Preloads a model to ensure it's ready for use without delay when needed.
