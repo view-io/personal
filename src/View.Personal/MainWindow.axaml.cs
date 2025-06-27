@@ -417,7 +417,7 @@
             var myFilesPanel = this.FindControl<Grid>("MyFilesPanel");
             var chatPanel = this.FindControl<Border>("ChatPanel");
             var workspaceText = this.FindControl<TextBlock>("WorkspaceText");
-            var dataMonitorPanel = this.FindControl<StackPanel>("DataMonitorPanel");
+            var dataMonitorPanel = this.FindControl<Grid>("DataMonitorPanel");
 
             if (dashboardPanel != null && settingsPanel2 != null && myFilesPanel != null &&
                 chatPanel != null && workspaceText != null && dataMonitorPanel != null)
@@ -437,6 +437,7 @@
 
         /// <summary>
         /// Displays the Console panel and restores its previous height if resized.
+        /// Adjusts the layout to ensure the console pushes content upward rather than overlapping.
         /// </summary>
         public void ShowConsolePanel()
         {
@@ -445,9 +446,35 @@
             {
                 var mainGrid = (Grid)Content;
                 var rowDef = mainGrid.RowDefinitions[2];
+                
+                // Store the current height if not already set
+                if (!_ConsoleRowHeight.IsAbsolute)
+                    _ConsoleRowHeight = new GridLength(200); // Default height
+                
+                // Set the row height to the stored value
+                rowDef.Height = _ConsoleRowHeight;
                 consolePanel.IsVisible = true;
-                if (_ConsoleRowHeight.IsAbsolute)
-                    rowDef.Height = _ConsoleRowHeight;
+                
+                // Adjust the DataMonitorPanel's DataGrid height when console is visible
+                var dataMonitorPanel = this.FindControl<Grid>("DataMonitorPanel");
+                if (dataMonitorPanel != null && dataMonitorPanel.IsVisible)
+                {
+                    var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
+                    if (dataGrid != null)
+                    {
+                        double consoleHeight = _ConsoleRowHeight.Value;
+                        double gridSplitterHeight = 5;
+                        double headerHeight = 80;
+                        double navigationHeight = 50;
+                        
+                        double availableHeight = this.Bounds.Height - consoleHeight - gridSplitterHeight - headerHeight - navigationHeight;
+                        
+                        dataGrid.MaxHeight = Math.Max(200, availableHeight);
+                        dataMonitorPanel.InvalidateMeasure();
+                    }
+                }
+
+                mainGrid.InvalidateMeasure();
             }
         }
 
@@ -461,9 +488,26 @@
             {
                 var mainGrid = (Grid)Content;
                 var rowDef = mainGrid.RowDefinitions[2];
-                _ConsoleRowHeight = rowDef.Height;
+                
+                if (rowDef.Height.IsAbsolute)
+                    _ConsoleRowHeight = rowDef.Height;
                 consolePanel.IsVisible = false;
                 rowDef.Height = GridLength.Auto;
+                
+                var dataMonitorPanel = this.FindControl<Grid>("DataMonitorPanel");
+                if (dataMonitorPanel != null && dataMonitorPanel.IsVisible)
+                {
+                    var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
+                    if (dataGrid != null)
+                    {
+                        dataGrid.MaxHeight = double.PositiveInfinity;
+                        dataGrid.InvalidateMeasure();
+                    }
+                   
+                    dataMonitorPanel.InvalidateMeasure();
+                }
+               
+                mainGrid.InvalidateMeasure();
             }
         }
 
