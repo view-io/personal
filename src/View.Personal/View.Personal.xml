@@ -1969,6 +1969,7 @@
         <member name="M:View.Personal.MainWindow.ShowConsolePanel">
             <summary>
             Displays the Console panel and restores its previous height if resized.
+            Adjusts the layout to ensure the console pushes content upward rather than overlapping.
             </summary>
         </member>
         <member name="M:View.Personal.MainWindow.HideConsolePanel">

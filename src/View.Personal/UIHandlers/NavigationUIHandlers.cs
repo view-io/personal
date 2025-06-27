@@ -52,7 +52,7 @@ namespace View.Personal.UIHandlers
                 var myFilesPanel = window.FindControl<Grid>("MyFilesPanel");
                 var chatPanel = window.FindControl<Border>("ChatPanel");
                 var workspaceText = window.FindControl<TextBlock>("WorkspaceText");
-                var dataMonitorPanel = window.FindControl<StackPanel>("DataMonitorPanel");
+                var dataMonitorPanel = window.FindControl<Grid>("DataMonitorPanel");
 
                 var mainContentArea = window.FindControl<Grid>("MainContentArea");
                 if (mainContentArea != null)
