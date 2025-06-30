@@ -60,7 +60,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("OpenAIEnableRAG").IsChecked = openAiSettings.RAG.EnableRAG;
             window.FindControl<Slider>("OpenAISimilarityThreshold").Value = openAiSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("OpenAISimilarityThresholdValue").Text = openAiSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("OpenAITopK").Text = openAiSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var openAiKnowledgeSource = window.FindControl<ComboBox>("OpenAIKnowledgeSource");
             if (openAiKnowledgeSource != null && !string.IsNullOrEmpty(openAiSettings.RAG.KnowledgeSource))
             {
@@ -69,6 +68,27 @@ namespace View.Personal.UIHandlers
                 if (knowledgeSourceItem != null)
                     openAiKnowledgeSource.SelectedItem = knowledgeSourceItem;
             }
+            
+            // Load OpenAI advanced RAG settings
+            window.FindControl<Slider>("OpenAIMaxRetrieved").Value = openAiSettings.RAG.NumberOfDocumentsToRetrieve;
+            window.FindControl<TextBlock>("OpenAIMaxRetrievedValue").Text = openAiSettings.RAG.NumberOfDocumentsToRetrieve.ToString("F0");
+            window.FindControl<ToggleSwitch>("OpenAIAutoRetrieval").IsChecked = openAiSettings.RAG.AutoRetrieval;
+            window.FindControl<ToggleSwitch>("OpenAIQueryOptimization").IsChecked = openAiSettings.RAG.QueryOptimization;
+            window.FindControl<ToggleSwitch>("OpenAIEnableCitations").IsChecked = openAiSettings.RAG.EnableCitations;
+            window.FindControl<ToggleSwitch>("OpenAIEnableContextSorting").IsChecked = openAiSettings.RAG.EnableContextSorting;
+            window.FindControl<Slider>("OpenAIContextRadius").Value = openAiSettings.RAG.ContextRadius;
+            window.FindControl<TextBlock>("OpenAIContextRadiusValue").Text = openAiSettings.RAG.ContextRadius.ToString("F0");
+            window.FindControl<ToggleSwitch>("OpenAIEnableReranking").IsChecked = openAiSettings.RAG.EnableReranking;
+            window.FindControl<Slider>("OpenAIRerankTopK").Value = openAiSettings.RAG.RerankTopK;
+            window.FindControl<TextBlock>("OpenAIRerankTopKValue").Text = openAiSettings.RAG.RerankTopK.ToString("F0");
+            
+            // Set OpenAI reranking method radio button
+            if (openAiSettings.RAG.RerankingMethod == "chunk")
+                window.FindControl<RadioButton>("OpenAIRerankByChunk").IsChecked = true;
+            else if (openAiSettings.RAG.RerankingMethod == "excerpt")
+                window.FindControl<RadioButton>("OpenAIRerankByExcerpt").IsChecked = true;
+            else if (openAiSettings.RAG.RerankingMethod == "document")
+                window.FindControl<RadioButton>("OpenAIRerankByDocument").IsChecked = true;
 
             window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
@@ -83,7 +103,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("AnthropicEnableRAG").IsChecked = anthropicSettings.RAG.EnableRAG;
             window.FindControl<Slider>("AnthropicSimilarityThreshold").Value = anthropicSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("AnthropicSimilarityThresholdValue").Text = anthropicSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("AnthropicTopK").Text = anthropicSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var anthropicKnowledgeSource = window.FindControl<ComboBox>("AnthropicKnowledgeSource");
             if (anthropicKnowledgeSource != null && !string.IsNullOrEmpty(anthropicSettings.RAG.KnowledgeSource))
             {
@@ -105,7 +124,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("OllamaEnableRAG").IsChecked = ollamaSettings.RAG.EnableRAG;
             window.FindControl<Slider>("OllamaSimilarityThreshold").Value = ollamaSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("OllamaSimilarityThresholdValue").Text = ollamaSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("OllamaTopK").Text = ollamaSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var ollamaKnowledgeSource = window.FindControl<ComboBox>("OllamaKnowledgeSource");
             if (ollamaKnowledgeSource != null && !string.IsNullOrEmpty(ollamaSettings.RAG.KnowledgeSource))
             {
@@ -131,7 +149,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("ViewEnableRAG").IsChecked = viewSettings.RAG.EnableRAG;
             window.FindControl<Slider>("ViewSimilarityThreshold").Value = viewSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("ViewSimilarityThresholdValue").Text = viewSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("ViewTopK").Text = viewSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var viewKnowledgeSource = window.FindControl<ComboBox>("ViewKnowledgeSource");
             if (viewKnowledgeSource != null && !string.IsNullOrEmpty(viewSettings.RAG.KnowledgeSource))
             {
@@ -305,6 +322,58 @@ namespace View.Personal.UIHandlers
                     if (args.Property.Name == "Value")
                     {
                         viewSimilarityThresholdValue.Text = viewSimilarityThreshold.Value.ToString("F1");
+                    }
+                };
+            }
+            
+            // Setup advanced RAG sliders
+            SetupAdvancedRagSliderHandlers(window);
+        }
+        
+        /// <summary>
+        /// Sets up event handlers for advanced RAG sliders to update their corresponding value displays.
+        /// </summary>
+        /// <param name="window">The main window instance.</param>
+        private static void SetupAdvancedRagSliderHandlers(MainWindow window)
+        {
+            // OpenAI provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "OpenAIMaxRetrieved", "OpenAIMaxRetrievedValue");
+            SetupAdvancedRagSlider(window, "OpenAIContextRadius", "OpenAIContextRadiusValue");
+            SetupAdvancedRagSlider(window, "OpenAIRerankTopK", "OpenAIRerankTopKValue");
+            
+            // Anthropic provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "AnthropicMaxRetrieved", "AnthropicMaxRetrievedValue");
+            SetupAdvancedRagSlider(window, "AnthropicContextRadius", "AnthropicContextRadiusValue");
+            SetupAdvancedRagSlider(window, "AnthropicRerankTopK", "AnthropicRerankTopKValue");
+            
+            // Ollama provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "OllamaMaxRetrieved", "OllamaMaxRetrievedValue");
+            SetupAdvancedRagSlider(window, "OllamaContextRadius", "OllamaContextRadiusValue");
+            SetupAdvancedRagSlider(window, "OllamaRerankTopK", "OllamaRerankTopKValue");
+            
+            // View provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "ViewMaxRetrieved", "ViewMaxRetrievedValue");
+            SetupAdvancedRagSlider(window, "ViewContextRadius", "ViewContextRadiusValue");
+            SetupAdvancedRagSlider(window, "ViewRerankTopK", "ViewRerankTopKValue");
+        }
+        
+        /// <summary>
+        /// Sets up event handlers for a specific advanced RAG slider to update its corresponding value display.
+        /// </summary>
+        /// <param name="window">The main window instance.</param>
+        /// <param name="sliderName">The name of the slider control.</param>
+        /// <param name="valueTextBlockName">The name of the TextBlock that displays the slider's value.</param>
+        private static void SetupAdvancedRagSlider(MainWindow window, string sliderName, string valueTextBlockName)
+        {
+            var slider = window.FindControl<Slider>(sliderName);
+            var valueTextBlock = window.FindControl<TextBlock>(valueTextBlockName);
+            if (slider != null && valueTextBlock != null)
+            {
+                slider.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        valueTextBlock.Text = slider.Value.ToString("F0");
                     }
                 };
             }
