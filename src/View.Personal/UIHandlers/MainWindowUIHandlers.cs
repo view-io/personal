@@ -75,8 +75,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<ToggleSwitch>("OpenAIQueryOptimization").IsChecked = openAiSettings.RAG.QueryOptimization;
             window.FindControl<ToggleSwitch>("OpenAIEnableCitations").IsChecked = openAiSettings.RAG.EnableCitations;
             window.FindControl<ToggleSwitch>("OpenAIEnableContextSorting").IsChecked = openAiSettings.RAG.EnableContextSorting;
-            window.FindControl<Slider>("OpenAIContextRadius").Value = openAiSettings.RAG.ContextRadius;
-            window.FindControl<TextBlock>("OpenAIContextRadiusValue").Text = openAiSettings.RAG.ContextRadius.ToString("F0");
 
             window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
@@ -106,8 +104,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<ToggleSwitch>("AnthropicQueryOptimization").IsChecked = anthropicSettings.RAG.QueryOptimization;
             window.FindControl<ToggleSwitch>("AnthropicEnableCitations").IsChecked = anthropicSettings.RAG.EnableCitations;
             window.FindControl<ToggleSwitch>("AnthropicEnableContextSorting").IsChecked = anthropicSettings.RAG.EnableContextSorting;
-            window.FindControl<Slider>("AnthropicContextRadius").Value = anthropicSettings.RAG.ContextRadius;
-            window.FindControl<TextBlock>("AnthropicContextRadiusValue").Text = anthropicSettings.RAG.ContextRadius.ToString("F0");
 
             window.FindControl<TextBox>("OllamaCompletionModel").Text = ollamaSettings.CompletionModel ?? string.Empty;
             window.FindControl<TextBox>("OllamaEndpoint").Text = ollamaSettings.Endpoint ?? string.Empty;
@@ -136,8 +132,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<ToggleSwitch>("OllamaQueryOptimization").IsChecked = ollamaSettings.RAG.QueryOptimization;
             window.FindControl<ToggleSwitch>("OllamaEnableCitations").IsChecked = ollamaSettings.RAG.EnableCitations;
             window.FindControl<ToggleSwitch>("OllamaEnableContextSorting").IsChecked = ollamaSettings.RAG.EnableContextSorting;
-            window.FindControl<Slider>("OllamaContextRadius").Value = ollamaSettings.RAG.ContextRadius;
-            window.FindControl<TextBlock>("OllamaContextRadiusValue").Text = ollamaSettings.RAG.ContextRadius.ToString("F0");
 
             window.FindControl<TextBox>("ViewApiKey").Text = viewSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("ViewEndpoint").Text = viewSettings.Endpoint ?? string.Empty;
@@ -170,8 +164,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<ToggleSwitch>("ViewQueryOptimization").IsChecked = viewSettings.RAG.QueryOptimization;
             window.FindControl<ToggleSwitch>("ViewEnableCitations").IsChecked = viewSettings.RAG.EnableCitations;
             window.FindControl<ToggleSwitch>("ViewEnableContextSorting").IsChecked = viewSettings.RAG.EnableContextSorting;
-            window.FindControl<Slider>("ViewContextRadius").Value = viewSettings.RAG.ContextRadius;
-            window.FindControl<TextBlock>("ViewContextRadiusValue").Text = viewSettings.RAG.ContextRadius.ToString("F0");
 
             // Embedding models
             window.FindControl<TextBox>("OllamaModel").Text = embeddingSettings.OllamaEmbeddingModel ?? string.Empty;
@@ -211,6 +203,7 @@ namespace View.Personal.UIHandlers
             // Setup temperature slider and similarity threshold slider value change handlers
             SetupTemperatureSliderHandlers(window);
             SetupSimilarityThresholdSliderHandlers(window);
+            SetupAdvancedRagSliderHandlers(window);
         }
 
         /// <summary>
@@ -353,23 +346,15 @@ namespace View.Personal.UIHandlers
         {
             // OpenAI provider advanced RAG sliders
             SetupAdvancedRagSlider(window, "OpenAIMaxRetrieved", "OpenAIMaxRetrievedValue");
-            SetupAdvancedRagSlider(window, "OpenAIContextRadius", "OpenAIContextRadiusValue");
-            // Reranking slider setup removed
             
             // Anthropic provider advanced RAG sliders
             SetupAdvancedRagSlider(window, "AnthropicMaxRetrieved", "AnthropicMaxRetrievedValue");
-            SetupAdvancedRagSlider(window, "AnthropicContextRadius", "AnthropicContextRadiusValue");
-            // Reranking slider setup removed
             
             // Ollama provider advanced RAG sliders
             SetupAdvancedRagSlider(window, "OllamaMaxRetrieved", "OllamaMaxRetrievedValue");
-            SetupAdvancedRagSlider(window, "OllamaContextRadius", "OllamaContextRadiusValue");
-            // Reranking slider setup removed
-            
+     
             // View provider advanced RAG sliders
             SetupAdvancedRagSlider(window, "ViewMaxRetrieved", "ViewMaxRetrievedValue");
-            SetupAdvancedRagSlider(window, "ViewContextRadius", "ViewContextRadiusValue");
-            // Reranking slider setup removed
         }
         
         /// <summary>
@@ -513,7 +498,6 @@ namespace View.Personal.UIHandlers
                     openAiSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("OpenAIQueryOptimization").IsChecked ?? true;
                     openAiSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("OpenAIEnableCitations").IsChecked ?? true;
                     openAiSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("OpenAIEnableContextSorting").IsChecked ?? true;
-                    openAiSettings.RAG.ContextRadius = (int)window.FindControl<Slider>("OpenAIContextRadius").Value;
                 }
 
                 // Update Anthropic settings
@@ -545,7 +529,6 @@ namespace View.Personal.UIHandlers
                     anthropicSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("AnthropicQueryOptimization").IsChecked ?? true;
                     anthropicSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("AnthropicEnableCitations").IsChecked ?? true;
                     anthropicSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("AnthropicEnableContextSorting").IsChecked ?? true;
-                    anthropicSettings.RAG.ContextRadius = (int)window.FindControl<Slider>("AnthropicContextRadius").Value;
                 }
 
                 // Update Ollama settings
@@ -573,7 +556,6 @@ namespace View.Personal.UIHandlers
                     ollamaSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("OllamaQueryOptimization").IsChecked ?? true;
                     ollamaSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("OllamaEnableCitations").IsChecked ?? true;
                     ollamaSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("OllamaEnableContextSorting").IsChecked ?? true;
-                    ollamaSettings.RAG.ContextRadius = (int)window.FindControl<Slider>("OllamaContextRadius").Value;
                 }
 
                 // Update View settings
@@ -607,7 +589,6 @@ namespace View.Personal.UIHandlers
                     viewSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("ViewQueryOptimization").IsChecked ?? true;
                     viewSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("ViewEnableCitations").IsChecked ?? true;
                     viewSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("ViewEnableContextSorting").IsChecked ?? true;
-                    viewSettings.RAG.ContextRadius = (int)window.FindControl<Slider>("ViewContextRadius").Value;
                 }
 
                 if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)

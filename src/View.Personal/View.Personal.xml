@@ -431,11 +431,6 @@
             Indicates whether context sorting is enabled.
             </summary>
         </member>
-        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.ContextRadius">
-            <summary>
-            The context radius for retrieval.
-            </summary>
-        </member>
         <member name="T:View.Personal.Classes.AppSettings.EmbeddingsSettings">
             <summary>
             Settings for embedding models across different providers.

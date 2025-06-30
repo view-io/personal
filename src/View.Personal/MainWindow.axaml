@@ -760,15 +760,6 @@
 																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
-																					<!-- Context radius slider -->
-																					<StackPanel Spacing="4">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Context radius" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="OpenAIContextRadiusValue" Text="2" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="OpenAIContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
 																				</StackPanel>
 																			</Border>
 																		</Flyout>
@@ -979,15 +970,7 @@
 																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
-																					<!-- Context radius slider -->
-																					<StackPanel Spacing="4">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Context radius" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="AnthropicContextRadiusValue" Text="2" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="AnthropicContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
+																					<!-- Context radius slider removed -->
 																				</StackPanel>
 																			</Border>
 																		</Flyout>
@@ -1189,15 +1172,7 @@
 																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
-																					<!-- Context radius slider -->
-																					<StackPanel Spacing="4">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Context radius" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="OllamaContextRadiusValue" Text="2" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="OllamaContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
+																					<!-- Context radius slider removed -->
 																				</StackPanel>
 																			</Border>
 																		</Flyout>
@@ -1422,15 +1397,7 @@
 																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
-																					<!-- Context radius slider -->
-																					<StackPanel Spacing="4">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Context radius" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="ViewContextRadiusValue" Text="2" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="ViewContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
+																					<!-- Context radius slider removed -->
 																				</StackPanel>
 																			</Border>
 																		</Flyout>

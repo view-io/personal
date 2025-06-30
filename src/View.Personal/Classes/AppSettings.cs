@@ -308,10 +308,6 @@ namespace View.Personal.Classes
             /// </summary>
             public bool EnableContextSorting { get; set; } = false;
 
-            /// <summary>
-            /// The context radius for retrieval.
-            /// </summary>
-            public int ContextRadius { get; set; } = 2;
 
             // Reranking properties have been removed
         }
