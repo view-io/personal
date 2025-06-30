@@ -416,11 +416,6 @@
             The similarity threshold for document retrieval during RAG queries.
             </summary>
         </member>
-        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.AutoRetrieval">
-            <summary>
-            Indicates whether auto retrieval is enabled.
-            </summary>
-        </member>
         <member name="P:View.Personal.Classes.AppSettings.RAGSettings.QueryOptimization">
             <summary>
             Indicates whether query optimization is enabled.
@@ -439,21 +434,6 @@
         <member name="P:View.Personal.Classes.AppSettings.RAGSettings.ContextRadius">
             <summary>
             The context radius for retrieval.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.EnableReranking">
-            <summary>
-            Indicates whether reranking is enabled.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.RerankingMethod">
-            <summary>
-            The reranking method to use.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Classes.AppSettings.RAGSettings.RerankTopK">
-            <summary>
-            The number of top documents to rerank.
             </summary>
         </member>
         <member name="T:View.Personal.Classes.AppSettings.EmbeddingsSettings">
@@ -2742,6 +2722,77 @@
             </summary>
             <param name="filePath">The path where the logs will be saved.</param>
             <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
+        </member>
+        <member name="T:View.Personal.Services.RagService">
+            <summary>
+            Service for handling Retrieval Augmented Generation (RAG) functionality.
+            Provides methods for retrieving relevant documents from knowledge bases and
+            augmenting AI responses with this information.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.RagService.#ctor(LiteGraph.LiteGraphClient,System.Guid,System.Guid)">
+            <summary>
+            Initializes a new instance of the RagService class.
+            </summary>
+            <param name="liteGraph">The LiteGraph instance for vector operations.</param>
+            <param name="tenantGuid">The tenant GUID.</param>
+            <param name="activeGraphGuid">The active graph GUID.</param>
+        </member>
+        <member name="M:View.Personal.Services.RagService.RetrieveRelevantDocumentsAsync(System.Collections.Generic.List{System.Single},View.Personal.Classes.AppSettings.RAGSettings)">
+            <summary>
+            Retrieves relevant documents based on the query embeddings and RAG settings.
+            </summary>
+            <param name="queryEmbeddings">The embeddings of the user query.</param>
+            <param name="ragSettings">The RAG settings to use for retrieval.</param>
+            <returns>A tuple containing the search results and a context string built from those results.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.OptimizeQuery(System.String,View.Personal.Classes.AppSettings.RAGSettings)">
+            <summary>
+            Optimizes a user query for better retrieval results if query optimization is enabled.
+            </summary>
+            <param name="userQuery">The original user query.</param>
+            <param name="ragSettings">The RAG settings to use.</param>
+            <returns>The optimized query or the original query if optimization is disabled.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.BuildRagEnhancedMessages(System.String,System.String,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
+            <summary>
+            Builds chat messages for RAG-enhanced responses.
+            </summary>
+            <param name="userInput">The user's input.</param>
+            <param name="context">The context from retrieved documents.</param>
+            <param name="conversationHistory">The conversation history.</param>
+            <returns>A list of chat messages with the RAG context included.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.PerformVectorSearch(System.Collections.Generic.List{System.Single},System.Int32,System.Double)">
+            <summary>
+            Performs a vector search using the provided embeddings.
+            </summary>
+            <param name="embeddings">The embeddings to search with.</param>
+            <param name="topK">The number of top results to return.</param>
+            <param name="minThreshold">The minimum similarity threshold.</param>
+            <returns>The search results.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.SortSearchResults(System.Collections.Generic.IEnumerable{LiteGraph.VectorSearchResult})">
+            <summary>
+            Sorts search results based on document structure or other criteria.
+            </summary>
+            <param name="searchResults">The search results to sort.</param>
+            <returns>The sorted search results.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.BuildContext(System.Collections.Generic.IEnumerable{LiteGraph.VectorSearchResult},System.Boolean)">
+            <summary>
+            Builds a context string from search results.
+            </summary>
+            <param name="searchResults">The search results to build context from.</param>
+            <param name="includeCitations">Whether to include citations in the context.</param>
+            <returns>The built context string.</returns>
+        </member>
+        <member name="M:View.Personal.Services.RagService.GetNodeContent(LiteGraph.Node)">
+            <summary>
+            Gets the content from a node.
+            </summary>
+            <param name="node">The node to get content from.</param>
+            <returns>The node content.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>

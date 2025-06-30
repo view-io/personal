@@ -737,12 +737,7 @@
 																								ToolTip.Tip="Maximum number of documents to retrieve" />
 																					</StackPanel>
 
-																					<!-- Auto retrieval toggle -->
-																					<Grid ColumnDefinitions="*,Auto">
-																						<TextBlock Grid.Column="0" Text="Auto retrieval" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																								   ToolTip.Tip="Automatically retrieve relevant documents" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIAutoRetrieval" IsChecked="True" OnContent="" OffContent="" />
-																					</Grid>
+
 
 																					<!-- Query optimization toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
@@ -755,14 +750,14 @@
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Include citations in the generated responses" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableCitations" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableCitations" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Enable context sorting toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Sort context by relevance" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Context radius slider -->
@@ -773,31 +768,6 @@
 																						</Grid>
 																						<Slider x:Name="OpenAIContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
 																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
-
-																					<!-- Reranking toggle and options -->
-																					<StackPanel Spacing="8">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Reranking" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																									   ToolTip.Tip="Rerank retrieved documents for better relevance" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableReranking" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<StackPanel Margin="16,0,0,0" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableReranking}">
-																							<RadioButton x:Name="OpenAIRerankByChunk" Content="Rerank by chunk" IsChecked="True" GroupName="OpenAIRerankMethod" />
-																							<RadioButton x:Name="OpenAIRerankByExcerpt" Content="Rerank by excerpt" GroupName="OpenAIRerankMethod" />
-																							<RadioButton x:Name="OpenAIRerankByDocument" Content="Rerank by document" GroupName="OpenAIRerankMethod" />
-																						</StackPanel>
-																					</StackPanel>
-
-																					<!-- Rerank Top K slider -->
-																					<StackPanel Spacing="4" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableReranking}">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Rerank Top K" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="OpenAIRerankTopKValue" Text="5" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="OpenAIRerankTopK" Minimum="1" Maximum="10" Value="5" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of top documents to rerank" />
 																					</StackPanel>
 																				</StackPanel>
 																			</Border>
@@ -986,12 +956,7 @@
 																								ToolTip.Tip="Maximum number of documents to retrieve" />
 																					</StackPanel>
 
-																					<!-- Auto retrieval toggle -->
-																					<Grid ColumnDefinitions="*,Auto">
-																						<TextBlock Grid.Column="0" Text="Auto retrieval" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																								   ToolTip.Tip="Automatically retrieve relevant documents" />
-																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicAutoRetrieval" IsChecked="True" OnContent="" OffContent="" />
-																					</Grid>
+
 
 																					<!-- Query optimization toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
@@ -1004,14 +969,14 @@
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Include citations in the generated responses" />
-																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableCitations" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableCitations" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Enable context sorting toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Sort context by relevance" />
-																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Context radius slider -->
@@ -1022,31 +987,6 @@
 																						</Grid>
 																						<Slider x:Name="AnthropicContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
 																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
-
-																					<!-- Reranking toggle and options -->
-																					<StackPanel Spacing="8">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Reranking" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																									   ToolTip.Tip="Rerank retrieved documents for better relevance" />
-																							<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableReranking" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<StackPanel Margin="16,0,0,0" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableReranking}">
-																							<RadioButton x:Name="AnthropicRerankByChunk" Content="Rerank by chunk" IsChecked="True" GroupName="AnthropicRerankMethod" />
-																							<RadioButton x:Name="AnthropicRerankByExcerpt" Content="Rerank by excerpt" GroupName="AnthropicRerankMethod" />
-																							<RadioButton x:Name="AnthropicRerankByDocument" Content="Rerank by document" GroupName="AnthropicRerankMethod" />
-																						</StackPanel>
-																					</StackPanel>
-
-																					<!-- Rerank Top K slider -->
-																					<StackPanel Spacing="4" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableReranking}">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Rerank Top K" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="AnthropicRerankTopKValue" Text="5" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="AnthropicRerankTopK" Minimum="1" Maximum="10" Value="5" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of top documents to rerank" />
 																					</StackPanel>
 																				</StackPanel>
 																			</Border>
@@ -1228,13 +1168,6 @@
 																								ToolTip.Tip="Maximum number of documents to retrieve" />
 																					</StackPanel>
 
-																					<!-- Auto retrieval toggle -->
-																					<Grid ColumnDefinitions="*,Auto">
-																						<TextBlock Grid.Column="0" Text="Auto retrieval" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																								   ToolTip.Tip="Automatically retrieve relevant documents" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OllamaAutoRetrieval" IsChecked="True" OnContent="" OffContent="" />
-																					</Grid>
-
 																					<!-- Query optimization toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
@@ -1246,14 +1179,14 @@
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Include citations in the generated responses" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableCitations" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableCitations" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Enable context sorting toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Sort context by relevance" />
-																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Context radius slider -->
@@ -1264,31 +1197,6 @@
 																						</Grid>
 																						<Slider x:Name="OllamaContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
 																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
-
-																					<!-- Reranking toggle and options -->
-																					<StackPanel Spacing="8">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Reranking" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																									   ToolTip.Tip="Rerank retrieved documents for better relevance" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableReranking" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<StackPanel Margin="16,0,0,0" IsVisible="{Binding IsChecked, ElementName=OllamaEnableReranking}">
-																							<RadioButton x:Name="OllamaRerankByChunk" Content="Rerank by chunk" IsChecked="True" GroupName="OllamaRerankMethod" />
-																							<RadioButton x:Name="OllamaRerankByExcerpt" Content="Rerank by excerpt" GroupName="OllamaRerankMethod" />
-																							<RadioButton x:Name="OllamaRerankByDocument" Content="Rerank by document" GroupName="OllamaRerankMethod" />
-																						</StackPanel>
-																					</StackPanel>
-
-																					<!-- Rerank Top K slider -->
-																					<StackPanel Spacing="4" IsVisible="{Binding IsChecked, ElementName=OllamaEnableReranking}">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Rerank Top K" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="OllamaRerankTopKValue" Text="5" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="OllamaRerankTopK" Minimum="1" Maximum="10" Value="5" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of top documents to rerank" />
 																					</StackPanel>
 																				</StackPanel>
 																			</Border>
@@ -1493,13 +1401,6 @@
 																								ToolTip.Tip="Maximum number of documents to retrieve" />
 																					</StackPanel>
 
-																					<!-- Auto retrieval toggle -->
-																					<Grid ColumnDefinitions="*,Auto">
-																						<TextBlock Grid.Column="0" Text="Auto retrieval" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																								   ToolTip.Tip="Automatically retrieve relevant documents" />
-																						<ToggleSwitch Grid.Column="1" x:Name="ViewAutoRetrieval" IsChecked="True" OnContent="" OffContent="" />
-																					</Grid>
-
 																					<!-- Query optimization toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
@@ -1511,14 +1412,14 @@
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Include citations in the generated responses" />
-																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableCitations" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableCitations" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Enable context sorting toggle -->
 																					<Grid ColumnDefinitions="*,Auto">
 																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
 																								   ToolTip.Tip="Sort context by relevance" />
-																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="True" OnContent="" OffContent="" />
+																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
 																					</Grid>
 
 																					<!-- Context radius slider -->
@@ -1529,31 +1430,6 @@
 																						</Grid>
 																						<Slider x:Name="ViewContextRadius" Minimum="1" Maximum="5" Value="2" TickFrequency="1" IsSnapToTickEnabled="True"
 																								ToolTip.Tip="Number of surrounding paragraphs to include" />
-																					</StackPanel>
-
-																					<!-- Reranking toggle and options -->
-																					<StackPanel Spacing="8">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Reranking" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																									   ToolTip.Tip="Rerank retrieved documents for better relevance" />
-																							<ToggleSwitch Grid.Column="1" x:Name="ViewEnableReranking" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<StackPanel Margin="16,0,0,0" IsVisible="{Binding IsChecked, ElementName=ViewEnableReranking}">
-																							<RadioButton x:Name="ViewRerankByChunk" Content="Rerank by chunk" IsChecked="True" GroupName="ViewRerankMethod" />
-																							<RadioButton x:Name="ViewRerankByExcerpt" Content="Rerank by excerpt" GroupName="ViewRerankMethod" />
-																							<RadioButton x:Name="ViewRerankByDocument" Content="Rerank by document" GroupName="ViewRerankMethod" />
-																						</StackPanel>
-																					</StackPanel>
-
-																					<!-- Rerank Top K slider -->
-																					<StackPanel Spacing="4" IsVisible="{Binding IsChecked, ElementName=ViewEnableReranking}">
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="Rerank Top K" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																							<TextBlock Grid.Column="1" x:Name="ViewRerankTopKValue" Text="5" FontSize="12" Foreground="#6A6B6F" />
-																						</Grid>
-																						<Slider x:Name="ViewRerankTopK" Minimum="1" Maximum="10" Value="5" TickFrequency="1" IsSnapToTickEnabled="True"
-																								ToolTip.Tip="Number of top documents to rerank" />
 																					</StackPanel>
 																				</StackPanel>
 																			</Border>
@@ -2420,7 +2296,7 @@
 						<avalonia:MaterialIcon Kind="Download" />
 					</Button>
 				</DockPanel>
-				<ScrollViewer VerticalScrollBarVisibility="Auto" MinHeight="100" MaxHeight="400" Background="Transparent">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
 					<SelectableTextBlock x:Name="ConsoleOutputTextBox"
                                          IsHitTestVisible="True"
                                          IsTabStop="False"

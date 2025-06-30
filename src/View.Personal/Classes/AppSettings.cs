@@ -294,11 +294,6 @@ namespace View.Personal.Classes
             public double SimilarityThreshold { get; set; } = 0.7;
 
             /// <summary>
-            /// Indicates whether auto retrieval is enabled.
-            /// </summary>
-            public bool AutoRetrieval { get; set; } = true;
-
-            /// <summary>
             /// Indicates whether query optimization is enabled.
             /// </summary>
             public bool QueryOptimization { get; set; } = true;
@@ -306,32 +301,19 @@ namespace View.Personal.Classes
             /// <summary>
             /// Indicates whether citations are enabled in responses.
             /// </summary>
-            public bool EnableCitations { get; set; } = true;
+            public bool EnableCitations { get; set; } = false;
 
             /// <summary>
             /// Indicates whether context sorting is enabled.
             /// </summary>
-            public bool EnableContextSorting { get; set; } = true;
+            public bool EnableContextSorting { get; set; } = false;
 
             /// <summary>
             /// The context radius for retrieval.
             /// </summary>
             public int ContextRadius { get; set; } = 2;
 
-            /// <summary>
-            /// Indicates whether reranking is enabled.
-            /// </summary>
-            public bool EnableReranking { get; set; } = true;
-
-            /// <summary>
-            /// The reranking method to use.
-            /// </summary>
-            public string RerankingMethod { get; set; } = "chunk";
-
-            /// <summary>
-            /// The number of top documents to rerank.
-            /// </summary>
-            public int RerankTopK { get; set; } = 5;
+            // Reranking properties have been removed
         }
 
         /// <summary>
