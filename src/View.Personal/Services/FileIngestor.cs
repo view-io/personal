@@ -361,27 +361,27 @@
                         }
                     }
 
+                    IngestionProgressService.UpdateProgress($"Creating document node", 40);
                     var fileNode =
                         MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                     liteGraph.Node.Create(fileNode);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID}"));
                     ts.AddMessage($"Created file document node {fileNode.GUID}");
-                    IngestionProgressService.UpdateProgress($"Created document node for {Path.GetFileName(filePath)}", 40);
-                    IngestionProgressService.UpdateProgress("Creating document structure", 40);
-
+                    
+                    IngestionProgressService.UpdateProgress("Creating chunk nodes", 50);
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes."));
                     ts.AddMessage($"Created {chunkNodes.Count} chunk nodes.");
-                    IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} chunk nodes", 60);
 
+                    IngestionProgressService.UpdateProgress("Creating edges from doc -> chunk nodes.", 85);
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
                     liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes."));
                     ts.AddMessage($"Created {edges.Count} edges from doc -> chunk nodes.");
-                    IngestionProgressService.UpdateProgress("Generating embeddings", 70);
 
+                    IngestionProgressService.UpdateProgress("Generating embeddings", 95);
                     var validChunkNodes = chunkNodes
                         .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                         .ToList();
@@ -409,7 +409,6 @@
                                     Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                     Contents = chunkTexts
                                 };
-                                IngestionProgressService.UpdateProgress($"Generating embeddings with OpenAI for {Path.GetFileName(filePath)}...", 70);
                                 var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
                                 if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) return;
                                 for (var j = 0; j < validChunkNodes.Count; j++)
@@ -1510,27 +1509,28 @@
                     }
                 }
 
+                IngestionProgressService.UpdateProgress($"Creating document node", 40);
                 var fileNode =
                     MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                 liteGraph.Node.Create(fileNode);
                 app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID} for {Path.GetFileName(filePath)}");
-                IngestionProgressService.UpdateProgress($"Created document node for {Path.GetFileName(filePath)}", 40);
 
+                IngestionProgressService.UpdateProgress("Creating chunk nodes", 60);
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                 liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                 app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes for {Path.GetFileName(filePath)}.");
-                IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} chunk nodes", 60);
 
+                IngestionProgressService.UpdateProgress($"Creating edges from doc -> chunk nodes", 85);
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                 app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes for {Path.GetFileName(filePath)}.");
-                IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} edges from doc -> chunk nodes", 75);
+
                 var validChunkNodes = chunkNodes
                     .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                     .ToList();
                 var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
-                IngestionProgressService.UpdateProgress("Generating embeddings", 90);
+                IngestionProgressService.UpdateProgress("Generating embeddings", 95);
                 if (!chunkTexts.Any())
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Warn, $"No valid text content found in atoms for embedding in {Path.GetFileName(filePath)}."));
                 else
