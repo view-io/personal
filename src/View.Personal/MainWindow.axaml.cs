@@ -98,6 +98,7 @@
         private List<ChatMessage> _ConversationHistory = new();
         private readonly FileBrowserService _FileBrowserService = new();
         private WindowNotificationManager? _WindowNotificationManager;
+        private RagService? _RagService;
         internal string _CurrentPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal Dictionary<string, FileSystemWatcher> _Watchers = new();
         private GridLength _ConsoleRowHeight = GridLength.Auto;
@@ -446,35 +447,9 @@
             {
                 var mainGrid = (Grid)Content;
                 var rowDef = mainGrid.RowDefinitions[2];
-                
-                // Store the current height if not already set
-                if (!_ConsoleRowHeight.IsAbsolute)
-                    _ConsoleRowHeight = new GridLength(200); // Default height
-                
-                // Set the row height to the stored value
-                rowDef.Height = _ConsoleRowHeight;
                 consolePanel.IsVisible = true;
-                
-                // Adjust the DataMonitorPanel's DataGrid height when console is visible
-                var dataMonitorPanel = this.FindControl<Grid>("DataMonitorPanel");
-                if (dataMonitorPanel != null && dataMonitorPanel.IsVisible)
-                {
-                    var dataGrid = this.FindControl<DataGrid>("FileSystemDataGrid");
-                    if (dataGrid != null)
-                    {
-                        double consoleHeight = _ConsoleRowHeight.Value;
-                        double gridSplitterHeight = 5;
-                        double headerHeight = 80;
-                        double navigationHeight = 50;
-                        
-                        double availableHeight = this.Bounds.Height - consoleHeight - gridSplitterHeight - headerHeight - navigationHeight;
-                        
-                        dataGrid.MaxHeight = Math.Max(200, availableHeight);
-                        dataMonitorPanel.InvalidateMeasure();
-                    }
-                }
-
-                mainGrid.InvalidateMeasure();
+                if (_ConsoleRowHeight.IsAbsolute)
+                    rowDef.Height = _ConsoleRowHeight;
             }
         }
 
@@ -488,12 +463,12 @@
             {
                 var mainGrid = (Grid)Content;
                 var rowDef = mainGrid.RowDefinitions[2];
-                
+
                 if (rowDef.Height.IsAbsolute)
                     _ConsoleRowHeight = rowDef.Height;
                 consolePanel.IsVisible = false;
                 rowDef.Height = GridLength.Auto;
-                
+
                 var dataMonitorPanel = this.FindControl<Grid>("DataMonitorPanel");
                 if (dataMonitorPanel != null && dataMonitorPanel.IsVisible)
                 {
@@ -503,10 +478,10 @@
                         dataGrid.MaxHeight = double.PositiveInfinity;
                         dataGrid.InvalidateMeasure();
                     }
-                   
+
                     dataMonitorPanel.InvalidateMeasure();
                 }
-               
+
                 mainGrid.InvalidateMeasure();
             }
         }
@@ -896,80 +871,58 @@
                     app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                // Generate embeddings with the selected embeddings provider
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Generating embeddings with provider: {embeddingsProvider}");
-                var (sdk, embeddingsRequest) =
-                    GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, userInput);
-                var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
-                if (promptEmbeddings == null)
-                    return "Error: Failed to generate embeddings for the prompt.";
-                app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
-
-                var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
-                app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
-                bool ragEnabled = selectedProvider switch
+                // Get the RAG settings for the selected provider
+                var ragSettings = selectedProvider switch
                 {
-                    "OpenAI" => app.ApplicationSettings.OpenAI.RAG.EnableRAG,
-                    "Anthropic" => app.ApplicationSettings.Anthropic.RAG.EnableRAG,
-                    "Ollama" => app.ApplicationSettings.Ollama.RAG.EnableRAG,
-                    "View" => app.ApplicationSettings.View.RAG.EnableRAG,
-                    _ => false
+                    "OpenAI" => app.ApplicationSettings.OpenAI.RAG,
+                    "Anthropic" => app.ApplicationSettings.Anthropic.RAG,
+                    "Ollama" => app.ApplicationSettings.Ollama.RAG,
+                    "View" => app.ApplicationSettings.View.RAG,
+                    _ => new AppSettings.RAGSettings()
                 };
-                List<ChatMessage> finalMessages = new List<ChatMessage>();
-                if (ragEnabled)
-                {
-                    app.LogWithTimestamp(SeverityEnum.Debug, "Performing vector search");
-                    int topK = selectedProvider switch
-                    {
-                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.NumberOfDocumentsToRetrieve,
-                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.NumberOfDocumentsToRetrieve,
-                        "Ollama" => app.ApplicationSettings.Ollama.RAG.NumberOfDocumentsToRetrieve,
-                        "View" => app.ApplicationSettings.View.RAG.NumberOfDocumentsToRetrieve,
-                        _ => 5
-                    };
 
-                    double minThreshold = selectedProvider switch
+                List<ChatMessage> finalMessages;
+
+                if (ragSettings.EnableRAG)
+                {
+                    _RagService = new RagService(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
+                    app.LogWithTimestamp(SeverityEnum.Debug, "RAG is enabled, processing with RAG service");
+
+                    string processedQuery = userInput;
+                    if (ragSettings.QueryOptimization)
                     {
-                        "OpenAI" => app.ApplicationSettings.OpenAI.RAG.SimilarityThreshold,
-                        "Anthropic" => app.ApplicationSettings.Anthropic.RAG.SimilarityThreshold,
-                        "Ollama" => app.ApplicationSettings.Ollama.RAG.SimilarityThreshold,
-                        "View" => app.ApplicationSettings.View.RAG.SimilarityThreshold,
-                        _ => 0.75
-                    };
-                    var searchResults = await PerformVectorSearch(floatEmbeddings, topK, minThreshold).ConfigureAwait(false);
-                    if (searchResults == null || !searchResults.Any())
+                        processedQuery = _RagService.OptimizeQuery(userInput, ragSettings);
+                        app.LogWithTimestamp(SeverityEnum.Debug, $"Query optimized: {processedQuery}");
+                    }
+
+                    // Generate embeddings with the selected embeddings provider
+                    app.LogWithTimestamp(SeverityEnum.Debug, $"Generating embeddings with provider: {embeddingsProvider}");
+                    var (sdk, embeddingsRequest) =
+                        GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
+                    var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
+                        if (promptEmbeddings == null)
+                        return "Error: Failed to generate embeddings for the prompt.";
+                    app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
+
+                    var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
+
+                    // Retrieve relevant documents using RAG service
+                    var (searchResults, context) = await _RagService.RetrieveRelevantDocumentsAsync(floatEmbeddings, ragSettings);
+
+                    if (string.IsNullOrEmpty(context))
                     {
                         return "I couldn't find any relevant documents in the knowledge base for your query.";
                     }
-                    else
-                    {
-                        var context = BuildContext(searchResults);
-                        var promptMessages = BuildPromptMessages();
 
-                        var contextMessage = new ChatMessage
-                        {
-                            Role = "system",
-                            Content = "You are an assistant answering based solely on the provided document context. " +
-                                      "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" + context
-                        };
-
-                        finalMessages = new List<ChatMessage>
-                        {
-                           contextMessage
-                        };
-                        finalMessages.AddRange(promptMessages.Where(m => m.Role != "system"));
-                        finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
-                    }
+                    // Build messages with RAG context
+                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, BuildPromptMessages());
                 }
                 else
                 {
-                    var searchResults = await PerformVectorSearch(floatEmbeddings).ConfigureAwait(false);
-                    if (searchResults == null || !searchResults.Any())
-                        return "No relevant documents found to answer your question.";
-                    app.LogWithTimestamp(SeverityEnum.Debug, "BuildContext execution starts");
-                    var context = BuildContext(searchResults);
-                    app.LogWithTimestamp(SeverityEnum.Debug, $"BuildContext execution completed");
-                    finalMessages = BuildFinalMessages(userInput, context, BuildPromptMessages());
+                    app.LogWithTimestamp(SeverityEnum.Debug, "RAG is disabled, using standard chat");
+
+                    finalMessages = new List<ChatMessage>(BuildPromptMessages());
+                    finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 }
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
                 app.LogWithTimestamp(SeverityEnum.Debug, $"Sending API request to {selectedProvider}");
@@ -1232,7 +1185,7 @@
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.LogWithTimestamp(SeverityEnum.Info, $"Creating request body for {provider}");
+            app.LogWithTimestamp(SeverityEnum.Info, $"Creating summarization request body for {provider}");
             switch (provider)
             {
                 //ToDo: need to grab control settings dynamically
@@ -1320,7 +1273,7 @@
             // Implement retry with proper handling
             RestResponse resp = null;
             var retryCount = 0;
-            var maxRetries = settings.MaxRetries <= 0 ? 3 : settings.MaxRetries; // Default to 3 if MaxRetries is 0 or negative
+            var maxRetries = settings.MaxRetries <= 0 ? 3 : settings.MaxRetries;
 
             while (true)
             {
@@ -1352,7 +1305,7 @@
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
-            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest completed for provider: {provider}");
+            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest completed for provider: '{provider}' for Summarization");
             return response;
         }
 
@@ -1452,6 +1405,7 @@
             else
             {
                 using var reader = new StreamReader(resp.Data);
+
                 while (!reader.EndOfStream)
                 {
                     var line = await reader.ReadLineAsync().ConfigureAwait(false);
@@ -1465,6 +1419,10 @@
                         {
                             safeTokenHandler?.Invoke(token);
                             sb.Append(token);
+
+                            // Always yield control back to the UI thread after each token
+                            // This prevents UI freezing by allowing UI updates between tokens
+                            await Task.Delay(1).ConfigureAwait(false);
                         }
                     }
                     catch (JsonException je)

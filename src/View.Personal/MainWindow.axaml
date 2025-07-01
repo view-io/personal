@@ -530,23 +530,28 @@
 								</Setter>
 							</Style>
 							<Style Selector="RadioButton">
-								<Setter Property="Width" Value="12" />
-								<Setter Property="Height" Value="12" />
-								<Setter Property="VerticalAlignment" Value="Top" />
+								<Setter Property="VerticalAlignment" Value="Center" />
 								<Setter Property="BorderBrush" Value="#6A6B6F" />
 								<Setter Property="Foreground" Value="#1A1C1E" />
 								<Setter Property="Template">
 									<ControlTemplate>
-										<Grid>
-											<Ellipse x:Name="PART_OuterCircle"
+										<Grid ColumnDefinitions="Auto,*">
+											<Grid Width="16" Height="16" VerticalAlignment="Center">
+												<Ellipse x:Name="PART_OuterCircle"
                                                      Width="12" Height="12"
                                                      Stroke="{TemplateBinding BorderBrush}"
                                                      StrokeThickness="1"
                                                      Fill="Transparent" />
-											<Ellipse x:Name="PART_InnerCircle"
+												<Ellipse x:Name="PART_InnerCircle"
                                                      Width="6" Height="6"
                                                      Fill="{TemplateBinding Foreground}"
                                                      IsVisible="{TemplateBinding IsChecked}" />
+											</Grid>
+											<ContentPresenter Grid.Column="1"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="4,0,0,0" />
 										</Grid>
 									</ControlTemplate>
 								</Setter>
@@ -701,9 +706,66 @@
 													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
 														<StackPanel Spacing="8">
 															<!-- Row 1: Toggle Button only -->
-															<CheckBox x:Name="OpenAIEnableRAG" Content="Enable RAG"
-																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
-																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+															<Grid ColumnDefinitions="*,Auto">
+																<CheckBox Grid.Column="0" x:Name="OpenAIEnableRAG" Content="Enable RAG"
+																		  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																		  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+																<Button Grid.Column="1" x:Name="OpenAIAdvancedRagButton"
+																		Classes="flat"
+																		IsEnabled="{Binding IsChecked, ElementName=OpenAIEnableRAG}"
+																		ToolTip.Tip="Configure advanced RAG settings"
+																		VerticalAlignment="Bottom"
+																		Height="41">
+																	<StackPanel Orientation="Horizontal" Spacing="8">
+																		<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																		<TextBlock Text="Advanced Settings" Foreground="#1A1C1E" FontWeight="400" />
+																	</StackPanel>
+																	<Button.Flyout>
+																		<Flyout Placement="Right">
+																			<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																				<StackPanel Spacing="16">
+																					<TextBlock Text="Advanced RAG" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+
+																					<!-- Max retrieved slider -->
+																					<StackPanel Spacing="4">
+																						<Grid ColumnDefinitions="*,Auto">
+																							<TextBlock Grid.Column="0" Text="Max retrieved" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																							<TextBlock Grid.Column="1" x:Name="OpenAIMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																						</Grid>
+																						<Slider x:Name="OpenAIMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="Maximum number of documents to retrieve" />
+																					</StackPanel>
+
+
+
+																					<!-- Query optimization toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Optimize queries for better retrieval results" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable citations toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Include citations in the generated responses" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable context sorting toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Sort context by relevance" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																				</StackPanel>
+																			</Border>
+																		</Flyout>
+																	</Button.Flyout>
+																</Button>
+															</Grid>
 
 															<StackPanel x:Name="OpenAIRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableRAG}">
 																<!-- Knowledgebase Source Dropdown -->
@@ -766,13 +828,7 @@
 																</StackPanel>
 																<!-- Row 3: Top-K and Threshold in same row -->
 																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																		<TextBox x:Name="OpenAITopK" Classes="no-shadow" Text ="3"
-																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
-																	</StackPanel>
-
-																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
 																		<Grid ColumnDefinitions="*,Auto">
 																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
 																			<TextBlock Grid.Column="1" x:Name="OpenAISimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
@@ -860,9 +916,67 @@
 													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
 														<StackPanel Spacing="8">
 															<!-- Row 1: Toggle Button only -->
-															<CheckBox x:Name="AnthropicEnableRAG" Content="Enable RAG"
-																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
-																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+															<Grid ColumnDefinitions="*,Auto">
+																<CheckBox Grid.Column="0" x:Name="AnthropicEnableRAG" Content="Enable RAG"
+																		  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																		  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+																<Button Grid.Column="1" x:Name="AnthropicAdvancedRagButton"
+																	Classes="flat"
+																	IsEnabled="{Binding IsChecked, ElementName=AnthropicEnableRAG}"
+																	ToolTip.Tip="Configure advanced RAG settings"
+																	VerticalAlignment="Bottom"
+																	Height="41">
+																	<StackPanel Orientation="Horizontal" Spacing="8">
+																		<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																		<TextBlock Text="Advanced Settings" Foreground="#1A1C1E" FontWeight="400" />
+																	</StackPanel>
+																	<Button.Flyout>
+																		<Flyout Placement="Right">
+																			<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																				<StackPanel Spacing="16">
+																					<TextBlock Text="Advanced RAG" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+
+																					<!-- Max retrieved slider -->
+																					<StackPanel Spacing="4">
+																						<Grid ColumnDefinitions="*,Auto">
+																							<TextBlock Grid.Column="0" Text="Max retrieved" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																							<TextBlock Grid.Column="1" x:Name="AnthropicMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																						</Grid>
+																						<Slider x:Name="AnthropicMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="Maximum number of documents to retrieve" />
+																					</StackPanel>
+
+
+
+																					<!-- Query optimization toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Optimize queries for better retrieval results" />
+																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable citations toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Include citations in the generated responses" />
+																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable context sorting toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Sort context by relevance" />
+																						<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Context radius slider removed -->
+																				</StackPanel>
+																			</Border>
+																		</Flyout>
+																	</Button.Flyout>
+																</Button>
+															</Grid>
 
 															<StackPanel x:Name="AnthropicRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableRAG}">
 																<!-- Row 2: Knowledgebase Source only -->
@@ -925,13 +1039,7 @@
 																</StackPanel>
 																<!-- Row 3: Top-K and Threshold in same row -->
 																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																		<TextBox x:Name="AnthropicTopK" Classes="no-shadow" Text ="3"
-																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
-																	</StackPanel>
-
-																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
 																		<Grid ColumnDefinitions="*,Auto">
 																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
 																			<TextBlock Grid.Column="1" x:Name="AnthropicSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
@@ -1012,9 +1120,65 @@
 													<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
 														<StackPanel Spacing="8">
 															<!-- Row 1: Toggle Button only -->
-															<CheckBox x:Name="OllamaEnableRAG" Content="Enable RAG"
-																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
-																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+															<Grid ColumnDefinitions="*,Auto">
+																<CheckBox Grid.Column="0" x:Name="OllamaEnableRAG" Content="Enable RAG"
+																		  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																		  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+																<Button Grid.Column="1" x:Name="OllamaAdvancedRagButton"
+																		Classes="flat"
+																		IsEnabled="{Binding IsChecked, ElementName=OllamaEnableRAG}"
+																		ToolTip.Tip="Configure advanced RAG settings"
+																		VerticalAlignment="Bottom"
+																		Height="41">
+																	<StackPanel Orientation="Horizontal" Spacing="8">
+																		<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																		<TextBlock Text="Advanced Settings" Foreground="#1A1C1E" FontWeight="400" />
+																	</StackPanel>
+																	<Button.Flyout>
+																		<Flyout Placement="Right">
+																			<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																				<StackPanel Spacing="16">
+																					<TextBlock Text="Advanced RAG" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+
+																					<!-- Max retrieved slider -->
+																					<StackPanel Spacing="4">
+																						<Grid ColumnDefinitions="*,Auto">
+																							<TextBlock Grid.Column="0" Text="Max retrieved" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																							<TextBlock Grid.Column="1" x:Name="OllamaMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																						</Grid>
+																						<Slider x:Name="OllamaMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="Maximum number of documents to retrieve" />
+																					</StackPanel>
+
+																					<!-- Query optimization toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Optimize queries for better retrieval results" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OllamaQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable citations toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Include citations in the generated responses" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable context sorting toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Sort context by relevance" />
+																						<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Context radius slider removed -->
+																				</StackPanel>
+																			</Border>
+																		</Flyout>
+																	</Button.Flyout>
+																</Button>
+															</Grid>
 
 															<StackPanel x:Name="OllamaRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OllamaEnableRAG}">
 																<!-- Row 2: Knowledgebase Source only -->
@@ -1077,13 +1241,7 @@
 																</StackPanel>
 																<!-- Row 3: Top-K and Threshold in same row -->
 																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																		<TextBox x:Name="OllamaTopK" Classes="no-shadow" Text ="3"
-																				   ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
-																	</StackPanel>
-
-																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
 																		<Grid ColumnDefinitions="*,Auto">
 																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
 																			<TextBlock Grid.Column="1" x:Name="OllamaSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
@@ -1186,10 +1344,66 @@
 														<StackPanel Spacing="8">
 															<TextBlock Text="RAG Settings" FontSize="12" Foreground="#1A1C1E" FontWeight="500" Padding="0,0,0,4" />
 
-															<!-- Row 1: Toggle Button only -->
-															<CheckBox x:Name="ViewEnableRAG" Content="Enable RAG"
-																	  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
-																	  HorizontalAlignment="Left" Margin="0,0,0,8" />
+															<!-- Row 1: Toggle Button with Advanced Settings Button -->
+															<Grid ColumnDefinitions="*,Auto">
+																<CheckBox Grid.Column="0" x:Name="ViewEnableRAG" Content="Enable RAG"
+																		  ToolTip.Tip="Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses."
+																		  HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+																<Button Grid.Column="1" x:Name="ViewAdvancedRagButton"
+																		Classes="flat"
+																		IsEnabled="{Binding IsChecked, ElementName=ViewEnableRAG}"
+																		ToolTip.Tip="Configure advanced RAG settings"
+																		VerticalAlignment="Bottom"
+																		Height="41">
+																	<StackPanel Orientation="Horizontal" Spacing="8">
+																		<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																		<TextBlock Text="Advanced Settings" Foreground="#1A1C1E" FontWeight="400" />
+																	</StackPanel>
+																	<Button.Flyout>
+																		<Flyout Placement="Right">
+																			<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																				<StackPanel Spacing="16">
+																					<TextBlock Text="Advanced RAG" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+
+																					<!-- Max retrieved slider -->
+																					<StackPanel Spacing="4">
+																						<Grid ColumnDefinitions="*,Auto">
+																							<TextBlock Grid.Column="0" Text="Max retrieved" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																							<TextBlock Grid.Column="1" x:Name="ViewMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																						</Grid>
+																						<Slider x:Name="ViewMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="Maximum number of documents to retrieve" />
+																					</StackPanel>
+
+																					<!-- Query optimization toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Query optimization" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Optimize queries for better retrieval results" />
+																						<ToggleSwitch Grid.Column="1" x:Name="ViewQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable citations toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable citations" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Include citations in the generated responses" />
+																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Enable context sorting toggle -->
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="Enable context sorting" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																								   ToolTip.Tip="Sort context by relevance" />
+																						<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																					</Grid>
+
+																					<!-- Context radius slider removed -->
+																				</StackPanel>
+																			</Border>
+																		</Flyout>
+																	</Button.Flyout>
+																</Button>
+															</Grid>
 
 															<StackPanel x:Name="ViewRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=ViewEnableRAG}">
 																<!-- Row 2: Knowledgebase Source only -->
@@ -1250,16 +1464,8 @@
 																		</ComboBox.Styles>
 																	</ComboBox>
 																</StackPanel>
-
-																<!-- Row 3: Top-K and Threshold in same row -->
 																<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																		<TextBlock Text="Number of Documents (Top-K)" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																		<TextBox x:Name="ViewTopK" Classes="no-shadow" Text ="3"
-																				 ToolTip.Tip="Number of documents to retrieve from the knowledge base." />
-																	</StackPanel>
-
-																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
 																		<Grid ColumnDefinitions="*,Auto">
 																			<TextBlock Grid.Column="0" Text="Similarity Threshold" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
 																			<TextBlock Grid.Column="1" x:Name="ViewSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
@@ -2057,7 +2263,7 @@
 						<avalonia:MaterialIcon Kind="Download" />
 					</Button>
 				</DockPanel>
-				<ScrollViewer VerticalScrollBarVisibility="Auto" MinHeight="100" MaxHeight="400" Background="Transparent">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">
 					<SelectableTextBlock x:Name="ConsoleOutputTextBox"
                                          IsHitTestVisible="True"
                                          IsTabStop="False"

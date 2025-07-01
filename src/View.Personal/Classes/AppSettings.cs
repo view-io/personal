@@ -292,6 +292,24 @@ namespace View.Personal.Classes
             /// The similarity threshold for document retrieval during RAG queries.
             /// </summary>
             public double SimilarityThreshold { get; set; } = 0.7;
+
+            /// <summary>
+            /// Indicates whether query optimization is enabled.
+            /// </summary>
+            public bool QueryOptimization { get; set; } = true;
+
+            /// <summary>
+            /// Indicates whether citations are enabled in responses.
+            /// </summary>
+            public bool EnableCitations { get; set; } = false;
+
+            /// <summary>
+            /// Indicates whether context sorting is enabled.
+            /// </summary>
+            public bool EnableContextSorting { get; set; } = false;
+
+
+            // Reranking properties have been removed
         }
 
         /// <summary>
