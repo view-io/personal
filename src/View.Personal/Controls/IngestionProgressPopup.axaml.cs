@@ -3,7 +3,6 @@ namespace View.Personal.Controls
     using Avalonia.Controls;
     using Avalonia.Interactivity;
     using Avalonia.Markup.Xaml;
-    using Avalonia.Media;
     using Avalonia.Threading;
     using Material.Icons;
     using Material.Icons.Avalonia;
@@ -11,6 +10,7 @@ namespace View.Personal.Controls
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using View.Personal.Classes;
     using View.Personal.Services;
 
     /// <summary>
@@ -65,8 +65,6 @@ namespace View.Personal.Controls
         public void UpdateCurrentFileProgress(string filePath, string status, double progressPercentage)
         {
             _lastActivity = DateTime.Now;
-
-            // Update the active files list
             UpdateActiveFilesFromService();
         }
 
@@ -83,14 +81,11 @@ namespace View.Personal.Controls
             {
                 _pendingFilesRepeater.ItemsSource = _pendingFiles;
 
-                // Update the pending count text
                 if (_pendingCountText != null)
                 {
                     _pendingCountText.Text = $"Pending Queue ({_pendingFiles.Count})";
                 }
             });
-
-            // Also update active files when pending files change
             UpdateActiveFilesFromService();
         }
 
@@ -150,31 +145,5 @@ namespace View.Personal.Controls
             var activeFiles = activeIngestions.Select(kv => (kv.Key, kv.Value.Status, kv.Value.Progress)).ToList();
             UpdateActiveFiles(activeFiles);
         }
-    }
-
-    /// <summary>
-    /// View model for displaying active file information in the UI.
-    /// </summary>
-    public class ActiveFileViewModel
-    {
-        /// <summary>
-        /// Gets or sets the filename of the active file being processed.
-        /// </summary>
-        public required string FileName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the current status message of the file processing.
-        /// </summary>
-        public required string Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the progress percentage (0-100) of the file processing.
-        /// </summary>
-        public double Progress { get; set; }
-        
-        /// <summary>
-        /// Gets the formatted progress percentage string (e.g., "45%")
-        /// </summary>
-        public string ProgressText => $"{Math.Round(Progress)}%";
     }
 }

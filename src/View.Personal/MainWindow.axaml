@@ -1712,6 +1712,15 @@
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 
+                    <!-- Ingestion Progress Popup - Added to MyFilesPanel -->
+                    <Controls:IngestionProgressPopup x:Name="IngestionProgressPopup" 
+                                      HorizontalAlignment="Right" 
+                                      VerticalAlignment="Bottom" 
+                                      Margin="0,0,0,0" 
+                                      ZIndex="2" 
+                                      Grid.Row="0"
+                                      Grid.RowSpan="4" />
+
 					<StackPanel Grid.Row="0" Spacing="12" Margin="0, 20, 0, 0">
 						<TextBlock Text="Files" Foreground="#1A1C1E" FontWeight="500" FontSize="16" />
 						<Border BorderThickness="0,0,0,1" BorderBrush="#EAECF0" Margin="0,0,0,8" />
@@ -2279,11 +2288,6 @@
 		</Border>
 		<!-- ReSharper disable Xaml.MissingGridIndex -->
 		<WindowNotificationManager x:Name="NotificationManager" />
-		<Controls:IngestionProgressPopup x:Name="IngestionProgressPopup" 
-                                     HorizontalAlignment="Right" 
-                                     VerticalAlignment="Bottom" 
-                                     Margin="0,0,20,20" 
-                                     ZIndex="1000" />
 		<!-- ReSharper restore Xaml.MissingGridIndex -->
 	</Grid>
 	<!-- ReSharper restore Xaml.StyleClassNotFound -->

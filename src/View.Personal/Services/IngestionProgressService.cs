@@ -54,7 +54,6 @@ namespace View.Personal.Services
             _lastUpdateTime = DateTime.Now;
             _isProcessing = true;
             
-            // Update the active ingestions dictionary
             _activeIngestions[filePath] = (status, progressPercentage);
 
             if (_progressPopup != null)
@@ -66,7 +65,6 @@ namespace View.Personal.Services
                 });
             }
             
-            // Log progress to application log
             var app = Avalonia.Application.Current as App;
             app?.Log(SeverityEnum.Info, $"Ingestion progress: {Path.GetFileName(filePath)} - {status} ({progressPercentage}%)");
         }
@@ -153,7 +151,6 @@ namespace View.Personal.Services
                 
                 UpdatePendingFiles();
                 
-                // If no more pending files and no active ingestions, start auto-hide timer
                 if (!HasPendingFiles() && _activeIngestions.Count == 0)
                 {
                     Task.Delay(_autoHideDelay).ContinueWith(_ => {
@@ -183,10 +180,8 @@ namespace View.Personal.Services
                 return;
             }
             
-            // Remove the file from active ingestions
             _activeIngestions.TryRemove(filePath, out _);
             
-            // If this was the current file, update the current file to the next one
             if (filePath == _currentFile)
             {
                 if (_activeIngestions.Count > 0)
@@ -203,8 +198,7 @@ namespace View.Personal.Services
             }
             
             UpdatePendingFiles();
-            
-            // If no more pending files and no active ingestions, start auto-hide timer
+
             if (!HasPendingFiles() && _activeIngestions.Count == 0)
             {
                 Task.Delay(_autoHideDelay).ContinueWith(_ => {
