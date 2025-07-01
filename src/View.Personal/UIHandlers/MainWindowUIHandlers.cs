@@ -60,7 +60,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("OpenAIEnableRAG").IsChecked = openAiSettings.RAG.EnableRAG;
             window.FindControl<Slider>("OpenAISimilarityThreshold").Value = openAiSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("OpenAISimilarityThresholdValue").Text = openAiSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("OpenAITopK").Text = openAiSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var openAiKnowledgeSource = window.FindControl<ComboBox>("OpenAIKnowledgeSource");
             if (openAiKnowledgeSource != null && !string.IsNullOrEmpty(openAiSettings.RAG.KnowledgeSource))
             {
@@ -69,6 +68,13 @@ namespace View.Personal.UIHandlers
                 if (knowledgeSourceItem != null)
                     openAiKnowledgeSource.SelectedItem = knowledgeSourceItem;
             }
+            
+            // Load OpenAI advanced RAG settings
+            window.FindControl<Slider>("OpenAIMaxRetrieved").Value = openAiSettings.RAG.NumberOfDocumentsToRetrieve;
+            window.FindControl<TextBlock>("OpenAIMaxRetrievedValue").Text = openAiSettings.RAG.NumberOfDocumentsToRetrieve.ToString("F0");
+            window.FindControl<ToggleSwitch>("OpenAIQueryOptimization").IsChecked = openAiSettings.RAG.QueryOptimization;
+            window.FindControl<ToggleSwitch>("OpenAIEnableCitations").IsChecked = openAiSettings.RAG.EnableCitations;
+            window.FindControl<ToggleSwitch>("OpenAIEnableContextSorting").IsChecked = openAiSettings.RAG.EnableContextSorting;
 
             window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
@@ -83,7 +89,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("AnthropicEnableRAG").IsChecked = anthropicSettings.RAG.EnableRAG;
             window.FindControl<Slider>("AnthropicSimilarityThreshold").Value = anthropicSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("AnthropicSimilarityThresholdValue").Text = anthropicSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("AnthropicTopK").Text = anthropicSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var anthropicKnowledgeSource = window.FindControl<ComboBox>("AnthropicKnowledgeSource");
             if (anthropicKnowledgeSource != null && !string.IsNullOrEmpty(anthropicSettings.RAG.KnowledgeSource))
             {
@@ -92,6 +97,13 @@ namespace View.Personal.UIHandlers
                 if (knowledgeSourceItem != null)
                     anthropicKnowledgeSource.SelectedItem = knowledgeSourceItem;
             }
+            
+            // Load Anthropic advanced RAG settings
+            window.FindControl<Slider>("AnthropicMaxRetrieved").Value = anthropicSettings.RAG.NumberOfDocumentsToRetrieve;
+            window.FindControl<TextBlock>("AnthropicMaxRetrievedValue").Text = anthropicSettings.RAG.NumberOfDocumentsToRetrieve.ToString("F0");
+            window.FindControl<ToggleSwitch>("AnthropicQueryOptimization").IsChecked = anthropicSettings.RAG.QueryOptimization;
+            window.FindControl<ToggleSwitch>("AnthropicEnableCitations").IsChecked = anthropicSettings.RAG.EnableCitations;
+            window.FindControl<ToggleSwitch>("AnthropicEnableContextSorting").IsChecked = anthropicSettings.RAG.EnableContextSorting;
 
             window.FindControl<TextBox>("OllamaCompletionModel").Text = ollamaSettings.CompletionModel ?? string.Empty;
             window.FindControl<TextBox>("OllamaEndpoint").Text = ollamaSettings.Endpoint ?? string.Empty;
@@ -105,7 +117,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("OllamaEnableRAG").IsChecked = ollamaSettings.RAG.EnableRAG;
             window.FindControl<Slider>("OllamaSimilarityThreshold").Value = ollamaSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("OllamaSimilarityThresholdValue").Text = ollamaSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("OllamaTopK").Text = ollamaSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var ollamaKnowledgeSource = window.FindControl<ComboBox>("OllamaKnowledgeSource");
             if (ollamaKnowledgeSource != null && !string.IsNullOrEmpty(ollamaSettings.RAG.KnowledgeSource))
             {
@@ -114,6 +125,13 @@ namespace View.Personal.UIHandlers
                 if (knowledgeSourceItem != null)
                     ollamaKnowledgeSource.SelectedItem = knowledgeSourceItem;
             }
+            
+            // Load Ollama advanced RAG settings
+            window.FindControl<Slider>("OllamaMaxRetrieved").Value = ollamaSettings.RAG.NumberOfDocumentsToRetrieve;
+            window.FindControl<TextBlock>("OllamaMaxRetrievedValue").Text = ollamaSettings.RAG.NumberOfDocumentsToRetrieve.ToString("F0");
+            window.FindControl<ToggleSwitch>("OllamaQueryOptimization").IsChecked = ollamaSettings.RAG.QueryOptimization;
+            window.FindControl<ToggleSwitch>("OllamaEnableCitations").IsChecked = ollamaSettings.RAG.EnableCitations;
+            window.FindControl<ToggleSwitch>("OllamaEnableContextSorting").IsChecked = ollamaSettings.RAG.EnableContextSorting;
 
             window.FindControl<TextBox>("ViewApiKey").Text = viewSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("ViewEndpoint").Text = viewSettings.Endpoint ?? string.Empty;
@@ -131,7 +149,6 @@ namespace View.Personal.UIHandlers
             window.FindControl<CheckBox>("ViewEnableRAG").IsChecked = viewSettings.RAG.EnableRAG;
             window.FindControl<Slider>("ViewSimilarityThreshold").Value = viewSettings.RAG.SimilarityThreshold;
             window.FindControl<TextBlock>("ViewSimilarityThresholdValue").Text = viewSettings.RAG.SimilarityThreshold.ToString("F1");
-            window.FindControl<TextBox>("ViewTopK").Text = viewSettings.RAG.NumberOfDocumentsToRetrieve.ToString();
             var viewKnowledgeSource = window.FindControl<ComboBox>("ViewKnowledgeSource");
             if (viewKnowledgeSource != null && !string.IsNullOrEmpty(viewSettings.RAG.KnowledgeSource))
             {
@@ -140,6 +157,13 @@ namespace View.Personal.UIHandlers
                 if (knowledgeSourceItem != null)
                     viewKnowledgeSource.SelectedItem = knowledgeSourceItem;
             }
+            
+            // Load View advanced RAG settings
+            window.FindControl<Slider>("ViewMaxRetrieved").Value = viewSettings.RAG.NumberOfDocumentsToRetrieve;
+            window.FindControl<TextBlock>("ViewMaxRetrievedValue").Text = viewSettings.RAG.NumberOfDocumentsToRetrieve.ToString("F0");
+            window.FindControl<ToggleSwitch>("ViewQueryOptimization").IsChecked = viewSettings.RAG.QueryOptimization;
+            window.FindControl<ToggleSwitch>("ViewEnableCitations").IsChecked = viewSettings.RAG.EnableCitations;
+            window.FindControl<ToggleSwitch>("ViewEnableContextSorting").IsChecked = viewSettings.RAG.EnableContextSorting;
 
             // Embedding models
             window.FindControl<TextBox>("OllamaModel").Text = embeddingSettings.OllamaEmbeddingModel ?? string.Empty;
@@ -179,6 +203,7 @@ namespace View.Personal.UIHandlers
             // Setup temperature slider and similarity threshold slider value change handlers
             SetupTemperatureSliderHandlers(window);
             SetupSimilarityThresholdSliderHandlers(window);
+            SetupAdvancedRagSliderHandlers(window);
         }
 
         /// <summary>
@@ -308,6 +333,50 @@ namespace View.Personal.UIHandlers
                     }
                 };
             }
+            
+            // Setup advanced RAG sliders
+            SetupAdvancedRagSliderHandlers(window);
+        }
+        
+        /// <summary>
+        /// Sets up event handlers for advanced RAG sliders to update their corresponding value displays.
+        /// </summary>
+        /// <param name="window">The main window instance.</param>
+        private static void SetupAdvancedRagSliderHandlers(MainWindow window)
+        {
+            // OpenAI provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "OpenAIMaxRetrieved", "OpenAIMaxRetrievedValue");
+            
+            // Anthropic provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "AnthropicMaxRetrieved", "AnthropicMaxRetrievedValue");
+            
+            // Ollama provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "OllamaMaxRetrieved", "OllamaMaxRetrievedValue");
+     
+            // View provider advanced RAG sliders
+            SetupAdvancedRagSlider(window, "ViewMaxRetrieved", "ViewMaxRetrievedValue");
+        }
+        
+        /// <summary>
+        /// Sets up event handlers for a specific advanced RAG slider to update its corresponding value display.
+        /// </summary>
+        /// <param name="window">The main window instance.</param>
+        /// <param name="sliderName">The name of the slider control.</param>
+        /// <param name="valueTextBlockName">The name of the TextBlock that displays the slider's value.</param>
+        private static void SetupAdvancedRagSlider(MainWindow window, string sliderName, string valueTextBlockName)
+        {
+            var slider = window.FindControl<Slider>(sliderName);
+            var valueTextBlock = window.FindControl<TextBlock>(valueTextBlockName);
+            if (slider != null && valueTextBlock != null)
+            {
+                slider.PropertyChanged += (sender, args) =>
+                {
+                    if (args.Property.Name == "Value")
+                    {
+                        valueTextBlock.Text = slider.Value.ToString("F0");
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -419,11 +488,16 @@ namespace View.Personal.UIHandlers
                 if (openAiSettings.RAG.EnableRAG)
                 {
                     openAiSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("OpenAISimilarityThreshold").Value;
-                    if (int.TryParse(window.FindControl<TextBox>("OpenAITopK").Text, out int openAiTopK))
-                        openAiSettings.RAG.NumberOfDocumentsToRetrieve = openAiTopK <= 0 ? 3 : openAiTopK;
+
                     var openAiKnowledgeSource = window.FindControl<ComboBox>("OpenAIKnowledgeSource");
                     if (openAiKnowledgeSource != null && openAiKnowledgeSource.SelectedItem != null)
                         openAiSettings.RAG.KnowledgeSource = openAiKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                    
+                    // Save advanced RAG settings
+                    openAiSettings.RAG.NumberOfDocumentsToRetrieve = (int)window.FindControl<Slider>("OpenAIMaxRetrieved").Value;
+                    openAiSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("OpenAIQueryOptimization").IsChecked ?? true;
+                    openAiSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("OpenAIEnableCitations").IsChecked ?? true;
+                    openAiSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("OpenAIEnableContextSorting").IsChecked ?? true;
                 }
 
                 // Update Anthropic settings
@@ -445,11 +519,16 @@ namespace View.Personal.UIHandlers
                 if (anthropicSettings.RAG.EnableRAG)
                 {
                     anthropicSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("AnthropicSimilarityThreshold").Value;
-                    if (int.TryParse(window.FindControl<TextBox>("AnthropicTopK").Text, out int anthropicTopK))
-                        anthropicSettings.RAG.NumberOfDocumentsToRetrieve = anthropicTopK <= 0 ? 3 : anthropicTopK;
+
                     var anthropicKnowledgeSource = window.FindControl<ComboBox>("AnthropicKnowledgeSource");
                     if (anthropicKnowledgeSource != null && anthropicKnowledgeSource.SelectedItem != null)
                         anthropicSettings.RAG.KnowledgeSource = anthropicKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                    
+                    // Save advanced RAG settings
+                    anthropicSettings.RAG.NumberOfDocumentsToRetrieve = (int)window.FindControl<Slider>("AnthropicMaxRetrieved").Value;
+                    anthropicSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("AnthropicQueryOptimization").IsChecked ?? true;
+                    anthropicSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("AnthropicEnableCitations").IsChecked ?? true;
+                    anthropicSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("AnthropicEnableContextSorting").IsChecked ?? true;
                 }
 
                 // Update Ollama settings
@@ -468,12 +547,15 @@ namespace View.Personal.UIHandlers
                 {
                     ollamaSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("OllamaSimilarityThreshold").Value;
 
-                    if (int.TryParse(window.FindControl<TextBox>("OllamaTopK").Text, out int ollamaTopK))
-                        ollamaSettings.RAG.NumberOfDocumentsToRetrieve = ollamaTopK <= 0 ? 3 : ollamaTopK;
-
                     var ollamaKnowledgeSource = window.FindControl<ComboBox>("OllamaKnowledgeSource");
                     if (ollamaKnowledgeSource != null && ollamaKnowledgeSource.SelectedItem != null)
                         ollamaSettings.RAG.KnowledgeSource = ollamaKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                    
+                    // Save advanced RAG settings
+                    ollamaSettings.RAG.NumberOfDocumentsToRetrieve = (int)window.FindControl<Slider>("OllamaMaxRetrieved").Value;
+                    ollamaSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("OllamaQueryOptimization").IsChecked ?? true;
+                    ollamaSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("OllamaEnableCitations").IsChecked ?? true;
+                    ollamaSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("OllamaEnableContextSorting").IsChecked ?? true;
                 }
 
                 // Update View settings
@@ -497,11 +579,16 @@ namespace View.Personal.UIHandlers
                 if (viewSettings.RAG.EnableRAG)
                 {
                     viewSettings.RAG.SimilarityThreshold = window.FindControl<Slider>("ViewSimilarityThreshold").Value;
-                    if (int.TryParse(window.FindControl<TextBox>("ViewTopK").Text, out int viewTopK))
-                        viewSettings.RAG.NumberOfDocumentsToRetrieve = viewTopK <= 0 ? 3 : viewTopK;
+
                     var viewKnowledgeSource = window.FindControl<ComboBox>("ViewKnowledgeSource");
                     if (viewKnowledgeSource != null && viewKnowledgeSource.SelectedItem != null)
                         viewSettings.RAG.KnowledgeSource = viewKnowledgeSource.SelectedItem.ToString() ?? string.Empty;
+                    
+                    // Save advanced RAG settings
+                    viewSettings.RAG.NumberOfDocumentsToRetrieve = (int)window.FindControl<Slider>("ViewMaxRetrieved").Value;
+                    viewSettings.RAG.QueryOptimization = window.FindControl<ToggleSwitch>("ViewQueryOptimization").IsChecked ?? true;
+                    viewSettings.RAG.EnableCitations = window.FindControl<ToggleSwitch>("ViewEnableCitations").IsChecked ?? true;
+                    viewSettings.RAG.EnableContextSorting = window.FindControl<ToggleSwitch>("ViewEnableContextSorting").IsChecked ?? true;
                 }
 
                 if (window.FindControl<RadioButton>("OpenAICompletionProvider").IsChecked == true)
