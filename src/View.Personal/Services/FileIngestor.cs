@@ -616,9 +616,6 @@
                     NotificationType.Success);
                 });
 
-                // Mark file ingestion as complete and update progress UI
-                IngestionProgressService.CompleteFileIngestion();
-                IngestionProgressService.UpdatePendingFiles();
             }
             catch (Exception ex)
             {
@@ -632,6 +629,11 @@
             }
             finally
             {
+
+                // Mark file ingestion as complete and update progress UI
+                IngestionProgressService.CompleteFileIngestion();
+                IngestionProgressService.UpdatePendingFiles();
+
                 if (spinner != null)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
@@ -667,7 +669,6 @@
             var appSettings = ((App)Application.Current).ApplicationSettings;
             var app = (App)Application.Current;
 
-            // ToDo: Go back over this and make sure this is working as expected
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
@@ -685,6 +686,10 @@
                 mainWindow.ShowNotification("Re-ingestion Error", "Unsupported file type.", NotificationType.Error);
                 return;
             }
+
+            IngestionProgressService.StartFileIngestion(filePath);
+            IngestionProgressService.UpdatePendingFiles();
+            IngestionProgressService.UpdateCurrentFileProgress(filePath, "Starting re-ingestion...", 0);
 
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
 
@@ -740,6 +745,7 @@
                 app.Log(Enums.SeverityEnum.Info, $"Detected Type: {typeResult.Type}");
 
                 var atoms = new List<Atom>();
+                IngestionProgressService.UpdateCurrentFileProgress(filePath, "Preparing to extract content...", 10);
                 await Task.Run(async () =>
                 {
                     if (isXlsFile)
@@ -769,6 +775,7 @@
                                     var pdfProcessor = new PdfProcessor(processorSettings);
                                     atoms = pdfProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PDF"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PDF", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Text:
@@ -785,6 +792,7 @@
                                     var textProcessor = new TextProcessor(textSettings);
                                     atoms = textProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Text file"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Text file", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Pptx:
@@ -817,6 +825,7 @@
                                     var docxProcessor = new DocxProcessor(processorSettings);
                                     atoms = docxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Word document"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Word document", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Markdown:
@@ -835,6 +844,7 @@
                                         atoms = markdownProcessor.Extract(filePath).ToList();
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Markdown file"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Markdown file", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Xlsx:
@@ -853,6 +863,7 @@
                                         atoms = xlsxProcessor.Extract(filePath).ToList();
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel file"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Excel file", 20);
                                     break;
                                 }
                             default:
@@ -899,20 +910,24 @@
                         }
                     }
 
+                    IngestionProgressService.UpdateProgress($"Creating document node", 40);
                     var fileNode =
                         MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                     liteGraph.Node.Create(fileNode);
                     app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID}");
 
+                    IngestionProgressService.UpdateProgress("Creating chunk nodes", 50);
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                     app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes.");
 
+                    IngestionProgressService.UpdateProgress("Creating edges from doc -> chunk nodes.", 85);
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
                     liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                     app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes.");
 
+                    IngestionProgressService.UpdateProgress("Generating embeddings", 95);
                     var validChunkNodes = chunkNodes
                         .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                         .ToList();
@@ -1124,9 +1139,8 @@
                 await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                 var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
                 if (filePathTextBox != null)
-                    filePathTextBox.Text = "";
+                    filePathTextBox.Text = "";     
                 app.Log(Enums.SeverityEnum.Info, $"File {filePath} ingested successfully!");
-                var filename = Path.GetFileName(filePath);
             }
             catch (Exception ex)
             {
@@ -1137,6 +1151,8 @@
             }
             finally
             {
+                IngestionProgressService.CompleteFileIngestion();
+                IngestionProgressService.UpdatePendingFiles();
                 if (spinner != null)
                     await Dispatcher.UIThread.InvokeAsync(() => spinner.IsVisible = false, DispatcherPriority.Normal);
             }
@@ -1228,8 +1244,6 @@
                             await ProcessSingleFileAsync(filePath, typeDetector, liteGraph, tenantGuid, graphGuid, window);
                             completedFiles.Add(filePath);
 
-                            IngestionProgressService.CompleteFileIngestion(filePath);
-                            IngestionProgressService.UpdatePendingFiles();
                         }
                         catch (Exception ex)
                         {
@@ -1245,6 +1259,8 @@
                         finally
                         {
                             semaphore.Release();
+                            IngestionProgressService.CompleteFileIngestion(filePath);
+                            IngestionProgressService.UpdatePendingFiles();
                         }
                     }));
                 }
