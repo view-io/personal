@@ -146,6 +146,7 @@
                         app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
                     _WatchedPathsPerGraph = app.ApplicationSettings.WatchedPathsPerGraph;
                     LoadGraphComboBox();
+
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                     var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
@@ -160,6 +161,14 @@
                         await FileDeleter.CleanupIncompleteFilesAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                         await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                     });
+
+                    // Initialize the ingestion progress popup
+                    var ingestionProgressPopup = this.FindControl<Controls.IngestionProgressPopup>("IngestionProgressPopup");
+                    if (ingestionProgressPopup != null)
+                    {
+                        Services.IngestionProgressService.Initialize(ingestionProgressPopup);
+                        app.Log(SeverityEnum.Info, "Ingestion progress popup initialized.");
+                    }
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,

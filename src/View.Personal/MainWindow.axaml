@@ -5,6 +5,7 @@
         xmlns:helpers="clr-namespace:View.Personal.Helpers"
         xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
         xmlns:controls="clr-namespace:View.Personal.Views"
+        xmlns:Controls="clr-namespace:View.Personal.Controls"
         x:Class="View.Personal.MainWindow"
         Width="1200" Height="800"
         Title="View Personal"
@@ -2242,7 +2243,7 @@
 					</Grid>
 				</Border>
 				<TextBlock Name="WorkspaceText" IsVisible="False" />
-			</Grid>
+			</Grid>		
 		</DockPanel>
 		<GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="#DDDDDD" />
 		<!-- Console panel -->
@@ -2278,6 +2279,11 @@
 		</Border>
 		<!-- ReSharper disable Xaml.MissingGridIndex -->
 		<WindowNotificationManager x:Name="NotificationManager" />
+		<Controls:IngestionProgressPopup x:Name="IngestionProgressPopup" 
+                                     HorizontalAlignment="Right" 
+                                     VerticalAlignment="Bottom" 
+                                     Margin="0,0,20,20" 
+                                     ZIndex="1000" />
 		<!-- ReSharper restore Xaml.MissingGridIndex -->
 	</Grid>
 	<!-- ReSharper restore Xaml.StyleClassNotFound -->

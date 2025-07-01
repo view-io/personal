@@ -55,9 +55,12 @@
 
         private static readonly string IngestionDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
 
-        private static readonly PersistentList<string> IngestionList =
+        /// <summary>
+        /// List of files currently in the ingestion queue.
+        /// </summary>
+        public static readonly PersistentList<string> IngestionList =
             new PersistentList<string>(Path.Combine(IngestionDir, "ingestion-backlog.idx"));
-            
+
         private static readonly PersistentDictionary<string, bool> CompletedIngestions =
             new(Path.Combine(IngestionDir, "completed-ingestions.idx"));
 
@@ -90,6 +93,9 @@
             ts.AddMessage("Start");
             if (!IngestionList.Contains(filePath))
                 IngestionList.Add(filePath);
+
+            IngestionProgressService.StartFileIngestion(filePath);
+            IngestionProgressService.UpdatePendingFiles();
 
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
@@ -213,6 +219,7 @@
                                     atoms = pdfProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PDF"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from PDF");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PDF", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Text:
@@ -230,6 +237,7 @@
                                     atoms = textProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Text file"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from Text file");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Text file", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Pptx:
@@ -247,6 +255,7 @@
                                     atoms = pptxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PowerPoint"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from PowerPoint");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PowerPoint", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Docx:
@@ -264,6 +273,7 @@
                                     atoms = docxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Word document"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from Word document");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Word document", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Markdown:
@@ -283,6 +293,7 @@
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Markdown file"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from Markdown file");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Markdown file", 20);
                                     break;
                                 }
                             case DocumentTypeEnum.Xlsx:
@@ -302,6 +313,7 @@
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel file"));
                                     ts.AddMessage($"Extracted {atoms.Count} atoms from Excel file");
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Excel file", 20);
                                     break;
                                 }
                             default:
@@ -354,17 +366,21 @@
                     liteGraph.Node.Create(fileNode);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID}"));
                     ts.AddMessage($"Created file document node {fileNode.GUID}");
+                    IngestionProgressService.UpdateProgress($"Created document node for {Path.GetFileName(filePath)}", 40);
+                    IngestionProgressService.UpdateProgress("Creating document structure", 40);
 
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes."));
                     ts.AddMessage($"Created {chunkNodes.Count} chunk nodes.");
+                    IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} chunk nodes", 60);
 
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
                     liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes."));
                     ts.AddMessage($"Created {edges.Count} edges from doc -> chunk nodes.");
+                    IngestionProgressService.UpdateProgress("Generating embeddings", 70);
 
                     var validChunkNodes = chunkNodes
                         .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
@@ -393,6 +409,7 @@
                                     Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                     Contents = chunkTexts
                                 };
+                                IngestionProgressService.UpdateProgress($"Generating embeddings with OpenAI for {Path.GetFileName(filePath)}...", 70);
                                 var embeddingsResult = await openAiSdk.GenerateEmbeddings(openAIEmbeddingsRequest);
                                 if (!CheckEmbeddingsResult(mainWindow, embeddingsResult, validChunkNodes.Count)) return;
                                 for (var j = 0; j < validChunkNodes.Count; j++)
@@ -507,7 +524,7 @@
                                     liteGraph.Node.Update(chunkNode);
                                 }
 
-                                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, 
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info,
                                     $"Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings."));
                                 ts.AddMessage($"Updated {validChunkNodes.Count} chunk nodes with VoyageAI embeddings.");
                                 break;
@@ -599,6 +616,10 @@
                     mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
                     NotificationType.Success);
                 });
+
+                // Mark file ingestion as complete and update progress UI
+                IngestionProgressService.CompleteFileIngestion();
+                IngestionProgressService.UpdatePendingFiles();
             }
             catch (Exception ex)
             {
@@ -606,6 +627,9 @@
                 app.LogExceptionToFile(ex, $"Error ingesting file {filePath}");
                 mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                     NotificationType.Error);
+
+                // Update progress UI to show error
+                IngestionProgressService.UpdateProgress($"Error: {ex.Message}", 0);
             }
             finally
             {
@@ -1197,8 +1221,16 @@
                                 return;
                             }
 
+                            IngestionProgressService.StartFileIngestion(filePath);
+                            IngestionProgressService.UpdatePendingFiles();
+
+                            IngestionProgressService.UpdateCurrentFileProgress(filePath, $"Processing...", 10);
+
                             await ProcessSingleFileAsync(filePath, typeDetector, liteGraph, tenantGuid, graphGuid, window);
                             completedFiles.Add(filePath);
+
+                            IngestionProgressService.CompleteFileIngestion(filePath);
+                            IngestionProgressService.UpdatePendingFiles();
                         }
                         catch (Exception ex)
                         {
@@ -1284,6 +1316,8 @@
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentException("File path cannot be null or empty");
 
+            // Update IngestionProgressService with current file name
+            var fileName = Path.GetFileName(filePath);
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
             if (string.IsNullOrEmpty(embeddingProvider))
                 throw new ArgumentException("No embedding provider selected");
@@ -1327,6 +1361,7 @@
                     };
                     atoms = Extract(filePath);
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel (.xls) file: {Path.GetFileName(filePath)}"));
+                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Excel file", 20);
                 }
                 else
                 {
@@ -1346,6 +1381,7 @@
                                 var pdfProcessor = new PdfProcessor(processorSettings);
                                 atoms = pdfProcessor.Extract(filePath).ToList();
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PDF: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PDF", 20);
                                 break;
                             }
                         case DocumentTypeEnum.Text:
@@ -1362,6 +1398,7 @@
                                 var textProcessor = new TextProcessor(textSettings);
                                 atoms = textProcessor.Extract(filePath).ToList();
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Text file: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Text file", 20);
                                 break;
                             }
                         case DocumentTypeEnum.Pptx:
@@ -1378,6 +1415,7 @@
                                 var pptxProcessor = new PptxProcessor(processorSettings);
                                 atoms = pptxProcessor.Extract(filePath).ToList();
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from PowerPoint: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PowerPoint", 20);
                                 break;
                             }
                         case DocumentTypeEnum.Docx:
@@ -1394,6 +1432,7 @@
                                 var docxProcessor = new DocxProcessor(processorSettings);
                                 atoms = docxProcessor.Extract(filePath).ToList();
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Word document: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Word document", 20);
                                 break;
                             }
                         case DocumentTypeEnum.Markdown:
@@ -1412,6 +1451,7 @@
                                     atoms = markdownProcessor.Extract(filePath).ToList();
                                 }
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Markdown file: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Markdown file", 20);
                                 break;
                             }
                         case DocumentTypeEnum.Xlsx:
@@ -1430,6 +1470,7 @@
                                     atoms = xlsxProcessor.Extract(filePath).ToList();
                                 }
                                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Extracted {atoms.Count} atoms from Excel file: {Path.GetFileName(filePath)}"));
+                                IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Excel file", 20);
                                 break;
                             }
                         default:
@@ -1473,21 +1514,23 @@
                     MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                 liteGraph.Node.Create(fileNode);
                 app.Log(Enums.SeverityEnum.Info, $"Created file document node {fileNode.GUID} for {Path.GetFileName(filePath)}");
+                IngestionProgressService.UpdateProgress($"Created document node for {Path.GetFileName(filePath)}", 40);
 
                 var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                 liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                 app.Log(Enums.SeverityEnum.Info, $"Created {chunkNodes.Count} chunk nodes for {Path.GetFileName(filePath)}.");
+                IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} chunk nodes", 60);
 
                 var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                     chunkNodes);
                 liteGraph.Edge.CreateMany(tenantGuid, graphGuid, edges);
                 app.Log(Enums.SeverityEnum.Info, $"Created {edges.Count} edges from doc -> chunk nodes for {Path.GetFileName(filePath)}.");
-
+                IngestionProgressService.UpdateProgress($"Created {chunkNodes.Count} edges from doc -> chunk nodes", 75);
                 var validChunkNodes = chunkNodes
                     .Where(x => x.Data is Atom atom && !string.IsNullOrWhiteSpace(atom.Text))
                     .ToList();
                 var chunkTexts = validChunkNodes.Select(x => (x.Data as Atom)?.Text).ToList();
-
+                IngestionProgressService.UpdateProgress("Generating embeddings", 90);
                 if (!chunkTexts.Any())
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Warn, $"No valid text content found in atoms for embedding in {Path.GetFileName(filePath)}."));
                 else
