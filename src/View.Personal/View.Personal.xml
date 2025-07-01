@@ -130,6 +130,31 @@
             Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="F:View.Personal.App.ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
             </remarks>
         </member>
+        <member name="T:View.Personal.Classes.ActiveFileViewModel">
+            <summary>
+            View model for displaying active file information in the UI.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.FileName">
+            <summary>
+            Gets or sets the filename of the active file being processed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.Status">
+            <summary>
+            Gets or sets the current status message of the file processing.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.Progress">
+            <summary>
+            Gets or sets the progress percentage (0-100) of the file processing.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.ProgressText">
+            <summary>
+            Gets the formatted progress percentage string (e.g., "45%")
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings">
             <summary>
             Contains application configuration settings for various AI providers and view settings.
@@ -225,6 +250,11 @@
             The temperature setting for controlling randomness in completions.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.RAG">
             <summary>
             Settings for Retrieval Augmented Generation (RAG).
@@ -270,6 +300,11 @@
             The temperature setting for controlling randomness in completions.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.RAG">
             <summary>
             Settings for Retrieval Augmented Generation (RAG).
@@ -308,6 +343,11 @@
         <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.Temperature">
             <summary>
             The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.RAG">
@@ -383,6 +423,11 @@
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.Temperature">
             <summary>
             The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.RAG">
@@ -1382,31 +1427,6 @@
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
-        <member name="T:View.Personal.Controls.ActiveFileViewModel">
-            <summary>
-            View model for displaying active file information in the UI.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Controls.ActiveFileViewModel.FileName">
-            <summary>
-            Gets or sets the filename of the active file being processed.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Controls.ActiveFileViewModel.Status">
-            <summary>
-            Gets or sets the current status message of the file processing.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Controls.ActiveFileViewModel.Progress">
-            <summary>
-            Gets or sets the progress percentage (0-100) of the file processing.
-            </summary>
-        </member>
-        <member name="P:View.Personal.Controls.ActiveFileViewModel.ProgressText">
-            <summary>
-            Gets the formatted progress percentage string (e.g., "45%")
-            </summary>
-        </member>
         <member name="T:View.Personal.Controls.Renderer.MarkdownRenderer">
             <summary>
             Provides functionality to render Markdown content as Avalonia UI controls.
@@ -2103,7 +2123,7 @@
             <summary>
             Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
             </summary>
-            <returns>A list of ChatMessage objects, including a summary of older messages (if applicable) followed by the most recent messages.</returns>
+            <returns>A list of ChatMessage objects, including the custom system prompt, a summary of older messages (if applicable) followed by the most recent messages.</returns>
         </member>
         <member name="M:View.Personal.MainWindow.GetAIResponse(System.String,System.Action{System.String})">
             <summary>

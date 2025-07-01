@@ -99,6 +99,11 @@ namespace View.Personal.Classes
             public double Temperature { get; set; } = 0.7;
             
             /// <summary>
+            /// The system prompt to use for the model.
+            /// </summary>
+            public string SystemPrompt { get; set; } = "";
+            
+            /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
             public RAGSettings RAG { get; set; } = new();
@@ -145,6 +150,11 @@ namespace View.Personal.Classes
             public double Temperature { get; set; } = 0.7;
             
             /// <summary>
+            /// The system prompt to use for the model.
+            /// </summary>
+            public string SystemPrompt { get; set; } = "";
+            
+            /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
             public RAGSettings RAG { get; set; } = new();
@@ -184,6 +194,11 @@ namespace View.Personal.Classes
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
             public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// The system prompt to use for the model.
+            /// </summary>
+            public string SystemPrompt { get; set; } = "";
             
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
@@ -260,6 +275,11 @@ namespace View.Personal.Classes
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
             public double Temperature { get; set; } = 0.7;
+            
+            /// <summary>
+            /// The system prompt to use for the model.
+            /// </summary>
+            public string SystemPrompt { get; set; } = "";
             
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).

@@ -49,6 +49,7 @@ namespace View.Personal.UIHandlers
 
             window.FindControl<TextBox>("OpenAIApiKey").Text = openAiSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("OpenAICompletionModel").Text = openAiSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("OpenAISystemPrompt").Text = openAiSettings.SystemPrompt ?? string.Empty;
             window.FindControl<TextBox>("OpenAIEndpoint").Text = openAiSettings.Endpoint ?? string.Empty;
             window.FindControl<TextBox>("OpenAIBatchSize").Text = openAiSettings.BatchSize.ToString();
             window.FindControl<TextBox>("OpenAIMaxRetries").Text = openAiSettings.MaxRetries.ToString();
@@ -78,6 +79,7 @@ namespace View.Personal.UIHandlers
 
             window.FindControl<TextBox>("AnthropicApiKey").Text = anthropicSettings.ApiKey ?? string.Empty;
             window.FindControl<TextBox>("AnthropicCompletionModel").Text = anthropicSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("AnthropicSystemPrompt").Text = anthropicSettings.SystemPrompt ?? string.Empty;
             window.FindControl<TextBox>("AnthropicEndpoint").Text = anthropicSettings.Endpoint ?? string.Empty;
             window.FindControl<TextBox>("AnthropicBatchSize").Text = anthropicSettings.BatchSize.ToString();
             window.FindControl<TextBox>("AnthropicMaxRetries").Text = anthropicSettings.MaxRetries.ToString();
@@ -106,6 +108,7 @@ namespace View.Personal.UIHandlers
             window.FindControl<ToggleSwitch>("AnthropicEnableContextSorting").IsChecked = anthropicSettings.RAG.EnableContextSorting;
 
             window.FindControl<TextBox>("OllamaCompletionModel").Text = ollamaSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("OllamaSystemPrompt").Text = ollamaSettings.SystemPrompt ?? string.Empty;
             window.FindControl<TextBox>("OllamaEndpoint").Text = ollamaSettings.Endpoint ?? string.Empty;
             window.FindControl<TextBox>("OllamaBatchSize").Text = ollamaSettings.BatchSize.ToString();
             window.FindControl<TextBox>("OllamaMaxRetries").Text = ollamaSettings.MaxRetries.ToString();
@@ -139,6 +142,7 @@ namespace View.Personal.UIHandlers
             window.FindControl<TextBox>("ViewAccessKey").Text = viewSettings.AccessKey ?? string.Empty;
             window.FindControl<TextBox>("ViewTenantGUID").Text = viewSettings.TenantGuid ?? string.Empty;
             window.FindControl<TextBox>("ViewCompletionModel").Text = viewSettings.CompletionModel ?? string.Empty;
+            window.FindControl<TextBox>("ViewSystemPrompt").Text = viewSettings.SystemPrompt ?? string.Empty;
             window.FindControl<TextBox>("ViewBatchSize").Text = viewSettings.BatchSize.ToString();
             window.FindControl<TextBox>("ViewMaxRetries").Text = viewSettings.MaxRetries.ToString();
             window.FindControl<Slider>("ViewTemperature").Value = viewSettings.Temperature;
@@ -473,6 +477,7 @@ namespace View.Personal.UIHandlers
                 // Update OpenAI settings
                 openAiSettings.ApiKey = window.FindControl<TextBox>("OpenAIApiKey").Text;
                 openAiSettings.CompletionModel = window.FindControl<TextBox>("OpenAICompletionModel").Text;
+                openAiSettings.SystemPrompt = window.FindControl<TextBox>("OpenAISystemPrompt").Text;
                 openAiSettings.Endpoint = window.FindControl<TextBox>("OpenAIEndpoint").Text;
                 if (int.TryParse(window.FindControl<TextBox>("OpenAIBatchSize").Text, out int openAiBatchSize))
                     openAiSettings.BatchSize = openAiBatchSize <= 0 ? 0 : openAiBatchSize;
@@ -504,6 +509,7 @@ namespace View.Personal.UIHandlers
                 anthropicSettings.ApiKey = window.FindControl<TextBox>("AnthropicApiKey").Text;
                 anthropicSettings.CompletionModel =
                     window.FindControl<TextBox>("AnthropicCompletionModel").Text;
+                anthropicSettings.SystemPrompt = window.FindControl<TextBox>("AnthropicSystemPrompt").Text;
                 anthropicSettings.Endpoint = window.FindControl<TextBox>("AnthropicEndpoint").Text;
                 if (int.TryParse(window.FindControl<TextBox>("AnthropicBatchSize").Text, out int anthropicBatchSize))
                     anthropicSettings.BatchSize = anthropicBatchSize <= 0 ? 0 : anthropicBatchSize;
@@ -533,6 +539,7 @@ namespace View.Personal.UIHandlers
 
                 // Update Ollama settings
                 ollamaSettings.CompletionModel = window.FindControl<TextBox>("OllamaCompletionModel").Text;
+                ollamaSettings.SystemPrompt = window.FindControl<TextBox>("OllamaSystemPrompt").Text;
                 ollamaSettings.Endpoint = window.FindControl<TextBox>("OllamaEndpoint").Text;
                 if (int.TryParse(window.FindControl<TextBox>("OllamaBatchSize").Text, out int ollamaBatchSize))
                     ollamaSettings.BatchSize = ollamaBatchSize <= 0 ? 0 : ollamaBatchSize;
@@ -565,6 +572,7 @@ namespace View.Personal.UIHandlers
                 viewSettings.AccessKey = window.FindControl<TextBox>("ViewAccessKey").Text;
                 viewSettings.TenantGuid = window.FindControl<TextBox>("ViewTenantGUID").Text;
                 viewSettings.CompletionModel = window.FindControl<TextBox>("ViewCompletionModel").Text;
+                viewSettings.SystemPrompt = window.FindControl<TextBox>("ViewSystemPrompt").Text;
                 if (int.TryParse(window.FindControl<TextBox>("ViewBatchSize").Text, out int viewBatchSize))
                     viewSettings.BatchSize = viewBatchSize <= 0 ? 0 : viewBatchSize;
                 if (int.TryParse(window.FindControl<TextBox>("ViewMaxRetries").Text, out int viewMaxRetries))

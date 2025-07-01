@@ -829,12 +829,33 @@
         /// <summary>
         /// Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
         /// </summary>
-        /// <returns>A list of ChatMessage objects, including a summary of older messages (if applicable) followed by the most recent messages.</returns>
+        /// <returns>A list of ChatMessage objects, including the custom system prompt, a summary of older messages (if applicable) followed by the most recent messages.</returns>
         private List<ChatMessage> BuildPromptMessages()
         {
-            // If conversation is short, just return everything
-            if (_ConversationHistory.Count <= 8)
-                return _ConversationHistory;
+            var app = (App)Application.Current;
+            var selectedProvider = app.ApplicationSettings.SelectedProvider;
+            var finalList = new List<ChatMessage>();
+
+            // Add the custom system prompt if it exists
+            string customSystemPrompt = selectedProvider switch
+            {
+                "OpenAI" => app.ApplicationSettings.OpenAI.SystemPrompt,
+                "Anthropic" => app.ApplicationSettings.Anthropic.SystemPrompt,
+                "Ollama" => app.ApplicationSettings.Ollama.SystemPrompt,
+                "View" => app.ApplicationSettings.View.SystemPrompt,
+                _ => string.Empty
+            };
+
+            if (!string.IsNullOrWhiteSpace(customSystemPrompt))
+            {
+                finalList.Add(new ChatMessage
+                {
+                    Role = "system",
+                    Content = customSystemPrompt
+                });
+
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt for {selectedProvider}");
+            }
 
             // Separate older messages from more recent ones
             var olderMessages = _ConversationHistory
@@ -844,20 +865,18 @@
                 .Skip(_ConversationHistory.Count - 6)
                 .ToList();
 
-            // For a proper summary, should I do second call to GPT to summarize `olderMessages`?
             var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
             var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
 
-            // Make one message with this summary
-            var summaryMessage = new ChatMessage
+            if (!string.IsNullOrEmpty(naiveSummary))
             {
-                Role = "system",
-                Content = summaryContent
-            };
-
-            // Return the summary plus the recent messages
-            var finalList = new List<ChatMessage>();
-            finalList.Add(summaryMessage);
+                var summaryMessage = new ChatMessage
+                {
+                    Role = "system",
+                    Content = summaryContent
+                };
+                finalList.Add(summaryMessage);
+            }
             finalList.AddRange(recentMessages);
 
             return finalList;
@@ -909,7 +928,7 @@
                     var (sdk, embeddingsRequest) =
                         GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
                     var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
-                        if (promptEmbeddings == null)
+                    if (promptEmbeddings == null)
                         return "Error: Failed to generate embeddings for the prompt.";
                     app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
 
