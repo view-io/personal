@@ -1480,14 +1480,17 @@
                         }
                         catch (Exception ex)
                         {
-                            failedFiles.Add(filePath);
-                            await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Error, $"Error ingesting file {filePath}: {ex.Message}"));
-                            app.LogExceptionToFile(ex, $"Error ingesting file {filePath}");
-
-                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            if (!token.IsCancellationRequested)
                             {
-                                mainWindow.ShowNotification("Ingestion Error", $"Error ingesting {Path.GetFileName(filePath)}: {ex.Message}", NotificationType.Error);
-                            }, DispatcherPriority.Background);
+                                failedFiles.Add(filePath);
+                                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Error, $"Error ingesting file {filePath}: {ex.Message}"));
+                                app.LogExceptionToFile(ex, $"Error ingesting file {filePath}");
+
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                {
+                                    mainWindow.ShowNotification("Ingestion Error", $"Error ingesting {Path.GetFileName(filePath)}: {ex.Message}", NotificationType.Error);
+                                }, DispatcherPriority.Background);
+                            }
                         }
                         finally
                         {
@@ -1537,7 +1540,7 @@
                     app.Log(Enums.SeverityEnum.Error, $"Error in batch file ingestion: {ex.Message}");
                     app.LogExceptionToFile(ex, "Error in batch file ingestion");
                     mainWindow.ShowNotification("Batch Ingestion Error", $"Something went wrong: {ex.Message}",
-                        NotificationType.Error);
+                      NotificationType.Error);
                 });
             }
             finally
@@ -1830,6 +1833,10 @@
                     {
                         wasCancelled = true;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ingestion cancelled before creating chunk nodes: {Path.GetFileName(filePath)}"));
+
+                        liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, fileNode.GUID);
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Deleted document node {fileNode.GUID} due to cancellation"));
+
                         RemoveFileFromCompleted(filePath);
                         if (IngestionList.Contains(filePath))
                             IngestionList.Remove(filePath);
@@ -1846,6 +1853,22 @@
                     {
                         wasCancelled = true;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ingestion cancelled before creating edges: {Path.GetFileName(filePath)}"));
+
+                        // Delete the chunk nodes that were just created
+                        var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
+                        if (chunkNodeGuids.Any())
+                        {
+                            liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes due to cancellation"));
+                        }
+
+                        liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, fileNode.GUID);
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Deleted document node {fileNode.GUID} due to cancellation"));
+
+                        RemoveFileFromCompleted(filePath);
+                        if (IngestionList.Contains(filePath))
+                            IngestionList.Remove(filePath);
+                        IngestionProgressService.CompleteFileIngestion(filePath);
                         return;
                     }
 
@@ -1864,6 +1887,17 @@
                     {
                         wasCancelled = true;
                         await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ingestion cancelled before generating embeddings: {Path.GetFileName(filePath)}"));
+
+                        var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
+                        if (chunkNodeGuids.Any())
+                        {
+                            liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
+                            await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes due to cancellation"));
+                        }
+
+                        liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, fileNode.GUID);
+                        await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Deleted document node {fileNode.GUID} due to cancellation"));
+
                         RemoveFileFromCompleted(filePath);
                         if (IngestionList.Contains(filePath))
                             IngestionList.Remove(filePath);
@@ -2100,18 +2134,21 @@
             }
             catch (Exception ex)
             {
-                RemoveFileFromCompleted(filePath);
-                if (IngestionList.Contains(filePath))
-                    IngestionList.Remove(filePath);
-                await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Error, $"Error processing file {Path.GetFileName(filePath)}: {ex.Message}"));
-                app.LogExceptionToFile(ex, $"Error processing file {filePath}");
-
-                if (mainWindow != null)
+                if (!wasCancelled && !cancellationToken.IsCancellationRequested)
                 {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                        mainWindow.ShowNotification("Ingestion Error",
-                            $"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
-                            NotificationType.Error));
+                    RemoveFileFromCompleted(filePath);
+                    if (IngestionList.Contains(filePath))
+                        IngestionList.Remove(filePath);
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Error, $"Error processing file {Path.GetFileName(filePath)}: {ex.Message}"));
+                    app.LogExceptionToFile(ex, $"Error processing file {filePath}");
+
+                    if (mainWindow != null)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                            mainWindow.ShowNotification("Ingestion Error",
+                                $"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
+                                NotificationType.Error));
+                    }
                 }
             }
         }
