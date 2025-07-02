@@ -2143,9 +2143,11 @@
         </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
-            Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
+            Builds a list of chat messages for a prompt, summarizing or pruning older messages
+            if the conversation exceeds the context window size.
             </summary>
-            <returns>A list of ChatMessage objects, including the custom system prompt, a summary of older messages (if applicable) followed by the most recent messages.</returns>
+            <returns>A list of ChatMessage objects including the system prompt,
+            plus summarized/pruned conversation history if needed.</returns>
         </member>
         <member name="M:View.Personal.MainWindow.GetAIResponse(System.String,System.Action{System.String})">
             <summary>
@@ -2538,6 +2540,7 @@
             <param name="tenantGuid">The GUID representing the tenant in the system.</param>
             <param name="graphGuid">The GUID representing the graph in the system.</param>
             <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
+            <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
         </member>
         <member name="M:View.Personal.Services.FileIngester.ProcessSingleFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)">

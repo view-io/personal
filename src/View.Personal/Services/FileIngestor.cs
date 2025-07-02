@@ -1379,6 +1379,7 @@
         /// <param name="tenantGuid">The GUID representing the tenant in the system.</param>
         /// <param name="graphGuid">The GUID representing the graph in the system.</param>
         /// <param name="window">The <see cref="Window"/> object, expected to be an instance of <see cref="MainWindow"/>, used for UI interactions.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task IngestFilesAsync(List<string> filePaths, TypeDetector typeDetector, LiteGraphClient liteGraph,
            Guid tenantGuid, Guid graphGuid, Window window, CancellationToken cancellationToken = default)

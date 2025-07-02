@@ -53,8 +53,11 @@
         /// <summary>
         /// Implementation of the cancel ingestion command.
         /// </summary>
+#pragma warning disable CS0067
         private class CancelIngestionCommandImpl : ICommand
         {
+
+
             private readonly ActiveFileViewModel _viewModel;
 
             public CancelIngestionCommandImpl(ActiveFileViewModel viewModel)
@@ -70,6 +73,8 @@
             {
                 IngestionProgressService.CancelFileIngestion(_viewModel.FilePath);
             }
+
         }
     }
 }
+#pragma warning restore CS0067

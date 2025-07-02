@@ -827,16 +827,18 @@
         }
 
         /// <summary>
-        /// Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
+        /// Builds a list of chat messages for a prompt, summarizing or pruning older messages
+        /// if the conversation exceeds the context window size.
         /// </summary>
-        /// <returns>A list of ChatMessage objects, including the custom system prompt, a summary of older messages (if applicable) followed by the most recent messages.</returns>
-        private List<ChatMessage> BuildPromptMessages()
+        /// <returns>A list of ChatMessage objects including the system prompt,
+        /// plus summarized/pruned conversation history if needed.</returns>
+        private async Task<List<ChatMessage>> BuildPromptMessages()
         {
             var app = (App)Application.Current;
             var selectedProvider = app.ApplicationSettings.SelectedProvider;
             var finalList = new List<ChatMessage>();
 
-            // Add the custom system prompt if it exists
+            // Add the custom system prompt if configured
             string customSystemPrompt = selectedProvider switch
             {
                 "OpenAI" => app.ApplicationSettings.OpenAI.SystemPrompt,
@@ -853,34 +855,42 @@
                     Role = "system",
                     Content = customSystemPrompt
                 });
-
                 app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt for {selectedProvider}");
             }
 
-            // Separate older messages from more recent ones
-            var olderMessages = _ConversationHistory
-                .Take(_ConversationHistory.Count - 6)
-                .ToList();
-            var recentMessages = _ConversationHistory
-                .Skip(_ConversationHistory.Count - 6)
-                .ToList();
+            int maxContextCharacters = 24000;
 
-            var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
-            var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
-
-            if (!string.IsNullOrEmpty(naiveSummary))
+            var conversationText = string.Join(" ", _ConversationHistory.Select(m => $"{m.Role}: {m.Content}"));
+            if (conversationText.Length > maxContextCharacters)
             {
-                var summaryMessage = new ChatMessage
+                app.LogWithTimestamp(SeverityEnum.Warn, $"Context window exceeded {maxContextCharacters} characters, summarizing older messages...");
+
+                var summaryPrompt = $"""
+                                        Please summarize the following conversation in a concise, context-preserving way. 
+                                        This will be used to continue the chat beyond the context window. 
+                                        Conversation:
+                                        {conversationText}
+                                      """;
+
+                var summary = await SummarizeChat(summaryPrompt);
+
+                finalList.Add(new ChatMessage
                 {
                     Role = "system",
-                    Content = summaryContent
-                };
-                finalList.Add(summaryMessage);
+                    Content = $"[Summary of prior conversation]: {summary}"
+                });
+
+                var recentMessages = _ConversationHistory.Skip(Math.Max(0, _ConversationHistory.Count - 4)).ToList();
+                finalList.AddRange(recentMessages);
             }
-            finalList.AddRange(recentMessages);
+            else
+            {
+                finalList.AddRange(_ConversationHistory);
+            }
 
             return finalList;
         }
+
 
         /// <summary>
         /// Asynchronously retrieves an AI-generated response based on user input, utilizing the selected provider and settings.
@@ -943,13 +953,13 @@
                     }
 
                     // Build messages with RAG context
-                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, BuildPromptMessages());
+                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, await BuildPromptMessages());
                 }
                 else
                 {
                     app.LogWithTimestamp(SeverityEnum.Debug, "RAG is disabled, using standard chat");
 
-                    finalMessages = new List<ChatMessage>(BuildPromptMessages());
+                    finalMessages = new List<ChatMessage>(await BuildPromptMessages());
                     finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 }
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
