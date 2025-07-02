@@ -124,6 +124,7 @@ namespace View.Personal.Controls
                 _activeFilesRepeater.ItemsSource = _activeFiles.Select(file => new ActiveFileViewModel
                 {
                     FileName = Path.GetFileName(file.FilePath),
+                    FilePath = file.FilePath,
                     Status = file.Status,
                     Progress = file.Progress
                 }).ToList();
