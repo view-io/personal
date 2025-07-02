@@ -130,6 +130,53 @@
             Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="F:View.Personal.App.ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
             </remarks>
         </member>
+        <member name="T:View.Personal.Classes.ActiveFileViewModel">
+            <summary>
+            View model for displaying active file information in the UI.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.FileName">
+            <summary>
+            Gets or sets the filename of the active file being processed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.FilePath">
+            <summary>
+            Gets or sets the full file path of the active file being processed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.Status">
+            <summary>
+            Gets or sets the current status message of the file processing.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.Progress">
+            <summary>
+            Gets or sets the progress percentage (0-100) of the file processing.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.ProgressText">
+            <summary>
+            Gets the formatted progress percentage string (e.g., "45%")
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.ActiveFileViewModel.CancelIngestionCommand">
+            <summary>
+            Gets the command to cancel the ingestion process.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Classes.ActiveFileViewModel.CancelIngestion_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the cancel button click event.
+            </summary>
+            <param name="sender">The sender object.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="T:View.Personal.Classes.ActiveFileViewModel.CancelIngestionCommandImpl">
+            <summary>
+            Implementation of the cancel ingestion command.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings">
             <summary>
             Contains application configuration settings for various AI providers and view settings.
@@ -225,6 +272,11 @@
             The temperature setting for controlling randomness in completions.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.OpenAISettings.RAG">
             <summary>
             Settings for Retrieval Augmented Generation (RAG).
@@ -270,6 +322,11 @@
             The temperature setting for controlling randomness in completions.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
+            </summary>
+        </member>
         <member name="P:View.Personal.Classes.AppSettings.AnthropicSettings.RAG">
             <summary>
             Settings for Retrieval Augmented Generation (RAG).
@@ -308,6 +365,11 @@
         <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.Temperature">
             <summary>
             The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.OllamaSettings.RAG">
@@ -383,6 +445,11 @@
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.Temperature">
             <summary>
             The temperature setting for controlling randomness in completions.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Classes.AppSettings.ViewSettings.SystemPrompt">
+            <summary>
+            The system prompt to use for the model.
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.ViewSettings.RAG">
@@ -1336,6 +1403,52 @@
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
+        <member name="T:View.Personal.Controls.IngestionProgressPopup">
+            <summary>
+            A collapsible popup control that displays real-time file ingestion progress and pending queue.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Controls.IngestionProgressPopup"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.UpdateCurrentFileProgress(System.String,System.String,System.Double)">
+            <summary>
+            Updates the current file being processed and its progress.
+            </summary>
+            <param name="filePath">The path of the file being processed.</param>
+            <param name="status">The current status message.</param>
+            <param name="progressPercentage">The progress percentage (0-100).</param>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.UpdatePendingFiles(System.Collections.Generic.List{System.String})">
+            <summary>
+            Updates the list of pending files in the queue.
+            </summary>
+            <param name="pendingFiles">The list of file paths pending ingestion.</param>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.CollapseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the collapse/expand button.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.UpdateActiveFiles(System.Collections.Generic.List{System.ValueTuple{System.String,System.String,System.Double}})">
+            <summary>
+            Updates the list of active files being processed.
+            </summary>
+            <param name="activeFiles">The list of active files with their status and progress.</param>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.UpdateActiveFilesFromService">
+            <summary>
+            Updates the active files list from the IngestionProgressService.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+        </member>
         <member name="T:View.Personal.Controls.Renderer.MarkdownRenderer">
             <summary>
             Provides functionality to render Markdown content as Avalonia UI controls.
@@ -1931,7 +2044,7 @@
         </member>
         <member name="M:View.Personal.MainWindow.IngestFileAsync(System.String)">
             <summary>
-            Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            Asynchronously initiates the ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)"/> method.
             This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
             It serves as a bridge between the UI event handling in <see cref="T:View.Personal.MainWindow"/> and the file ingestion logic in <see cref="T:View.Personal.Services.FileIngester"/>.
             </summary>
@@ -1940,7 +2053,7 @@
         </member>
         <member name="M:View.Personal.MainWindow.IngestFilesAsync(System.Collections.Generic.List{System.String})">
             <summary>
-            Asynchronously initiates the ingestion of multiple files into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            Asynchronously initiates the ingestion of multiple files into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)"/> method.
             This method processes all files in batch mode, generating embeddings in a single batch per provider for better performance.
             </summary>
             <param name="filePaths">The list of paths to the files to be ingested.</param>
@@ -1948,7 +2061,7 @@
         </member>
         <member name="M:View.Personal.MainWindow.ReIngestFileAsync(System.String)">
             <summary>
-            Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)"/> method.
+            Asynchronously initiates the re-ingestion of a file into the system by delegating to the <see cref="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)"/> method.
             This method uses the instance's private fields for file type detection, graph interaction, and tenant/graph identification.
             It serves as a bridge between the UI event handling in <see cref="T:View.Personal.MainWindow"/> and the file re-ingestion logic in <see cref="T:View.Personal.Services.FileIngester"/>.
             </summary>
@@ -2030,9 +2143,11 @@
         </member>
         <member name="M:View.Personal.MainWindow.BuildPromptMessages">
             <summary>
-            Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
+            Builds a list of chat messages for a prompt, summarizing or pruning older messages
+            if the conversation exceeds the context window size.
             </summary>
-            <returns>A list of ChatMessage objects, including a summary of older messages (if applicable) followed by the most recent messages.</returns>
+            <returns>A list of ChatMessage objects including the system prompt,
+            plus summarized/pruned conversation history if needed.</returns>
         </member>
         <member name="M:View.Personal.MainWindow.GetAIResponse(System.String,System.Action{System.String})">
             <summary>
@@ -2358,7 +2473,30 @@
             Provides methods for ingesting files into the application, processing them into graph nodes, and generating embeddings.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+        <member name="F:View.Personal.Services.FileIngester.ActiveCancellationTokens">
+            <summary>
+            Dictionary to track active cancellation tokens for each file being ingested.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Services.FileIngester.IngestionList">
+            <summary>
+            List of files currently in the ingestion queue.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.CancelIngestion(System.String)">
+            <summary>
+            Cancels the ingestion of a specific file.
+            </summary>
+            <param name="filePath">The path of the file to cancel ingestion for.</param>
+            <returns>True if cancellation was requested, false if the file wasn't being ingesting.</returns>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.RemoveCancellationToken(System.String)">
+            <summary>
+            Removes the cancellation token source for a file that has completed or been cancelled.
+            </summary>
+            <param name="filePath">The path of the file.</param>
+        </member>
+        <member name="M:View.Personal.Services.FileIngester.IngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)">
             <summary>
             Asynchronously ingests a PDF file into the LiteGraph system. The method processes the file into smaller chunks (atoms),
             creates nodes in the graph for the file and its chunks, generates embeddings for the chunks using the selected provider,
@@ -2373,9 +2511,10 @@
             <param name="tenantGuid">The GUID representing the tenant in the system.</param>
             <param name="graphGuid">The GUID representing the graph in the system.</param>
             <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
+            <param name="cancellationToken">Optional cancellation token to cancel the operation if needed.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+        <member name="M:View.Personal.Services.FileIngester.ReIngestFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)">
             <summary>
             Re-ingests a previously deleted or updated file into the LiteGraph system. This method performs the same steps as
             initial ingestion: detecting file type, extracting content into atoms (chunks), generating graph nodes and edges,
@@ -2388,9 +2527,10 @@
             <param name="tenantGuid">The unique identifier of the tenant in the LiteGraph system.</param>
             <param name="graphGuid">The unique identifier of the graph where the file will be stored.</param>
             <param name="window">The parent <see cref="T:Avalonia.Controls.Window"/>, expected to be <see cref="T:View.Personal.MainWindow"/>, for UI updates and notifications.</param>
+            <param name="cancellationToken">Optional cancellation token to cancel the operation if needed.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous re-ingestion operation.</returns>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+        <member name="M:View.Personal.Services.FileIngester.IngestFilesAsync(System.Collections.Generic.List{System.String},DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)">
             <summary>
             Asynchronously ingests multiple files into the LiteGraph system, processing them concurrently and updating the UI as each file completes.
             </summary>
@@ -2400,9 +2540,10 @@
             <param name="tenantGuid">The GUID representing the tenant in the system.</param>
             <param name="graphGuid">The GUID representing the graph in the system.</param>
             <param name="window">The <see cref="T:Avalonia.Controls.Window"/> object, expected to be an instance of <see cref="T:View.Personal.MainWindow"/>, used for UI interactions.</param>
+            <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.ProcessSingleFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
+        <member name="M:View.Personal.Services.FileIngester.ProcessSingleFileAsync(System.String,DocumentAtom.TypeDetection.TypeDetector,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window,System.Threading.CancellationToken)">
             <summary>
             Processes a single file for ingestion without showing individual UI notifications.
             This is a helper method for batch processing.
@@ -2529,6 +2670,82 @@
             <param name="filePath">The file path where the GEXF file will be saved.</param>
             <param name="errorMessage">An output parameter that receives the error message if the export fails; null if successful.</param>
             <returns>True if the export succeeds, false if an exception occurs during the process.</returns>
+        </member>
+        <member name="T:View.Personal.Services.IngestionProgressService">
+            <summary>
+            Service for tracking and reporting file ingestion progress.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Services.IngestionProgressService._activeIngestions">
+            <summary>
+            Dictionary to track all files currently being processed and their progress information
+            </summary>
+        </member>
+        <member name="E:View.Personal.Services.IngestionProgressService.IngestionCancelled">
+            <summary>
+            Event raised when a file ingestion is cancelled
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.Initialize(View.Personal.Controls.IngestionProgressPopup)">
+            <summary>
+            Initializes the progress service with a reference to the progress popup UI.
+            </summary>
+            <param name="progressPopup">The progress popup UI control.</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.UpdateCurrentFileProgress(System.String,System.String,System.Double)">
+            <summary>
+            Updates the current file being processed and its progress.
+            </summary>
+            <param name="filePath">The path of the file being processed.</param>
+            <param name="status">The current status message.</param>
+            <param name="progressPercentage">The progress percentage (0-100).</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.UpdatePendingFiles">
+            <summary>
+            Updates the list of pending files in the queue.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.StartFileIngestion(System.String)">
+            <summary>
+            Starts tracking a file ingestion process.
+            </summary>
+            <param name="filePath">The path of the file being ingested.</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.UpdateProgress(System.String,System.Double)">
+            <summary>
+            Updates the progress of the current file ingestion.
+            </summary>
+            <param name="status">The current status message.</param>
+            <param name="progressPercentage">The progress percentage (0-100).</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.CompleteFileIngestion">
+            <summary>
+            Completes the current file ingestion process.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.CompleteFileIngestion(System.String)">
+            <summary>
+            Completes a specific file ingestion process.
+            </summary>
+            <param name="filePath">The path of the file that completed ingestion.</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.GetActiveIngestions">
+            <summary>
+            Gets all currently active ingestion files and their progress.
+            </summary>
+            <returns>A dictionary of file paths and their progress information.</returns>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.CancelFileIngestion(System.String)">
+            <summary>
+            Cancels the ingestion of a specific file and removes it from the database.
+            </summary>
+            <param name="filePath">The path of the file to cancel ingestion for.</param>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.HasPendingFiles">
+            <summary>
+            Checks if there are any pending files in the ingestion queue.
+            </summary>
+            <returns>True if there are pending files, false otherwise.</returns>
         </member>
         <member name="T:View.Personal.Services.LocalModelService">
             <summary>

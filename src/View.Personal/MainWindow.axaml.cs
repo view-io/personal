@@ -146,6 +146,7 @@
                         app.ApplicationSettings.WatchedPathsPerGraph[_ActiveGraphGuid] = new List<string>();
                     _WatchedPathsPerGraph = app.ApplicationSettings.WatchedPathsPerGraph;
                     LoadGraphComboBox();
+
                     DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                     var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
@@ -160,6 +161,14 @@
                         await FileDeleter.CleanupIncompleteFilesAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                         await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                     });
+
+                    // Initialize the ingestion progress popup
+                    var ingestionProgressPopup = this.FindControl<Controls.IngestionProgressPopup>("IngestionProgressPopup");
+                    if (ingestionProgressPopup != null)
+                    {
+                        Services.IngestionProgressService.Initialize(ingestionProgressPopup);
+                        app.Log(SeverityEnum.Info, "Ingestion progress popup initialized.");
+                    }
                 };
                 NavList.SelectionChanged += (s, e) =>
                     NavigationUIHandlers.NavList_SelectionChanged(s, e, this, _LiteGraph, _TenantGuid,
@@ -818,41 +827,70 @@
         }
 
         /// <summary>
-        /// Builds a list of chat messages for a prompt, summarizing older messages if the conversation exceeds a certain length.
+        /// Builds a list of chat messages for a prompt, summarizing or pruning older messages
+        /// if the conversation exceeds the context window size.
         /// </summary>
-        /// <returns>A list of ChatMessage objects, including a summary of older messages (if applicable) followed by the most recent messages.</returns>
-        private List<ChatMessage> BuildPromptMessages()
+        /// <returns>A list of ChatMessage objects including the system prompt,
+        /// plus summarized/pruned conversation history if needed.</returns>
+        private async Task<List<ChatMessage>> BuildPromptMessages()
         {
-            // If conversation is short, just return everything
-            if (_ConversationHistory.Count <= 8)
-                return _ConversationHistory;
+            var app = (App)Application.Current;
+            var selectedProvider = app.ApplicationSettings.SelectedProvider;
+            var finalList = new List<ChatMessage>();
 
-            // Separate older messages from more recent ones
-            var olderMessages = _ConversationHistory
-                .Take(_ConversationHistory.Count - 6)
-                .ToList();
-            var recentMessages = _ConversationHistory
-                .Skip(_ConversationHistory.Count - 6)
-                .ToList();
-
-            // For a proper summary, should I do second call to GPT to summarize `olderMessages`?
-            var naiveSummary = string.Join(" ", olderMessages.Select(m => $"{m.Role}: {m.Content}"));
-            var summaryContent = $"[Summary of older conversation]: {naiveSummary}";
-
-            // Make one message with this summary
-            var summaryMessage = new ChatMessage
+            // Add the custom system prompt if configured
+            string customSystemPrompt = selectedProvider switch
             {
-                Role = "system",
-                Content = summaryContent
+                "OpenAI" => app.ApplicationSettings.OpenAI.SystemPrompt,
+                "Anthropic" => app.ApplicationSettings.Anthropic.SystemPrompt,
+                "Ollama" => app.ApplicationSettings.Ollama.SystemPrompt,
+                "View" => app.ApplicationSettings.View.SystemPrompt,
+                _ => string.Empty
             };
 
-            // Return the summary plus the recent messages
-            var finalList = new List<ChatMessage>();
-            finalList.Add(summaryMessage);
-            finalList.AddRange(recentMessages);
+            if (!string.IsNullOrWhiteSpace(customSystemPrompt))
+            {
+                finalList.Add(new ChatMessage
+                {
+                    Role = "system",
+                    Content = customSystemPrompt
+                });
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt for {selectedProvider}");
+            }
+
+            int maxContextCharacters = 24000;
+
+            var conversationText = string.Join(" ", _ConversationHistory.Select(m => $"{m.Role}: {m.Content}"));
+            if (conversationText.Length > maxContextCharacters)
+            {
+                app.LogWithTimestamp(SeverityEnum.Warn, $"Context window exceeded {maxContextCharacters} characters, summarizing older messages...");
+
+                var summaryPrompt = $"""
+                                        Please summarize the following conversation in a concise, context-preserving way. 
+                                        This will be used to continue the chat beyond the context window. 
+                                        Conversation:
+                                        {conversationText}
+                                      """;
+
+                var summary = await SummarizeChat(summaryPrompt);
+
+                finalList.Add(new ChatMessage
+                {
+                    Role = "system",
+                    Content = $"[Summary of prior conversation]: {summary}"
+                });
+
+                var recentMessages = _ConversationHistory.Skip(Math.Max(0, _ConversationHistory.Count - 4)).ToList();
+                finalList.AddRange(recentMessages);
+            }
+            else
+            {
+                finalList.AddRange(_ConversationHistory);
+            }
 
             return finalList;
         }
+
 
         /// <summary>
         /// Asynchronously retrieves an AI-generated response based on user input, utilizing the selected provider and settings.
@@ -900,7 +938,7 @@
                     var (sdk, embeddingsRequest) =
                         GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
                     var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
-                        if (promptEmbeddings == null)
+                    if (promptEmbeddings == null)
                         return "Error: Failed to generate embeddings for the prompt.";
                     app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
 
@@ -915,13 +953,13 @@
                     }
 
                     // Build messages with RAG context
-                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, BuildPromptMessages());
+                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, await BuildPromptMessages());
                 }
                 else
                 {
                     app.LogWithTimestamp(SeverityEnum.Debug, "RAG is disabled, using standard chat");
 
-                    finalMessages = new List<ChatMessage>(BuildPromptMessages());
+                    finalMessages = new List<ChatMessage>(await BuildPromptMessages());
                     finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 }
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
