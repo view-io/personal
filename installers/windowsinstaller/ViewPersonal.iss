@@ -1,7 +1,7 @@
 [Setup]
 AppId={{B31E2B3F-2C5D-4B3A-A676-94B4BC66DAA2}}
 AppName=View Personal
-AppVerName=View Personal v1.0.0
+AppVerName=View Personal v1.1.0
 DefaultDirName={autopf}\View Personal
 DefaultGroupName=View Personal
 OutputDir=.\Output
