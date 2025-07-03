@@ -151,7 +151,9 @@ namespace View.Personal
                         _GraphDriver = new SqliteGraphRepository(Constants.LiteGraphDatabaseFilename);
                         _Logging.Debug(_Header + "initialized graph driver using sqlite file " +
                                        Constants.LiteGraphDatabaseFilename);
-                        _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings);
+                        var storageSettings = new LiteGraph.StorageSettings();
+                        storageSettings.BackupsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ViewPersonal","backups");
+                        _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings, new CachingSettings(), storageSettings);
                         _LiteGraph.InitializeRepository();
                         _Logging.Debug(_Header + "initialized litegraph");
 
