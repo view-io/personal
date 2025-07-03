@@ -544,7 +544,11 @@ namespace View.Personal.UIHandlers
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
                         FileIngester.EnqueueFileForIngestion(filePath);
+                    
+                    // Collect all valid files that need to be ingested for parallel processing
+                    var filesToIngest = new List<string>();
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
+                    {
                         if (!IsTemporaryFile(Path.GetFileName(filePath)))
                         {
                             var existingNode =
@@ -559,18 +563,8 @@ namespace View.Personal.UIHandlers
                                     mainWindow.LogToConsole(
                                         $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
                                 }
-
-                                try
-                                {
-                                    await mainWindow.IngestFileAsync(filePath);
-                                    mainWindow.LogToConsole(
-                                        $"[{SeverityEnum.Info}] {(existingNode == null ? " Initially ingested" : " Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
-                                }
-                                catch (Exception ex)
-                                {
-                                    mainWindow.LogToConsole(
-                                        $"[{SeverityEnum.Error}] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
-                                }
+                                
+                                filesToIngest.Add(filePath);
                             }
                             else
                             {
@@ -578,6 +572,22 @@ namespace View.Personal.UIHandlers
                                     $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
                             }
                         }
+                    }
+                    
+                    // Process all files in parallel using IngestFilesAsync
+                    if (filesToIngest.Count > 0)
+                    {
+                        try
+                        {
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting parallel ingestion of {filesToIngest.Count} files from directory: {entry.FullPath}");
+                            await mainWindow.IngestFilesAsync(filesToIngest);
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Completed parallel ingestion of files from directory: {entry.FullPath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest files from directory {entry.FullPath}: {ex.Message}");
+                        }
+                    }
                 }
                 else
                 {
@@ -1080,7 +1090,10 @@ namespace View.Personal.UIHandlers
 
                 if (Directory.Exists(filePath))
                 {
+                    // Collect all valid files from the directory for parallel processing
+                    var filesToIngest = new List<string>();
                     foreach (var subFilePath in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
+                    {
                         if (!IsTemporaryFile(Path.GetFileName(subFilePath)))
                         {
                             var node = FindFileInLiteGraph(mainWindow, subFilePath,
@@ -1095,19 +1108,25 @@ namespace View.Personal.UIHandlers
                                     node.GUID);
                                 mainWindow.LogToConsole($"[{SeverityEnum.Info}] Deleted node {node.GUID} for {node.Name}");
                             }
-
-                            try
-                            {
-                                await mainWindow.IngestFileAsync(subFilePath);
-                                mainWindow.LogToConsole(
-                                    $"[{SeverityEnum.Info}] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
-                            }
-                            catch (Exception ex)
-                            {
-                                mainWindow.LogToConsole(
-                                    $"[{SeverityEnum.Error}]  Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
-                            }
+                            
+                            filesToIngest.Add(subFilePath);
                         }
+                    }
+
+                    // Process all files in parallel using IngestFilesAsync
+                    if (filesToIngest.Count > 0)
+                    {
+                        try
+                        {
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting parallel ingestion of {filesToIngest.Count} files from directory: {filePath}");
+                            await mainWindow.IngestFilesAsync(filesToIngest);
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Completed parallel ingestion of files from directory: {filePath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest files from directory {filePath}: {ex.Message}");
+                        }
+                    }
 
                     var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
                     if (filesPanel != null && filesPanel.IsVisible)
