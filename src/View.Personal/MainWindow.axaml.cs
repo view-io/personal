@@ -1,4 +1,4 @@
-﻿namespace View.Personal
+namespace View.Personal
 {
     using Avalonia;
     using Avalonia.Controls;
@@ -8,6 +8,7 @@
     using Avalonia.Interactivity;
     using Avalonia.Media;
     using Avalonia.Threading;
+    using Avalonia.VisualTree;
     using Classes;
     using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
@@ -719,8 +720,28 @@
                     ShowNotification("No Selection", "Please select at least one file to remove.", NotificationType.Warning);
                     return;
                 }
-
-                await FileDeleter.DeleteSelectedFilesAsync(selectedFiles, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                
+                bool isDeleted = await FileDeleter.DeleteSelectedFilesAsync(selectedFiles, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
+                
+                if (isDeleted)
+                {
+                    var selectAllButton = this.FindControl<Button>("SelectAllButton");
+                    if (selectAllButton != null && selectAllButton.Content is StackPanel stackPanel)
+                    {
+                        var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                        var icon = stackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
+                        
+                        if (textBlock != null)
+                        {
+                            textBlock.Text = "Select All";
+                        }
+                        
+                        if (icon != null)
+                        {
+                            icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
+                        }
+                    }
+                }
             }
         }
 
@@ -1622,6 +1643,7 @@
             if (sender is CheckBox checkBox && checkBox.DataContext is FileViewModel fileViewModel)
             {
                 fileViewModel.IsChecked = true;
+                UpdateSelectAllButtonState();
             }
         }
 
@@ -1635,6 +1657,95 @@
             if (sender is CheckBox checkBox && checkBox.DataContext is FileViewModel fileViewModel)
             {
                 fileViewModel.IsChecked = false;
+                UpdateSelectAllButtonState();
+            }
+        }
+        
+        /// <summary>
+        /// Updates the Select All button text based on the current selection state of files.
+        /// </summary>
+        private void UpdateSelectAllButtonState()
+        {
+            if (FilesDataGrid.ItemsSource is IEnumerable<FileViewModel> allFiles)
+            {
+                var filesList = allFiles.ToList();
+                var selectAllButton = this.FindControl<Button>("SelectAllButton");
+                
+                if (selectAllButton != null && selectAllButton.Content is StackPanel buttonStackPanel)
+                {
+                    var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                    var icon = buttonStackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
+                    
+                    if (textBlock != null && icon != null)
+                    {
+                        bool allChecked = filesList.All(f => f.IsChecked);
+                        bool noneChecked = filesList.All(f => !f.IsChecked);
+                        
+                        if (allChecked)
+                        {
+                            textBlock.Text = "Unselect All";
+                            icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline;
+                        }
+                        else if (noneChecked)
+                        {
+                            textBlock.Text = "Select All";
+                            icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Handles the Click event of the Select All button, selecting or unselecting all files on the current page.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (FilesDataGrid.ItemsSource is IEnumerable<FileViewModel> allFiles)
+            {
+                var filesList = allFiles.ToList();
+                var selectAllButton = this.FindControl<Button>("SelectAllButton");
+                
+                // Get the current button text to determine the action
+                string currentButtonText = "Select All";
+                if (selectAllButton != null && selectAllButton.Content is StackPanel stackPanel)
+                {
+                    var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                    if (textBlock != null)
+                    {
+                        currentButtonText = textBlock.Text;
+                    }
+                }
+                
+                // If button says "Unselect All", we want to unselect all files
+                // If button says "Select All", we want to select all files
+                bool newCheckedState = currentButtonText == "Select All";
+                
+                foreach (var file in filesList)
+                {
+                    file.IsChecked = newCheckedState;
+                }
+                
+                // Update button text and icon based on the action performed
+                if (selectAllButton != null && selectAllButton.Content is StackPanel buttonStackPanel)
+                {
+                    var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                    var icon = buttonStackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
+                    
+                    if (textBlock != null)
+                    {
+                        textBlock.Text = newCheckedState ? "Unselect All" : "Select All";
+                    }
+                    
+                    if (icon != null)
+                    {
+                        icon.Kind = newCheckedState ? 
+                            Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline : 
+                            Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
+                    }
+                }
             }
         }
 
@@ -1760,12 +1871,37 @@
                 {
                     var uniqueFiles =
                         MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
+                    var selectAllButton = this.FindControl<Button>("SelectAllButton");
+                    var removeSelectedFilesButton = this.FindControl<Button>("RemoveSelectedFilesButton");
+                    
                     if (uniqueFiles.Any())
                     {
                         filesDataGrid.ItemsSource = uniqueFiles;
                         uploadFilesPanel.IsVisible = false;
                         filesDataGrid.IsVisible = true;
                         filePaginationControls.IsVisible = true;
+                        fileOperationsPanel.IsVisible = true;
+                        
+                        // Make Select All and Remove Selected Files buttons visible when files are present
+                        if (selectAllButton != null)
+                        {
+                            selectAllButton.IsVisible = true;
+                            
+                            // Reset the button text to "Select All"
+                            if (selectAllButton.Content is StackPanel buttonStackPanel)
+                            {
+                                var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                                if (textBlock != null)
+                                {
+                                    textBlock.Text = "Select All";
+                                }
+                            }
+                        }
+                        
+                        if (removeSelectedFilesButton != null)
+                        {
+                            removeSelectedFilesButton.IsVisible = true;
+                        }
                     }
                     else
                     {
@@ -1774,6 +1910,17 @@
                         fileOperationsPanel.IsVisible = false;
                         filePaginationControls.IsVisible = false;
                         uploadFilesPanel.IsVisible = true;
+                        
+                        // Hide Select All and Remove Selected Files buttons when no files are present
+                        if (selectAllButton != null)
+                        {
+                            selectAllButton.IsVisible = false;
+                        }
+                        
+                        if (removeSelectedFilesButton != null)
+                        {
+                            removeSelectedFilesButton.IsVisible = false;
+                        }
                     }
                 }
             }

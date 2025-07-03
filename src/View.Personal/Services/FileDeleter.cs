@@ -94,17 +94,17 @@
         /// <param name="tenantGuid">The tenant GUID under which the files exist.</param>
         /// <param name="graphGuid">The graph GUID that contains the file nodes.</param>
         /// <param name="window">The parent window for displaying notifications and UI refresh.</param>
-        /// <returns>A task that completes when all selected files have been processed for deletion.</returns>
-        public static async Task DeleteSelectedFilesAsync(IEnumerable<FileViewModel> files, LiteGraphClient liteGraph,
+        /// <returns>True if files were processed; false if canceled or empty.</returns>
+        public static async Task<bool> DeleteSelectedFilesAsync(IEnumerable<FileViewModel> files, LiteGraphClient liteGraph,
             Guid tenantGuid, Guid graphGuid, Window window)
         {
-            if (files == null) return;
+            if (files == null) return false;
             var filesList = files.ToList();
-            if (!filesList.Any()) return;
+            if (!filesList.Any()) return false;
 
             var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
                            $"Are you sure you want to delete {filesList.Count} selected files?", MessageBoxIcon.Warning);
-            if (result != ButtonResult.Yes) return;
+            if (result != ButtonResult.Yes) return false;
 
             var app = (App)App.Current;
             var mainWindow = window as MainWindow;
@@ -190,6 +190,7 @@
                             NotificationType.Success);
                     }
                 }
+                return true;
             }
             catch (Exception ex)
             {
@@ -198,6 +199,7 @@
                 if (mainWindow != null)
                     mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);
+                return false;
             }
             finally
             {

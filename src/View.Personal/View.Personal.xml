@@ -2302,6 +2302,18 @@
             <param name="sender">The source of the event.</param>
             <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
         </member>
+        <member name="M:View.Personal.MainWindow.UpdateSelectAllButtonState">
+            <summary>
+            Updates the Select All button text based on the current selection state of files.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.SelectAll_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the Click event of the Select All button, selecting or unselecting all files on the current page.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.LoadGraphComboBox">
             <summary>
             Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
@@ -2444,7 +2456,7 @@
             <param name="tenantGuid">The tenant GUID under which the files exist.</param>
             <param name="graphGuid">The graph GUID that contains the file nodes.</param>
             <param name="window">The parent window for displaying notifications and UI refresh.</param>
-            <returns>A task that completes when all selected files have been processed for deletion.</returns>
+            <returns>True if files were processed; false if canceled or empty.</returns>
         </member>
         <member name="M:View.Personal.Services.FileDeleter.DeleteFile(View.Personal.Classes.FileViewModel,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
