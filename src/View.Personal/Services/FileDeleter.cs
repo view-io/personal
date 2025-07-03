@@ -126,6 +126,7 @@
                 var failedDeletes = new ConcurrentBag<string>();
                 var filesDataGrid = mainWindow?.FindControl<DataGrid>("FilesDataGrid");
                 ObservableCollection<FileViewModel> fileCollection = null;
+                bool watchedPathsUpdated = false;
 
                 if (filesDataGrid?.ItemsSource is ObservableCollection<FileViewModel> collection)
                 {
@@ -154,11 +155,45 @@
                             if (mainWindow != null)
                             {
                                 var filePath = file.FilePath;
-                                if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
-                                        watchedPath == filePath ||
-                                        (System.IO.Directory.Exists(watchedPath) &&
-                                         filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                                    app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
+                                if (!string.IsNullOrEmpty(filePath))
+                                {
+                                    if (mainWindow.WatchedPaths.Contains(filePath))
+                                    {
+                                        mainWindow.WatchedPaths.Remove(filePath);
+                                        app?.Log(SeverityEnum.Info, $"Removed '{file.Name}' from watched paths.");
+                                        watchedPathsUpdated = true;
+                                    }
+                                    else if (mainWindow.WatchedPaths.Any(watchedPath =>
+                                            System.IO.Directory.Exists(watchedPath) &&
+                                            filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar)))
+                                    {
+                                        var parentWatchedDir = mainWindow.WatchedPaths.FirstOrDefault(watchedPath =>
+                                            System.IO.Directory.Exists(watchedPath) &&
+                                            filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar));
+                                        
+                                        if (!string.IsNullOrEmpty(parentWatchedDir))
+                                        {
+                                            var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                                                .Where(n => n.Tags != null && 
+                                                       n.Tags["FilePath"] != filePath && 
+                                                       n.Tags["FilePath"].StartsWith(parentWatchedDir + System.IO.Path.DirectorySeparatorChar))
+                                                .ToList();
+
+                                            bool hasRemainingFiles = remainingFilesInDb.Count > 0;
+
+                                            if (!hasRemainingFiles)
+                                            {
+                                                mainWindow.WatchedPaths.Remove(parentWatchedDir);
+                                                app?.Log(SeverityEnum.Info, $"Removed '{System.IO.Path.GetFileName(parentWatchedDir)}' from watched paths as it no longer contains any files.");
+                                                watchedPathsUpdated = true;
+                                            }
+                                            else
+                                            {
+                                                app?.Log(SeverityEnum.Info, $"File '{file.Name}' is within a watched directory. Parent directory remains watched with {remainingFilesInDb.Count} file(s) in database.");
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         });
 
@@ -177,6 +212,13 @@
 
                 if (mainWindow != null)
                 {
+                    if (watchedPathsUpdated)
+                    {
+                        app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
+                        app.SaveSettings();
+                        app?.Log(SeverityEnum.Info, $"Saved updated watched paths after file deletion.");
+                    }
+                    
                     if (failedDeletes.Any())
                     {
                         mainWindow.ShowNotification("Deletion Warning",
@@ -252,13 +294,50 @@
                     app?.Log(SeverityEnum.Debug, $"FilePath: '{filePath}'");
                     app?.Log(SeverityEnum.Debug, $"WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
 
-                    if (!string.IsNullOrEmpty(filePath) && mainWindow.WatchedPaths.Any(watchedPath =>
-                            watchedPath == filePath ||
-                            (System.IO.Directory.Exists(watchedPath) &&
-                             filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar))))
-                        app?.Log(SeverityEnum.Warn, $"File '{file.Name}' is watched in Data Monitor. It may be re-ingested if changed on disk.");
-                    else
-                        app?.Log(SeverityEnum.Debug, $"File '{file.Name}' not watched or FilePath unavailable.");
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        if (mainWindow.WatchedPaths.Contains(filePath))
+                        {
+                            mainWindow.WatchedPaths.Remove(filePath);
+                            app?.Log(SeverityEnum.Info, $"Removed '{file.Name}' from watched paths.");
+                        }
+                        else if (mainWindow.WatchedPaths.Any(watchedPath =>
+                                System.IO.Directory.Exists(watchedPath) &&
+                                filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar)))
+                        {
+                            var parentWatchedDir = mainWindow.WatchedPaths.FirstOrDefault(watchedPath =>
+                                System.IO.Directory.Exists(watchedPath) &&
+                                filePath.StartsWith(watchedPath + System.IO.Path.DirectorySeparatorChar));
+                            
+                            if (!string.IsNullOrEmpty(parentWatchedDir))
+                            {
+                                var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                                    .Where(n => n.Tags != null && 
+                                           n.Tags["FilePath"] != filePath && 
+                                           n.Tags["FilePath"].StartsWith(parentWatchedDir + System.IO.Path.DirectorySeparatorChar))
+                                    .ToList();
+                                
+                                bool hasRemainingFiles =  remainingFilesInDb.Count > 0;
+                                
+                                if (!hasRemainingFiles)
+                                {
+                                    mainWindow.WatchedPaths.Remove(parentWatchedDir);
+                                    app?.Log(SeverityEnum.Info, $"Removed '{System.IO.Path.GetFileName(parentWatchedDir)}' from watched paths as it no longer contains any files.");
+                                    app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
+                                    app.SaveSettings();
+                                    app?.Log(SeverityEnum.Info, $"Saved updated watched paths after directory unwatching.");
+                                }
+                                else
+                                {
+                                    app?.Log(SeverityEnum.Info, $"File '{file.Name}' is within a watched directory. Parent directory remains watched with {remainingFilesInDb.Count} file(s) in database.");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            app?.Log(SeverityEnum.Debug, $"File '{file.Name}' not watched or FilePath unavailable.");
+                        }
+                    }
                 }
             }
             catch (Exception ex)

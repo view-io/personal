@@ -2090,7 +2090,7 @@
 										   Foreground="#6A6B6F"
 										   VerticalAlignment="Center" />
 								<ComboBox x:Name="PageSizeComboBox"
-                                          Width="55"
+                                          Width="60"
                                           Height="28"
                                           Background="#FFFFFF"
                                           BorderBrush="#DBDBDB"
