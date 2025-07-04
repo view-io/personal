@@ -31,6 +31,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Run]
 Filename: "{app}\View.Personal.exe"; Description: "{cm:LaunchProgram,View Personal}"; Flags: nowait postinstall skipifsilent
 
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\*"
+Type: dirifempty; Name: "{app}"
+
 [Code]
 var
   InfoPage: TWizardPage;
