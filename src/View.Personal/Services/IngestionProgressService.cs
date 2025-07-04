@@ -307,7 +307,7 @@ namespace View.Personal.Services
                         
                         // Find the document node with this file path
                         var documentNodes = await Task.Run(() => 
-                            liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                            liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
                             .Where(node => node.Tags != null && node.Tags["FilePath"] == filePath)
                             .ToList());
                         
