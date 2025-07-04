@@ -544,72 +544,102 @@ namespace View.Personal.UIHandlers
                 {
                     foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
                         FileIngester.EnqueueFileForIngestion(filePath);
-                    foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
-                        if (!IsTemporaryFile(Path.GetFileName(filePath)))
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            // Collect all valid files that need to be ingested for parallel processing
+                            var filesToIngest = new List<string>();
+                            foreach (var filePath in Directory.GetFiles(entry.FullPath, "*", SearchOption.AllDirectories))
+                            {
+                                if (!IsTemporaryFile(Path.GetFileName(filePath)))
+                                {
+                                    var existingNode =
+                                        FindFileInLiteGraph(mainWindow, filePath, liteGraph, tenantGuid, graphGuid);
+                                    var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
+
+                                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
+                                    {
+                                        if (existingNode != null)
+                                        {
+                                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
+                                            await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole(
+                                                $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}"));
+                                        }
+
+                                        filesToIngest.Add(filePath);
+                                    }
+                                    else
+                                    {
+                                        await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole(
+                                            $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})"));
+                                    }
+                                }
+                            }
+
+                            // Process all files in parallel using IngestFilesAsync
+                            if (filesToIngest.Count > 0)
+                            {
+                                try
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting parallel ingestion of {filesToIngest.Count} files from directory: {entry.FullPath}"));
+                                    await mainWindow.IngestFilesAsync(filesToIngest);
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Info}] Completed parallel ingestion of files from directory: {entry.FullPath}"));
+                                }
+                                catch (Exception ex)
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest files from directory {entry.FullPath}: {ex.Message}"));
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Error}] Error processing directory {entry.FullPath}: {ex.Message}"));
+                        }
+                    });
+                }
+                else
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
                         {
                             var existingNode =
-                                FindFileInLiteGraph(mainWindow, filePath, liteGraph, tenantGuid, graphGuid);
-                            var fileLastWriteTime = File.GetLastWriteTimeUtc(filePath);
+                                FindFileInLiteGraph(mainWindow, entry.FullPath, liteGraph, tenantGuid, graphGuid);
+                            var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
 
                             if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
                             {
                                 if (existingNode != null)
                                 {
                                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
-                                    mainWindow.LogToConsole(
-                                        $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {Path.GetFileName(filePath)}");
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole(
+                                        $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {entry.Name}"));
                                 }
 
                                 try
                                 {
-                                    await mainWindow.IngestFileAsync(filePath);
-                                    mainWindow.LogToConsole(
-                                        $"[{SeverityEnum.Info}] {(existingNode == null ? " Initially ingested" : " Updated and ingested")} file: {Path.GetFileName(filePath)} ({filePath})");
+                                    await mainWindow.IngestFileAsync(entry.FullPath);
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole(
+                                        $"[{SeverityEnum.Info}] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})"));
                                 }
                                 catch (Exception ex)
                                 {
-                                    mainWindow.LogToConsole(
-                                        $"[{SeverityEnum.Error}] Failed to ingest file {Path.GetFileName(filePath)}: {ex.Message}");
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest file {entry.Name}: {ex.Message}"));
                                 }
                             }
                             else
                             {
-                                mainWindow.LogToConsole(
-                                    $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {Path.GetFileName(filePath)} ({filePath})");
+                                await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole(
+                                    $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})"));
                             }
-                        }
-                }
-                else
-                {
-                    var existingNode =
-                        FindFileInLiteGraph(mainWindow, entry.FullPath, liteGraph, tenantGuid, graphGuid);
-                    var fileLastWriteTime = File.GetLastWriteTimeUtc(entry.FullPath);
-
-                    if (existingNode == null || fileLastWriteTime > existingNode.LastUpdateUtc)
-                    {
-                        if (existingNode != null)
-                        {
-                            liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, existingNode.GUID);
-                            mainWindow.LogToConsole(
-                                $"[{SeverityEnum.Info}] Deleted outdated node {existingNode.GUID} for file {entry.Name}");
-                        }
-
-                        try
-                        {
-                            await mainWindow.IngestFileAsync(entry.FullPath);
-                            mainWindow.LogToConsole(
-                                $"[{SeverityEnum.Info}] {(existingNode == null ? "Initially ingested" : "Updated and ingested")} file: {entry.Name} ({entry.FullPath})");
                         }
                         catch (Exception ex)
                         {
-                            mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest file {entry.Name}: {ex.Message}");
+                            await Dispatcher.UIThread.InvokeAsync(() => mainWindow.LogToConsole($"[{SeverityEnum.Error}] Error processing file {entry.Name}: {ex.Message}"));
                         }
-                    }
-                    else
-                    {
-                        mainWindow.LogToConsole(
-                            $"[{SeverityEnum.Info}] Skipped ingestion of unchanged file: {entry.Name} ({entry.FullPath})");
-                    }
+                    });
                 }
 
                 var app = (App)Application.Current;
@@ -1080,7 +1110,10 @@ namespace View.Personal.UIHandlers
 
                 if (Directory.Exists(filePath))
                 {
+                    // Collect all valid files from the directory for parallel processing
+                    var filesToIngest = new List<string>();
                     foreach (var subFilePath in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
+                    {
                         if (!IsTemporaryFile(Path.GetFileName(subFilePath)))
                         {
                             var node = FindFileInLiteGraph(mainWindow, subFilePath,
@@ -1096,28 +1129,42 @@ namespace View.Personal.UIHandlers
                                 mainWindow.LogToConsole($"[{SeverityEnum.Info}] Deleted node {node.GUID} for {node.Name}");
                             }
 
+                            filesToIngest.Add(subFilePath);
+                        }
+                    }
+
+                    // Process all files in parallel using IngestFilesAsync
+                    if (filesToIngest.Count > 0)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting parallel ingestion of {filesToIngest.Count} files from directory: {filePath}"));
+
+                        _ = Task.Run(async () =>
+                        {
                             try
                             {
-                                await mainWindow.IngestFileAsync(subFilePath);
-                                mainWindow.LogToConsole(
-                                    $"[{SeverityEnum.Info}] Ingested file: {Path.GetFileName(subFilePath)} ({subFilePath})");
+                                await mainWindow.IngestFilesAsync(filesToIngest);
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Completed parallel ingestion of files from directory: {filePath}"));
+
+                                var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                                if (filesPanel != null && filesPanel.IsVisible)
+                                {
+                                    await FilePaginationHelper.RefreshGridAsync(
+                                           ((App)Application.Current)._LiteGraph,
+                                           ((App)Application.Current)._TenantGuid,
+                                           ((App)Application.Current)._GraphGuid,
+                                           mainWindow);
+                                    await Dispatcher.UIThread.InvokeAsync(() =>
+                                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory ingestion."));
+                                }
                             }
                             catch (Exception ex)
                             {
-                                mainWindow.LogToConsole(
-                                    $"[{SeverityEnum.Error}]  Failed to ingest file {Path.GetFileName(subFilePath)}: {ex.Message}");
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to ingest files from directory {filePath}: {ex.Message}"));
                             }
-                        }
-
-                    var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
-                    if (filesPanel != null && filesPanel.IsVisible)
-                    {
-                        await FilePaginationHelper.RefreshGridAsync(
-                               ((App)Application.Current)._LiteGraph,
-                               ((App)Application.Current)._TenantGuid,
-                               ((App)Application.Current)._GraphGuid,
-                               mainWindow);
-                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory ingestion.");
+                        });
                     }
                 }
                 else if (File.Exists(filePath))
@@ -1136,26 +1183,32 @@ namespace View.Personal.UIHandlers
                         mainWindow.LogToConsole($"[{SeverityEnum.Info}] Deleted node {node.GUID} for {node.Name}");
                     }
 
-                    try
+                    _ = Task.Run(async () =>
                     {
-                        await mainWindow.IngestFileAsync(filePath);
-                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Ingested file: {fileName} ({filePath})");
-
-                        var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
-                        if (filesPanel != null && filesPanel.IsVisible)
+                        try
                         {
-                            await FilePaginationHelper.RefreshGridAsync(
-                                    ((App)Application.Current)._LiteGraph,
-                                    ((App)Application.Current)._TenantGuid,
-                                    ((App)Application.Current)._GraphGuid,
-                                mainWindow);
-                            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after file ingestion.");
+                            await mainWindow.IngestFileAsync(filePath);
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Ingested file: {fileName} ({filePath})"));
+
+                            var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+                            if (filesPanel != null && filesPanel.IsVisible)
+                            {
+                                await FilePaginationHelper.RefreshGridAsync(
+                                        ((App)Application.Current)._LiteGraph,
+                                        ((App)Application.Current)._TenantGuid,
+                                        ((App)Application.Current)._GraphGuid,
+                                    mainWindow);
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after file ingestion."));
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        mainWindow.LogToConsole($"[{SeverityEnum.Error}]  Failed to ingest file {fileName}: {ex.Message}");
-                    }
+                        catch (Exception ex)
+                        {
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                                mainWindow.LogToConsole($"[{SeverityEnum.Error}]  Failed to ingest file {fileName}: {ex.Message}"));
+                        }
+                    });
                 }
                 else
                 {

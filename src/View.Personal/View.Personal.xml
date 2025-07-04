@@ -2302,6 +2302,18 @@
             <param name="sender">The source of the event.</param>
             <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
         </member>
+        <member name="M:View.Personal.MainWindow.UpdateSelectAllButtonState">
+            <summary>
+            Updates the Select All button text based on the current selection state of files.
+            </summary>
+        </member>
+        <member name="M:View.Personal.MainWindow.SelectAll_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the Click event of the Select All button, selecting or unselecting all files on the current page.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:Avalonia.Interactivity.RoutedEventArgs"/> instance containing the event data.</param>
+        </member>
         <member name="M:View.Personal.MainWindow.LoadGraphComboBox">
             <summary>
             Populates the ComboBox with a list of graphs and selects the active graph based on saved settings.
@@ -2373,11 +2385,12 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
+            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
@@ -2443,7 +2456,7 @@
             <param name="tenantGuid">The tenant GUID under which the files exist.</param>
             <param name="graphGuid">The graph GUID that contains the file nodes.</param>
             <param name="window">The parent window for displaying notifications and UI refresh.</param>
-            <returns>A task that completes when all selected files have been processed for deletion.</returns>
+            <returns>True if files were processed; false if canceled or empty.</returns>
         </member>
         <member name="M:View.Personal.Services.FileDeleter.DeleteFile(View.Personal.Classes.FileViewModel,LiteGraph.LiteGraphClient,System.Guid,System.Guid,Avalonia.Controls.Window)">
             <summary>
