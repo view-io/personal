@@ -2183,42 +2183,6 @@
             <param name="request">The EmbeddingsRequest object containing the model and content to embed.</param>
             <returns>A task that resolves to a list of float values representing the embeddings, or null if generation fails.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single},System.Int32,System.Double)">
-            <summary>
-            Asynchronously performs a vector similarity search using the provided embeddings to retrieve the most relevant results.
-            The search results are filtered based on a minimum similarity threshold and limited to a specified Top-K count.
-            </summary>
-            <param name="embeddings">A list of float values representing the query embeddings.</param>
-            <param name="topK">The maximum number of top results to return, ordered by descending similarity score.</param>
-            <param name="minThreshold">The minimum similarity score required for a result to be considered relevant.</param>
-            <returns>
-            A task that resolves to a filtered and ordered enumerable collection of <see cref="T:LiteGraph.VectorSearchResult"/> objects
-            that meet the similarity threshold and Top-K criteria.
-            </returns>
-        </member>
-        <member name="M:View.Personal.MainWindow.PerformVectorSearch(System.Collections.Generic.List{System.Single})">
-            <summary>
-            Asynchronously performs a vector search using the provided embeddings to find relevant results.
-            </summary>
-            <param name="embeddings">A list of float values representing the embeddings to search with.</param>
-            <returns>A task that resolves to an enumerable collection of VectorSearchResult objects.</returns>
-        </member>
-        <member name="M:View.Personal.MainWindow.BuildContext(System.Collections.Generic.IEnumerable{LiteGraph.VectorSearchResult})">
-            <summary>
-            Builds a context string from vector search results by extracting and combining relevant node content.
-            </summary>
-            <param name="searchResults">An enumerable collection of VectorSearchResult objects to process.</param>
-            <returns>A string representing the combined content of the top-scoring search results, truncated if exceeding 4000 characters.</returns>
-        </member>
-        <member name="M:View.Personal.MainWindow.BuildFinalMessages(System.String,System.String,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
-            <summary>
-            Constructs a final list of chat messages by combining prior conversation, context, and user input.
-            </summary>
-            <param name="userInput">The user's input string to be included as the latest message.</param>
-            <param name="context">The context string derived from search results to guide the response.</param>
-            <param name="conversationSoFar">The existing list of ChatMessage objects from the conversation history.</param>
-            <returns>A list of ChatMessage objects including the conversation history, context, and user input.</returns>
-        </member>
         <member name="M:View.Personal.MainWindow.CreateRequestBody(System.String,View.Personal.Classes.CompletionProviderSettings,System.Collections.Generic.List{View.Personal.Classes.ChatMessage})">
             <summary>
             Creates a request body object tailored to the specified provider using the provided settings and messages.
@@ -2385,12 +2349,11 @@
             <param name="utcDateTime">The UTC <see cref="T:System.DateTime"/> to convert.</param>
             <returns>A <see cref="T:System.DateTime"/> representing the local system time equivalent.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean,System.Boolean)">
+        <member name="M:View.Personal.MainWindow.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
-            <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>

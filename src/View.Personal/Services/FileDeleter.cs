@@ -173,7 +173,7 @@
                                         
                                         if (!string.IsNullOrEmpty(parentWatchedDir))
                                         {
-                                            var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                                            var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
                                                 .Where(n => n.Tags != null && 
                                                        n.Tags["FilePath"] != filePath && 
                                                        n.Tags["FilePath"].StartsWith(parentWatchedDir + System.IO.Path.DirectorySeparatorChar))
@@ -311,7 +311,7 @@
                             
                             if (!string.IsNullOrEmpty(parentWatchedDir))
                             {
-                                var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })
+                                var remainingFilesInDb = liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
                                     .Where(n => n.Tags != null && 
                                            n.Tags["FilePath"] != filePath && 
                                            n.Tags["FilePath"].StartsWith(parentWatchedDir + System.IO.Path.DirectorySeparatorChar))
@@ -362,7 +362,7 @@
             var app = (App)App.Current;
 
             var documentNodes = await Task.Run(() =>
-                liteGraph.Node.ReadMany(tenantGuid, graphGuid, new List<string> { "document" })?.ToList()
+                liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
                 ?? new List<Node>());
 
             var incompleteNodes = documentNodes

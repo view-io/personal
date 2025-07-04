@@ -56,7 +56,7 @@ namespace View.Personal.Helpers
                 return (uniqueFiles, pagination);
             }
 
-            var query = new EnumerationQuery
+            var query = new EnumerationRequest
             {
                 TenantGUID = tenantGuid,
                 GraphGUID = graphGuid,
