@@ -154,13 +154,10 @@ namespace ViewPersonal.Updater.Views
 
         private async void InstallNowButton_Click(object? sender, RoutedEventArgs e)
         {
-            await Dispatcher.UIThread.InvokeAsync(() => 
-            {
-                InstallNowButtonNormalState.IsVisible = false;
-                InstallNowButtonLoadingState.IsVisible = true;
-                InstallNowButton.IsEnabled = false;
-            });
-            
+            InstallNowButtonNormalState.IsVisible = false;
+            InstallNowButtonLoadingState.IsVisible = true;
+            InstallNowButton.IsEnabled = false;
+
             if (_downloadedInstallerPath == null)
             {
                 await Dispatcher.UIThread.InvokeAsync(() => 

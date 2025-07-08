@@ -161,21 +161,17 @@ namespace ViewPersonal.Updater.Services
 
             try
             {
-                // Ensure the installer file is ready and not locked
                 _app.LogInfo($"{_header}Preparing to launch installer: {_downloadedInstallerPath}");
                 
-                // Close main application if it's running
                 if (!string.IsNullOrEmpty(_mainAppPath) && File.Exists(_mainAppPath))
                 {
                     CloseMainApplication();
                 }
 
-                // Start the installer with elevated privileges if possible
                 var process = Process.Start(new ProcessStartInfo
                 {
                     FileName = _downloadedInstallerPath,
                     UseShellExecute = true,
-                    Verb = "runas" // Try to run as administrator on Windows
                 });
 
                 if (process == null)
