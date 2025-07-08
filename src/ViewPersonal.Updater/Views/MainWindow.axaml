@@ -1,0 +1,95 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:Class="ViewPersonal.Updater.Views.MainWindow"
+        Title="View Personal"
+        Width="550" Height="550"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Background="White"
+        Icon="/Assets/glyph.png">
+
+	<Grid RowDefinitions="*">
+		<Grid Grid.Row="0" Margin="30">
+			<Border Background="White" CornerRadius="8">
+				<Grid x:Name="ContentGrid" Margin="30">
+					<Grid x:Name="UpdateAvailableGrid" IsVisible="False">
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
+							<TextBlock Text="Update Available" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" />
+							<TextBlock x:Name="NewVersionText" Text="Version 1.0.0" HorizontalAlignment="Center" FontSize="18" Margin="0,0,0,10" />
+							<TextBlock Text="A new version of View Personal is available. Would you like to download it now?" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,20" />
+							<Button x:Name="InstallButton" Content="Install" HorizontalAlignment="Center" Width="200" Height="45"
+								Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="SemiBold" Classes="flat"
+								CornerRadius="4" Click="InstallButton_Click" />
+						</StackPanel>
+					</Grid>
+					<Grid x:Name="DownloadingGrid" IsVisible="False">
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
+							<TextBlock Text="Downloading update..." HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" />
+							<ProgressBar x:Name="DownloadProgressBar" CornerRadius="4" Value="0" Width="300" Height="12" Margin="0,0,0,10" Background="#E0E0E0" Foreground="#4CAF50" />
+							<TextBlock x:Name="DownloadProgressText" Text="0%" HorizontalAlignment="Center" Margin="0,0,0,5" />
+							<TextBlock x:Name="DownloadSizeText" Text="0 MB / 0 MB" HorizontalAlignment="Center" />
+						</StackPanel>
+					</Grid>
+
+					<Grid x:Name="InstallReadyGrid" IsVisible="False">
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
+							<TextBlock Text="Download Complete" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" />
+							<TextBlock Text="The update has been downloaded and is ready to install." HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
+							<Button x:Name="InstallNowButton" HorizontalAlignment="Center" Width="200" Height="45"
+                                    Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="SemiBold" Classes="flat"
+                                    CornerRadius="4" Click="InstallNowButton_Click">
+								<Panel>
+									<StackPanel x:Name="InstallNowButtonNormalState" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="True">
+										<TextBlock Text="Install Now" VerticalAlignment="Center" />
+									</StackPanel>
+									<StackPanel x:Name="InstallNowButtonLoadingState" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False">
+										<icons:MaterialIcon Kind="Loading" Width="20" Height="20" Margin="0,0,10,0">
+											<icons:MaterialIcon.Styles>
+												<Style Selector="icons|MaterialIcon.Spin">
+													<Style.Animations>
+														<Animation Duration="0:0:2" IterationCount="Infinite">
+															<KeyFrame Cue="0%">
+																<Setter Property="RotateTransform.Angle" Value="0" />
+															</KeyFrame>
+															<KeyFrame Cue="100%">
+																<Setter Property="RotateTransform.Angle" Value="360" />
+															</KeyFrame>
+														</Animation>
+													</Style.Animations>
+												</Style>
+											</icons:MaterialIcon.Styles>
+											<icons:MaterialIcon.Classes>
+												<x:String>Spin</x:String>
+											</icons:MaterialIcon.Classes>
+										</icons:MaterialIcon>
+										<TextBlock Text="Installing..." VerticalAlignment="Center" />
+									</StackPanel>
+								</Panel>
+							</Button>
+						</StackPanel>
+					</Grid>
+
+					<Grid x:Name="ErrorGrid" IsVisible="False">
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
+							<TextBlock Text="Update Error" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" />
+							<TextBlock x:Name="ErrorMessageText" Text="An error occurred while checking for updates." HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
+							<Button x:Name="RetryButton" Content="Retry" HorizontalAlignment="Center" Width="200" Height="45"
+                                    Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="SemiBold" Classes="flat"
+                                    CornerRadius="4" Click="RetryButton_Click" />
+						</StackPanel>
+					</Grid>
+
+
+				</Grid>
+			</Border>
+		</Grid>
+	</Grid>
+</Window>

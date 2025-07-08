@@ -152,7 +152,7 @@ namespace View.Personal
                         _Logging.Debug(_Header + "initialized graph driver using sqlite file " +
                                        Constants.LiteGraphDatabaseFilename);
                         var storageSettings = new LiteGraph.StorageSettings();
-                        storageSettings.BackupsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ViewPersonal","backups");
+                        storageSettings.BackupsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "backups");
                         _LiteGraph = new LiteGraphClient(_GraphDriver, _LoggingSettings, new CachingSettings(), storageSettings);
                         _LiteGraph.InitializeRepository();
                         _Logging.Debug(_Header + "initialized litegraph");
@@ -242,13 +242,21 @@ namespace View.Personal
                     _Logging.Debug(_Header + "Showing MainWindow");
                     _FileLogging.Info(_Header + "Showing MainWindow");
                     desktop.MainWindow.Show();
-                    
+
                     // Preload models in background after window is shown
                     _ = Task.Run(async () =>
                     {
-                            var localModelService = new Services.LocalModelService(this);
-                            await localModelService.PreloadModelsAtStartupAsync();
+                        var localModelService = new Services.LocalModelService(this);
+                        await localModelService.PreloadModelsAtStartupAsync();
                     });
+
+                    _Logging.Debug(_Header + "Storing application version in file");
+                    _FileLogging.Info(_Header + "Storing application version in file");
+                    StoreAppVersionInFile();
+
+                    _Logging.Debug(_Header + "Initializing Updater Launcher");
+                    _FileLogging.Info(_Header + "Initializing Updater Launcher");
+                    LaunchUpdater();
                 }
                 catch (Exception e)
                 {
@@ -430,6 +438,97 @@ namespace View.Personal
         #endregion
 
         #region Private-Methods
+
+        /// <summary>
+        /// Stores the current application version in a file for the updater to read.
+        /// </summary>
+        private void StoreAppVersionInFile()
+        {
+            try
+            {
+                var versionDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
+                if (!Directory.Exists(versionDirectory))
+                {
+                    Directory.CreateDirectory(versionDirectory);
+                }
+
+                var versionFilePath = Path.Combine(versionDirectory, "Version");
+                var currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
+                
+                File.WriteAllText(versionFilePath, currentVersion);
+                _Logging.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
+                _FileLogging?.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
+            }
+            catch (Exception ex)
+            {
+                _Logging.Error(_Header + $"Failed to store app version: {ex.Message}");
+                _FileLogging?.Exception(ex, _Header + "Failed to store app version");
+            }
+        }
+
+        /// <summary>
+        /// Launches the ViewPersonal Updater application in a separate process.
+        /// </summary>
+        private void LaunchUpdater()
+        {
+            try
+            {
+                _Logging.Debug(_Header + "Launching updater immediately - it will handle its own delay before checking for updates");
+                _FileLogging?.Debug(_Header + "Launching updater immediately - it will handle its own delay before checking for updates");
+
+                var appDir = Path.GetDirectoryName(typeof(App).Assembly.Location) ?? string.Empty;
+                string updaterPath;
+                _FileLogging?.Debug(_Header + $"App Directory: {appDir}");
+
+                if (OperatingSystem.IsWindows())
+                {
+                    _FileLogging?.Debug(_Header + "Windows");
+                    updaterPath = Path.Combine(appDir, "Updater", "ViewPersonal.Updater.exe");
+                    _FileLogging?.Debug(_Header + $"Updater Path: {updaterPath}");
+                }
+                else if (OperatingSystem.IsMacOS())
+                {
+                    updaterPath = Path.Combine(appDir, "ViewPersonal.Updater.app", "Contents", "MacOS", "ViewPersonal.Updater");
+                }
+                else
+                {
+                    _Logging.Error(_Header + "Unsupported OS for updater.");
+                    _FileLogging?.Debug(_Header + "Unsupported OS for updater.");
+                    return;
+                }
+
+                if (File.Exists(updaterPath))
+                {
+                    var currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
+                    _Logging.Debug(_Header + $"Current app version: {currentVersion}");
+
+                    var process = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = updaterPath,
+                            Arguments = $"--app-path \"{typeof(App).Assembly.Location}\" --app-version \"{currentVersion}\"",
+                            UseShellExecute = true
+                        }
+                    };
+
+                    _Logging.Debug(_Header + $"Launching updater with args: {process.StartInfo.Arguments}");
+                    _FileLogging?.Debug(_Header + $"Launching updater with args: {process.StartInfo.Arguments}");
+
+                    process.Start();
+                }
+                else
+                {
+                    _FileLogging?.Debug(_Header + $"Updater not found at {updaterPath}");
+                    _Logging.Error(_Header + $"Updater not found at {updaterPath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _Logging.Error(_Header + $"Failed to launch updater: {ex.Message}");
+                _FileLogging?.Exception(ex, _Header + "Failed to launch updater");
+            }
+        }
 
         /// <summary>
         /// Loads application settings from a configuration file or initializes default settings if the file does not exist.

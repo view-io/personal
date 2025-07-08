@@ -1,18 +1,29 @@
 @echo off
 echo Building View Personal Installer...
 
-:: Step 1: Build the .NET application in Release mode
+:: Step 1: Publish the main .NET application
 echo.
-echo Building .NET project...
+echo Building main .NET project...
 dotnet build ..\..\src\View.Personal\View.Personal.csproj -c Release
 
 if %ERRORLEVEL% NEQ 0 (
-    echo Error: .NET build failed. Please check the build output.
+    echo Error: View.Personal build failed. Please check the build output.
     pause
     exit /b %ERRORLEVEL%
 )
 
-:: Step 2: Check if Inno Setup is installed
+:: Step 2: Publish the updater .NET application
+echo.
+echo Publishing updater .NET project...
+dotnet publish ..\..\src\ViewPersonal.Updater\ViewPersonal.Updater.csproj -c Release -r win-x64 --self-contained false -o ..\..\src\ViewPersonal.Updater\publish-updater
+
+if %ERRORLEVEL% NEQ 0 (
+    echo Error: ViewPersonal.Updater publish failed.
+    pause
+    exit /b %ERRORLEVEL%
+)
+
+:: Step 3: Check if Inno Setup is installed
 echo.
 echo Checking for Inno Setup...
 if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" (
@@ -25,17 +36,23 @@ if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" (
     exit /b 1
 )
 
-:: Step 3: Create Output directory if it doesn't exist
+:: Step 4: Create Output directory if it doesn't exist
 if not exist "Output" mkdir Output
 
-:: Step 4: Confirm that the application was built
-if not exist "..\..\src\View.Personal\bin\Release\net9.0\View.Personal.exe" (
-    echo Error: Build output not found. Ensure the application builds successfully.
+:: Step 5: Confirm that the applications were published
+if not exist "..\..\src\View.Personal\publish\View.Personal.exe" (
+    echo Error: View.Personal publish output not found.
     pause
     exit /b 1
 )
 
-:: Step 5: Run the Inno Setup Compiler
+if not exist "..\..\src\ViewPersonal.Updater\publish-updater\ViewPersonal.Updater.exe" (
+    echo Error: ViewPersonal.Updater publish output not found.
+    pause
+    exit /b 1
+)
+
+:: Step 6: Run the Inno Setup Compiler
 echo.
 echo Running Inno Setup Compiler...
 "%ISCC%" ViewPersonal.iss

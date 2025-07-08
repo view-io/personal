@@ -8,11 +8,8 @@ namespace View.Personal
     using Avalonia.Interactivity;
     using Avalonia.Media;
     using Avalonia.Threading;
-    using Avalonia.VisualTree;
     using Classes;
-    using DocumentAtom.Core.Atoms;
     using DocumentAtom.TypeDetection;
-    using DocumentFormat.OpenXml.InkML;
     using Helpers;
     using LiteGraph;
     using RestWrapper;
@@ -156,14 +153,13 @@ namespace View.Personal
                     {
                         LoadGraphComboBox();
                     };
-                    // Resume any pending file ingestions from previous sessions
+
                     Task.Run(async () =>
                     {
                         await FileDeleter.CleanupIncompleteFilesAsync(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                         await FileIngester.ResumePendingIngestions(_TypeDetector, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
                     });
 
-                    // Initialize the ingestion progress popup
                     var ingestionProgressPopup = this.FindControl<Controls.IngestionProgressPopup>("IngestionProgressPopup");
                     if (ingestionProgressPopup != null)
                     {

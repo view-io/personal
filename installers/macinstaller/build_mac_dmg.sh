@@ -3,7 +3,7 @@ set -e
  
 APP_NAME="View Personal"
 APP_BUNDLE_NAME="View Personal.app"
-APP_VERSION="1.1.0"
+APP_VERSION=$(xmllint --xpath "string(//Version)" ../../src/View.Personal/View.Personal.csproj)
 PUBLISH_DIR="publish-macos"
 OUTPUT_DIR="Output"
 ICON_PATH="Icon/glyph.icns"

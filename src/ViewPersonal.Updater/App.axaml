@@ -1,0 +1,36 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+             x:Class="ViewPersonal.Updater.App">
+
+	<Application.Styles>
+		<FluentTheme />
+		<themes:MaterialTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime" />
+		<StyleInclude Source="avares://Material.Icons.Avalonia/MaterialIconStyles.axaml" />
+
+		<Style Selector="Button.flat">
+			<Setter Property="Background" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="#DBDBDB" />
+			<Setter Property="BorderThickness" Value=".97" />
+			<Setter Property="CornerRadius" Value="8" />
+			<Setter Property="Foreground" Value="#1A1C1E" />
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate TargetType="Button">
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							CornerRadius="{TemplateBinding CornerRadius}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalAlignment="Center"
+										  VerticalAlignment="Center"
+										  Margin="0"
+										  Padding="12 8 12 8" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+	</Application.Styles>
+</Application>
