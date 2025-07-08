@@ -77,7 +77,8 @@ namespace ViewPersonal.Updater.Services
                 return null;
 
             _isDownloadingUpdate = true;
-            string tempPath = Path.Combine(Path.GetTempPath(), $"ViewPersonal_Update_{Guid.NewGuid()}.exe");
+            string extension = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dmg" : ".exe";
+            string tempPath = Path.Combine(Path.GetTempPath(), $"ViewPersonal_Update_{Guid.NewGuid()}{extension}");
 
             try
             {
@@ -162,26 +163,51 @@ namespace ViewPersonal.Updater.Services
             try
             {
                 _app.LogInfo($"{_header}Preparing to launch installer: {_downloadedInstallerPath}");
-                
+
                 if (!string.IsNullOrEmpty(_mainAppPath) && File.Exists(_mainAppPath))
                 {
                     CloseMainApplication();
                 }
 
-                var process = Process.Start(new ProcessStartInfo
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+                    _downloadedInstallerPath.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase))
                 {
-                    FileName = _downloadedInstallerPath,
-                    UseShellExecute = true,
-                });
+                    _app.LogInfo($"{_header}Mounting DMG for installation...");
 
-                if (process == null)
-                {
-                    _app.LogError($"{_header}Failed to start installer process.");
-                    return false;
+                    var process = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = $"\"{_downloadedInstallerPath}\"",
+                        UseShellExecute = true
+                    });
+
+                    if (process == null)
+                    {
+                        _app.LogError($"{_header}Failed to open DMG.");
+                        return false;
+                    }
+
+                    _app.LogInfo($"{_header}DMG opened successfully with process ID: {process.Id}");
+                    return true;
                 }
+                else
+                {
+                    // Windows or other platforms
+                    var process = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = _downloadedInstallerPath,
+                        UseShellExecute = true,
+                    });
 
-                _app.LogInfo($"{_header}Installer started successfully with process ID: {process.Id}");
-                return true;
+                    if (process == null)
+                    {
+                        _app.LogError($"{_header}Failed to start installer process.");
+                        return false;
+                    }
+
+                    _app.LogInfo($"{_header}Installer started successfully with process ID: {process.Id}");
+                    return true;
+                }
             }
             catch (Exception ex)
             {
@@ -254,14 +280,14 @@ namespace ViewPersonal.Updater.Services
 
                 var mainAppName = Path.GetFileNameWithoutExtension(_mainAppPath);
                 _app.LogInfo($"{_header}Attempting to close main application: {mainAppName}");
-                
+
                 var processes = Process.GetProcessesByName(mainAppName);
                 if (processes.Length == 0)
                 {
                     _app.LogInfo($"{_header}No running instances of {mainAppName} found.");
                     return;
                 }
-                
+
                 _app.LogInfo($"{_header}Found {processes.Length} running instances of {mainAppName}.");
 
                 foreach (var process in processes)
@@ -271,7 +297,7 @@ namespace ViewPersonal.Updater.Services
                         // Try to close gracefully first
                         _app.LogInfo($"{_header}Attempting to close process ID: {process.Id}");
                         process.CloseMainWindow();
-                        
+
                         // Wait up to 2 seconds for the process to exit gracefully
                         if (!process.WaitForExit(2000))
                         {
@@ -306,18 +332,6 @@ namespace ViewPersonal.Updater.Services
         public void Dispose()
         {
             _httpClient?.Dispose();
-
-            if (!string.IsNullOrEmpty(_downloadedInstallerPath) && File.Exists(_downloadedInstallerPath))
-            {
-                try
-                {
-                    File.Delete(_downloadedInstallerPath);
-                }
-                catch (Exception ex)
-                {
-                    _app.LogError($"{_header}Error deleting downloaded installer during cleanup: {ex.Message}");
-                }
-            }
         }
     }
 }

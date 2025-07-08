@@ -1,4 +1,4 @@
-namespace View.Personal
+﻿namespace View.Personal
 {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
@@ -21,6 +21,8 @@ namespace View.Personal
     using View.Personal.Helpers;
     using View.Personal.Enums;
     using System.Threading.Tasks;
+    using System.Diagnostics;
+
 
     /// <summary>
     /// Main application class for View Personal.
@@ -361,7 +363,7 @@ namespace View.Personal
 
         /// <summary>
         /// Retrieves the completion provider settings for the specified provider type.
-        /// Creates and configures a CompletionProviderSettings object with the appropriate 
+        /// Creates and configures a CompletionProviderSettings object with the appropriate
         /// credentials and settings based on the provider type.
         /// </summary>
         /// <param name="providerType">The type of completion provider to get settings for.</param>
@@ -454,7 +456,7 @@ namespace View.Personal
 
                 var versionFilePath = Path.Combine(versionDirectory, "Version");
                 var currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
-                
+
                 File.WriteAllText(versionFilePath, currentVersion);
                 _Logging.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
                 _FileLogging?.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
@@ -480,15 +482,49 @@ namespace View.Personal
                 string updaterPath;
                 _FileLogging?.Debug(_Header + $"App Directory: {appDir}");
 
+                string currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
+                string appPathArg = typeof(App).Assembly.Location;
+
+                ProcessStartInfo startInfo;
+
                 if (OperatingSystem.IsWindows())
                 {
                     _FileLogging?.Debug(_Header + "Windows");
                     updaterPath = Path.Combine(appDir, "Updater", "ViewPersonal.Updater.exe");
-                    _FileLogging?.Debug(_Header + $"Updater Path: {updaterPath}");
+
+                    if (!File.Exists(updaterPath))
+                    {
+                        _FileLogging?.Debug(_Header + $"Updater not found at {updaterPath}");
+                        _Logging.Error(_Header + $"Updater not found at {updaterPath}");
+                        return;
+                    }
+
+                    startInfo = new ProcessStartInfo
+                    {
+                        FileName = updaterPath,
+                        Arguments = $"--app-path \"{appPathArg}\" --app-version \"{currentVersion}\"",
+                        UseShellExecute = true
+                    };
                 }
                 else if (OperatingSystem.IsMacOS())
                 {
-                    updaterPath = Path.Combine(appDir, "ViewPersonal.Updater.app", "Contents", "MacOS", "ViewPersonal.Updater");
+                    updaterPath = Path.Combine(appDir, "Updater", "ViewPersonal.Updater.app", "Contents", "MacOS", "ViewPersonal.Updater");
+
+                    if (!File.Exists(updaterPath))
+                    {
+                        _FileLogging?.Debug(_Header + $"Updater executable not found at {updaterPath}");
+                        _Logging.Error(_Header + $"Updater executable not found at {updaterPath}");
+                        return;
+                    }
+
+                    startInfo = new ProcessStartInfo
+                    {
+                        FileName = updaterPath,
+                        Arguments = $"--app-path \"{appPathArg}\" --app-version \"{currentVersion}\"",
+                        UseShellExecute = false, // ✅ important for hiding dock icon
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
                 }
                 else
                 {
@@ -497,31 +533,10 @@ namespace View.Personal
                     return;
                 }
 
-                if (File.Exists(updaterPath))
-                {
-                    var currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
-                    _Logging.Debug(_Header + $"Current app version: {currentVersion}");
+                _Logging.Debug(_Header + $"Launching updater with: {startInfo.FileName} {startInfo.Arguments}");
+                _FileLogging?.Debug(_Header + $"Launching updater with: {startInfo.FileName} {startInfo.Arguments}");
 
-                    var process = new System.Diagnostics.Process
-                    {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo
-                        {
-                            FileName = updaterPath,
-                            Arguments = $"--app-path \"{typeof(App).Assembly.Location}\" --app-version \"{currentVersion}\"",
-                            UseShellExecute = true
-                        }
-                    };
-
-                    _Logging.Debug(_Header + $"Launching updater with args: {process.StartInfo.Arguments}");
-                    _FileLogging?.Debug(_Header + $"Launching updater with args: {process.StartInfo.Arguments}");
-
-                    process.Start();
-                }
-                else
-                {
-                    _FileLogging?.Debug(_Header + $"Updater not found at {updaterPath}");
-                    _Logging.Error(_Header + $"Updater not found at {updaterPath}");
-                }
+                Process.Start(startInfo);
             }
             catch (Exception ex)
             {
@@ -529,6 +544,7 @@ namespace View.Personal
                 _FileLogging?.Exception(ex, _Header + "Failed to launch updater");
             }
         }
+
 
         /// <summary>
         /// Loads application settings from a configuration file or initializes default settings if the file does not exist.
