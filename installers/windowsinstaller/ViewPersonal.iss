@@ -17,11 +17,10 @@ WizardSmallImageFile="Resource\wizard_small_icon.bmp"
 UninstallDisplayIcon={app}\icon.ico
 
 [Files]
-; Main application files from the Release build
-Source: "..\..\src\View.Personal\bin\Release\net9.0\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\_publish\View.Personal\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\_publish\ViewPersonal.Updater\*"; DestDir: "{app}\Updater"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Updater files
-Source: "..\..\src\ViewPersonal.Updater\publish-updater\*"; DestDir: "{app}\Updater"; Flags: ignoreversion recursesubdirs createallsubdirs
+
 
 ; Icon
 Source: "Resource\icon.ico"; DestDir: "{app}"; Flags: ignoreversion

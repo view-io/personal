@@ -1,13 +1,12 @@
 @echo off
 echo Building View Personal Installer...
-
+set "PUBLISH_DIR=..\..\src\_publish"
 :: Step 1: Publish the main .NET application
 echo.
-echo Building main .NET project...
-dotnet build ..\..\src\View.Personal\View.Personal.csproj -c Release
-
+echo Publishing main .NET project...
+dotnet publish ../../src/View.Personal/View.Personal.csproj -c Release --self-contained true -r win-x64 -o "%PUBLISH_DIR%\View.Personal"
 if %ERRORLEVEL% NEQ 0 (
-    echo Error: View.Personal build failed. Please check the build output.
+    echo Error: View.Personal publish failed. Please check the build output.
     pause
     exit /b %ERRORLEVEL%
 )
@@ -15,7 +14,7 @@ if %ERRORLEVEL% NEQ 0 (
 :: Step 2: Publish the updater .NET application
 echo.
 echo Publishing updater .NET project...
-dotnet publish ..\..\src\ViewPersonal.Updater\ViewPersonal.Updater.csproj -c Release -r win-x64 --self-contained false -o ..\..\src\ViewPersonal.Updater\publish-updater
+dotnet publish ../../src/ViewPersonal.Updater/ViewPersonal.Updater.csproj -c Release --self-contained true -r win-x64 -o "%PUBLISH_DIR%\ViewPersonal.Updater"
 
 if %ERRORLEVEL% NEQ 0 (
     echo Error: ViewPersonal.Updater publish failed.
@@ -40,13 +39,13 @@ if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" (
 if not exist "Output" mkdir Output
 
 :: Step 5: Confirm that the applications were published
-if not exist "..\..\src\View.Personal\publish\View.Personal.exe" (
+if not exist "%PUBLISH_DIR%\View.Personal\View.Personal.exe" (
     echo Error: View.Personal publish output not found.
     pause
     exit /b 1
 )
 
-if not exist "..\..\src\ViewPersonal.Updater\publish-updater\ViewPersonal.Updater.exe" (
+if not exist "%PUBLISH_DIR%\ViewPersonal.Updater\ViewPersonal.Updater.exe" (
     echo Error: ViewPersonal.Updater publish output not found.
     pause
     exit /b 1
