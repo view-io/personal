@@ -1,4 +1,4 @@
-﻿namespace View.Personal
+namespace View.Personal
 {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
@@ -583,6 +583,9 @@
                         Guid.TryParse(ApplicationSettings.ActiveGraphGuid, out var activeGraphGuid)
                             ? activeGraphGuid.ToString()
                             : _GraphGuid.ToString();
+                    
+                    // Initialize ResourceManagerService with the preferred language
+                    Services.ResourceManagerService.Initialize(ApplicationSettings);
                 }
                 else
                 {
@@ -595,6 +598,7 @@
                     ApplicationSettings = new AppSettings
                     {
                         ActiveGraphGuid = _GraphGuid.ToString(),
+                        PreferredLanguage = "en", // Default to English
                         OpenAI = new AppSettings.OpenAISettings
                         { Endpoint = "https://api.openai.com/v1/chat/completions" },
                         Anthropic = new AppSettings.AnthropicSettings { Endpoint = "https://api.anthropic.com/v1" },

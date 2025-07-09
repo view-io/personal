@@ -12,6 +12,7 @@ namespace View.Personal
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
+    using Material.Icons.Avalonia;
     using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
@@ -589,11 +590,73 @@ namespace View.Personal
             MainWindowUIHandlers.SaveSettings2_Click(this);
         }
 
+        private void SaveLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var saveButton = this.FindControl<Button>("SaveLanguageButton");
+            var spinner = this.FindControl<MaterialIcon>("SaveLanguageSpinner");
+            
+            try
+            {
+                spinner.IsVisible = true;
+                
+                // Determine selected language
+                var englishRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
+                var hindiRadio = this.FindControl<RadioButton>("HindiLanguageRadio");
+                
+                string languageCode = "en";
+                if (hindiRadio.IsChecked == true)
+                {
+                    languageCode = "hi";
+                }
+                
+                // Update application settings
+                app.ApplicationSettings.PreferredLanguage = languageCode;
+                
+                // Save settings
+                app.SaveSettings();
+                
+                // Update culture - this will trigger the CultureChanged event
+                // which will update all localized strings in the UI
+                Services.ResourceManagerService.SetCulture(new System.Globalization.CultureInfo(languageCode));
+                
+                // Show success notification
+                this.ShowNotification("Language Setting Saved", 
+                    "Your language preference has been saved and applied.", 
+                    NotificationType.Success);
+            }
+            catch (Exception ex)
+            {
+                this.ShowNotification("Error", $"Failed to save language setting: {ex.Message}", NotificationType.Error);
+            }
+            finally
+            {
+                spinner.IsVisible = false;
+            }
+        }
+
         private void LoadSettingsFromFile()
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
             var app = (App)Application.Current;
             var settings = app.ApplicationSettings;
+            
+            // Set language radio buttons based on preferred language
+            if (!string.IsNullOrEmpty(settings.PreferredLanguage))
+            {
+                switch (settings.PreferredLanguage.ToLower())
+                {
+                    case "en":
+                        this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                        break;
+                    case "hi":
+                        this.FindControl<RadioButton>("HindiLanguageRadio").IsChecked = true;
+                        break;
+                    default:
+                        this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                        break;
+                }
+            }
 
             if (File.Exists(filePath))
             {

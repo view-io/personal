@@ -59,6 +59,12 @@ namespace View.Personal.Classes
         public List<string> WatchedPaths { get; set; } = new();
 
         /// <summary>
+        /// Gets or sets the preferred language/culture for the application UI.
+        /// Default is "en" for English.
+        /// </summary>
+        public string PreferredLanguage { get; set; } = "en";
+
+        /// <summary>
         /// Settings specific to the OpenAI service.
         /// </summary>
         public class OpenAISettings
