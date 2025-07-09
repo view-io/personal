@@ -7,7 +7,7 @@
 		<FluentTheme />
 		<themes:MaterialTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime" />
 		<StyleInclude Source="avares://Material.Icons.Avalonia/MaterialIconStyles.axaml" />
-
+		
 		<Style Selector="Button.flat">
 			<Setter Property="Background" Value="#FFFFFF" />
 			<Setter Property="BorderBrush" Value="#DBDBDB" />

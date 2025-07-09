@@ -52,9 +52,14 @@
 									<StackPanel x:Name="InstallNowButtonLoadingState" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False">
 										<icons:MaterialIcon Kind="Loading" Width="20" Height="20" Margin="0,0,10,0">
 											<icons:MaterialIcon.Styles>
-												<Style Selector="icons|MaterialIcon.Spin">
+												<Style Selector="icons|MaterialIcon">
+													<Setter Property="RenderTransform">
+														<Setter.Value>
+															<RotateTransform CenterX="10" CenterY="10" Angle="0"/>
+														</Setter.Value>
+													</Setter>
 													<Style.Animations>
-														<Animation Duration="0:0:2" IterationCount="Infinite">
+														<Animation Duration="0:0:1" IterationCount="Infinite">
 															<KeyFrame Cue="0%">
 																<Setter Property="RotateTransform.Angle" Value="0" />
 															</KeyFrame>
@@ -65,9 +70,6 @@
 													</Style.Animations>
 												</Style>
 											</icons:MaterialIcon.Styles>
-											<icons:MaterialIcon.Classes>
-												<x:String>Spin</x:String>
-											</icons:MaterialIcon.Classes>
 										</icons:MaterialIcon>
 										<TextBlock Text="Installing..." VerticalAlignment="Center" />
 									</StackPanel>

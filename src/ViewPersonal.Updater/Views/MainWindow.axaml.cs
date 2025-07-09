@@ -152,54 +152,79 @@ namespace ViewPersonal.Updater.Views
             ShowGrid("InstallReadyGrid");
         }
 
-        private async void InstallNowButton_Click(object? sender, RoutedEventArgs e)
+        private void InstallNowButton_Click(object? sender, RoutedEventArgs e)
         {
-            InstallNowButtonNormalState.IsVisible = false;
-            InstallNowButtonLoadingState.IsVisible = true;
-            InstallNowButton.IsEnabled = false;
-
-            if (_downloadedInstallerPath == null)
+            try
             {
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                InstallNowButtonNormalState.IsVisible = false;
+                InstallNowButtonLoadingState.IsVisible = true;
+                InstallNowButton.IsEnabled = false;
+                
+                if (_downloadedInstallerPath == null)
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
-                });
-                ShowError("The installer is not available.");
-                return;
-            }
+                    ShowError("The installer is not available.");
+                    return;
+                }
 
-            if (_updateService is null)
-            {
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                if (_updateService is null)
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
+                    ShowError("Updater initialization failed. Please contact support.");
+                    return;
+                }
+                
+                var thread = new System.Threading.Thread(() =>
+                {
+                    try
+                    {                        
+                        bool success = _updateService.InstallUpdate();
+                        if (success)
+                        {
+                            _app._FileLogging?.Info("Installer launched successfully. Application shutting down.");
+                            _updateService?.Dispose();
+                            Environment.Exit(0);
+                        }
+                        else
+                        {
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                InstallNowButtonNormalState.IsVisible = true;
+                                InstallNowButtonLoadingState.IsVisible = false;
+                                InstallNowButton.IsEnabled = true;
+                                ShowError("Failed to start the installer.");
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _app.LogError($"Error launching installer: {ex.Message}");
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            InstallNowButtonNormalState.IsVisible = true;
+                            InstallNowButtonLoadingState.IsVisible = false;
+                            InstallNowButton.IsEnabled = true;
+                            ShowError($"Failed to start the installer: {ex.Message}");
+                        });
+                    }
                 });
-                ShowError("Updater initialization failed. Please contact support.");
-                return;
+                thread.Start();
             }
-
-            bool success = _updateService.InstallUpdate();
-            if (success)
+            catch (Exception ex)
             {
-                _app._FileLogging?.Info("Installer launched successfully. Application shutting down.");
-                _updateService?.Dispose();
-                Environment.Exit(0);
-            }
-            else
-            {
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                _app.LogError($"Error in InstallNowButton_Click: {ex.Message}");
+                Dispatcher.UIThread.Post(() => 
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
+                    ShowError($"An error occurred: {ex.Message}");
                 });
-
-                ShowError("Failed to start the installer.");
-            }
+            } 
         }
 
         private void RetryButton_Click(object? sender, RoutedEventArgs e)
