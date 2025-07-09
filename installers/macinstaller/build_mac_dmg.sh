@@ -3,35 +3,43 @@ set -e
  
 APP_NAME="View Personal"
 APP_BUNDLE_NAME="View Personal.app"
-APP_VERSION="1.1.0"
+UPDATER_NAME="ViewPersonal.Updater"
+UPDATER_APP_BUNDLE_NAME="$UPDATER_NAME.app"
+APP_VERSION=$(xmllint --xpath "string(//Version)" ../../src/View.Personal/View.Personal.csproj)
 PUBLISH_DIR="publish-macos"
 OUTPUT_DIR="Output"
 ICON_PATH="Icon/glyph.icns"
 ICON_PNG_FOR_DMG_ICON="Icon/glyph.png"
+UPDATER_DIR="../../src/ViewPersonal.Updater"
+UPDATER_OUTPUT_DIR="publish-updater"
  
 echo "Cleaning..."
 rm -rf "$PUBLISH_DIR" "$OUTPUT_DIR"
 mkdir -p "$PUBLISH_DIR/x64" "$PUBLISH_DIR/arm64" "$OUTPUT_DIR"
  
-# -------------------------------------------------------
-# BUILD x64
-# -------------------------------------------------------
-echo "Publishing x64..."
-dotnet publish ../../src/View.Personal/View.Personal.csproj -c Release --self-contained true -r osx-x64 -o "$PUBLISH_DIR/x64"
+build_app_bundle () {
+    ARCH=$1
+    RUNTIME=$2
+    echo "Publishing $ARCH..."
+    dotnet publish ../../src/View.Personal/View.Personal.csproj -c Release --self-contained true -r $RUNTIME -o "$PUBLISH_DIR/$ARCH"
  
-STAGING_X64="$OUTPUT_DIR/staging-x64"
-mkdir -p "$STAGING_X64"
+    echo "Publishing updater ($ARCH)..."
+    dotnet publish "$UPDATER_DIR/ViewPersonal.Updater.csproj" -c Release -r $RUNTIME --self-contained true -o "$UPDATER_DIR/$UPDATER_OUTPUT_DIR/$ARCH"
  
-APP_BUNDLE_X64="$STAGING_X64/$APP_BUNDLE_NAME"
-APP_CONTENTS_X64="$APP_BUNDLE_X64/Contents"
-MACOS_DIR_X64="$APP_CONTENTS_X64/MacOS"
-RESOURCES_DIR_X64="$APP_CONTENTS_X64/Resources"
+    STAGING_DIR="$OUTPUT_DIR/staging-$ARCH"
+    mkdir -p "$STAGING_DIR"
  
-mkdir -p "$MACOS_DIR_X64" "$RESOURCES_DIR_X64"
-cp -R "$PUBLISH_DIR/x64/." "$MACOS_DIR_X64/"
-cp "$ICON_PATH" "$RESOURCES_DIR_X64/glyph.icns"
+    # ------------------ Main App Bundle ------------------
+    APP_BUNDLE="$STAGING_DIR/$APP_BUNDLE_NAME"
+    APP_CONTENTS="$APP_BUNDLE/Contents"
+    MACOS_DIR="$APP_CONTENTS/MacOS"
+    RESOURCES_DIR="$APP_CONTENTS/Resources"
+    mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
  
-cat > "$APP_CONTENTS_X64/Info.plist" <<EOF
+    cp -R "$PUBLISH_DIR/$ARCH/." "$MACOS_DIR/"
+    cp "$ICON_PATH" "$RESOURCES_DIR/glyph.icns"
+ 
+    cat > "$APP_CONTENTS/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -49,101 +57,68 @@ cat > "$APP_CONTENTS_X64/Info.plist" <<EOF
 </plist>
 EOF
  
-codesign --deep --force --sign - "$APP_BUNDLE_X64"
-xattr -dr com.apple.quarantine "$APP_BUNDLE_X64"
-codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE_X64"
+    # ------------------ Updater App Bundle ------------------
+    UPDATER_BUNDLE="$MACOS_DIR/Updater/$UPDATER_APP_BUNDLE_NAME"
+    UPDATER_CONTENTS="$UPDATER_BUNDLE/Contents"
+    UPDATER_MACOS="$UPDATER_CONTENTS/MacOS"
+    UPDATER_RESOURCES="$UPDATER_CONTENTS/Resources"
+    mkdir -p "$UPDATER_MACOS" "$UPDATER_RESOURCES"
  
-echo "Creating x64 DMG..."
-create-dmg \
-  --volname "$APP_NAME Installer x64" \
-  --window-pos 200 120 \
-  --window-size 520 320 \
-  --icon-size 100 \
-  --icon "$APP_BUNDLE_NAME" 200 140 \
-  --app-drop-link 400 140 \
-  --volicon "$ICON_PATH" \
-  "$OUTPUT_DIR/ViewPersonalInstaller-x64.dmg" \
-  "$STAGING_X64"
+    cp -R "$UPDATER_DIR/$UPDATER_OUTPUT_DIR/$ARCH/." "$UPDATER_MACOS/"
+    cp "$ICON_PATH" "$UPDATER_RESOURCES/glyph.icns"
  
-# embed custom disk icon
-if [[ -f "$ICON_PNG_FOR_DMG_ICON" ]]; then
-    ICON_COPY="$OUTPUT_DIR/temp_icon.png"
-    ICON_RSRC="$OUTPUT_DIR/dmg_icon.rsrc"
-    cp "$ICON_PNG_FOR_DMG_ICON" "$ICON_COPY"
-    sips -i "$ICON_COPY"
-    DeRez -only icns "$ICON_COPY" > "$ICON_RSRC"
-    Rez -append "$ICON_RSRC" -o "$OUTPUT_DIR/ViewPersonalInstaller-x64.dmg"
-    SetFile -a C "$OUTPUT_DIR/ViewPersonalInstaller-x64.dmg" || echo "'SetFile' not available."
-    rm -f "$ICON_COPY" "$ICON_RSRC"
-fi
- 
-# -------------------------------------------------------
-# BUILD arm64
-# -------------------------------------------------------
-echo "Publishing arm64..."
-dotnet publish ../../src/View.Personal/View.Personal.csproj -c Release --self-contained true -r osx-arm64 -o "$PUBLISH_DIR/arm64"
- 
-STAGING_ARM64="$OUTPUT_DIR/staging-arm64"
-mkdir -p "$STAGING_ARM64"
- 
-APP_BUNDLE_ARM64="$STAGING_ARM64/$APP_BUNDLE_NAME"
-APP_CONTENTS_ARM64="$APP_BUNDLE_ARM64/Contents"
-MACOS_DIR_ARM64="$APP_CONTENTS_ARM64/MacOS"
-RESOURCES_DIR_ARM64="$APP_CONTENTS_ARM64/Resources"
- 
-mkdir -p "$MACOS_DIR_ARM64" "$RESOURCES_DIR_ARM64"
-cp -R "$PUBLISH_DIR/arm64/." "$MACOS_DIR_ARM64/"
-cp "$ICON_PATH" "$RESOURCES_DIR_ARM64/glyph.icns"
- 
-cat > "$APP_CONTENTS_ARM64/Info.plist" <<EOF
+    cat > "$UPDATER_CONTENTS/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleName</key><string>$APP_NAME</string>
-    <key>CFBundleDisplayName</key><string>$APP_NAME</string>
-    <key>CFBundleExecutable</key><string>View.Personal</string>
-    <key>CFBundleIdentifier</key><string>com.view.personal</string>
+    <key>CFBundleName</key><string>ViewPersonal.Updater</string>
+    <key>CFBundleDisplayName</key><string>View Personal Updater</string>
+    <key>CFBundleExecutable</key><string>$UPDATER_NAME</string>
+    <key>CFBundleIdentifier</key><string>com.viewpersonal.updater</string>
     <key>CFBundleVersion</key><string>$APP_VERSION</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleIconFile</key><string>glyph</string>
     <key>LSMinimumSystemVersion</key><string>10.13</string>
+    <key>LSUIElement</key><true/>
 </dict>
 </plist>
 EOF
  
-codesign --deep --force --sign - "$APP_BUNDLE_ARM64"
-xattr -dr com.apple.quarantine "$APP_BUNDLE_ARM64"
-codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE_ARM64"
+    echo "Code signing..."
+    codesign --deep --force --sign - "$APP_BUNDLE"
+    codesign --deep --force --sign - "$UPDATER_BUNDLE"
+    xattr -dr com.apple.quarantine "$APP_BUNDLE"
+    codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
  
-echo "Creating arm64 DMG..."
-create-dmg \
-  --volname "$APP_NAME Installer arm64" \
-  --window-pos 200 120 \
-  --window-size 520 320 \
-  --icon-size 100 \
-  --icon "$APP_BUNDLE_NAME" 200 140 \
-  --app-drop-link 400 140 \
-  --volicon "$ICON_PATH" \
-  "$OUTPUT_DIR/ViewPersonalInstaller-arm64.dmg" \
-  "$STAGING_ARM64"
+    echo "Creating $ARCH DMG..."
+    create-dmg \
+      --volname "$APP_NAME Installer $ARCH" \
+      --window-pos 200 120 \
+      --window-size 520 320 \
+      --icon-size 100 \
+      --icon "$APP_BUNDLE_NAME" 200 140 \
+      --app-drop-link 400 140 \
+      --volicon "$ICON_PATH" \
+      "$OUTPUT_DIR/ViewPersonalInstaller-$ARCH.dmg" \
+      "$STAGING_DIR"
  
-# embed custom disk icon
-if [[ -f "$ICON_PNG_FOR_DMG_ICON" ]]; then
-    ICON_COPY="$OUTPUT_DIR/temp_icon.png"
-    ICON_RSRC="$OUTPUT_DIR/dmg_icon.rsrc"
-    cp "$ICON_PNG_FOR_DMG_ICON" "$ICON_COPY"
-    sips -i "$ICON_COPY"
-    DeRez -only icns "$ICON_COPY" > "$ICON_RSRC"
-    Rez -append "$ICON_RSRC" -o "$OUTPUT_DIR/ViewPersonalInstaller-arm64.dmg"
-    SetFile -a C "$OUTPUT_DIR/ViewPersonalInstaller-arm64.dmg" || echo "'SetFile' not available."
-    rm -f "$ICON_COPY" "$ICON_RSRC"
-fi
+    if [[ -f "$ICON_PNG_FOR_DMG_ICON" ]]; then
+        ICON_COPY="$OUTPUT_DIR/temp_icon.png"
+        ICON_RSRC="$OUTPUT_DIR/dmg_icon.rsrc"
+        cp "$ICON_PNG_FOR_DMG_ICON" "$ICON_COPY"
+        sips -i "$ICON_COPY"
+        DeRez -only icns "$ICON_COPY" > "$ICON_RSRC"
+        Rez -append "$ICON_RSRC" -o "$OUTPUT_DIR/ViewPersonalInstaller-$ARCH.dmg"
+        SetFile -a C "$OUTPUT_DIR/ViewPersonalInstaller-$ARCH.dmg" || echo "'SetFile' not available."
+        rm -f "$ICON_COPY" "$ICON_RSRC"
+    fi
+}
  
-# -------------------------------------------------------
-# CLEANUP
-# -------------------------------------------------------
+build_app_bundle "x64" "osx-x64"
+build_app_bundle "arm64" "osx-arm64"
+ 
 echo "Cleaning up staging folders..."
 rm -rf "$OUTPUT_DIR/staging-x64" "$OUTPUT_DIR/staging-arm64"
  
