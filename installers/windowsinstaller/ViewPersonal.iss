@@ -1,8 +1,10 @@
 [Setup]
 AppId={{B31E2B3F-2C5D-4B3A-A676-94B4BC66DAA2}}
 AppName=View Personal
-AppVerName=View Personal v1.1.0
+#define MyAppVersion GetFileVersion("..\..\src\View.Personal\publish\View.Personal.exe")
+AppVerName=View Personal v{#MyAppVersion}
 DefaultDirName={autopf}\View Personal
+PrivilegesRequired=admin
 DefaultGroupName=View Personal
 OutputDir=.\Output
 OutputBaseFilename=ViewPersonalSetup
@@ -15,10 +17,12 @@ WizardSmallImageFile="Resource\wizard_small_icon.bmp"
 UninstallDisplayIcon={app}\icon.ico
 
 [Files]
-; Main application files from the Release build
-Source: "..\..\src\View.Personal\bin\Release\net9.0\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\_publish\View.Personal\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\src\_publish\ViewPersonal.Updater\*"; DestDir: "{app}\Updater"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Icon file for desktop/start menu shortcuts
+
+
+; Icon
 Source: "Resource\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]

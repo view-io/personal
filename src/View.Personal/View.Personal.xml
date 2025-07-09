@@ -106,7 +106,7 @@
         <member name="M:View.Personal.App.GetProviderSettings(View.Personal.Classes.CompletionProviderTypeEnum)">
             <summary>
             Retrieves the completion provider settings for the specified provider type.
-            Creates and configures a CompletionProviderSettings object with the appropriate 
+            Creates and configures a CompletionProviderSettings object with the appropriate
             credentials and settings based on the provider type.
             </summary>
             <param name="providerType">The type of completion provider to get settings for.</param>
@@ -121,6 +121,16 @@
             Retrieves all graphs associated with the specified tenant from the LiteGraph database.
             </summary>
             <returns>A list of <see cref="T:LiteGraph.Graph"/> objects representing all graphs for the tenant. Returns an empty list if an error occurs.</returns>
+        </member>
+        <member name="M:View.Personal.App.StoreAppVersionInFile">
+            <summary>
+            Stores the current application version in a file for the updater to read.
+            </summary>
+        </member>
+        <member name="M:View.Personal.App.LaunchUpdater">
+            <summary>
+            Launches the ViewPersonal Updater application in a separate process.
+            </summary>
         </member>
         <member name="M:View.Personal.App.LoadSettings">
             <summary>

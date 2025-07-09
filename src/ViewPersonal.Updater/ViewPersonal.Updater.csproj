@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+	</PropertyGroup>
+	<ItemGroup>
+	  <AvaloniaResource Include="Assets\glyph.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </AvaloniaResource>
+	  <AvaloniaResource Include="Assets\logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </AvaloniaResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+		<PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
+		<PackageReference Include="Material.Avalonia" Version="3.9.3-nightly.0.2" />
+		<PackageReference Include="SyslogLogging" Version="2.0.8" />
+	</ItemGroup>
+</Project>

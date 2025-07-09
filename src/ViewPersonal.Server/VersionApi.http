@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:5210
+
+### Get all versions
+GET {{baseUrl}}/api/versions
+Accept: application/json
+
+### Get latest version
+GET {{baseUrl}}/api/versions/latest
+Accept: application/json
+
+### Get version by ID
+GET {{baseUrl}}/api/versions/1
+Accept: application/json
+
+### Create a new version
+POST {{baseUrl}}/api/versions
+Content-Type: application/json
+
+{
+  "versionNumber": "1.1.0",
+  "releaseDate": "2023-06-15T00:00:00",
+  "description": "Bug fixes and performance improvements",
+  "isLatest": true,
+  "osDetails": [
+    {
+      "os": "Windows",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.1.0-windows.exe"
+    },
+    {
+      "os": "Mac Intel",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.1.0-mac-intel.dmg"
+    },
+    {
+      "os": "Mac Apple Silicon",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.1.0-mac-arm64.dmg"
+    }
+  ]
+}
+
+### Update a version
+PUT {{baseUrl}}/api/versions/1
+Content-Type: application/json
+
+{
+  "versionNumber": "1.0.1",
+  "releaseDate": "2023-05-20T00:00:00",
+  "description": "Hotfix for critical issues",
+  "isLatest": false,
+  "osDetails": [
+    {
+      "os": "Windows",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.0.1-windows.exe"
+    },
+    {
+      "os": "Mac Intel",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.0.1-mac-intel.dmg"
+    },
+    {
+      "os": "Mac Apple Silicon",
+      "downloadUrl": "https://example.com/download/viewpersonal-1.0.1-mac-arm64.dmg"
+    }
+  ]
+}
+
+### Delete a version
+DELETE {{baseUrl}}/api/versions/2
