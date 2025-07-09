@@ -1,7 +1,7 @@
 # View AI Personal
 
 <p align="center">
-  <img src="src/logo.png" alt="View AI Personal Logo" height="192">
+  <img src="logo.png" alt="View AI Personal Logo" height="192">
 </p>
 
 <p align="center">
