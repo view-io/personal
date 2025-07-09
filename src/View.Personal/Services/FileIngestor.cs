@@ -538,7 +538,7 @@
 
                                 var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
                                     appSettings.OpenAI.ApiKey);
-                                var openAIEmbeddingsRequest = new EmbeddingsRequest
+                                var openAIEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                     Contents = chunkTexts
@@ -581,7 +581,7 @@
                                 }
 
                                 var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint, "");
-                                var ollamaEmbeddingsRequest = new EmbeddingsRequest
+                                var ollamaEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OllamaEmbeddingModel,
                                     Contents = chunkTexts
@@ -628,7 +628,7 @@
 
                                 var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
                                     appSettings.Embeddings.VoyageApiKey);
-                                var voyageEmbeddingsRequest = new EmbeddingsRequest
+                                var voyageEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.VoyageEmbeddingModel,
                                     Contents = chunkTexts
@@ -688,7 +688,7 @@
                                 var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                                     appSettings.View.Endpoint,
                                     appSettings.View.AccessKey);
-                                var viewEmbeddingsRequest = new EmbeddingsRequest
+                                var viewEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     // ToDo: eventually want to remove hardcoded values
                                     EmbeddingsRule = new EmbeddingsRule
@@ -696,10 +696,10 @@
                                         EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
                                         EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                         EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
-                                        BatchSize = 2,
-                                        MaxGeneratorTasks = 4,
-                                        MaxRetries = 3,
-                                        MaxFailures = 3
+                                        EmbeddingsBatchSize = 2,
+                                        MaxEmbeddingsTasks = 4,
+                                        MaxEmbeddingsRetries = 3,
+                                        MaxEmbeddingsFailures = 3
                                     },
                                     Model = appSettings.Embeddings.ViewEmbeddingModel,
                                     Contents = chunkTexts
@@ -1148,7 +1148,7 @@
                                 }
                                 var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
                                     appSettings.OpenAI.ApiKey);
-                                var openAIEmbeddingsRequest = new EmbeddingsRequest
+                                var openAIEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                     Contents = chunkTexts
@@ -1190,7 +1190,7 @@
                                 }
 
                                 var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint, "");
-                                var ollamaEmbeddingsRequest = new EmbeddingsRequest
+                                var ollamaEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OllamaEmbeddingModel,
                                     Contents = chunkTexts
@@ -1237,7 +1237,7 @@
 
                                 var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
                                     appSettings.Embeddings.VoyageApiKey);
-                                var voyageEmbeddingsRequest = new EmbeddingsRequest
+                                var voyageEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.VoyageEmbeddingModel,
                                     Contents = chunkTexts
@@ -1288,7 +1288,7 @@
                                 var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                                     appSettings.View.Endpoint,
                                     appSettings.View.AccessKey);
-                                var viewEmbeddingsRequest = new EmbeddingsRequest
+                                var viewEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     // ToDo: eventually want to remove hardcoded values
                                     EmbeddingsRule = new EmbeddingsRule
@@ -1296,10 +1296,10 @@
                                         EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
                                         EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                         EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
-                                        BatchSize = 2,
-                                        MaxGeneratorTasks = 4,
-                                        MaxRetries = 3,
-                                        MaxFailures = 3
+                                        EmbeddingsBatchSize = 2,
+                                        MaxEmbeddingsTasks = 4,
+                                        MaxEmbeddingsRetries = 3,
+                                        MaxEmbeddingsFailures = 3
                                     },
                                     Model = appSettings.Embeddings.ViewEmbeddingModel,
                                     Contents = chunkTexts
@@ -1920,7 +1920,7 @@
 
                                 var openAiSdk = new ViewOpenAiSdk(tenantGuid, "https://api.openai.com/",
                                     appSettings.OpenAI.ApiKey);
-                                var openAIEmbeddingsRequest = new EmbeddingsRequest
+                                var openAIEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OpenAIEmbeddingModel,
                                     Contents = chunkTexts
@@ -1958,7 +1958,7 @@
                                 }
 
                                 var ollamaSdk = new ViewOllamaSdk(tenantGuid, appSettings.Ollama.Endpoint);
-                                var ollamaEmbeddingsRequest = new EmbeddingsRequest
+                                var ollamaEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.OllamaEmbeddingModel,
                                     Contents = chunkTexts
@@ -2001,7 +2001,7 @@
 
                                 var voyageSdk = new ViewVoyageAiSdk(tenantGuid, appSettings.Embeddings.VoyageEndpoint,
                                     appSettings.Embeddings.VoyageApiKey);
-                                var voyageEmbeddingsRequest = new EmbeddingsRequest
+                                var voyageEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     Model = appSettings.Embeddings.VoyageEmbeddingModel,
                                     Contents = chunkTexts
@@ -2047,7 +2047,7 @@
                                 var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                                     appSettings.View.Endpoint,
                                     appSettings.View.AccessKey);
-                                var viewEmbeddingsRequest = new EmbeddingsRequest
+                                var viewEmbeddingsRequest = new GenerateEmbeddingsRequest
                                 {
                                     // ToDo: eventually want to remove hardcoded values
                                     EmbeddingsRule = new EmbeddingsRule
@@ -2055,10 +2055,10 @@
                                         EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
                                         EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                         EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
-                                        BatchSize = 2,
-                                        MaxGeneratorTasks = 4,
-                                        MaxRetries = 3,
-                                        MaxFailures = 3
+                                        EmbeddingsBatchSize = 2,
+                                        MaxEmbeddingsTasks = 4,
+                                        MaxEmbeddingsRetries = 3,
+                                        MaxEmbeddingsFailures = 3
                                     },
                                     Model = appSettings.Embeddings.ViewEmbeddingModel,
                                     Contents = chunkTexts
@@ -2206,7 +2206,6 @@
                 IngestionList.Add(filePath);
         }
 
-
         /// <summary>
         /// Resumes ingestion of files that were previously listed but not successfully processed,
         /// </summary>
@@ -2323,10 +2322,10 @@
         /// Checks the validity of the embeddings result and displays error notifications if issues are found.
         /// </summary>
         /// <param name="mainWindow">The MainWindow instance to use for displaying error notifications.</param>
-        /// <param name="result">The EmbeddingsResult object to validate.</param>
+        /// <param name="result">The generateEmbeddingsResult object to validate.</param>
         /// <param name="expectedCount">The expected number of embeddings in the result.</param>
         /// <returns>True if the embeddings result is valid, false otherwise.</returns>
-        private static bool CheckEmbeddingsResult(MainWindow mainWindow, EmbeddingsResult result, int expectedCount)
+        private static bool CheckEmbeddingsResult(MainWindow mainWindow, GenerateEmbeddingsResult result, int expectedCount)
         {
             if (!result.Success)
             {
