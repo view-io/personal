@@ -521,7 +521,7 @@
                     {
                         FileName = updaterPath,
                         Arguments = $"--app-path \"{appPathArg}\" --app-version \"{currentVersion}\"",
-                        UseShellExecute = false, // ✅ important for hiding dock icon
+                        UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true
                     };

@@ -37,7 +37,7 @@ namespace ViewPersonal.Updater.Views
         {
             await CheckForUpdatesAsync(skipNoUpdateCheck: true);
         }
-        
+
         /// <summary>
         /// Public method to check for updates manually
         /// </summary>
@@ -89,7 +89,7 @@ namespace ViewPersonal.Updater.Views
                         }
                     }
                 }
-                
+
                 _latestVersion = await _updateService.CheckForUpdatesAsync();
 
                 if (_latestVersion == null)
@@ -111,7 +111,7 @@ namespace ViewPersonal.Updater.Views
                 {
                     _app.LogDebug("No updates found, shutting down application");
                     _app._FileLogging?.Debug("No updates found, shutting down application");
-                    
+
                     if (_app._desktop != null)
                     {
                         _app._desktop.Shutdown();
@@ -160,7 +160,7 @@ namespace ViewPersonal.Updater.Views
 
             if (_downloadedInstallerPath == null)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => 
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
@@ -172,7 +172,7 @@ namespace ViewPersonal.Updater.Views
 
             if (_updateService is null)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => 
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
@@ -181,7 +181,7 @@ namespace ViewPersonal.Updater.Views
                 ShowError("Updater initialization failed. Please contact support.");
                 return;
             }
-             
+
             bool success = _updateService.InstallUpdate();
             if (success)
             {
@@ -191,13 +191,13 @@ namespace ViewPersonal.Updater.Views
             }
             else
             {
-                await Dispatcher.UIThread.InvokeAsync(() => 
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
                 });
-                
+
                 ShowError("Failed to start the installer.");
             }
         }
@@ -212,9 +212,12 @@ namespace ViewPersonal.Updater.Views
             _updateService?.Dispose();
             Environment.Exit(0);
         }
-        
+
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (OperatingSystem.IsMacOS())
+                HideDockIconViaAppleScript();
+
             _updateService?.Dispose();
             Environment.Exit(0);
         }
@@ -227,6 +230,19 @@ namespace ViewPersonal.Updater.Views
                 DownloadProgressText.Text = $"{percentage}%";
                 DownloadSizeText.Text = sizeInfo;
             });
+        }
+        public static void HideDockIconViaAppleScript()
+        {
+            try
+            {
+                var process = new System.Diagnostics.Process();
+                process.StartInfo.FileName = "osascript";
+                process.StartInfo.Arguments = "-e 'tell application \"System Events\" to set visible of process \"ViewPersonal.Updater\" to false'";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.Start();
+            }
+            catch {  }
         }
 
         private void ShowGrid(string gridName)
