@@ -212,7 +212,9 @@ namespace View.Personal.Views
                                 if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                                 {
                                     var mainWindow = (MainWindow)desktop.MainWindow!;
-                                    mainWindow.ShowNotification("Model Downloaded", $"{modelName} was pulled successfully!", Avalonia.Controls.Notifications.NotificationType.Success);
+                                    mainWindow.ShowNotification(ResourceManagerService.GetString("ModelDownloaded"), 
+                                        ResourceManagerService.GetString("ModelDownloadedSuccess", modelName), 
+                                        Avalonia.Controls.Notifications.NotificationType.Success);
                                 }
 
                                 Dispatcher.UIThread.Post(() => LoadModels());
@@ -272,7 +274,7 @@ namespace View.Personal.Views
                     if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                     {
                         var mainWindow = (MainWindow)desktop.MainWindow!;
-                        mainWindow.ShowNotification("Model Downloaded", $"{modelName} pulled successfully!", Avalonia.Controls.Notifications.NotificationType.Success);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("ModelDownloaded"), ResourceManagerService.GetString("ModelDownloadedSuccess", modelName), Avalonia.Controls.Notifications.NotificationType.Success);
                     }
                     _modelNameTextBox!.Text = string.Empty;
                     pullProgressBar.Value = 100;

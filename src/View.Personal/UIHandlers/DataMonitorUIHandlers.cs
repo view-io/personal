@@ -129,12 +129,15 @@ namespace View.Personal.UIHandlers
             }
             catch (UnauthorizedAccessException ex)
             {
-                mainWindow.ShowNotification("Access Denied", $"Cannot access {path}: {ex.Message}",
+                mainWindow.ShowNotification(ResourceManagerService.GetString("AccessDenied"), 
+                    ResourceManagerService.GetString("CannotAccessPath", path, ex.Message),
                     NotificationType.Error);
             }
             catch (Exception ex)
             {
-                mainWindow.ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                    ResourceManagerService.GetString("FailedToLoadDirectory", ex.Message), 
+                    NotificationType.Error);
             }
         }
 
@@ -228,7 +231,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                mainWindow.ShowNotification("Error", $"Failed to load drives: {ex.Message}", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToLoadDrives", ex.Message), NotificationType.Error);
             }
         }
 
@@ -258,7 +261,7 @@ namespace View.Personal.UIHandlers
                 var enteredPath = textBox.Text?.Trim();
                 if (string.IsNullOrEmpty(enteredPath))
                 {
-                    mainWindow.ShowNotification("Invalid Path", "Please enter a valid path.", NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("InvalidPath"), ResourceManagerService.GetString("PleaseEnterValidPath"), NotificationType.Error);
                     return;
                 }
 
@@ -271,21 +274,21 @@ namespace View.Personal.UIHandlers
                     }
                     else
                     {
-                        mainWindow.ShowNotification("Path Not Found", $"The path '{enteredPath}' does not exist.",
-                            NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("PathNotFound"), ResourceManagerService.GetString("PathDoesNotExist", enteredPath),
+                    NotificationType.Error);
                         textBox.Text = mainWindow._CurrentPath;
                     }
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    mainWindow.ShowNotification("Access Denied", $"Cannot access '{enteredPath}': {ex.Message}",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("AccessDenied"), ResourceManagerService.GetString("CannotAccessPath", enteredPath, ex.Message),
+                    NotificationType.Error);
                     textBox.Text = mainWindow._CurrentPath;
                 }
                 catch (Exception ex)
                 {
-                    mainWindow.ShowNotification("Error", $"Failed to navigate to '{enteredPath}': {ex.Message}",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToNavigatePath", enteredPath, ex.Message),
+                    NotificationType.Error);
                     textBox.Text = mainWindow._CurrentPath;
                 }
             }
@@ -301,7 +304,7 @@ namespace View.Personal.UIHandlers
         {
             if (mainWindow.WatchedPaths.Count == 0)
             {
-                mainWindow.ShowNotification("Sync", "No watched paths to sync.", NotificationType.Information);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Sync"), ResourceManagerService.GetString("NoWatchedPathsToSync"), NotificationType.Information);
                 return;
             }
 
@@ -485,8 +488,8 @@ namespace View.Personal.UIHandlers
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    mainWindow.ShowNotification("Ingestion Error", $"Access denied to directory: {entry.FullPath}.",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), ResourceManagerService.GetString("AccessDeniedToDirectory", entry.FullPath),
+                    NotificationType.Error);
                     mainWindow.LogToConsole($"[{SeverityEnum.Error}] Access denied to directory: {entry.FullPath}");
                     checkBox.IsChecked = false;
                     return;

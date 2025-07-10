@@ -32,8 +32,8 @@ namespace View.Personal.Services
             try
             {
                 var result = await CustomMessageBoxHelper.ShowConfirmationAsync(
-                    "Confirm Deletion",
-                    $"Are you sure you want to delete '{graphItem.Name}'?",
+                    ResourceManagerService.GetString("ConfirmDeletion"),
+                    string.Format(ResourceManagerService.GetString("ConfirmDeleteKnowledgebase"), graphItem.Name),
                     MessageBoxIcon.Warning);
 
                 if (result != ButtonResult.Yes)
@@ -42,7 +42,8 @@ namespace View.Personal.Services
                 liteGraph.Graph.DeleteByGuid(tenantGuid, graphItem.GUID, true);
 
                 if (window is MainWindow mainWindow)
-                    mainWindow.ShowNotification("Knowledgebase Deleted", $"{graphItem.Name} was deleted successfully!",
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("KnowledgebaseDeleted"), 
+                        string.Format(ResourceManagerService.GetString("KnowledgebaseDeletedSuccessfully"), graphItem.Name),
                         NotificationType.Success);
             }
             catch (Exception ex)
@@ -51,7 +52,8 @@ namespace View.Personal.Services
                 app?.Log(SeverityEnum.Error, $"Error deleting knowledgebase '{graphItem.Name}': {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error deleting knowledgebase {graphItem.Name}");
                 if (window is MainWindow mainWindow)
-                    mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
+                        string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
                         NotificationType.Error);
             }
         }

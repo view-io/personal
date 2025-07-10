@@ -1,4 +1,4 @@
-﻿namespace View.Personal.Services
+namespace View.Personal.Services
 {
     using Avalonia;
     using Avalonia.Controls;
@@ -176,7 +176,7 @@
             if (!SupportedExtensions.Contains(extension))
             {
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Warn, $"Unsupported file extension: {extension}"));
-                mainWindow.ShowNotification("Ingestion Error", "Unsupported file type.", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), ResourceManagerService.GetString("UnsupportedFileType"), NotificationType.Error);
 
                 if (IngestionList.Contains(filePath))
                     IngestionList.Remove(filePath);
@@ -203,7 +203,7 @@
             {
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    mainWindow.ShowNotification("Ingestion Error", "No file selected.", NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), ResourceManagerService.GetString("NoFileSelected"), NotificationType.Error);
                     return;
                 }
 
@@ -217,7 +217,8 @@
                 if (string.IsNullOrEmpty(embeddingProvider))
                 {
                     await CustomMessageBoxHelper.ShowErrorAsync(
-                        "Error", "Please select an embedding provider");
+                        ResourceManagerService.GetString("Error"), 
+                        ResourceManagerService.GetString("PleaseSelectEmbeddingProvider"));
 
                     if (IngestionList.Contains(filePath))
                         IngestionList.Remove(filePath);
@@ -406,8 +407,8 @@
                                     {
                                         app.Log(Enums.SeverityEnum.Warn, $"Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
                                         ts.AddMessage($"Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
-                                        mainWindow.ShowNotification("Ingestion Error",
-                                            "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                            ResourceManagerService.GetString("OnlySupportedFilesAllowed"),
                                             NotificationType.Error);
                                     });
                                     return;
@@ -530,8 +531,8 @@
                                 if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
                                 {
-                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.ShowNotification("Ingestion Error",
-                                        "OpenAI embedding settings incomplete.",
+                                    await Dispatcher.UIThread.InvokeAsync(() => mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                        ResourceManagerService.GetString("OpenAIEmbeddingSettingsIncomplete"),
                                         NotificationType.Error));
                                     return;
                                 }
@@ -573,8 +574,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Ingestion Error",
-                                        "Local embedding model not configured.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                        ResourceManagerService.GetString("LocalEmbeddingModelNotConfigured"),
                                         NotificationType.Error);
                                     });
                                     return;
@@ -620,8 +621,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Ingestion Error",
-                                        "VoyageAI embedding settings incomplete.", NotificationType.Error);
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                        ResourceManagerService.GetString("VoyageAIEmbeddingSettingsIncomplete"), NotificationType.Error);
                                     });
                                     return;
                                 }
@@ -670,8 +671,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Ingestion Error",
-                                        "View embedding settings incomplete.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                        ResourceManagerService.GetString("ViewEmbeddingSettingsIncomplete"),
                                         NotificationType.Error);
                                     });
                                     return;
@@ -771,8 +772,9 @@
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        mainWindow.ShowNotification("File Ingested", $"{filename} ingested successfully!",
-                    NotificationType.Success);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("FileIngested"), 
+                            ResourceManagerService.GetString("FileIngestedSuccess", filename),
+                            NotificationType.Success);
                     });
 
                 }
@@ -790,7 +792,8 @@
 
                 if (!token.IsCancellationRequested && !wasCancelled)
                 {
-                    mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), 
+                        ResourceManagerService.GetString("SomethingWentWrong", ex.Message),
                         NotificationType.Error);
                 }
                 IngestionProgressService.UpdateProgress($"Error: {ex.Message}", 0);
@@ -855,7 +858,7 @@
             if (!SupportedExtensions.Contains(extension))
             {
                 app.Log(Enums.SeverityEnum.Warn, $"Unsupported file extension: {extension}");
-                mainWindow.ShowNotification("Re-ingestion Error", "Unsupported file type.", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"), ResourceManagerService.GetString("UnsupportedFileType"), NotificationType.Error);
                 return;
             }
 
@@ -877,7 +880,9 @@
             {
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    mainWindow.ShowNotification("Re-ingestion Error", "No file selected.", NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"), 
+                        ResourceManagerService.GetString("NoFileSelected"), 
+                        NotificationType.Error);
                     return;
                 }
 
@@ -1064,8 +1069,8 @@
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
                                         app.Log(Enums.SeverityEnum.Warn, $"Unsupported file type: {typeResult.Type} (PDF, Text, PowerPoint, Word, Markdown, or Excel only).");
-                                        mainWindow.ShowNotification("Re-ingestion Error",
-                                            "Only PDF, plain-text, PowerPoint, Word, Markdown, or Excel files are supported.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"),
+                                            ResourceManagerService.GetString("OnlySupportedFilesAllowed"),
                                             NotificationType.Error);
                                     });
                                     return;
@@ -1141,8 +1146,8 @@
                                 if (string.IsNullOrEmpty(appSettings.OpenAI.ApiKey) ||
                                     string.IsNullOrEmpty(appSettings.Embeddings.OpenAIEmbeddingModel))
                                 {
-                                    mainWindow.ShowNotification("Re-ingestion Error",
-                                        "OpenAI embedding settings incomplete.",
+                                    mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"),
+                                        ResourceManagerService.GetString("OpenAIEmbeddingSettingsIncomplete"),
                                         NotificationType.Error);
                                     return;
                                 }
@@ -1182,8 +1187,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Re-ingestion Error",
-                                        "Local embedding model not configured.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"),
+                                        ResourceManagerService.GetString("LocalEmbeddingModelNotConfigured"),
                                         NotificationType.Error);
                                     });
                                     return;
@@ -1229,8 +1234,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Re-ingestion Error",
-                                        "VoyageAI embedding settings incomplete.", NotificationType.Error);
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"),
+                                        ResourceManagerService.GetString("VoyageAIEmbeddingSettingsIncomplete"), NotificationType.Error);
                                     });
                                     return;
                                 }
@@ -1278,8 +1283,8 @@
                                 {
                                     await Dispatcher.UIThread.InvokeAsync(() =>
                                     {
-                                        mainWindow.ShowNotification("Re-ingestion Error",
-                                        "View embedding settings incomplete.",
+                                        mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"),
+                                        ResourceManagerService.GetString("ViewEmbeddingSettingsIncomplete"),
                                         NotificationType.Error);
                                     });
                                     return;
@@ -1357,7 +1362,8 @@
             {
                 app.Log(Enums.SeverityEnum.Error, $"Error re-ingesting file {filePath}: {ex.Message}");
                 app.LogExceptionToFile(ex, $"Error re-ingesting file {filePath}");
-                mainWindow.ShowNotification("Re-ingestion Error", $"Something went wrong: {ex.Message}",
+                mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"), 
+                    string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
                     NotificationType.Error);
             }
             finally
@@ -1488,7 +1494,7 @@
 
                                 await Dispatcher.UIThread.InvokeAsync(() =>
                                 {
-                                    mainWindow.ShowNotification("Ingestion Error", $"Error ingesting {Path.GetFileName(filePath)}: {ex.Message}", NotificationType.Error);
+                                    mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), ResourceManagerService.GetString("ErrorIngesting", Path.GetFileName(filePath), ex.Message), NotificationType.Error);
                                 }, DispatcherPriority.Background);
                             }
                         }
@@ -1520,14 +1526,14 @@
                     {
                         if (failureCount > 0)
                         {
-                            mainWindow.ShowNotification("Batch Ingestion Complete",
-                                $"Successfully ingested {successCount} files. {failureCount} files failed.",
+                            mainWindow.ShowNotification(ResourceManagerService.GetString("BatchIngestionComplete"),
+                                ResourceManagerService.GetString("BatchIngestionPartialSuccess", successCount, failureCount),
                                 NotificationType.Warning);
                         }
                         else
                         {
-                            mainWindow.ShowNotification("Batch Ingestion Complete",
-                                $"Successfully ingested all {successCount} files.",
+                            mainWindow.ShowNotification(ResourceManagerService.GetString("BatchIngestionComplete"),
+                                ResourceManagerService.GetString("BatchIngestionFullSuccess", successCount),
                                 NotificationType.Success);
                         }
                     }, DispatcherPriority.Normal);
@@ -1539,7 +1545,8 @@
                 {
                     app.Log(Enums.SeverityEnum.Error, $"Error in batch file ingestion: {ex.Message}");
                     app.LogExceptionToFile(ex, "Error in batch file ingestion");
-                    mainWindow.ShowNotification("Batch Ingestion Error", $"Something went wrong: {ex.Message}",
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("BatchIngestionError"), 
+                      string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
                       NotificationType.Error);
                 });
             }
@@ -2127,8 +2134,8 @@
                 if (mainWindow != null)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
-                        mainWindow.ShowNotification("Ingestion Cancelled",
-                            $"Ingestion of {Path.GetFileName(filePath)} was cancelled.",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionCancelled"),
+                            ResourceManagerService.GetString("IngestionCancelledMessage", Path.GetFileName(filePath)),
                             NotificationType.Information));
                 }
             }
@@ -2145,8 +2152,8 @@
                     if (mainWindow != null)
                     {
                         await Dispatcher.UIThread.InvokeAsync(() =>
-                            mainWindow.ShowNotification("Ingestion Error",
-                                $"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
+                            mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                string.Format(ResourceManagerService.GetString("ErrorProcessingFile"), Path.GetFileName(filePath), ex.Message),
                                 NotificationType.Error));
                     }
                 }
@@ -2234,8 +2241,8 @@
                 if (mainWindow != null)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
-                        mainWindow.ShowNotification("Resuming Ingestion",
-                            $"Resuming ingestion of {filesToIngest.Count} pending files from previous session",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("ResumingIngestion"),
+                            string.Format(ResourceManagerService.GetString("ResumingIngestionMessage"), filesToIngest.Count),
                             NotificationType.Information));
                 }
 
@@ -2271,8 +2278,8 @@
                         app.LogExceptionToFile(ex, "Error resuming ingestion");
                         if (mainWindow != null)
                         {
-                            mainWindow.ShowNotification("Ingestion Error",
-                                $"Error resuming ingestion: {ex.Message}",
+                            mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"),
+                                ResourceManagerService.GetString("ErrorResumingIngestion", ex.Message),
                                 NotificationType.Error);
                         }
                     });
@@ -2315,7 +2322,7 @@
         /// <param name="message">The message to display in the error notification.</param>
         private static void ShowErrorNotification(MainWindow mainWindow, string title, string message)
         {
-            mainWindow.ShowNotification(title, message, NotificationType.Error);
+            mainWindow.ShowNotification(ResourceManagerService.GetString(title), message, NotificationType.Error);
         }
 
         /// <summary>
@@ -2329,24 +2336,23 @@
         {
             if (!result.Success)
             {
-                var errorMessage = $"Failed to generate embeddings for chunks with status {result.StatusCode}";
-                if (result.Error != null)
-                    errorMessage += $" {result.Error.Message}";
-                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error", errorMessage));
+                var statusMessage = result.Error != null ? $"{result.StatusCode} {result.Error.Message}" : result.StatusCode.ToString();
+                var errorMessage = ResourceManagerService.GetString("FailedToGenerateEmbeddings", statusMessage);
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "IngestionError", errorMessage));
                 return false;
             }
 
             if (result.ContentEmbeddings == null)
             {
-                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error",
-                    "Failed to generate embeddings for chunks: ContentEmbeddings is null"));
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "IngestionError",
+                    ResourceManagerService.GetString("FailedToGenerateEmbeddingsNull")));
                 return false;
             }
 
             if (result.ContentEmbeddings.Count != expectedCount)
             {
-                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "Ingestion Error",
-                    "Failed to generate embeddings for chunks: Incorrect embeddings count"));
+                Dispatcher.UIThread.InvokeAsync(() => ShowErrorNotification(mainWindow, "IngestionError",
+                    ResourceManagerService.GetString("FailedToGenerateEmbeddingsCount")));
                 return false;
             }
 

@@ -548,18 +548,24 @@ namespace View.Personal
                     bool success = await app.LoggingService.DownloadLogsAsync(filePath);
                     if (success)
                     {
-                        ShowNotification("Success", "Console logs saved successfully", NotificationType.Success);
+                        ShowNotification(ResourceManagerService.GetString("Success"), 
+                            ResourceManagerService.GetString("ConsoleLogsSavedSuccessfully"), 
+                            NotificationType.Success);
                     }
                     else
                     {
-                        ShowNotification("Warning", "No console logs to download", NotificationType.Warning);
+                        ShowNotification(ResourceManagerService.GetString("Warning"), 
+                            ResourceManagerService.GetString("NoConsoleLogsToDownload"), 
+                            NotificationType.Warning);
                     }
                 }
                 catch (Exception ex)
                 {
                     app.Log(SeverityEnum.Error, $"Error saving console logs: {ex.Message}");
                     app.LogExceptionToFile(ex, "Error saving console logs");
-                    ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
+                    ShowNotification(ResourceManagerService.GetString("Error"), 
+                        ResourceManagerService.GetString("FailedToSaveConsoleLogs"), 
+                        NotificationType.Error);
                 }
             }
         }
@@ -621,13 +627,13 @@ namespace View.Personal
                 Services.ResourceManagerService.SetCulture(new System.Globalization.CultureInfo(languageCode));
                 
                 // Show success notification
-                this.ShowNotification("Language Setting Saved", 
-                    "Your language preference has been saved and applied.", 
+                this.ShowNotification(ResourceManagerService.GetString("LanguageSettingSaved"), 
+                    ResourceManagerService.GetString("LanguagePreferenceSaved"), 
                     NotificationType.Success);
             }
             catch (Exception ex)
             {
-                this.ShowNotification("Error", $"Failed to save language setting: {ex.Message}", NotificationType.Error);
+                this.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToSaveLanguageSetting", ex.Message), NotificationType.Error);
             }
             finally
             {
@@ -776,7 +782,7 @@ namespace View.Personal
 
                 if (!selectedFiles.Any())
                 {
-                    ShowNotification("No Selection", "Please select at least one file to remove.", NotificationType.Warning);
+                    ShowNotification(ResourceManagerService.GetString("NoSelection"), ResourceManagerService.GetString("SelectAtLeastOneFile"), NotificationType.Warning);
                     return;
                 }
                 
