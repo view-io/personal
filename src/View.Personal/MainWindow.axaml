@@ -38,7 +38,7 @@
 							DockPanel.Dock="Top" Margin="12 0 12 0"
                             Click="StartNewChatButton_Click"
                             Classes="flat"
-                            Width="149" Height="32">
+                            Width="149" Height="40">
 						<StackPanel Orientation="Horizontal" Spacing="8">
 							<avalonia:MaterialIcon Kind="SquareEditOutline" Foreground="#1A1C1E"
                                                    VerticalAlignment="Top"
