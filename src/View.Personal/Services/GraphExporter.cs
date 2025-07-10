@@ -22,7 +22,7 @@ namespace View.Personal.Services
         {
             try
             {
-                liteGraph.ExportGraphToGexfFile(tenantGuid, graphGuid, filePath, true);
+                liteGraph.ExportGraphToGexfFile(tenantGuid, graphGuid, filePath, true, true);
                 errorMessage = string.Empty;
                 return true;
             }
