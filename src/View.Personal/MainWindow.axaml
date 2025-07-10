@@ -55,10 +55,6 @@
                               BorderThickness="0.97"
                               Foreground="#1A1C1E">
 						<ComboBox.Styles>
-							<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-								<Setter Property="MinHeight" Value="36" />
-								<Setter Property="Margin" Value="0,0,0,0" />
-							</Style>
 							<Style Selector="ComboBox /template/ Border#PART_Border">
 								<Setter Property="CornerRadius" Value="8" />
 								<Setter Property="BorderBrush" Value="#DBDBDB" />
@@ -113,10 +109,6 @@
 								</DataTemplate>
 							</ComboBox.ItemTemplate>
 							<ComboBox.Styles>
-								<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-									<Setter Property="MinHeight" Value="36" />
-									<Setter Property="Margin" Value="0,0,0,0" />
-								</Style>
 								<Style Selector="ComboBox /template/ Border#PART_Border">
 									<Setter Property="CornerRadius" Value="8" />
 									<Setter Property="BorderBrush" Value="#DBDBDB" />
