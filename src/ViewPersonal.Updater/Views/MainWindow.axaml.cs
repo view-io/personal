@@ -1,14 +1,14 @@
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using ViewPersonal.Updater.Models;
-using ViewPersonal.Updater.Services;
-
 namespace ViewPersonal.Updater.Views
 {
+    using Avalonia.Controls;
+    using Avalonia.Interactivity;
+    using Avalonia.Threading;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using ViewPersonal.Updater.Models;
+    using ViewPersonal.Updater.Services;
+
     public partial class MainWindow : Window
     {
         private UpdateService? _updateService;
@@ -159,7 +159,7 @@ namespace ViewPersonal.Updater.Views
                 InstallNowButtonNormalState.IsVisible = false;
                 InstallNowButtonLoadingState.IsVisible = true;
                 InstallNowButton.IsEnabled = false;
-                
+
                 if (_downloadedInstallerPath == null)
                 {
                     InstallNowButtonNormalState.IsVisible = true;
@@ -177,11 +177,11 @@ namespace ViewPersonal.Updater.Views
                     ShowError("Updater initialization failed. Please contact support.");
                     return;
                 }
-                
+
                 var thread = new System.Threading.Thread(() =>
                 {
                     try
-                    {                        
+                    {
                         bool success = _updateService.InstallUpdate();
                         if (success)
                         {
@@ -217,14 +217,14 @@ namespace ViewPersonal.Updater.Views
             catch (Exception ex)
             {
                 _app.LogError($"Error in InstallNowButton_Click: {ex.Message}");
-                Dispatcher.UIThread.Post(() => 
+                Dispatcher.UIThread.Post(() =>
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
                     ShowError($"An error occurred: {ex.Message}");
                 });
-            } 
+            }
         }
 
         private void RetryButton_Click(object? sender, RoutedEventArgs e)
@@ -267,7 +267,7 @@ namespace ViewPersonal.Updater.Views
                 process.StartInfo.CreateNoWindow = true;
                 process.Start();
             }
-            catch {  }
+            catch { }
         }
 
         private void ShowGrid(string gridName)

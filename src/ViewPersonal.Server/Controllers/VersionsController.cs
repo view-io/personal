@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using ViewPersonal.Server.Models;
-using ViewPersonal.Server.Models.DTOs;
-using ViewPersonal.Server.Repositories.Interfaces;
-
 namespace ViewPersonal.Server.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using ViewPersonal.Server.Models;
+    using ViewPersonal.Server.Models.DTOs;
+    using ViewPersonal.Server.Repositories.Interfaces;
+
     /// <summary>
     /// API controller for managing application versions
     /// </summary>
@@ -43,7 +43,7 @@ namespace ViewPersonal.Server.Controllers
                     DownloadUrl = o.DownloadUrl
                 }).ToList()
             }).ToList();
-            
+
             return Ok(versionDtos);
         }
 
@@ -131,7 +131,7 @@ namespace ViewPersonal.Server.Controllers
             };
 
             var createdVersion = await _versionRepository.AddVersionAsync(version);
-            
+
             var responseDto = new VersionResponseDto
             {
                 Id = createdVersion.Id,
