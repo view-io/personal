@@ -1,21 +1,16 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
-using SyslogLogging;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Timers;
-using ViewPersonal.Updater.Enums;
-using ViewPersonal.Updater.Services;
-using ViewPersonal.Updater.Views;
-using ViewPersonal.Updater.Models;
-
 namespace ViewPersonal.Updater
 {
+    using Avalonia;
+    using Avalonia.Controls.ApplicationLifetimes;
+    using Avalonia.Markup.Xaml;
+    using SyslogLogging;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using ViewPersonal.Updater.Enums;
+    using ViewPersonal.Updater.Services;
+    using ViewPersonal.Updater.Views;
+
     public class App : Application
     {
         internal string _Header = "[ViewPersonal.Updater] ";
@@ -46,14 +41,14 @@ namespace ViewPersonal.Updater
                     {
                         Directory.CreateDirectory(logDirectory);
                     }
-                    
+
                     _FileLogging = new LoggingModule(Path.Combine(logDirectory, "View-Personal-Updater.log"));
                     _FileLogging.Debug(_Header + "File logging initialized");
 
                     var args = Environment.GetCommandLineArgs();
                     _mainAppPath = null;
                     _appVersion = null;
-                    
+
                     for (int i = 1; i < args.Length; i++)
                     {
                         if (args[i] == "--app-path" && i + 1 < args.Length)
@@ -67,13 +62,13 @@ namespace ViewPersonal.Updater
                             i++;
                         }
                     }
-                    
+
                     _Logging.Debug(_Header + $"Command line args: mainAppPath={_mainAppPath}, appVersion={_appVersion}");
                     _FileLogging.Debug(_Header + $"Command line args: mainAppPath={_mainAppPath}, appVersion={_appVersion}");
-                    
+
                     _mainWindow = new MainWindow(_mainAppPath, _appVersion);
                     _desktop = desktop;
-                    
+
                     _desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnLastWindowClose;
 
                     // Only check for updates once after startup
@@ -86,7 +81,7 @@ namespace ViewPersonal.Updater
                     {
                         Directory.CreateDirectory(logDirectory);
                     }
-                    
+
                     var errorLogPath = Path.Combine(logDirectory, "updater-error.log");
                     var errorLogging = new LoggingModule(errorLogPath);
                     errorLogging.Exception(ex, _Header + "Error during initialization");
@@ -96,7 +91,7 @@ namespace ViewPersonal.Updater
 
             base.OnFrameworkInitializationCompleted();
         }
-        
+
         private async Task CheckForUpdatesSilentlyAsync()
         {
             try
@@ -104,9 +99,9 @@ namespace ViewPersonal.Updater
                 _Logging?.Debug(_Header + $"Waiting {Constants.VersionCheckDelayMilliseconds}ms before checking for updates");
                 _FileLogging?.Debug(_Header + $"Waiting {Constants.VersionCheckDelayMilliseconds}ms before checking for updates");
                 await Task.Delay(Constants.VersionCheckDelayMilliseconds);
-               
+
                 var updateService = new UpdateService(_mainAppPath);
-                
+
                 if (_currentVersion == null)
                 {
                     if (!string.IsNullOrEmpty(_appVersion) && Version.TryParse(_appVersion, out Version? parsedVersion))
@@ -120,7 +115,7 @@ namespace ViewPersonal.Updater
                         var versionFilePath = Path.Combine(
                             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                             "ViewPersonal", "data", "Version");
-                        
+
                         if (File.Exists(versionFilePath))
                         {
                             var versionString = File.ReadAllText(versionFilePath).Trim();
@@ -147,32 +142,32 @@ namespace ViewPersonal.Updater
                         }
                     }
                 }
-                
+
                 _Logging?.Debug(_Header + "Checking for updates");
                 _FileLogging?.Debug(_Header + "Checking for updates");
                 var latestVersion = await updateService.CheckForUpdatesAsync();
-                
+
                 if (latestVersion == null)
                 {
                     _Logging?.Debug(_Header + "No updates available or unable to check for updates");
                     _FileLogging?.Debug(_Header + "No updates available or unable to check for updates");
                     return;
                 }
-                
+
                 latestVersion.VersionNumber = latestVersion.VersionNumber.Trim().TrimStart('v', 'V');
                 var newVersion = Version.Parse(latestVersion.VersionNumber);
-                
+
                 _Logging?.Debug(_Header + $"Current version: {_currentVersion}, Latest version: {newVersion}");
                 _FileLogging?.Debug(_Header + $"Current version: {_currentVersion}, Latest version: {newVersion}");
-                
+
                 if (newVersion > _currentVersion)
                 {
                     _Logging?.Debug(_Header + "Update available, showing main window");
                     _FileLogging?.Debug(_Header + "Update available, showing main window");
-                    
+
                     if (_desktop != null && _mainWindow != null)
                     {
-                        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                         {
                             _desktop.MainWindow = _mainWindow;
                             _mainWindow.Show();
@@ -183,10 +178,10 @@ namespace ViewPersonal.Updater
                 {
                     _Logging?.Debug(_Header + "No update needed, shutting down application");
                     _FileLogging?.Debug(_Header + "No update needed, shutting down application");
-                    
+
                     if (_desktop != null)
                     {
-                        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                         {
                             _desktop.Shutdown();
                         });
@@ -199,9 +194,9 @@ namespace ViewPersonal.Updater
                 _FileLogging?.Exception(ex, _Header + "Silent update check error");
             }
         }
-        
 
-        
+
+
         // System tray methods removed
 
         /// <summary>
@@ -212,7 +207,7 @@ namespace ViewPersonal.Updater
         public void Log(SeverityEnum severity, string message)
         {
             var formattedMessage = $"{_Header}{message}";
-            
+
             switch (severity)
             {
                 case SeverityEnum.Info:
@@ -290,7 +285,7 @@ namespace ViewPersonal.Updater
             _Logging?.Exception(ex, $"{_Header}{context}");
             _FileLogging?.Exception(ex, $"{_Header}{context}");
         }
-        
+
         /// <summary>
         /// Cleans up resources when the application is shutting down.
         /// </summary>

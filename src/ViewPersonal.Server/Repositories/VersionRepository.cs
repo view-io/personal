@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using ViewPersonal.Server.Data;
-using ViewPersonal.Server.Models;
-using ViewPersonal.Server.Repositories.Interfaces;
-
 namespace ViewPersonal.Server.Repositories
 {
+    using Microsoft.EntityFrameworkCore;
+    using ViewPersonal.Server.Data;
+    using ViewPersonal.Server.Models;
+    using ViewPersonal.Server.Repositories.Interfaces;
+
     /// <summary>
     /// Repository for version operations
     /// </summary>
@@ -42,7 +42,7 @@ namespace ViewPersonal.Server.Repositories
         /// <inheritdoc/>
         public async Task<AppVersion?> GetVersionByIdAsync(int id)
         {
-            return await _context.Versions.Include(x=> x.OsDetails).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Versions.Include(x => x.OsDetails).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <inheritdoc/>

@@ -1662,7 +1662,7 @@ namespace View.Personal
             graphComboBox.ItemsSource = graphItems;
             graphComboBox.ItemTemplate = new FuncDataTemplate<GraphItem>((item, _) =>
             {
-                return new TextBlock { Text = item?.Name ?? "(no name)" };
+                return new TextBlock { Text = item?.Name };
             });
 
             // Populate the RAG knowledge source ComboBoxes

@@ -1,7 +1,7 @@
-using ViewPersonal.Server.Models;
-
 namespace ViewPersonal.Server.Repositories.Interfaces
 {
+    using ViewPersonal.Server.Models;
+    
     /// <summary>
     /// Interface for version repository operations
     /// </summary>

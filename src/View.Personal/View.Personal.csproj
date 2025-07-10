@@ -33,7 +33,7 @@
 		<PackageReference Include="DocumentAtom.TextTools" Version="1.0.22" />
 		<PackageReference Include="DocumentAtom.TypeDetection" Version="1.0.29" />
 		<PackageReference Include="DocumentAtom.Word" Version="1.0.26" />
-		<PackageReference Include="LiteGraph" Version="4.1.0" />
+		<PackageReference Include="LiteGraph" Version="4.1.1" />
 		<PackageReference Include="Markdig" Version="0.41.3" />
         <PackageReference Include="Material.Avalonia" Version="3.12.0" />
         <PackageReference Include="Material.Avalonia.DataGrid" Version="3.12.0" />

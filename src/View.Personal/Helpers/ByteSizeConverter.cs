@@ -56,7 +56,7 @@ namespace View.Personal.Helpers
         /// <returns>Throws a <see cref="NotImplementedException"/> as conversion back is not supported.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+             return Avalonia.Data.BindingOperations.DoNothing;
         }
 
 #pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
