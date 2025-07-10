@@ -171,4 +171,283 @@
   <data name="StartNewChat" xml:space="preserve">
     <value>Start New Chat</value>
   </data>
+  <data name="Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="DataMonitor" xml:space="preserve">
+    <value>Data Monitor</value>
+  </data>
+  <data name="Console" xml:space="preserve">
+    <value>Console</value>
+  </data>
+  <data name="ChatHistory" xml:space="preserve">
+    <value>Chat History</value>
+  </data>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>Welcome to View</value>
+  </data>
+  <data name="ManageFiles" xml:space="preserve">
+    <value>Manage the files you want to chat with</value>
+  </data>
+  <data name="MonitorFiles" xml:space="preserve">
+    <value>Continuously monitor files and folders for ingestion</value>
+  </data>
+  <data name="ConfigureLLM" xml:space="preserve">
+    <value>Configure your LLM and API keys</value>
+  </data>
+  <data name="ChatWithData" xml:space="preserve">
+    <value>Chat with your data</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>Upload Files</value>
+  </data>
+  <data name="ClickToUpload" xml:space="preserve">
+    <value>Click to upload </value>
+  </data>
+  <data name="OrDragAndDrop" xml:space="preserve">
+    <value>or drag and drop</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>(max file size 500mb)</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Date Created</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="OpenInFileExplorer" xml:space="preserve">
+    <value>Open in File Explorer</value>
+  </data>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>Reprocess file</value>
+  </data>
+  <data name="DeleteFile" xml:space="preserve">
+    <value>Delete file</value>
+  </data>
+  <data name="NoItemsToDisplay" xml:space="preserve">
+    <value>No items to display</value>
+  </data>
+  <data name="NoPages" xml:space="preserve">
+    <value>No pages</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>First page</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Previous page</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>Next page</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>Last page</value>
+  </data>
+  <data name="ItemsPerPage" xml:space="preserve">
+    <value>Items per page:</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>Remove Selected Files</value>
+  </data>
+  <data name="EnterUserMessage" xml:space="preserve">
+    <value>Enter user message...</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>©2025 View Systems Inc.</value>
+  </data>
+  <data name="NewKnowledgebase" xml:space="preserve">
+    <value>New Knowledgebase</value>
+  </data>
+  <data name="ExportToGEXF" xml:space="preserve">
+    <value>Export to GEXF</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GUID" xml:space="preserve">
+    <value>GUID</value>
+  </data>
+  <data name="Nodes" xml:space="preserve">
+    <value>Nodes</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>Last Update</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="DeleteKnowledgebase" xml:space="preserve">
+    <value>Delete knowledgebase</value>
+  </data>
+  <data name="Providers" xml:space="preserve">
+    <value>Providers</value>
+  </data>
+  <data name="OpenAI" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="GainAccessToOpenAI" xml:space="preserve">
+    <value>Gain access to OpenAI models</value>
+  </data>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>OpenAI Settings</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>Knowledgebase Source</value>
+  </data>
+  <data name="Knowledgebases" xml:space="preserve">
+    <value>Knowledgebases</value>
+  </data>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>OpenAI API Key</value>
+  </data>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>YOUR_API_KEY_HERE</value>
+  </data>
+  <data name="EnterOpenAIApiKey" xml:space="preserve">
+    <value>Enter your OpenAI API key.</value>
+  </data>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>OpenAI Completion Model</value>
+  </data>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+  </data>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>System Prompt</value>
+  </data>
+  <data name="EnterSystemPrompt" xml:space="preserve">
+    <value>Enter a custom system prompt for the model.</value>
+  </data>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>OpenAI Endpoint</value>
+  </data>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>Set the OpenAI API endpoint.</value>
+  </data>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>Anthropic Settings</value>
+  </data>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>Anthropic API Key</value>
+  </data>
+  <data name="EnterAnthropicApiKey" xml:space="preserve">
+    <value>Enter your Anthropic API key.</value>
+  </data>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>Anthropic Completion Model</value>
+  </data>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+  </data>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>Anthropic Endpoint</value>
+  </data>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>Set the Anthropic API endpoint.</value>
+  </data>
+  <data name="BatchSize" xml:space="preserve">
+    <value>Batch Size</value>
+  </data>
+  <data name="BatchSizeTooltip" xml:space="preserve">
+    <value>Number of requests to process in a single batch.</value>
+  </data>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>Max Retries</value>
+  </data>
+  <data name="MaxRetriesTooltip" xml:space="preserve">
+    <value>Maximum number of retry attempts for failed requests.</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused.</value>
+  </data>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>Enable RAG</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses.</value>
+  </data>
+  <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
+    <value>Configure advanced RAG settings</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>Advanced Settings</value>
+  </data>
+  <data name="AdvancedRAG" xml:space="preserve">
+    <value>Advanced RAG</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>Max retrieved</value>
+  </data>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>Maximum number of documents to retrieve</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>Query optimization</value>
+  </data>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>Optimize queries for better retrieval results</value>
+  </data>
+  <data name="EnableCitations" xml:space="preserve">
+    <value>Enable citations</value>
+  </data>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>Include citations in the generated responses</value>
+  </data>
+  <data name="EnableContextSorting" xml:space="preserve">
+    <value>Enable context sorting</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>Sort context by relevance</value>
+  </data>
+  <data name="LocalModels" xml:space="preserve">
+    <value>Local Models</value>
+  </data>
+  <data name="PullNewModel" xml:space="preserve">
+    <value>Pull a new model</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Click here </value>
+  </data>
+  <data name="ExploreAvailableModels" xml:space="preserve">
+    <value>to explore available models</value>
+  </data>
+  <data name="EnterOllamaModelTag" xml:space="preserve">
+    <value>Enter Ollama compatible model tag (e.g. qwen2.5:7b)</value>
+  </data>
+  <data name="Pull" xml:space="preserve">
+    <value>Pull</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DownloadedModels" xml:space="preserve">
+    <value>Downloaded models</value>
+  </data>
+  <data name="ChooseFromExistingModels" xml:space="preserve">
+    <value>Choose from existing models</value>
+  </data>
+  <data name="ParameterSize" xml:space="preserve">
+    <value>parameter size: {0}</value>
+  </data>
 </root>

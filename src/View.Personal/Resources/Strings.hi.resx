@@ -171,4 +171,283 @@
   <data name="StartNewChat" xml:space="preserve">
     <value>नई चैट शुरू करें</value>
   </data>
+  <data name="Files" xml:space="preserve">
+    <value>फ़ाइलें</value>
+  </data>
+  <data name="DataMonitor" xml:space="preserve">
+    <value>डेटा मॉनिटर</value>
+  </data>
+  <data name="Console" xml:space="preserve">
+    <value>कंसोल</value>
+  </data>
+  <data name="ChatHistory" xml:space="preserve">
+    <value>चैट इतिहास</value>
+  </data>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>व्यू में आपका स्वागत है</value>
+  </data>
+  <data name="ManageFiles" xml:space="preserve">
+    <value>उन फ़ाइलों का प्रबंधन करें जिनके साथ आप चैट करना चाहते हैं</value>
+  </data>
+  <data name="MonitorFiles" xml:space="preserve">
+    <value>इंजेस्शन के लिए फ़ाइलों और फ़ोल्डरों की निरंतर निगरानी करें</value>
+  </data>
+  <data name="ConfigureLLM" xml:space="preserve">
+    <value>अपने LLM और API कुंजियों को कॉन्फ़िगर करें</value>
+  </data>
+  <data name="ChatWithData" xml:space="preserve">
+    <value>अपने डेटा के साथ चैट करें</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>फ़ाइलें अपलोड करें</value>
+  </data>
+  <data name="ClickToUpload" xml:space="preserve">
+    <value>अपलोड करने के लिए क्लिक करें </value>
+  </data>
+  <data name="OrDragAndDrop" xml:space="preserve">
+    <value>या खींचें और छोड़ें</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>(अधिकतम फ़ाइल आकार 500mb)</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>चुनें</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>नाम</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>आकार</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>प्रकार</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>बनाने की तिथि</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>कार्रवाई</value>
+  </data>
+  <data name="OpenInFileExplorer" xml:space="preserve">
+    <value>फ़ाइल एक्सप्लोरर में खोलें</value>
+  </data>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>फ़ाइल को फिर से प्रोसेस करें</value>
+  </data>
+  <data name="DeleteFile" xml:space="preserve">
+    <value>फ़ाइल हटाएं</value>
+  </data>
+  <data name="NoItemsToDisplay" xml:space="preserve">
+    <value>प्रदर्शित करने के लिए कोई आइटम नहीं</value>
+  </data>
+  <data name="NoPages" xml:space="preserve">
+    <value>कोई पृष्ठ नहीं</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>पहला पृष्ठ</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>पिछला पृष्ठ</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>अगला पृष्ठ</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>अंतिम पृष्ठ</value>
+  </data>
+  <data name="ItemsPerPage" xml:space="preserve">
+    <value>प्रति पृष्ठ आइटम:</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>सभी चुनें</value>
+  </data>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>चयनित फ़ाइलें हटाएं</value>
+  </data>
+  <data name="EnterUserMessage" xml:space="preserve">
+    <value>उपयोगकर्ता संदेश दर्ज करें...</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>©2025 व्यू सिस्टम्स इंक.</value>
+  </data>
+  <data name="NewKnowledgebase" xml:space="preserve">
+    <value>नया ज्ञान आधार</value>
+  </data>
+  <data name="ExportToGEXF" xml:space="preserve">
+    <value>GEXF में निर्यात करें</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>नाम</value>
+  </data>
+  <data name="GUID" xml:space="preserve">
+    <value>GUID</value>
+  </data>
+  <data name="Nodes" xml:space="preserve">
+    <value>नोड्स</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>बनाया गया</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>अंतिम अपडेट</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>हटाएं</value>
+  </data>
+  <data name="DeleteKnowledgebase" xml:space="preserve">
+    <value>ज्ञान आधार हटाएं</value>
+  </data>
+  <data name="Providers" xml:space="preserve">
+    <value>प्रदाता</value>
+  </data>
+  <data name="OpenAI" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="GainAccessToOpenAI" xml:space="preserve">
+    <value>OpenAI मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>OpenAI सेटिंग्स</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>ज्ञान आधार स्रोत</value>
+  </data>
+  <data name="Knowledgebases" xml:space="preserve">
+    <value>ज्ञान आधार</value>
+  </data>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>OpenAI API कुंजी</value>
+  </data>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>आपकी_API_कुंजी_यहां</value>
+  </data>
+  <data name="EnterOpenAIApiKey" xml:space="preserve">
+    <value>अपनी OpenAI API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>OpenAI पूर्णता मॉडल</value>
+  </data>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>उपयोग करने के लिए OpenAI मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
+  </data>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>सिस्टम प्रॉम्प्ट</value>
+  </data>
+  <data name="EnterSystemPrompt" xml:space="preserve">
+    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
+  </data>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>OpenAI एंडपॉइंट</value>
+  </data>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>OpenAI API एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>Anthropic सेटिंग्स</value>
+  </data>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>Anthropic API कुंजी</value>
+  </data>
+  <data name="EnterAnthropicApiKey" xml:space="preserve">
+    <value>अपनी Anthropic API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>Anthropic पूर्णता मॉडल</value>
+  </data>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>उपयोग करने के लिए Anthropic मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
+  </data>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>Anthropic एंडपॉइंट</value>
+  </data>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>Anthropic API एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="BatchSize" xml:space="preserve">
+    <value>बैच आकार</value>
+  </data>
+  <data name="BatchSizeTooltip" xml:space="preserve">
+    <value>एक बैच में प्रोसेस करने के लिए अनुरोधों की संख्या।</value>
+  </data>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>अधिकतम पुनः प्रयास</value>
+  </data>
+  <data name="MaxRetriesTooltip" xml:space="preserve">
+    <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयास प्रयासों की संख्या।</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>तापमान</value>
+  </data>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>पूर्णताओं में यादृच्छिकता को नियंत्रित करता है। उच्च मान (0.8) आउटपुट को अधिक यादृच्छिक बनाते हैं, निम्न मान (0.2) इसे अधिक केंद्रित बनाते हैं।</value>
+  </data>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>RAG सक्षम करें</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
+  </data>
+  <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
+    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>उन्नत सेटिंग्स</value>
+  </data>
+  <data name="AdvancedRAG" xml:space="preserve">
+    <value>उन्नत RAG</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>अधिकतम पुनर्प्राप्त</value>
+  </data>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>क्वेरी अनुकूलन</value>
+  </data>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी अनुकूलित करें</value>
+  </data>
+  <data name="EnableCitations" xml:space="preserve">
+    <value>उद्धरण सक्षम करें</value>
+  </data>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
+  </data>
+  <data name="EnableContextSorting" xml:space="preserve">
+    <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
+  </data>
+  <data name="LocalModels" xml:space="preserve">
+    <value>स्थानीय मॉडल</value>
+  </data>
+  <data name="PullNewModel" xml:space="preserve">
+    <value>एक नया मॉडल पुल करें</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>यहां क्लिक करें </value>
+  </data>
+  <data name="ExploreAvailableModels" xml:space="preserve">
+    <value>उपलब्ध मॉडल देखने के लिए</value>
+  </data>
+  <data name="EnterOllamaModelTag" xml:space="preserve">
+    <value>ओल्लामा संगत मॉडल टैग दर्ज करें (उदा. qwen2.5:7b)</value>
+  </data>
+  <data name="Pull" xml:space="preserve">
+    <value>पुल करें</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>रद्द करें</value>
+  </data>
+  <data name="DownloadedModels" xml:space="preserve">
+    <value>डाउनलोड किए गए मॉडल</value>
+  </data>
+  <data name="ChooseFromExistingModels" xml:space="preserve">
+    <value>मौजूदा मॉडल से चुनें</value>
+  </data>
+  <data name="ParameterSize" xml:space="preserve">
+    <value>पैरामीटर आकार: {0}</value>
+  </data>
 </root>
