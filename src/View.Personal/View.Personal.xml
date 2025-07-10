@@ -2291,9 +2291,9 @@
             <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>
             <param name="appSettings">The application settings containing provider-specific configurations.</param>
             <param name="userInput">The user input text to be embedded.</param>
-            <returns>A tuple containing the SDK instance (<see cref="T:System.Object"/>) and the <see cref="T:View.Sdk.Embeddings.EmbeddingsRequest"/> configured for the specified provider.</returns>
+            <returns>A tuple containing the SDK instance (<see cref="T:System.Object"/>) and the <see cref="T:View.Sdk.Embeddings.GenerateEmbeddingsRequest"/> configured for the specified provider.</returns>
         </member>
-        <member name="M:View.Personal.MainWindow.GenerateEmbeddings(System.Object,View.Sdk.Embeddings.EmbeddingsRequest)">
+        <member name="M:View.Personal.MainWindow.GenerateEmbeddings(System.Object,View.Sdk.Embeddings.GenerateEmbeddingsRequest)">
             <summary>
             Asynchronously generates embeddings for a given request using the specified SDK.
             </summary>
@@ -2693,12 +2693,12 @@
             <param name="title">The title of the error notification.</param>
             <param name="message">The message to display in the error notification.</param>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.CheckEmbeddingsResult(View.Personal.MainWindow,View.Sdk.Embeddings.EmbeddingsResult,System.Int32)">
+        <member name="M:View.Personal.Services.FileIngester.CheckEmbeddingsResult(View.Personal.MainWindow,View.Sdk.Embeddings.GenerateEmbeddingsResult,System.Int32)">
             <summary>
             Checks the validity of the embeddings result and displays error notifications if issues are found.
             </summary>
             <param name="mainWindow">The MainWindow instance to use for displaying error notifications.</param>
-            <param name="result">The EmbeddingsResult object to validate.</param>
+            <param name="result">The generateEmbeddingsResult object to validate.</param>
             <param name="expectedCount">The expected number of embeddings in the result.</param>
             <returns>True if the embeddings result is valid, false otherwise.</returns>
         </member>

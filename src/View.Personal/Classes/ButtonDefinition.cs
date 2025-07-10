@@ -1,8 +1,8 @@
-﻿using View.Personal.Controls;
-using View.Personal.Enums;
-
-namespace View.Personal.Classes
+﻿namespace View.Personal.Classes
 {
+    using View.Personal.Controls;
+    using View.Personal.Enums;
+
     /// <summary>
     /// Represents a button definition for a custom message box.
     /// </summary>

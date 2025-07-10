@@ -1104,8 +1104,8 @@ namespace View.Personal
         /// <param name="embeddingsProvider">The name of the embeddings provider (e.g., "OpenAI", "Ollama", "View", "VoyageAI").</param>
         /// <param name="appSettings">The application settings containing provider-specific configurations.</param>
         /// <param name="userInput">The user input text to be embedded.</param>
-        /// <returns>A tuple containing the SDK instance (<see cref="object"/>) and the <see cref="EmbeddingsRequest"/> configured for the specified provider.</returns>
-        private (object sdk, EmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
+        /// <returns>A tuple containing the SDK instance (<see cref="object"/>) and the <see cref="GenerateEmbeddingsRequest"/> configured for the specified provider.</returns>
+        private (object sdk, GenerateEmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
             AppSettings appSettings, string userInput)
         {
             switch (embeddingsProvider)
@@ -1113,14 +1113,14 @@ namespace View.Personal
                 // ToDo: Make hardcoded values dynamic
                 case "OpenAI":
                     return (new ViewOpenAiSdk(_TenantGuid, "https://api.openai.com/", appSettings.OpenAI.ApiKey),
-                        new EmbeddingsRequest
+                        new GenerateEmbeddingsRequest
                         {
                             Model = appSettings.Embeddings.OpenAIEmbeddingModel ?? "text-embedding-ada-002",
                             Contents = new List<string> { userInput }
                         });
                 case "Ollama":
                     return (new ViewOllamaSdk(_TenantGuid, appSettings.Ollama.Endpoint, ""),
-                        new EmbeddingsRequest
+                        new GenerateEmbeddingsRequest
                         {
                             Model = appSettings.Embeddings.OllamaEmbeddingModel,
                             Contents = new List<string> { userInput }
@@ -1128,17 +1128,17 @@ namespace View.Personal
                 case "View":
                     return (
                         new ViewEmbeddingsServerSdk(_TenantGuid, appSettings.View.Endpoint, appSettings.View.AccessKey),
-                        new EmbeddingsRequest
+                        new GenerateEmbeddingsRequest
                         {
                             EmbeddingsRule = new EmbeddingsRule
                             {
                                 EmbeddingsGenerator = Enum.Parse<EmbeddingsGeneratorEnum>("LCProxy"),
                                 EmbeddingsGeneratorUrl = "http://nginx-lcproxy:8000/",
                                 EmbeddingsGeneratorApiKey = appSettings.View.ApiKey,
-                                BatchSize = 2,
-                                MaxGeneratorTasks = 4,
-                                MaxRetries = 3,
-                                MaxFailures = 3
+                                EmbeddingsBatchSize = 2,
+                                MaxEmbeddingsTasks = 4,
+                                MaxEmbeddingsRetries = 3,
+                                MaxEmbeddingsFailures = 3
                             },
                             Model = appSettings.Embeddings.ViewEmbeddingModel,
                             Contents = new List<string> { userInput }
@@ -1148,7 +1148,7 @@ namespace View.Personal
                     return (
                         new ViewVoyageAiSdk(_TenantGuid, appSettings.Embeddings.VoyageEndpoint,
                             appSettings.Embeddings.VoyageApiKey),
-                        new EmbeddingsRequest
+                        new GenerateEmbeddingsRequest
                         {
                             Model = appSettings.Embeddings.VoyageEmbeddingModel,
                             Contents = new List<string> { userInput }
@@ -1164,7 +1164,7 @@ namespace View.Personal
         /// <param name="sdk">The SDK instance corresponding to the provider (e.g., OpenAI, Ollama, View, Voyage).</param>
         /// <param name="request">The EmbeddingsRequest object containing the model and content to embed.</param>
         /// <returns>A task that resolves to a list of float values representing the embeddings, or null if generation fails.</returns>
-        private async Task<List<float>> GenerateEmbeddings(object sdk, EmbeddingsRequest request)
+        private async Task<List<float>> GenerateEmbeddings(object sdk, GenerateEmbeddingsRequest request)
         {
             var app = (App)Application.Current;
             var result = await (sdk switch
