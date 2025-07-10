@@ -102,7 +102,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.7;
+            public double Temperature { get; set; } = 0.8;
             
             /// <summary>
             /// The system prompt to use for the model.
@@ -153,7 +153,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.7;
+            public double Temperature { get; set; } = 0.8;
             
             /// <summary>
             /// The system prompt to use for the model.
@@ -199,13 +199,13 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.7;
+            public double Temperature { get; set; } = 0.8;
             
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "";
-            
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant.  Please respond primarily out of the supplied context.  Be pleasant and kind.";
+
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
@@ -302,7 +302,7 @@ namespace View.Personal.Classes
             /// Indicates whether RAG functionality is enabled.
             /// This is the master switch for RAG features.
             /// </summary>
-            public bool EnableRAG { get; set; } = false;
+            public bool EnableRAG { get; set; } = true;
 
             /// <summary>
             /// The knowledge source to use for RAG queries.
@@ -312,12 +312,12 @@ namespace View.Personal.Classes
             /// <summary>
             /// The number of documents to retrieve (Top-K) during RAG queries.
             /// </summary>
-            public int NumberOfDocumentsToRetrieve { get; set; } = 3;
+            public int NumberOfDocumentsToRetrieve { get; set; } = 10;
 
             /// <summary>
             /// The similarity threshold for document retrieval during RAG queries.
             /// </summary>
-            public double SimilarityThreshold { get; set; } = 0.7;
+            public double SimilarityThreshold { get; set; } = 0.5;
 
             /// <summary>
             /// Indicates whether query optimization is enabled.
@@ -332,10 +332,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// Indicates whether context sorting is enabled.
             /// </summary>
-            public bool EnableContextSorting { get; set; } = false;
-
-
-            // Reranking properties have been removed
+            public bool EnableContextSorting { get; set; } = true;
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace ViewPersonal.Server.Data
 {
+    using Microsoft.EntityFrameworkCore;
+
     /// <summary>
     /// Helper class to initialize the database
     /// </summary>

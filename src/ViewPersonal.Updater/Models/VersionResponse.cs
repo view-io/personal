@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace ViewPersonal.Updater.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Data transfer object for version responses
     /// </summary>
