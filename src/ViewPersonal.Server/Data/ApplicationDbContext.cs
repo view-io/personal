@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using ViewPersonal.Server.Models;
-
 namespace ViewPersonal.Server.Data
 {
+    using Microsoft.EntityFrameworkCore;
+    using ViewPersonal.Server.Models;
+
     /// <summary>
     /// Database context for the application
     /// </summary>
@@ -47,7 +47,7 @@ namespace ViewPersonal.Server.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.OperatingSystem).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.DownloadUrl).HasMaxLength(1000);
-                
+
                 // Configure the relationship with AppVersion
                 entity.HasOne(d => d.AppVersion)
                       .WithMany(v => v.OsDetails)

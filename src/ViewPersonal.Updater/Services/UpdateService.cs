@@ -1,15 +1,15 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Threading.Tasks;
-using ViewPersonal.Updater.Models;
-
 namespace ViewPersonal.Updater.Services
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Runtime.InteropServices;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using ViewPersonal.Updater.Models;
+
     /// <summary>
     /// Service for checking application updates and handling the update process.
     /// </summary>

@@ -1,10 +1,9 @@
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using System;
-using System.IO;
-
 namespace ViewPersonal.Updater
 {
+    using Avalonia;
+    using Avalonia.Controls.ApplicationLifetimes;
+    using System;
+
     internal class Program
     {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
