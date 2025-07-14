@@ -91,14 +91,14 @@
 							</Style>
 						</ComboBox.Styles>
 					</ComboBox>
-					<StackPanel DockPanel.Dock="Top" Margin="24 24 12 0">
+					<StackPanel DockPanel.Dock="Top" Margin="24 0 12 0">
 						<ComboBox x:Name="ChatHistoryList" DockPanel.Dock="Top" Margin="0 5 12 0" Width="149"
                               Theme="{StaticResource MaterialOutlineComboBox}"
                               assists:ComboBoxAssist.Label="Chat History"
                               Padding="12,4"
-					              Background="#FFFFFF"
-					              BorderBrush="#DBDBDB"
-					              BorderThickness="0.97"
+					          Background="#FFFFFF"
+					          BorderBrush="#DBDBDB"
+					          BorderThickness="0.97"
                               Foreground="#1A1C1E"
                               SelectionChanged="ChatHistoryList_SelectionChanged">
 
