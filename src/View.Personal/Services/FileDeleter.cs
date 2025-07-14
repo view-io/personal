@@ -44,7 +44,7 @@
                 try
                 {
                     var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                                        $"Are you sure you want to delete '{file.Name}'?", MessageBoxIcon.Warning);
+                                        $"Are you sure you want to remove '{file.Name}'", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
 
                     if (result != ButtonResult.Yes)
                         return;
@@ -103,7 +103,7 @@
             if (!filesList.Any()) return false;
 
             var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                           $"Are you sure you want to delete {filesList.Count} selected files?", MessageBoxIcon.Warning);
+                           $"Are you sure you want to remove the selected files", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
             if (result != ButtonResult.Yes) return false;
 
             var app = (App)App.Current;

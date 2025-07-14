@@ -403,7 +403,7 @@ namespace View.Personal.UIHandlers
                 }
 
             LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-            var filesPanel = mainWindow.FindControl<StackPanel>("MyFilesPanel");
+            var filesPanel = mainWindow.FindControl<Grid>("MyFilesPanel");
             if (filesPanel != null && filesPanel.IsVisible)
             {
                 await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
