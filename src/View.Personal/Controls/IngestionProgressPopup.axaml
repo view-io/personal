@@ -6,102 +6,121 @@
              xmlns:controls="clr-namespace:View.Personal.Controls"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
              x:Class="View.Personal.Controls.IngestionProgressPopup">
-  <Border Background="White"
-          BorderBrush="#DDDDDD"
-          BorderThickness="1"
-          CornerRadius="8"
-          BoxShadow="0 4 8 0 #20000000"
-          Width="300">
-    <Grid RowDefinitions="Auto,*">
-      <!-- Header with title and collapse button -->
-      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Background="#F5F5F5" Height="40">
-        <TextBlock Grid.Column="0"
-                   Text="File Ingestion Progress"
-                   VerticalAlignment="Center"
-                   Margin="12,0,0,0"
-                   FontWeight="SemiBold"/>
-        <Button Grid.Column="1"
-                x:Name="CollapseButton"
-                Width="32" Height="32"
-                Margin="0,0,8,0"
-				Classes="flat"
-                Background="Transparent"
-                BorderThickness="0"
-                Padding="4"
-                Click="CollapseButton_Click">
-          <avalonia:MaterialIcon Kind="ChevronDown" Width="16" Height="16"/>
-        </Button>
-      </Grid>
-      
-      <!-- Content area with progress info -->
-      <Grid Grid.Row="1" x:Name="ContentPanel" RowDefinitions="Auto,*">
-        <!-- Active files list -->
-        <Border Grid.Row="0" Padding="12" BorderThickness="0,0,0,1" BorderBrush="#EEEEEE">
-          <Grid RowDefinitions="Auto,*">
-            <TextBlock Grid.Row="0" x:Name="ActiveCountText" Text="Current Ingestion (0)" FontWeight="Medium" FontSize="13" Margin="0,0,0,8"/>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="150" Padding="0,0,4,0">
-              <ItemsRepeater x:Name="ActiveFilesRepeater">
-                <ItemsRepeater.ItemTemplate>
-                  <DataTemplate>
-					  <Border Padding="8" Margin="0,0,0,4" Background="#F0F7FF" CornerRadius="4">
-						  <Grid RowDefinitions="Auto,Auto,Auto">
-							  <DockPanel Grid.Row="0" LastChildFill="True">
-								  <Button Width="22" Height="22"
-										  Padding="0"
-										  Background="#FF5252"
-										  BorderThickness="0"
-										  Classes="flat"
-										  CornerRadius="8"
-										  Command="{Binding CancelIngestionCommand}"
-										  Margin="4,0,0,0"
-										  VerticalAlignment="Center"
-										  DockPanel.Dock="Right"
-										  ToolTip.Tip="Cancel ingestion">
-									  <avalonia:MaterialIcon Kind="Close"
-															 Width="15"
-															 Height="15"
-															 Foreground="White"
-															 HorizontalAlignment="Center"
-															 VerticalAlignment="Center"/>
-								  </Button>
-								  <TextBlock Text="{Binding FileName}"
-											 TextWrapping="Wrap"
-											 FontSize="11"
-											 FontWeight="Medium"
-											 Margin="0,0,8,0"
-											 MaxWidth="220"
-											 VerticalAlignment="Center"/>
-							  </DockPanel>
-							  <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,4,0,4">
-								  <ProgressBar Grid.Column="0" Value="{Binding Progress}" Maximum="100" Height="6" Background="#E0E0E0" Foreground="#4CAF50" CornerRadius="3"/>
-								  <TextBlock Grid.Column="1" Text="{Binding ProgressText}" FontSize="10" Margin="4,0,0,0" VerticalAlignment="Center" Foreground="#666666"/>
-							  </Grid>
-							  <TextBlock Grid.Row="2" Text="{Binding Status}" TextWrapping="Wrap" FontSize="10" Foreground="#666666" Margin="0,2,0,0"/>
-						  </Grid>
-					  </Border>
-				  </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-              </ItemsRepeater>
-            </ScrollViewer>
-          </Grid>
-        </Border>
-        
-        <!-- Pending files list -->
-        <Grid Grid.Row="2" RowDefinitions="Auto,*">
-          <TextBlock Grid.Row="0" x:Name="PendingCountText" Text="Pending Queue (0)" FontWeight="Medium" FontSize="13" Margin="12,12,12,8"/>
-          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12" MaxHeight="150" Padding="0,0,4,0">
-            <ItemsRepeater x:Name="PendingFilesRepeater" Margin="12,0,12,0">
-              <ItemsRepeater.ItemTemplate>
-                <DataTemplate>
-                  <Border Padding="8" Margin="0,0,0,4" Background="#F9F9F9" CornerRadius="4">
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="11"/>
-                  </Border>
-                </DataTemplate>
-              </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-          </ScrollViewer>
-        </Grid>
-      </Grid>
-    </Grid>
-  </Border>
+	<Border Background="White"
+			BorderBrush="#DDDDDD"
+			BorderThickness="1"
+			CornerRadius="8"
+			BoxShadow="0 4 8 0 #20000000"
+			Width="450">
+		<Grid RowDefinitions="Auto,*">
+			<!-- Header with title and collapse button -->
+			<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Background="#F5F5F5" Height="40">
+				<TextBlock Grid.Column="0"
+						   Text="File Ingestion Progress"
+						   VerticalAlignment="Center"
+						   Margin="12,0,0,0"
+						   FontWeight="SemiBold"/>
+				<Button Grid.Column="1"
+						x:Name="CollapseButton"
+						Width="32" Height="32"
+						Margin="0,0,8,0"
+						Classes="flat"
+						Background="Transparent"
+						BorderThickness="0"
+						Padding="4"
+						Click="CollapseButton_Click">
+					<avalonia:MaterialIcon Kind="ChevronDown" Width="16" Height="16"/>
+				</Button>
+			</Grid>
+
+			<!-- Content area with progress info -->
+			<Grid Grid.Row="1" x:Name="ContentPanel" RowDefinitions="Auto,*">
+				<!-- Active files list -->
+				<Border Grid.Row="0" Padding="12" BorderThickness="0,0,0,1" BorderBrush="#EEEEEE">
+					<Grid RowDefinitions="Auto,*">
+						<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+							<TextBlock Grid.Column="0" x:Name="ActiveCountText" Text="Current Ingestion (0)" FontWeight="Medium" FontSize="13" Margin="0,0,0,8" VerticalAlignment="Center"/>
+							<Button Grid.Column="1"
+									x:Name="CancelAllButton"
+									Width="100" Height="32"
+									Margin="0,0,0,8"
+									Classes="danger flat"
+									Background="#FF5252"
+									Foreground="White"
+									BorderThickness="0"
+									Padding="4"
+									Click="CancelAllButton_Click"
+									HorizontalAlignment="Right">
+								<StackPanel Orientation="Horizontal">
+									<avalonia:MaterialIcon Kind="Cancel" Width="16" Height="16" Margin="0,0,4,0"/>
+									<TextBlock Text="Cancel All" VerticalAlignment="Center"/>
+								</StackPanel>
+							</Button>
+						</Grid>
+						<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="150" Padding="0,0,4,0">
+							<ItemsRepeater x:Name="ActiveFilesRepeater">
+								<ItemsRepeater.ItemTemplate>
+									<DataTemplate>
+										<Border Padding="8" Margin="0,0,0,4" Background="#F0F7FF" CornerRadius="4">
+											<Grid RowDefinitions="Auto,Auto,Auto">
+												<DockPanel Grid.Row="0" LastChildFill="True">
+													<Button Width="22" Height="22"
+															Padding="0"
+															Background="#FF5252"
+															BorderThickness="0"
+															Classes="flat"
+															CornerRadius="8"
+															Command="{Binding CancelIngestionCommand}"
+															Margin="4,0,0,0"
+															VerticalAlignment="Center"
+															DockPanel.Dock="Right"
+															ToolTip.Tip="Cancel ingestion">
+														<avalonia:MaterialIcon Kind="Close"
+																			   Width="15"
+																			   Height="15"
+																			   Foreground="White"
+																			   HorizontalAlignment="Center"
+																			   VerticalAlignment="Center"/>
+													</Button>
+													<TextBlock Text="{Binding FileName}"
+															   TextWrapping="Wrap"
+															   FontSize="11"
+															   FontWeight="Medium"
+															   Margin="0,0,8,0"
+															   MaxWidth="220"
+															   HorizontalAlignment="Left"
+															   TextAlignment="Left" />
+												</DockPanel>
+												<Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,4,0,4">
+													<ProgressBar Grid.Column="0" Value="{Binding Progress}" Maximum="100" Height="6" Background="#E0E0E0" Foreground="#4CAF50" CornerRadius="3"/>
+													<TextBlock Grid.Column="1" Text="{Binding ProgressText}" FontSize="10" Margin="4,0,0,0" VerticalAlignment="Center" Foreground="#666666"/>
+												</Grid>
+												<TextBlock Grid.Row="2" Text="{Binding Status}" TextWrapping="Wrap" FontSize="10" Foreground="#666666" Margin="0,2,0,0"/>
+											</Grid>
+										</Border>
+									</DataTemplate>
+								</ItemsRepeater.ItemTemplate>
+							</ItemsRepeater>
+						</ScrollViewer>
+					</Grid>
+				</Border>
+
+				<!-- Pending files list -->
+				<Grid Grid.Row="2" RowDefinitions="Auto,*">
+					<TextBlock Grid.Row="0" x:Name="PendingCountText" Text="Pending Queue (0)" FontWeight="Medium" FontSize="13" Margin="12,12,12,8"/>
+					<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12" MaxHeight="150" Padding="0,0,4,0">
+						<ItemsRepeater x:Name="PendingFilesRepeater" Margin="12,0,12,0">
+							<ItemsRepeater.ItemTemplate>
+								<DataTemplate>
+									<Border Padding="8" Margin="0,0,0,4" Background="#F9F9F9" CornerRadius="4">
+										<TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="11"/>
+									</Border>
+								</DataTemplate>
+							</ItemsRepeater.ItemTemplate>
+						</ItemsRepeater>
+					</ScrollViewer>
+				</Grid>
+			</Grid>
+		</Grid>
+	</Border>
 </UserControl>

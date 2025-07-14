@@ -10,6 +10,7 @@ namespace View.Personal.Controls
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using View.Personal.Classes;
     using View.Personal.Services;
 
@@ -111,6 +112,16 @@ namespace View.Personal.Controls
         }
 
         /// <summary>
+        /// Handles the click event for the cancel all button.
+        /// </summary>
+        private void CancelAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            _lastActivity = DateTime.Now;
+            IngestionProgressService.CancelAllFileIngestions();
+
+        }
+
+        /// <summary>
         /// Updates the list of active files being processed.
         /// </summary>
         /// <param name="activeFiles">The list of active files with their status and progress.</param>
@@ -129,7 +140,6 @@ namespace View.Personal.Controls
                     Progress = file.Progress
                 }).ToList();
 
-                // Update the current ingestion count text
                 if (_activeCountText != null)
                 {
                     _activeCountText.Text = $"Current Ingestion ({_activeFiles.Count})";
