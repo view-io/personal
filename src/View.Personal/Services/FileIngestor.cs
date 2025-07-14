@@ -1,4 +1,4 @@
-﻿namespace View.Personal.Services
+namespace View.Personal.Services
 {
     using Avalonia;
     using Avalonia.Controls;
@@ -782,6 +782,9 @@
                 wasCancelled = true;
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ingestion was cancelled for file: {Path.GetFileName(filePath)}"));
                 IngestionProgressService.UpdateProgress($"Cancelled", 0);
+                RemoveFileFromCompleted(filePath);
+                if (IngestionList.Contains(filePath))
+                    IngestionList.Remove(filePath);
             }
             catch (Exception ex)
             {
@@ -1518,7 +1521,20 @@
                 }
                 var successCount = completedFiles.Count;
                 var failureCount = failedFiles.Count;
-                if (successCount > 0)
+                var allCancelled = filePaths.All(fp => !completedFiles.Contains(fp) && !failedFiles.Contains(fp));
+                
+                if (allCancelled)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, "All file ingestions were cancelled."));
+                    
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        mainWindow.ShowNotification("Ingestion Cancelled",
+                            "All file ingestions were cancelled.",
+                            NotificationType.Information);
+                    }, DispatcherPriority.Normal);
+                }
+                else if (successCount > 0)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Batch ingestion complete. {successCount} files succeeded, {failureCount} files failed."));
 
