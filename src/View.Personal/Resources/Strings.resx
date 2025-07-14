@@ -153,4 +153,103 @@
   <data name="StartNewChat" xml:space="preserve">
     <value>Start New Chat</value>
   </data>
+  <data name="OpenAIProvider" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="OpenAIDescription" xml:space="preserve">
+    <value>Gain access to OpenAI models</value>
+  </data>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>OpenAI Settings</value>
+  </data>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>OpenAI API Key</value>
+  </data>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>OpenAI Completion Model</value>
+  </data>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>System Prompt</value>
+  </data>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>OpenAI Endpoint</value>
+  </data>
+  <data name="BatchSize" xml:space="preserve">
+    <value>Batch Size</value>
+  </data>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>Max Retries</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>Enable RAG</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>Advanced Settings</value>
+  </data>
+  <data name="SimilarityThreshold" xml:space="preserve">
+    <value>Similarity Threshold</value>
+  </data>
+  <data name="AnthropicProvider" xml:space="preserve">
+    <value>Anthropic</value>
+  </data>
+  <data name="AnthropicDescription" xml:space="preserve">
+    <value>Gain access to Anthropic models</value>
+  </data>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>Anthropic Settings</value>
+  </data>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>Anthropic API Key</value>
+  </data>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>Anthropic Completion Model</value>
+  </data>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>Anthropic Endpoint</value>
+  </data>
+  <data name="LocalProvider" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>Gain access to a local model</value>
+  </data>
+  <data name="OllamaSettings" xml:space="preserve">
+    <value>Ollama Settings</value>
+  </data>
+  <data name="OllamaCompletionModel" xml:space="preserve">
+    <value>Ollama Completion Model</value>
+  </data>
+  <data name="ViewSettings" xml:space="preserve">
+    <value>View Settings</value>
+  </data>
+  <data name="EmbeddingsApiKey" xml:space="preserve">
+    <value>Embeddings API Key</value>
+  </data>
+  <data name="ViewEndpoint" xml:space="preserve">
+    <value>View Endpoint</value>
+  </data>
+  <data name="OllamaHostName" xml:space="preserve">
+    <value>Ollama Host Name</value>
+  </data>
+  <data name="AccessKey" xml:space="preserve">
+    <value>Access Key</value>
+  </data>
+  <data name="TenantGuid" xml:space="preserve">
+    <value>Tenant Guid</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>Knowledgebase Source</value>
+  </data>
+  <data name="CompletionModel" xml:space="preserve">
+    <value>Completion Model</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>Max retrieved</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>Query optimization</value>
+  </data>
 </root>

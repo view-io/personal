@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,290 +59,434 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AppTitle" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
     <value>व्यू पर्सनल</value>
   </data>
-	<data name="Knowledgebase" xml:space="preserve">
+  <data name="Knowledgebase" xml:space="preserve">
     <value>ज्ञान आधार</value>
   </data>
-	<data name="Settings" xml:space="preserve">
+  <data name="Settings" xml:space="preserve">
     <value>सेटिंग्स</value>
   </data>
-	<data name="Language" xml:space="preserve">
+  <data name="Language" xml:space="preserve">
     <value>भाषा</value>
   </data>
-	<data name="English" xml:space="preserve">
+  <data name="English" xml:space="preserve">
     <value>अंग्रेज़ी</value>
   </data>
-	<data name="Hindi" xml:space="preserve">
+  <data name="Hindi" xml:space="preserve">
     <value>हिंदी</value>
   </data>
-	<data name="SaveSettings" xml:space="preserve">
+  <data name="SaveSettings" xml:space="preserve">
     <value>सेटिंग्स सहेजें</value>
   </data>
-	<data name="ErrorStartingApp" xml:space="preserve">
+  <data name="ErrorStartingApp" xml:space="preserve">
     <value>व्यू पर्सनल शुरू करने में असमर्थ</value>
   </data>
-	<data name="ErrorGeneric" xml:space="preserve">
+  <data name="ErrorGeneric" xml:space="preserve">
     <value>एक त्रुटि हुई</value>
   </data>
-	<data name="SettingsSaved" xml:space="preserve">
+  <data name="SettingsSaved" xml:space="preserve">
     <value>सेटिंग्स सफलतापूर्वक सहेजी गईं</value>
   </data>
-	<data name="LanguageChanged" xml:space="preserve">
+  <data name="LanguageChanged" xml:space="preserve">
     <value>भाषा बदलकर {0} कर दी गई</value>
   </data>
-	<data name="SaveLanguage" xml:space="preserve">
+  <data name="StartNewChat" xml:space="preserve">
+    <value>नई चैट शुरू करें</value>
+  </data>
+  <data name="OpenAIProvider" xml:space="preserve">
+    <value>ओपनएआई</value>
+  </data>
+  <data name="OpenAIDescription" xml:space="preserve">
+    <value>ओपनएआई मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>ओपनएआई सेटिंग्स</value>
+  </data>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>ओपनएआई एपीआई कुंजी</value>
+  </data>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>ओपनएआई पूर्णता मॉडल</value>
+  </data>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>सिस्टम प्रॉम्प्ट</value>
+  </data>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>ओपनएआई एंडपॉइंट</value>
+  </data>
+  <data name="BatchSize" xml:space="preserve">
+    <value>बैच आकार</value>
+  </data>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>अधिकतम पुनः प्रयास</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>तापमान</value>
+  </data>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>RAG सक्षम करें</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>उन्नत सेटिंग्स</value>
+  </data>
+  <data name="SimilarityThreshold" xml:space="preserve">
+    <value>समानता सीमा</value>
+  </data>
+  <data name="AnthropicProvider" xml:space="preserve">
+    <value>एंथ्रोपिक</value>
+  </data>
+  <data name="AnthropicDescription" xml:space="preserve">
+    <value>एंथ्रोपिक मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>एंथ्रोपिक सेटिंग्स</value>
+  </data>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>एंथ्रोपिक एपीआई कुंजी</value>
+  </data>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>एंथ्रोपिक पूर्णता मॉडल</value>
+  </data>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>एंथ्रोपिक एंडपॉइंट</value>
+  </data>
+  <data name="LocalProvider" xml:space="preserve">
+    <value>स्थानीय</value>
+  </data>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>स्थानीय मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="OllamaSettings" xml:space="preserve">
+    <value>ओलामा सेटिंग्स</value>
+  </data>
+  <data name="OllamaCompletionModel" xml:space="preserve">
+    <value>ओलामा पूर्णता मॉडल</value>
+  </data>
+  <data name="ViewSettings" xml:space="preserve">
+    <value>व्यू सेटिंग्स</value>
+  </data>
+  <data name="EmbeddingsApiKey" xml:space="preserve">
+    <value>एम्बेडिंग्स API कुंजी</value>
+  </data>
+  <data name="ViewEndpoint" xml:space="preserve">
+    <value>व्यू एंडपॉइंट</value>
+  </data>
+  <data name="OllamaHostName" xml:space="preserve">
+    <value>ओलामा होस्ट नाम</value>
+  </data>
+  <data name="AccessKey" xml:space="preserve">
+    <value>एक्सेस कुंजी</value>
+  </data>
+  <data name="TenantGuid" xml:space="preserve">
+    <value>टेनेंट जीयूआईडी</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>ज्ञानआधार स्रोत</value>
+  </data>
+  <data name="CompletionModel" xml:space="preserve">
+    <value>पूर्णता मॉडल</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>अधिकतम पुनर्प्राप्त</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>क्वेरी अनुकूलन</value>
+  </data>
+  <data name="RAGSettings" xml:space="preserve">
+    <value>RAG सेटिंग्स</value>
+  </data>
+  <data name="EmbeddingsGeneration" xml:space="preserve">
+    <value>एम्बेडिंग्स जनरेशन</value>
+  </data>
+  <data name="EmbeddingsGenerationDescription" xml:space="preserve">
+    <value>स्थानीय या क्लाउड प्रदाता चुनें&#xD;&#xA;एम्बेडिंग मॉडल का उपयोग किया जाएगा&#xD;&#xA;वेक्टर एम्बेडिंग्स उत्पन्न करने के लिए।</value>
+  </data>
+  <data name="EmbeddingsGenerationWarning" xml:space="preserve">
+    <value>चेतावनी: यदि आप अपडेट या बदलते हैं&#xD;&#xA;आपका एम्बेडिंग मॉडल, आपको&#xD;&#xA;सभी दस्तावेज़ों को फिर से आयात करना होगा।</value>
+  </data>
+  <data name="OpenAIEmbeddingModel" xml:space="preserve">
+    <value>ओपनएआई एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="ModelName" xml:space="preserve">
+    <value>मॉडल नाम</value>
+  </data>
+  <data name="Dimensionality" xml:space="preserve">
+    <value>आयामिता</value>
+  </data>
+  <data name="MaxTokens" xml:space="preserve">
+    <value>अधिकतम टोकन</value>
+  </data>
+  <data name="GainAccessToAnthropic" xml:space="preserve">
+    <value>एंथ्रोपिक मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="GainAccessToLocalModel" xml:space="preserve">
+    <value>स्थानीय मॉडल तक पहुंच प्राप्त करें।</value>
+  </data>
+  <data name="ViewProvider" xml:space="preserve">
+    <value>व्यू प्रदाता</value>
+  </data>
+  <data name="GainAccessToViewModel" xml:space="preserve">
+    <value>व्यू मॉडल तक पहुंच प्राप्त करें</value>
+  </data>
+  <data name="SaveLanguage" xml:space="preserve">
     <value>भाषा सेटिंग सहेजें</value>
   </data>
-	<data name="RestartRequired" xml:space="preserve">
+  <data name="RestartRequired" xml:space="preserve">
     <value>आपकी भाषा प्राथमिकता सहेज ली गई है और लागू कर दी गई है।</value>
   </data>
-	<data name="LanguageSettingSaved" xml:space="preserve">
+  <data name="LanguageSettingSaved" xml:space="preserve">
     <value>भाषा सेटिंग सहेजी गई</value>
   </data>
-	<data name="Error" xml:space="preserve">
+  <data name="Error" xml:space="preserve">
     <value>त्रुटि</value>
   </data>
-	<data name="FailedToSaveLanguage" xml:space="preserve">
+  <data name="FailedToSaveLanguage" xml:space="preserve">
     <value>भाषा सेटिंग सहेजने में विफल</value>
   </data>
-	<data name="SelectLanguage" xml:space="preserve">
+  <data name="SelectLanguage" xml:space="preserve">
     <value>अपनी पसंदीदा भाषा चुनें:</value>
   </data>
-	<data name="ValidationError" xml:space="preserve">
+  <data name="ValidationError" xml:space="preserve">
     <value>मान्यता त्रुटि</value>
   </data>
-	<data name="PleaseEnterValueFor" xml:space="preserve">
+  <data name="PleaseEnterValueFor" xml:space="preserve">
     <value>कृपया {0} के लिए मान दर्ज करें।</value>
   </data>
-	<data name="Success" xml:space="preserve">
+  <data name="Success" xml:space="preserve">
     <value>सफलता</value>
   </data>
-	<data name="Warning" xml:space="preserve">
+  <data name="Warning" xml:space="preserve">
     <value>चेतावनी</value>
   </data>
-	<data name="OllamaNotInstalled" xml:space="preserve">
+  <data name="OllamaNotInstalled" xml:space="preserve">
     <value>ओलामा स्थापित नहीं है</value>
   </data>
-	<data name="OllamaNotRunning" xml:space="preserve">
+  <data name="OllamaNotRunning" xml:space="preserve">
     <value>ओलामा सेटिंग्स में परिभाषित सिस्टम पर स्थापित नहीं है या चल नहीं रहा है।</value>
   </data>
-	<data name="DownloadOllama" xml:space="preserve">
+  <data name="DownloadOllama" xml:space="preserve">
     <value>ओलामा डाउनलोड करें</value>
   </data>
-	<data name="UnexpectedError" xml:space="preserve">
+  <data name="UnexpectedError" xml:space="preserve">
     <value>अप्रत्याशित त्रुटि</value>
   </data>
-	<data name="SettingsSavedMessage" xml:space="preserve">
+  <data name="SettingsSavedMessage" xml:space="preserve">
     <value>आपकी सेटिंग्स सफलतापूर्वक सहेज ली गई हैं।</value>
   </data>
-	<data name="FileDeleted" xml:space="preserve">
+  <data name="FileDeleted" xml:space="preserve">
     <value>फ़ाइल हटा दी गई</value>
   </data>
-	<data name="FileDeletedSuccess" xml:space="preserve">
+  <data name="FileDeletedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक हटा दिया गया!</value>
   </data>
-	<data name="DeletionError" xml:space="preserve">
+  <data name="DeletionError" xml:space="preserve">
     <value>हटाने में त्रुटि</value>
   </data>
-	<data name="SomethingWentWrong" xml:space="preserve">
+  <data name="SomethingWentWrong" xml:space="preserve">
     <value>कुछ गलत हो गया: {0}</value>
   </data>
-	<data name="DeletionWarning" xml:space="preserve">
+  <data name="DeletionWarning" xml:space="preserve">
     <value>हटाने की चेतावनी</value>
   </data>
-	<data name="FilesDeleted" xml:space="preserve">
+  <data name="FilesDeleted" xml:space="preserve">
     <value>फ़ाइलें हटा दी गईं</value>
   </data>
-	<data name="IngestionError" xml:space="preserve">
+  <data name="IngestionError" xml:space="preserve">
     <value>अंतर्ग्रहण त्रुटि</value>
   </data>
-	<data name="UnsupportedFileType" xml:space="preserve">
+  <data name="UnsupportedFileType" xml:space="preserve">
     <value>असमर्थित फ़ाइल प्रकार।</value>
   </data>
-	<data name="NoFileSelected" xml:space="preserve">
+  <data name="NoFileSelected" xml:space="preserve">
     <value>कोई फ़ाइल चयनित नहीं।</value>
   </data>
-	<data name="FileIngested" xml:space="preserve">
+  <data name="FileIngested" xml:space="preserve">
     <value>फ़ाइल अंतर्ग्रहित</value>
   </data>
-	<data name="FileIngestedSuccess" xml:space="preserve">
+  <data name="FileIngestedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक अंतर्ग्रहित!</value>
   </data>
-	<data name="ReingestionError" xml:space="preserve">
+  <data name="ReingestionError" xml:space="preserve">
     <value>पुन: अंतर्ग्रहण त्रुटि</value>
   </data>
-	<data name="BatchIngestionComplete" xml:space="preserve">
+  <data name="BatchIngestionComplete" xml:space="preserve">
     <value>बैच अंतर्ग्रहण पूर्ण</value>
   </data>
-	<data name="BatchIngestionError" xml:space="preserve">
+  <data name="BatchIngestionError" xml:space="preserve">
     <value>बैच अंतर्ग्रहण त्रुटि</value>
   </data>
-	<data name="IngestionCancelled" xml:space="preserve">
+  <data name="IngestionCancelled" xml:space="preserve">
     <value>अंतर्ग्रहण रद्द किया गया</value>
   </data>
-	<data name="ResumingIngestion" xml:space="preserve">
+  <data name="ResumingIngestion" xml:space="preserve">
     <value>अंतर्ग्रहण फिर से शुरू हो रहा है</value>
   </data>
-	<data name="FilePathNotAvailable" xml:space="preserve">
+  <data name="FilePathNotAvailable" xml:space="preserve">
     <value>फ़ाइल पथ उपलब्ध नहीं है।</value>
   </data>
-	<data name="FileDoesNotExist" xml:space="preserve">
+  <data name="FileDoesNotExist" xml:space="preserve">
     <value>फ़ाइल डिस्क पर मौजूद नहीं है।</value>
   </data>
-	<data name="CouldNotOpenFileLocation" xml:space="preserve">
+  <data name="CouldNotOpenFileLocation" xml:space="preserve">
     <value>फ़ाइल स्थान नहीं खोल सका: {0}</value>
   </data>
-	<data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
+  <data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
     <value>पुनः प्रसंस्करण के लिए फ़ाइल पथ उपलब्ध नहीं है।</value>
   </data>
-	<data name="FileReprocessed" xml:space="preserve">
+  <data name="FileReprocessed" xml:space="preserve">
     <value>फ़ाइल पुनः प्रसंस्करित</value>
   </data>
-	<data name="FileReprocessedSuccess" xml:space="preserve">
+  <data name="FileReprocessedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक पुनः प्रसंस्करित किया गया!</value>
   </data>
-	<data name="ReprocessingError" xml:space="preserve">
+  <data name="ReprocessingError" xml:space="preserve">
     <value>पुनः प्रसंस्करण त्रुटि</value>
   </data>
-	<data name="KnowledgebaseDeleted" xml:space="preserve">
+  <data name="KnowledgebaseDeleted" xml:space="preserve">
     <value>ज्ञानआधार हटा दिया गया</value>
   </data>
-	<data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
+  <data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक हटा दिया गया!</value>
   </data>
-	<data name="ModelDeleted" xml:space="preserve">
+  <data name="ModelDeleted" xml:space="preserve">
     <value>मॉडल हटा दिया गया</value>
   </data>
-	<data name="ModelDeletedSuccess" xml:space="preserve">
+  <data name="ModelDeletedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक हटा दिया गया!</value>
   </data>
-	<data name="FailedToDeleteModel" xml:space="preserve">
+  <data name="FailedToDeleteModel" xml:space="preserve">
     <value>{0} को हटाने में विफल। कृपया पुनः प्रयास करें।</value>
   </data>
-	<data name="ErrorPullingModel" xml:space="preserve">
+  <data name="ErrorPullingModel" xml:space="preserve">
     <value>मॉडल पुल करने में त्रुटि: {0}</value>
   </data>
-	<data name="CreateNewKnowledgebase" xml:space="preserve">
+  <data name="CreateNewKnowledgebase" xml:space="preserve">
     <value>नया ज्ञानआधार बनाएँ</value>
   </data>
-	<data name="EnterKnowledgebaseName" xml:space="preserve">
+  <data name="EnterKnowledgebaseName" xml:space="preserve">
     <value>ज्ञानआधार का नाम दर्ज करें:</value>
   </data>
-	<data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
+  <data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
     <value>कृपया एक ज्ञानआधार नाम दर्ज करें</value>
   </data>
-	<data name="NoSelection" xml:space="preserve">
+  <data name="NoSelection" xml:space="preserve">
     <value>कोई चयन नहीं</value>
   </data>
-	<data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
+  <data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
     <value>कृपया हटाने के लिए कम से कम एक फ़ाइल का चयन करें।</value>
   </data>
-	<data name="ConsoleLogsSaved" xml:space="preserve">
+  <data name="ConsoleLogsSaved" xml:space="preserve">
     <value>कंसोल लॉग सफलतापूर्वक सहेजे गए</value>
   </data>
-	<data name="InvalidEndpoint" xml:space="preserve">
+  <data name="InvalidEndpoint" xml:space="preserve">
     <value>अमान्य एंडपॉइंट</value>
   </data>
-	<data name="OllamaEndpointFormat" xml:space="preserve">
-  <value>ओलामा एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
-</data>
-	<data name="UnreachableHost" xml:space="preserve">
+  <data name="OllamaEndpointFormat" xml:space="preserve">
+    <value>ओलामा एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
+  </data>
+  <data name="UnreachableHost" xml:space="preserve">
     <value>अपहुंच योग्य होस्ट</value>
   </data>
-	<data name="HostnameNotResolvable" xml:space="preserve">
+  <data name="HostnameNotResolvable" xml:space="preserve">
     <value>{0} एंडपॉइंट होस्टनेम DNS के माध्यम से हल नहीं किया जा सका।</value>
   </data>
-	<data name="ViewEndpointFormat" xml:space="preserve">
-  <value>व्यू एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
-</data>
-	<data name="AccessDenied" xml:space="preserve">
+  <data name="ViewEndpointFormat" xml:space="preserve">
+    <value>व्यू एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
     <value>पहुंच अस्वीकृत</value>
   </data>
-	<data name="CannotAccessPath" xml:space="preserve">
+  <data name="CannotAccessPath" xml:space="preserve">
     <value>{0} तक पहुंच नहीं हो सकती: {1}</value>
   </data>
-	<data name="FailedToLoadDirectory" xml:space="preserve">
+  <data name="FailedToLoadDirectory" xml:space="preserve">
     <value>निर्देशिका लोड करने में विफल: {0}</value>
   </data>
-	<data name="InvalidPath" xml:space="preserve">
+  <data name="InvalidPath" xml:space="preserve">
     <value>अमान्य पथ</value>
   </data>
-	<data name="PleaseEnterValidPath" xml:space="preserve">
+  <data name="PleaseEnterValidPath" xml:space="preserve">
     <value>कृपया एक वैध पथ दर्ज करें।</value>
   </data>
-	<data name="PathNotFound" xml:space="preserve">
+  <data name="PathNotFound" xml:space="preserve">
     <value>पथ नहीं मिला</value>
   </data>
-	<data name="PathDoesNotExist" xml:space="preserve">
+  <data name="PathDoesNotExist" xml:space="preserve">
     <value>पथ '{0}' मौजूद नहीं है।</value>
   </data>
-	<data name="FailedToNavigatePath" xml:space="preserve">
+  <data name="FailedToNavigatePath" xml:space="preserve">
     <value>'{0}' पर नेविगेट करने में विफल: {1}</value>
   </data>
-	<data name="FilesDeletedPartial" xml:space="preserve">
+  <data name="ModelDownloaded" xml:space="preserve">
+    <value>मॉडल डाउनलोड किया गया</value>
+  </data>
+  <data name="ModelDownloadedSuccess" xml:space="preserve">
+    <value>{0} सफलतापूर्वक पुल किया गया!</value>
+  </data>
+  <data name="FilesDeletedPartial" xml:space="preserve">
     <value>{0} फ़ाइलें हटा दी गईं। {1} फ़ाइलें हटाने में विफल रहे।</value>
   </data>
-	<data name="FilesDeletedSuccess" xml:space="preserve">
+  <data name="FilesDeletedSuccess" xml:space="preserve">
     <value>{0} फ़ाइलें सफलतापूर्वक हटा दी गईं!</value>
   </data>
   <data name="FailedToGenerateEmbeddings" xml:space="preserve">
@@ -360,10 +504,10 @@
   <data name="ErrorIngesting" xml:space="preserve">
     <value>{0} को इंजेस्ट करने में त्रुटि: {1}</value>
   </data>
-	<data name="BatchIngestionPartialSuccess" xml:space="preserve">
+  <data name="BatchIngestionPartialSuccess" xml:space="preserve">
     <value>सफलतापूर्वक {0} फ़ाइलें इंजेस्ट की गईं। {1} फ़ाइलें विफल रहीं।</value>
   </data>
-	<data name="BatchIngestionFullSuccess" xml:space="preserve">
+  <data name="BatchIngestionFullSuccess" xml:space="preserve">
     <value>सभी {0} फ़ाइलें सफलतापूर्वक इंजेस्ट की गईं।</value>
   </data>
   <data name="IngestionCancelledMessage" xml:space="preserve">
@@ -384,12 +528,6 @@
   <data name="AccessDeniedToDirectory" xml:space="preserve">
     <value>निर्देशिका तक पहुंच अस्वीकृत: {0}।</value>
   </data>
-  <data name="ModelDownloaded" xml:space="preserve">
-    <value>मॉडल डाउनलोड किया गया</value>
-  </data>
-  <data name="ModelDownloadedSuccess" xml:space="preserve">
-    <value>{0} सफलतापूर्वक पुल किया गया!</value>
-  </data>
   <data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
     <value>OpenAI एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
   </data>
@@ -405,286 +543,301 @@
   <data name="NoConsoleLogs" xml:space="preserve">
     <value>डाउनलोड करने के लिए कोई कंसोल लॉग नहीं</value>
   </data>
-	<data name="FailedToSaveConsoleLogs" xml:space="preserve">
+  <data name="FailedToSaveConsoleLogs" xml:space="preserve">
     <value>कंसोल लॉग सहेजने में विफल</value>
   </data>
-	<data name="StartNewChat" xml:space="preserve">
-    <value>नई चैट शुरू करें</value>
-  </data>
-	<data name="Files" xml:space="preserve">
+  <data name="Files" xml:space="preserve">
     <value>फ़ाइलें</value>
   </data>
-	<data name="DataMonitor" xml:space="preserve">
+  <data name="DataMonitor" xml:space="preserve">
     <value>डेटा मॉनिटर</value>
   </data>
-	<data name="Console" xml:space="preserve">
+  <data name="Console" xml:space="preserve">
     <value>कंसोल</value>
   </data>
-	<data name="ChatHistory" xml:space="preserve">
+  <data name="ChatHistory" xml:space="preserve">
     <value>चैट इतिहास</value>
   </data>
-	<data name="WelcomeToView" xml:space="preserve">
+  <data name="WelcomeToView" xml:space="preserve">
     <value>व्यू में आपका स्वागत है</value>
   </data>
-	<data name="ManageFiles" xml:space="preserve">
+  <data name="ManageFiles" xml:space="preserve">
     <value>उन फ़ाइलों का प्रबंधन करें जिनके साथ आप चैट करना चाहते हैं</value>
   </data>
-	<data name="MonitorFiles" xml:space="preserve">
+  <data name="MonitorFiles" xml:space="preserve">
     <value>इंजेस्शन के लिए फ़ाइलों और फ़ोल्डरों की निरंतर निगरानी करें</value>
   </data>
-	<data name="ConfigureLLM" xml:space="preserve">
+  <data name="ConfigureLLM" xml:space="preserve">
     <value>अपने LLM और API कुंजियों को कॉन्फ़िगर करें</value>
   </data>
-	<data name="ChatWithData" xml:space="preserve">
+  <data name="ChatWithData" xml:space="preserve">
     <value>अपने डेटा के साथ चैट करें</value>
   </data>
-	<data name="UploadFiles" xml:space="preserve">
+  <data name="UploadFiles" xml:space="preserve">
     <value>फ़ाइलें अपलोड करें</value>
   </data>
-	<data name="ClickToUpload" xml:space="preserve">
+  <data name="ClickToUpload" xml:space="preserve">
     <value>अपलोड करने के लिए क्लिक करें </value>
   </data>
-	<data name="OrDragAndDrop" xml:space="preserve">
+  <data name="OrDragAndDrop" xml:space="preserve">
     <value>या खींचें और छोड़ें</value>
   </data>
-	<data name="MaxFileSize" xml:space="preserve">
+  <data name="MaxFileSize" xml:space="preserve">
     <value>(अधिकतम फ़ाइल आकार 500mb)</value>
   </data>
-	<data name="Select" xml:space="preserve">
+  <data name="Select" xml:space="preserve">
     <value>चुनें</value>
   </data>
-	<data name="Name" xml:space="preserve">
+  <data name="Name" xml:space="preserve">
     <value>नाम</value>
   </data>
-	<data name="Size" xml:space="preserve">
+  <data name="Size" xml:space="preserve">
     <value>आकार</value>
   </data>
-	<data name="Type" xml:space="preserve">
+  <data name="Type" xml:space="preserve">
     <value>प्रकार</value>
   </data>
-	<data name="DateCreated" xml:space="preserve">
+  <data name="DateCreated" xml:space="preserve">
     <value>बनाने की तिथि</value>
   </data>
-	<data name="Actions" xml:space="preserve">
+  <data name="Actions" xml:space="preserve">
     <value>कार्रवाई</value>
   </data>
-	<data name="OpenInFileExplorer" xml:space="preserve">
+  <data name="OpenInFileExplorer" xml:space="preserve">
     <value>फ़ाइल एक्सप्लोरर में खोलें</value>
   </data>
-	<data name="ReprocessFile" xml:space="preserve">
+  <data name="ReprocessFile" xml:space="preserve">
     <value>फ़ाइल को फिर से प्रोसेस करें</value>
   </data>
-	<data name="DeleteFile" xml:space="preserve">
+  <data name="DeleteFile" xml:space="preserve">
     <value>फ़ाइल हटाएं</value>
   </data>
-	<data name="NoItemsToDisplay" xml:space="preserve">
+  <data name="NoItemsToDisplay" xml:space="preserve">
     <value>प्रदर्शित करने के लिए कोई आइटम नहीं</value>
   </data>
-	<data name="NoPages" xml:space="preserve">
+  <data name="NoPages" xml:space="preserve">
     <value>कोई पृष्ठ नहीं</value>
   </data>
-	<data name="FirstPage" xml:space="preserve">
+  <data name="FirstPage" xml:space="preserve">
     <value>पहला पृष्ठ</value>
   </data>
-	<data name="PreviousPage" xml:space="preserve">
+  <data name="PreviousPage" xml:space="preserve">
     <value>पिछला पृष्ठ</value>
   </data>
-	<data name="NextPage" xml:space="preserve">
+  <data name="NextPage" xml:space="preserve">
     <value>अगला पृष्ठ</value>
   </data>
-	<data name="LastPage" xml:space="preserve">
+  <data name="LastPage" xml:space="preserve">
     <value>अंतिम पृष्ठ</value>
   </data>
-	<data name="ItemsPerPage" xml:space="preserve">
+  <data name="ItemsPerPage" xml:space="preserve">
     <value>प्रति पृष्ठ आइटम:</value>
   </data>
-	<data name="SelectAll" xml:space="preserve">
+  <data name="SelectAll" xml:space="preserve">
     <value>सभी चुनें</value>
   </data>
-	<data name="RemoveSelectedFiles" xml:space="preserve">
+  <data name="RemoveSelectedFiles" xml:space="preserve">
     <value>चयनित फ़ाइलें हटाएं</value>
   </data>
-	<data name="EnterUserMessage" xml:space="preserve">
+  <data name="EnterUserMessage" xml:space="preserve">
     <value>उपयोगकर्ता संदेश दर्ज करें...</value>
   </data>
-	<data name="Copyright" xml:space="preserve">
+  <data name="Copyright" xml:space="preserve">
     <value>©2025 व्यू सिस्टम्स इंक.</value>
   </data>
-	<data name="NewKnowledgebase" xml:space="preserve">
+  <data name="NewKnowledgebase" xml:space="preserve">
     <value>नया ज्ञान आधार</value>
   </data>
-	<data name="ExportToGEXF" xml:space="preserve">
+  <data name="ExportToGEXF" xml:space="preserve">
     <value>GEXF में निर्यात करें</value>
   </data>
-	<data name="GUID" xml:space="preserve">
+  <data name="GUID" xml:space="preserve">
     <value>GUID</value>
   </data>
-	<data name="Nodes" xml:space="preserve">
+  <data name="Nodes" xml:space="preserve">
     <value>नोड्स</value>
   </data>
-	<data name="Created" xml:space="preserve">
+  <data name="Created" xml:space="preserve">
     <value>बनाया गया</value>
   </data>
-	<data name="LastUpdate" xml:space="preserve">
+  <data name="LastUpdate" xml:space="preserve">
     <value>अंतिम अपडेट</value>
   </data>
-	<data name="Remove" xml:space="preserve">
+  <data name="Remove" xml:space="preserve">
     <value>हटाएं</value>
   </data>
-	<data name="DeleteKnowledgebase" xml:space="preserve">
+  <data name="DeleteKnowledgebase" xml:space="preserve">
     <value>ज्ञान आधार हटाएं</value>
   </data>
-	<data name="Providers" xml:space="preserve">
+  <data name="Providers" xml:space="preserve">
     <value>प्रदाता</value>
   </data>
-	<data name="OpenAI" xml:space="preserve">
-    <value>OpenAI</value>
+  <data name="OpenAI" xml:space="preserve">
+    <value>ओपनएआई</value>
   </data>
-	<data name="GainAccessToOpenAI" xml:space="preserve">
+  <data name="GainAccessToOpenAI" xml:space="preserve">
     <value>OpenAI मॉडल तक पहुंच प्राप्त करें</value>
   </data>
-	<data name="OpenAISettings" xml:space="preserve">
-    <value>OpenAI सेटिंग्स</value>
-  </data>
-	<data name="KnowledgebaseSource" xml:space="preserve">
-    <value>ज्ञान आधार स्रोत</value>
-  </data>
-	<data name="Knowledgebases" xml:space="preserve">
+  <data name="Knowledgebases" xml:space="preserve">
     <value>ज्ञान आधार</value>
   </data>
-	<data name="OpenAIApiKey" xml:space="preserve">
-    <value>OpenAI API कुंजी</value>
-  </data>
-	<data name="YourApiKeyHere" xml:space="preserve">
+  <data name="YourApiKeyHere" xml:space="preserve">
     <value>आपकी_API_कुंजी_यहां</value>
   </data>
-	<data name="EnterOpenAIApiKey" xml:space="preserve">
-    <value>अपनी OpenAI API कुंजी दर्ज करें।</value>
+  <data name="EnterOpenAIApiKey" xml:space="preserve">
+    <value>अपनी ओपनएआई API कुंजी दर्ज करें।</value>
   </data>
-	<data name="OpenAICompletionModel" xml:space="preserve">
-    <value>OpenAI पूर्णता मॉडल</value>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
   </data>
-	<data name="SpecifyOpenAIModel" xml:space="preserve">
-    <value>उपयोग करने के लिए OpenAI मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
-  </data>
-	<data name="SystemPrompt" xml:space="preserve">
-    <value>सिस्टम प्रॉम्प्ट</value>
-  </data>
-	<data name="EnterSystemPrompt" xml:space="preserve">
+  <data name="EnterSystemPrompt" xml:space="preserve">
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
-	<data name="OpenAIEndpoint" xml:space="preserve">
-    <value>OpenAI एंडपॉइंट</value>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>ओपनएआई API एंडपॉइंट सेट करें।</value>
   </data>
-	<data name="SetOpenAIEndpoint" xml:space="preserve">
-    <value>OpenAI API एंडपॉइंट सेट करें।</value>
+  <data name="EnterAnthropicApiKey" xml:space="preserve">
+    <value>अपनी एंथ्रोपिक API कुंजी दर्ज करें।</value>
   </data>
-	<data name="AnthropicSettings" xml:space="preserve">
-    <value>Anthropic सेटिंग्स</value>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>उपयोग करने के लिए एंथ्रोपिक मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
   </data>
-	<data name="AnthropicApiKey" xml:space="preserve">
-    <value>Anthropic API कुंजी</value>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>एंथ्रोपिक API एंडपॉइंट सेट करें।</value>
   </data>
-	<data name="EnterAnthropicApiKey" xml:space="preserve">
-    <value>अपनी Anthropic API कुंजी दर्ज करें।</value>
-  </data>
-	<data name="AnthropicCompletionModel" xml:space="preserve">
-    <value>Anthropic पूर्णता मॉडल</value>
-  </data>
-	<data name="SpecifyAnthropicModel" xml:space="preserve">
-    <value>उपयोग करने के लिए Anthropic मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
-  </data>
-	<data name="AnthropicEndpoint" xml:space="preserve">
-    <value>Anthropic एंडपॉइंट</value>
-  </data>
-	<data name="SetAnthropicEndpoint" xml:space="preserve">
-    <value>Anthropic API एंडपॉइंट सेट करें।</value>
-  </data>
-	<data name="BatchSize" xml:space="preserve">
-    <value>बैच आकार</value>
-  </data>
-	<data name="BatchSizeTooltip" xml:space="preserve">
+  <data name="BatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में प्रोसेस करने के लिए अनुरोधों की संख्या।</value>
   </data>
-	<data name="MaxRetries" xml:space="preserve">
-    <value>अधिकतम पुनः प्रयास</value>
-  </data>
-	<data name="MaxRetriesTooltip" xml:space="preserve">
+  <data name="MaxRetriesTooltip" xml:space="preserve">
     <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयास प्रयासों की संख्या।</value>
   </data>
-	<data name="Temperature" xml:space="preserve">
-    <value>तापमान</value>
-  </data>
-	<data name="TemperatureTooltip" xml:space="preserve">
+  <data name="TemperatureTooltip" xml:space="preserve">
     <value>पूर्णताओं में यादृच्छिकता को नियंत्रित करता है। उच्च मान (0.8) आउटपुट को अधिक यादृच्छिक बनाते हैं, निम्न मान (0.2) इसे अधिक केंद्रित बनाते हैं।</value>
   </data>
-	<data name="EnableRAG" xml:space="preserve">
-    <value>RAG सक्षम करें</value>
-  </data>
-	<data name="EnableRAGTooltip" xml:space="preserve">
+  <data name="EnableRAGTooltip" xml:space="preserve">
     <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
   </data>
-	<data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
+  <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
     <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
   </data>
-	<data name="AdvancedSettings" xml:space="preserve">
-    <value>उन्नत सेटिंग्स</value>
-  </data>
-	<data name="AdvancedRAG" xml:space="preserve">
+  <data name="AdvancedRAG" xml:space="preserve">
     <value>उन्नत RAG</value>
   </data>
-	<data name="MaxRetrieved" xml:space="preserve">
-    <value>अधिकतम पुनर्प्राप्त</value>
-  </data>
-	<data name="MaxRetrievedTooltip" xml:space="preserve">
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
     <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
   </data>
-	<data name="QueryOptimization" xml:space="preserve">
-    <value>क्वेरी अनुकूलन</value>
-  </data>
-	<data name="QueryOptimizationTooltip" xml:space="preserve">
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
     <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी अनुकूलित करें</value>
   </data>
-	<data name="EnableCitations" xml:space="preserve">
+  <data name="EnableCitations" xml:space="preserve">
     <value>उद्धरण सक्षम करें</value>
   </data>
-	<data name="EnableCitationsTooltip" xml:space="preserve">
+  <data name="EnableCitationsTooltip" xml:space="preserve">
     <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
   </data>
-	<data name="EnableContextSorting" xml:space="preserve">
+  <data name="EnableContextSorting" xml:space="preserve">
     <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
   </data>
-	<data name="EnableContextSortingTooltip" xml:space="preserve">
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
     <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
   </data>
-	<data name="LocalModels" xml:space="preserve">
+  <data name="LocalModels" xml:space="preserve">
     <value>स्थानीय मॉडल</value>
   </data>
-	<data name="PullNewModel" xml:space="preserve">
+  <data name="PullNewModel" xml:space="preserve">
     <value>एक नया मॉडल पुल करें</value>
   </data>
-	<data name="ClickHere" xml:space="preserve">
+  <data name="ClickHere" xml:space="preserve">
     <value>यहां क्लिक करें </value>
   </data>
-	<data name="ExploreAvailableModels" xml:space="preserve">
+  <data name="ExploreAvailableModels" xml:space="preserve">
     <value>उपलब्ध मॉडल देखने के लिए</value>
   </data>
-	<data name="EnterOllamaModelTag" xml:space="preserve">
+  <data name="EnterOllamaModelTag" xml:space="preserve">
     <value>ओल्लामा संगत मॉडल टैग दर्ज करें (उदा. qwen2.5:7b)</value>
   </data>
-	<data name="Pull" xml:space="preserve">
+  <data name="Pull" xml:space="preserve">
     <value>पुल करें</value>
   </data>
-	<data name="Cancel" xml:space="preserve">
+  <data name="Cancel" xml:space="preserve">
     <value>रद्द करें</value>
   </data>
-	<data name="DownloadedModels" xml:space="preserve">
+  <data name="DownloadedModels" xml:space="preserve">
     <value>डाउनलोड किए गए मॉडल</value>
   </data>
-	<data name="ChooseFromExistingModels" xml:space="preserve">
+  <data name="ChooseFromExistingModels" xml:space="preserve">
     <value>मौजूदा मॉडल से चुनें</value>
   </data>
-	<data name="ParameterSize" xml:space="preserve">
+  <data name="ParameterSize" xml:space="preserve">
     <value>पैरामीटर आकार: {0}</value>
+  </data>
+  <data name="SpecifyOllamaModel" xml:space="preserve">
+    <value>उपयोग करने के लिए ओलामा मॉडल निर्दिष्ट करें, जैसे, llama2-7B-q4 या mistral-7B।</value>
+  </data>
+  <data name="OllamaSystemPrompt" xml:space="preserve">
+    <value>ओलामा सिस्टम प्रॉम्प्ट</value>
+  </data>
+  <data name="SetOllamaEndpoint" xml:space="preserve">
+    <value>ओलामा API एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="OllamaTemperature" xml:space="preserve">
+    <value>ओलामा तापमान</value>
+  </data>
+  <data name="OllamaBatchSize" xml:space="preserve">
+    <value>ओलामा बैच आकार</value>
+  </data>
+  <data name="OllamaMaxRetries" xml:space="preserve">
+    <value>ओलामा अधिकतम पुनः प्रयास</value>
+  </data>
+  <data name="OllamaEmbeddingModel" xml:space="preserve">
+    <value>Ollama एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="SpecifyOllamaEmbeddingModel" xml:space="preserve">
+    <value>उपयोग करने के लिए Ollama एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे, llama2।</value>
+  </data>
+  <data name="DimensionalityTooltip" xml:space="preserve">
+    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिता।</value>
+  </data>
+  <data name="MaxTokensTooltip" xml:space="preserve">
+    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए अधिकतम टोकन।</value>
+  </data>
+  <data name="OllamaEnableRAG" xml:space="preserve">
+    <value>ओलामा RAG सक्षम करें</value>
+  </data>
+  <data name="OllamaRagSettingsPanel" xml:space="preserve">
+    <value>ओलामा RAG सेटिंग्स पैनल</value>
+  </data>
+  <data name="OllamaKnowledgeSource" xml:space="preserve">
+    <value>ओलामा ज्ञान स्रोत</value>
+  </data>
+  <data name="OllamaEnableContextSorting" xml:space="preserve">
+    <value>ओलामा संदर्भ क्रमबद्ध करना सक्षम करें</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
+    <value>अपनी व्यू एम्बेडिंग्स API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="SetViewApiEndpoint" xml:space="preserve">
+    <value>व्यू API एंडपॉइंट URL सेट करें।</value>
+  </data>
+  <data name="EnterOllamaHostName" xml:space="preserve">
+    <value>ओलामा होस्ट नाम या URL दर्ज करें।</value>
+  </data>
+  <data name="EnterViewAccessKey" xml:space="preserve">
+    <value>प्रमाणीकरण के लिए अपनी व्यू एक्सेस कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewTenantGUID" xml:space="preserve">
+    <value>मल्टी-टेनेंट वातावरण के लिए अपना व्यू टेनेंट GUID दर्ज करें।</value>
+  </data>
+  <data name="ViewCompletionModel" xml:space="preserve">
+    <value>व्यू पूर्णता मॉडल</value>
+  </data>
+  <data name="SpecifyViewModel" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे, llama3.1:8b।</value>
+  </data>
+  <data name="EnterCustomSystemPrompt" xml:space="preserve">
+    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
+    <value>VoyageAI एम्बेडिंग सेटिंग्स असंगत.</value>
   </data>
 </root>
