@@ -1,7 +1,7 @@
 namespace View.Personal.Services
 {
+    using Avalonia.Controls.Notifications;
     using Avalonia.Threading;
-    using LiteGraph;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -10,7 +10,6 @@ namespace View.Personal.Services
     using System.Threading.Tasks;
     using View.Personal.Classes;
     using View.Personal.Controls;
-    using View.Personal.Enums;
 
     /// <summary>
     /// Service for tracking and reporting file ingestion progress.
@@ -143,7 +142,6 @@ namespace View.Personal.Services
                 // Remove the file from active ingestions
                 _activeIngestions.TryRemove(_currentFile, out _);
                 
-                // If there are other active ingestions, update the current file to the next one
                 if (_activeIngestions.Count > 0)
                 {
                     var nextFile = _activeIngestions.Keys.First();
@@ -243,15 +241,12 @@ namespace View.Personal.Services
                 return;
             }
             
-            // Get the application instance for logging
             var app = Avalonia.Application.Current as App;
             app?.Log(Enums.SeverityEnum.Info, $"Starting cancellation of file: {Path.GetFileName(filePath)}");
             
-            // Update UI to show cancellation in progress
             _activeIngestions[filePath] = ("Cancelling...", 0);
             UpdateCurrentFileProgress(filePath, "Cancelling...", 0);
-            
-            // First, cancel the actual ingestion process
+  
             bool cancellationRequested = FileIngester.CancelIngestion(filePath);
             
             if (cancellationRequested)
@@ -261,19 +256,16 @@ namespace View.Personal.Services
                 // Give a short delay to allow cancellation to take effect
                 await Task.Delay(500);
                 
-                // Update UI to show deletion in progress
                 _activeIngestions[filePath] = ("Deleting...", 0);
                 UpdateCurrentFileProgress(filePath, "Deleting...", 0);
             }
             
-            // Remove from ingestion list if present
             if (FileIngester.IngestionList.Contains(filePath))
             {
                 FileIngester.IngestionList.Remove(filePath);
                 app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from ingestion list");
             }
            
-            // Update current file if needed
             if (filePath == _currentFile)
             {
                 if (_activeIngestions.Count > 0)
@@ -294,18 +286,15 @@ namespace View.Personal.Services
             
             try
             {
-                // Get the main window instance
                 if (app?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     var mainWindow = desktop.MainWindow as MainWindow;
                     if (mainWindow != null)
                     {
-                        // Find document node by file path
                         var liteGraph = app._LiteGraph;
                         var tenantGuid = app._TenantGuid;
                         var graphGuid = mainWindow.ActiveGraphGuid;
                         
-                        // Find the document node with this file path
                         var documentNodes = await Task.Run(() => 
                             liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
                             .Where(node => node.Tags != null && node.Tags["FilePath"] == filePath)
@@ -315,7 +304,6 @@ namespace View.Personal.Services
                         {
                             foreach (var node in documentNodes)
                             {
-                                // Create a FileViewModel to use with the DeleteFile method
                                 var fileViewModel = new FileViewModel
                                 {
                                     NodeGuid = node.GUID,
@@ -323,7 +311,6 @@ namespace View.Personal.Services
                                     FilePath = filePath
                                 };
                                 
-                                // Delete the file from the database
                                 await FileDeleter.DeleteFile(fileViewModel, liteGraph, tenantGuid, graphGuid, mainWindow);
                                 app.Log(Enums.SeverityEnum.Info, $"Deleted document node for cancelled file: {Path.GetFileName(filePath)}");
                             }
@@ -341,15 +328,12 @@ namespace View.Personal.Services
             }
             finally
             {
-                // Remove from active ingestions after database operations are complete
                 _activeIngestions.TryRemove(filePath, out _);
                 app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from active ingestions");
             }
             
-            // Raise the cancellation event
             IngestionCancelled?.Invoke(null, filePath);
             
-            // Log the cancellation
             app?.Log(Enums.SeverityEnum.Info, $"Cancelled ingestion of file: {Path.GetFileName(filePath)}");
         }
         
@@ -360,6 +344,35 @@ namespace View.Personal.Services
         private static bool HasPendingFiles()
         {
             return FileIngester.IngestionList.Count > 0;
+        }
+        
+        /// <summary>
+        /// Cancels all active and pending file ingestions.
+        /// </summary>
+        public static async void CancelAllFileIngestions()
+        {
+            var app = Avalonia.Application.Current as App;
+            app?.Log(Enums.SeverityEnum.Info, "Starting cancellation of all file ingestions");
+            
+            var activeFiles = new List<string>(_activeIngestions.Keys);
+            foreach (var filePath in activeFiles)
+            {
+                _activeIngestions[filePath] = ("Cancelling...", 0);
+                UpdateCurrentFileProgress(filePath, "Cancelling...", 0);    
+                FileIngester.CancelIngestion(filePath);
+                await Task.Delay(100);
+            }
+            
+            var pendingFiles = new List<string>(FileIngester.IngestionList);
+            foreach (var filePath in pendingFiles)
+            {
+                FileIngester.IngestionList.Remove(filePath);
+                app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from pending queue");
+            }
+            
+            UpdatePendingFiles();
+            
+            app?.Log(Enums.SeverityEnum.Info, $"Cancelled all file ingestions: {activeFiles.Count} active, {pendingFiles.Count} pending");
         }
     }
 }

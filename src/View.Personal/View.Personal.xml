@@ -1448,6 +1448,11 @@
             Handles the click event for the collapse/expand button.
             </summary>
         </member>
+        <member name="M:View.Personal.Controls.IngestionProgressPopup.CancelAllButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the cancel all button.
+            </summary>
+        </member>
         <member name="M:View.Personal.Controls.IngestionProgressPopup.UpdateActiveFiles(System.Collections.Generic.List{System.ValueTuple{System.String,System.String,System.Double}})">
             <summary>
             Updates the list of active files being processed.
@@ -2840,6 +2845,11 @@
             Checks if there are any pending files in the ingestion queue.
             </summary>
             <returns>True if there are pending files, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.IngestionProgressService.CancelAllFileIngestions">
+            <summary>
+            Cancels all active and pending file ingestions.
+            </summary>
         </member>
         <member name="T:View.Personal.Services.LocalModelService">
             <summary>
