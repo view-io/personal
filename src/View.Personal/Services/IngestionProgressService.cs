@@ -373,18 +373,6 @@ namespace View.Personal.Services
             UpdatePendingFiles();
             
             app?.Log(Enums.SeverityEnum.Info, $"Cancelled all file ingestions: {activeFiles.Count} active, {pendingFiles.Count} pending");
-            
-            if (app?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                var mainWindow = desktop.MainWindow as MainWindow;
-                if (mainWindow != null)
-                {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                        mainWindow.ShowNotification("Ingestion Cancelled",
-                            $"All file ingestions have been cancelled.",
-                            NotificationType.Warning));
-                }
-            }
         }
     }
 }
