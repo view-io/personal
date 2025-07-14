@@ -259,13 +259,14 @@
     <value>Embeddings Generation</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
-    <value>Select the local or cloud provider&#xD;&#xA;embedding model to be used to&#xD;&#xA;generate vector embeddings.</value>
+    <value>Select the local or cloud provider
+embedding model to be used to
+generate vector embeddings.</value>
   </data>
   <data name="EmbeddingsGenerationWarning" xml:space="preserve">
-    <value>WARNING: If you update or change&#xD;&#xA;your embedding model, you will&#xD;&#xA;need to re-import all documents.</value>
-  </data>
-  <data name="OpenAIEmbeddingModelTitle" xml:space="preserve">
-    <value>OpenAI Embedding Model</value>
+    <value>WARNING: If you update or change
+your embedding model, you will
+need to re-import all documents.</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>Model Name</value>
@@ -839,5 +840,173 @@
   </data>
   <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
     <value>VoyageAI embedding settings incompatible.</value>
+  </data>
+  <data name="DataMonitorTitle" xml:space="preserve">
+    <value>Data Monitor</value>
+  </data>
+  <data name="AdvancedRAGTitle" xml:space="preserve">
+    <value>Advanced RAG</value>
+  </data>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>Advanced Settings</value>
+  </data>
+  <data name="RAGSettingsTitle" xml:space="preserve">
+    <value>RAG Settings</value>
+  </data>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_API_KEY_HERE</value>
+  </data>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_EMBEDDINGS_API_KEY</value>
+  </data>
+  <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
+    <value>Enter your OpenAI API key.</value>
+  </data>
+  <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
+    <value>Enter your Anthropic API key.</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>Enter your View embeddings API key.</value>
+  </data>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>Enter your View access key for authentication.</value>
+  </data>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>Enter your View tenant GUID for multi-tenant environments.</value>
+  </data>
+  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
+    <value>Enter your VoyageAI API key for authentication.</value>
+  </data>
+  <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
+    <value>OpenAI Embedding Model</value>
+  </data>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>VoyageAI Embedding Model</value>
+  </data>
+  <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
+    <value>Ollama Embedding Model</value>
+  </data>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>View Embedding Model</value>
+  </data>
+  <data name="EmbeddingModelName" xml:space="preserve">
+    <value>Model Name</value>
+  </data>
+  <data name="EmbeddingDimensionality" xml:space="preserve">
+    <value>Dimensionality</value>
+  </data>
+  <data name="EmbeddingMaxTokens" xml:space="preserve">
+    <value>Max Tokens</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Endpoint</value>
+  </data>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>Saving settings...</value>
+  </data>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>Unselect All</value>
+  </data>
+  <data name="PaginationShowingItems" xml:space="preserve">
+    <value>Showing {0}-{1} of {2} items</value>
+  </data>
+  <data name="PaginationNoItems" xml:space="preserve">
+    <value>No items to display</value>
+  </data>
+  <data name="PaginationPageInfo" xml:space="preserve">
+    <value>Page {0} of {1}</value>
+  </data>
+  <data name="PaginationNoPages" xml:space="preserve">
+    <value>No pages</value>
+  </data>
+  <data name="FileIngestionProgress" xml:space="preserve">
+    <value>File Ingestion Progress</value>
+  </data>
+  <data name="CurrentIngestion" xml:space="preserve">
+    <value>Current Ingestion ({0})</value>
+  </data>
+  <data name="PendingQueue" xml:space="preserve">
+    <value>Pending Queue ({0})</value>
+  </data>
+  <data name="CancelAll" xml:space="preserve">
+    <value>Cancel All</value>
+  </data>
+  <data name="CancelIngestion" xml:space="preserve">
+    <value>Cancel ingestion</value>
+  </data>
+  <data name="AvailableDrives" xml:space="preserve">
+    <value>Available Drives</value>
+  </data>
+  <data name="EnterPathToNavigate" xml:space="preserve">
+    <value>Enter path to navigate...</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Last Modified</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>Watching</value>
+  </data>
+  <data name="ItemIsBeingWatched" xml:space="preserve">
+    <value>This item is being watched</value>
+  </data>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+  </data>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+  </data>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+  </data>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>Set the OpenAI API endpoint.</value>
+  </data>
+  <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
+    <value>Number of requests to process in a single batch.</value>
+  </data>
+  <data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
+    <value>Maximum number of retry attempts for failed requests.</value>
+  </data>
+  <data name="OpenAITemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>Minimum similarity score required for documents to be included in the context.</value>
+  </data>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>Configure advanced RAG settings</value>
+  </data>
+  <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
+    <value>The number of requests to process in a batch.</value>
+  </data>
+  <data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
+    <value>Maximum number of retries for failed requests.</value>
+  </data>
+  <data name="AnthropicTemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+  </data>
+  <data name="OllamaBatchSizeTooltip" xml:space="preserve">
+    <value>The number of requests to process in a batch.</value>
+  </data>
+  <data name="OllamaMaxRetriesTooltip" xml:space="preserve">
+    <value>Maximum number of retries for failed requests.</value>
+  </data>
+  <data name="OllamaTemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+  </data>
+  <data name="ViewBatchSizeTooltip" xml:space="preserve">
+    <value>The number of requests to process in a batch.</value>
+  </data>
+  <data name="ViewMaxRetriesTooltip" xml:space="preserve">
+    <value>Maximum number of retries for failed requests.</value>
+  </data>
+  <data name="ViewTemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
   </data>
 </root>

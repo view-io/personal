@@ -410,8 +410,8 @@ namespace View.Personal.UIHandlers
             var saveText = window.FindControl<TextBlock>("SaveSettingsText");
             var spinner = window.FindControl<MaterialIcon>("SaveSettingsSpinner");
 
-            string originalButtonText = "Save Settings";
-            saveText.Text = "Saving settings...";
+            string originalButtonText = ResourceManagerService.GetString("SaveSettings");
+            saveText.Text = ResourceManagerService.GetString("SavingSettings");
             spinner.IsVisible = true;
             try
             {

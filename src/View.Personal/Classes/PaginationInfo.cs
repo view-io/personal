@@ -1,6 +1,7 @@
 namespace View.Personal.Classes
 {
     using System;
+    using View.Personal.Services;
 
     /// <summary>
     /// Represents pagination information for data grids.
@@ -89,15 +90,15 @@ namespace View.Personal.Classes
         /// Gets a formatted string showing the range of items currently displayed.
         /// </summary>
         public string PageRangeText => TotalItems > 0
-            ? $"Showing {FirstItemIndex}-{LastItemIndex} of {TotalItems} items"
-            : "No items to display";
+            ? string.Format(ResourceManagerService.GetString("PaginationShowingItems"), FirstItemIndex, LastItemIndex, TotalItems)
+            : ResourceManagerService.GetString("PaginationNoItems");
 
         /// <summary>
         /// Gets a formatted string showing the current page number and total pages.
         /// </summary>
         public string PageInfoText => TotalPages > 0
-            ? $"Page {CurrentPage} of {TotalPages}"
-            : "No pages";
+            ? string.Format(ResourceManagerService.GetString("PaginationPageInfo"), CurrentPage, TotalPages)
+            : ResourceManagerService.GetString("PaginationNoPages");
 
         /// <summary>
         /// Advances to the next page, if available.

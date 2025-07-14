@@ -259,13 +259,14 @@
     <value>एम्बेडिंग्स जनरेशन</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
-    <value>स्थानीय या क्लाउड प्रदाता चुनें&#xD;&#xA;एम्बेडिंग मॉडल का उपयोग किया जाएगा&#xD;&#xA;वेक्टर एम्बेडिंग्स उत्पन्न करने के लिए।</value>
+    <value>स्थानीय या क्लाउड प्रदाता चुनें
+एम्बेडिंग मॉडल का उपयोग किया जाएगा
+वेक्टर एम्बेडिंग्स उत्पन्न करने के लिए।</value>
   </data>
   <data name="EmbeddingsGenerationWarning" xml:space="preserve">
-    <value>चेतावनी: यदि आप अपडेट या बदलते हैं&#xD;&#xA;आपका एम्बेडिंग मॉडल, आपको&#xD;&#xA;सभी दस्तावेज़ों को फिर से आयात करना होगा।</value>
-  </data>
-  <data name="OpenAIEmbeddingModel" xml:space="preserve">
-    <value>ओपनएआई एम्बेडिंग मॉडल</value>
+    <value>चेतावनी: यदि आप अपडेट या बदलते हैं
+आपका एम्बेडिंग मॉडल, आपको
+सभी दस्तावेज़ों को फिर से आयात करना होगा।</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>मॉडल नाम</value>
@@ -529,7 +530,7 @@
     <value>निर्देशिका तक पहुंच अस्वीकृत: {0}।</value>
   </data>
   <data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>OpenAI एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
+    <value>ओपनएआई एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
   </data>
   <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
     <value>स्थानीय एम्बेडिंग मॉडल कॉन्फ़िगर नहीं किया गया है।</value>
@@ -676,7 +677,7 @@
     <value>ओपनएआई</value>
   </data>
   <data name="GainAccessToOpenAI" xml:space="preserve">
-    <value>OpenAI मॉडल तक पहुंच प्राप्त करें</value>
+    <value>ओपनएआई मॉडल तक पहुंच प्राप्त करें</value>
   </data>
   <data name="Knowledgebases" xml:space="preserve">
     <value>ज्ञान आधार</value>
@@ -790,7 +791,7 @@
     <value>ओलामा अधिकतम पुनः प्रयास</value>
   </data>
   <data name="OllamaEmbeddingModel" xml:space="preserve">
-    <value>Ollama एम्बेडिंग मॉडल</value>
+    <value>ओलामा एम्बेडिंग मॉडल</value>
   </data>
   <data name="SpecifyOllamaEmbeddingModel" xml:space="preserve">
     <value>उपयोग करने के लिए Ollama एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे, llama2।</value>
@@ -838,6 +839,174 @@
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
   <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-    <value>VoyageAI एम्बेडिंग सेटिंग्स असंगत.</value>
+    <value>VoyageAI एम्बेडिंग सेटिंग्स असंगत हैं।</value>
+  </data>
+  <data name="DataMonitorTitle" xml:space="preserve">
+    <value>डेटा मॉनिटर</value>
+  </data>
+  <data name="AdvancedRAGTitle" xml:space="preserve">
+    <value>उन्नत RAG</value>
+  </data>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>उन्नत सेटिंग्स</value>
+  </data>
+  <data name="RAGSettingsTitle" xml:space="preserve">
+    <value>RAG सेटिंग्स</value>
+  </data>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_API_KEY_HERE</value>
+  </data>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_EMBEDDINGS_API_KEY</value>
+  </data>
+  <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
+    <value>अपनी OpenAI API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
+    <value>अपनी Anthropic API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>अपनी View एम्बेडिंग्स API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>प्रमाणीकरण के लिए अपनी View एक्सेस कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>मल्टी-टेनेंट वातावरण के लिए अपनी View टेनेंट GUID दर्ज करें।</value>
+  </data>
+  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
+    <value>प्रमाणीकरण के लिए अपनी VoyageAI API कुंजी दर्ज करें।</value>
+  </data>
+  <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
+    <value>ओपनएआई एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>वॉयजएआई एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
+    <value>ओल्लामा एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>व्यू एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="EmbeddingModelName" xml:space="preserve">
+    <value>मॉडल नाम</value>
+  </data>
+  <data name="EmbeddingDimensionality" xml:space="preserve">
+    <value>आयामीता</value>
+  </data>
+  <data name="EmbeddingMaxTokens" xml:space="preserve">
+    <value>अधिकतम टोकन</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>एपीआई कुंजी</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>एंडपॉइंट</value>
+  </data>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>सेटिंग्स सहेजी जा रही हैं...</value>
+  </data>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>सभी चयन हटाएँ</value>
+  </data>
+  <data name="PaginationShowingItems" xml:space="preserve">
+    <value>{2} में से {0}-{1} आइटम दिखा रहे हैं</value>
+  </data>
+  <data name="PaginationNoItems" xml:space="preserve">
+    <value>कोई आइटम प्रदर्शित नहीं है</value>
+  </data>
+  <data name="PaginationPageInfo" xml:space="preserve">
+    <value>पृष्ठ {0} का {1}</value>
+  </data>
+  <data name="PaginationNoPages" xml:space="preserve">
+    <value>कोई पृष्ठ नहीं</value>
+  </data>
+  <data name="FileIngestionProgress" xml:space="preserve">
+    <value>फ़ाइल इनजेशन प्रगति</value>
+  </data>
+  <data name="CurrentIngestion" xml:space="preserve">
+    <value>वर्तमान इनजेशन ({0})</value>
+  </data>
+  <data name="PendingQueue" xml:space="preserve">
+    <value>लंबित कतार ({0})</value>
+  </data>
+  <data name="CancelAll" xml:space="preserve">
+    <value>सभी रद्द करें</value>
+  </data>
+  <data name="CancelIngestion" xml:space="preserve">
+    <value>इनजेशन रद्द करें</value>
+  </data>
+  <data name="AvailableDrives" xml:space="preserve">
+    <value>उपलब्ध ड्राइव्स</value>
+  </data>
+  <data name="EnterPathToNavigate" xml:space="preserve">
+    <value>नेविगेट करने के लिए पथ दर्ज करें...</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>अंतिम संशोधित</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>निगरानी</value>
+  </data>
+  <data name="ItemIsBeingWatched" xml:space="preserve">
+    <value>यह आइटम निगरानी में है</value>
+  </data>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे gpt-3.5-turbo या gpt-4।</value>
+  </data>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए एंथ्रॉपिक मॉडल निर्दिष्ट करें, जैसे claude-2 या claude-instant-1।</value>
+  </data>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओल्लामा मॉडल निर्दिष्ट करें, जैसे llama2-7B-q4 या mistral-7B।</value>
+  </data>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>ओपनएआई API एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
+    <value>एक बैच में संसाधित किये जाने वाले अनुरोधों की संख्या.</value>
+  </data>
+  <data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
+    <value>असफल अनुरोधों के लिए पुनः प्रयास की अधिकतम संख्या.</value>
+  </data>
+  <data name="OpenAITemperatureTooltip" xml:space="preserve">
+    <value>AI की प्रतिक्रियाओं की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे, 0.8) अधिक रचनात्मक परिणाम देते हैं, जबकि निम्न मान (जैसे, 0.2) प्रतिक्रियाओं को अधिक केंद्रित और नियतात्मक बनाते हैं।</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>संदर्भ में शामिल करने के लिए दस्तावेज़ों के लिए न्यूनतम समानता स्कोर।</value>
+  </data>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
+  </data>
+  <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
+    <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
+  </data>
+  <data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
+    <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
+  </data>
+  <data name="AnthropicTemperatureTooltip" xml:space="preserve">
+    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+  </data>
+  <data name="OllamaBatchSizeTooltip" xml:space="preserve">
+    <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
+  </data>
+  <data name="OllamaMaxRetriesTooltip" xml:space="preserve">
+    <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
+  </data>
+  <data name="OllamaTemperatureTooltip" xml:space="preserve">
+    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+  </data>
+  <data name="ViewBatchSizeTooltip" xml:space="preserve">
+    <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
+  </data>
+  <data name="ViewMaxRetriesTooltip" xml:space="preserve">
+    <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
+  </data>
+  <data name="ViewTemperatureTooltip" xml:space="preserve">
+    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
   </data>
 </root>

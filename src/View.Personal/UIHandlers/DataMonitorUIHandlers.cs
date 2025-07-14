@@ -178,7 +178,7 @@ namespace View.Personal.UIHandlers
 
                 // Set a special path to indicate we're at the drives view
                 mainWindow._CurrentPath = "Drives";
-                pathTextBox.Text = "Available Drives";
+                pathTextBox.Text = ResourceManagerService.GetString("AvailableDrives");
 
                 var entries = new List<FileSystemEntry>();
                 var drives = DriveInfo.GetDrives();

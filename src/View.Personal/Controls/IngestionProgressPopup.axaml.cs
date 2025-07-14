@@ -84,7 +84,7 @@ namespace View.Personal.Controls
 
                 if (_pendingCountText != null)
                 {
-                    _pendingCountText.Text = $"Pending Queue ({_pendingFiles.Count})";
+                    _pendingCountText.Text = string.Format(ResourceManagerService.GetString("PendingQueue"), _pendingFiles.Count);
                 }
             });
             UpdateActiveFilesFromService();
@@ -142,7 +142,7 @@ namespace View.Personal.Controls
 
                 if (_activeCountText != null)
                 {
-                    _activeCountText.Text = $"Current Ingestion ({_activeFiles.Count})";
+                    _activeCountText.Text = string.Format(ResourceManagerService.GetString("CurrentIngestion"), _activeFiles.Count);
                 }
             });
         }

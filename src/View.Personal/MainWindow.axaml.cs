@@ -798,7 +798,7 @@ namespace View.Personal
                         
                         if (textBlock != null)
                         {
-                            textBlock.Text = "Select All";
+                            textBlock.Text = ResourceManagerService.GetString("SelectAll");
                         }
                         
                         if (icon != null)
@@ -1643,12 +1643,12 @@ namespace View.Personal
                         
                         if (allChecked)
                         {
-                            textBlock.Text = "Unselect All";
+                            textBlock.Text = ResourceManagerService.GetString("UnselectAll");
                             icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline;
                         }
                         else if (noneChecked)
                         {
-                            textBlock.Text = "Select All";
+                            textBlock.Text = ResourceManagerService.GetString("SelectAll");
                             icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
                         }
                     }
@@ -1669,7 +1669,7 @@ namespace View.Personal
                 var selectAllButton = this.FindControl<Button>("SelectAllButton");
                 
                 // Get the current button text to determine the action
-                string currentButtonText = "Select All";
+                string currentButtonText = ResourceManagerService.GetString("SelectAll");
                 if (selectAllButton != null && selectAllButton.Content is StackPanel stackPanel)
                 {
                     var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
@@ -1681,7 +1681,7 @@ namespace View.Personal
                 
                 // If button says "Unselect All", we want to unselect all files
                 // If button says "Select All", we want to select all files
-                bool newCheckedState = currentButtonText == "Select All";
+                bool newCheckedState = currentButtonText == ResourceManagerService.GetString("SelectAll");
                 
                 foreach (var file in filesList)
                 {
@@ -1696,7 +1696,7 @@ namespace View.Personal
                     
                     if (textBlock != null)
                     {
-                        textBlock.Text = newCheckedState ? "Unselect All" : "Select All";
+                        textBlock.Text = newCheckedState ? ResourceManagerService.GetString("UnselectAll") : ResourceManagerService.GetString("SelectAll");
                     }
                     
                     if (icon != null)
@@ -1853,7 +1853,7 @@ namespace View.Personal
                                 var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
                                 if (textBlock != null)
                                 {
-                                    textBlock.Text = "Select All";
+                                    textBlock.Text = ResourceManagerService.GetString("SelectAll");
                                 }
                             }
                         }
