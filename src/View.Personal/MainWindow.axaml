@@ -240,9 +240,6 @@
 						</Grid.RowDefinitions>
 						<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
 							<TextBlock Text="Welcome to View" FontSize="45" Classes="default" />
-							<Border CornerRadius="4" Background="#F5F5F5" Padding="5" Height="22"
-                                    VerticalAlignment="Top">
-							</Border>
 						</StackPanel>
 						<StackPanel Grid.Row="1" Spacing="30" Margin="0,20,0,0">
 							<StackPanel Orientation="Horizontal" Spacing="16">
