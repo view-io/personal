@@ -790,9 +790,15 @@
 
                 if (!token.IsCancellationRequested && !wasCancelled)
                 {
-                    mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        mainWindow.ShowNotification("Ingestion Error", $"Something went wrong: {ex.Message}",
                         NotificationType.Error);
+                    });
                 }
+                if (IngestionList.Contains(filePath))
+                    IngestionList.Remove(filePath);
+                RemoveFileFromCompleted(filePath);
                 IngestionProgressService.UpdateProgress($"Error: {ex.Message}", 0);
             }
             finally
@@ -2121,7 +2127,6 @@
                 if (IngestionList.Contains(filePath))
                     IngestionList.Remove(filePath);
                 await Dispatcher.UIThread.InvokeAsync(() => app.Log(Enums.SeverityEnum.Info, $"Ingestion operation cancelled for file: {Path.GetFileName(filePath)}"));
-
                 IngestionProgressService.CompleteFileIngestion(filePath);
 
                 if (mainWindow != null)
