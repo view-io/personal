@@ -698,13 +698,13 @@
     <value>ओपनएआई API एंडपॉइंट सेट करें।</value>
   </data>
   <data name="EnterAnthropicApiKey" xml:space="preserve">
-    <value>अपनी एंथ्रोपिक API कुंजी दर्ज करें।</value>
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="SpecifyAnthropicModel" xml:space="preserve">
     <value>उपयोग करने के लिए एंथ्रोपिक मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
   </data>
   <data name="SetAnthropicEndpoint" xml:space="preserve">
-    <value>एंथ्रोपिक API एंडपॉइंट सेट करें।</value>
+    <value>एंथ्रोपिक एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="BatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में प्रोसेस करने के लिए अनुरोधों की संख्या।</value>
@@ -716,7 +716,7 @@
     <value>पूर्णताओं में यादृच्छिकता को नियंत्रित करता है। उच्च मान (0.8) आउटपुट को अधिक यादृच्छिक बनाते हैं, निम्न मान (0.2) इसे अधिक केंद्रित बनाते हैं।</value>
   </data>
   <data name="EnableRAGTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
+    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो एआई अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
   </data>
   <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
     <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
@@ -735,6 +735,21 @@
   </data>
   <data name="EnableCitationsTooltip" xml:space="preserve">
     <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>ज्ञानकोष स्रोत</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्ति संवर्धित पीढ़ी सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञानकोष का उपयोग करेगा।</value>
+  </data>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
+  </data>
+  <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
   </data>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
@@ -776,25 +791,28 @@
     <value>उपयोग करने के लिए ओलामा मॉडल निर्दिष्ट करें, जैसे, llama2-7B-q4 या mistral-7B।</value>
   </data>
   <data name="OllamaSystemPrompt" xml:space="preserve">
-    <value>ओलामा सिस्टम प्रॉम्प्ट</value>
+    <value>ओल्लामा सिस्टम प्रॉम्प्ट</value>
+  </data>
+  <data name="OllamaEndpoint" xml:space="preserve">
+    <value>ओल्लामा एंडपॉइंट</value>
   </data>
   <data name="SetOllamaEndpoint" xml:space="preserve">
-    <value>ओलामा API एंडपॉइंट सेट करें।</value>
+    <value>ओल्लामा एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="OllamaTemperature" xml:space="preserve">
-    <value>ओलामा तापमान</value>
+    <value>ओल्लामा तापमान</value>
   </data>
   <data name="OllamaBatchSize" xml:space="preserve">
-    <value>ओलामा बैच आकार</value>
+    <value>ओल्लामा बैच आकार</value>
   </data>
   <data name="OllamaMaxRetries" xml:space="preserve">
-    <value>ओलामा अधिकतम पुनः प्रयास</value>
+    <value>ओल्लामा अधिकतम पुनः प्रयास</value>
   </data>
   <data name="OllamaEmbeddingModel" xml:space="preserve">
     <value>ओलामा एम्बेडिंग मॉडल</value>
   </data>
   <data name="SpecifyOllamaEmbeddingModel" xml:space="preserve">
-    <value>उपयोग करने के लिए Ollama एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे, llama2।</value>
+    <value>उपयोग करने के लिए ओल्लामा एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे, llama2।</value>
   </data>
   <data name="DimensionalityTooltip" xml:space="preserve">
     <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिता।</value>
@@ -803,31 +821,31 @@
     <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए अधिकतम टोकन।</value>
   </data>
   <data name="OllamaEnableRAG" xml:space="preserve">
-    <value>ओलामा RAG सक्षम करें</value>
+    <value>ओल्लामा RAG सक्षम करें</value>
   </data>
   <data name="OllamaRagSettingsPanel" xml:space="preserve">
-    <value>ओलामा RAG सेटिंग्स पैनल</value>
+    <value>ओल्लामा RAG सेटिंग्स पैनल</value>
   </data>
   <data name="OllamaKnowledgeSource" xml:space="preserve">
-    <value>ओलामा ज्ञान स्रोत</value>
+    <value>ओल्लामा ज्ञान स्रोत</value>
   </data>
   <data name="OllamaEnableContextSorting" xml:space="preserve">
-    <value>ओलामा संदर्भ क्रमबद्ध करना सक्षम करें</value>
+    <value>ओल्लामा संदर्भ क्रमबद्ध करना सक्षम करें</value>
   </data>
   <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
-    <value>अपनी व्यू एम्बेडिंग्स API कुंजी दर्ज करें।</value>
+    <value>अपनी व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="SetViewApiEndpoint" xml:space="preserve">
-    <value>व्यू API एंडपॉइंट URL सेट करें।</value>
+    <value>व्यू एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
   </data>
   <data name="EnterOllamaHostName" xml:space="preserve">
-    <value>ओलामा होस्ट नाम या URL दर्ज करें।</value>
+    <value>ओल्लामा होस्ट नाम या यूआरएल दर्ज करें।</value>
   </data>
   <data name="EnterViewAccessKey" xml:space="preserve">
     <value>प्रमाणीकरण के लिए अपनी व्यू एक्सेस कुंजी दर्ज करें।</value>
   </data>
   <data name="EnterViewTenantGUID" xml:space="preserve">
-    <value>मल्टी-टेनेंट वातावरण के लिए अपना व्यू टेनेंट GUID दर्ज करें।</value>
+    <value>मल्टी-टेनेंट वातावरण के लिए अपना व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
   </data>
   <data name="ViewCompletionModel" xml:space="preserve">
     <value>व्यू पूर्णता मॉडल</value>
@@ -839,7 +857,7 @@
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
   <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-    <value>VoyageAI एम्बेडिंग सेटिंग्स असंगत हैं।</value>
+    <value>वॉयजएआई एम्बेडिंग सेटिंग्स असंगत हैं।</value>
   </data>
   <data name="DataMonitorTitle" xml:space="preserve">
     <value>डेटा मॉनिटर</value>
@@ -854,28 +872,28 @@
     <value>RAG सेटिंग्स</value>
   </data>
   <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_API_KEY_HERE</value>
+    <value>आपकी_एपीआई_कुंजी_यहां</value>
   </data>
   <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_EMBEDDINGS_API_KEY</value>
+    <value>आपकी_एम्बेडिंग्स_एपीआई_कुंजी</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>अपनी OpenAI API कुंजी दर्ज करें।</value>
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>अपनी Anthropic API कुंजी दर्ज करें।</value>
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
-    <value>अपनी View एम्बेडिंग्स API कुंजी दर्ज करें।</value>
+    <value>अपनी व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
-    <value>प्रमाणीकरण के लिए अपनी View एक्सेस कुंजी दर्ज करें।</value>
+    <value>प्रमाणीकरण के लिए अपनी व्यू एक्सेस कुंजी दर्ज करें।</value>
   </data>
   <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
-    <value>मल्टी-टेनेंट वातावरण के लिए अपनी View टेनेंट GUID दर्ज करें।</value>
+    <value>मल्टी-टेनेंट वातावरण के लिए अपनी व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>प्रमाणीकरण के लिए अपनी VoyageAI API कुंजी दर्ज करें।</value>
+    <value>प्रमाणीकरण के लिए अपनी वॉयजएआई एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>ओपनएआई एम्बेडिंग मॉडल</value>
@@ -989,7 +1007,7 @@
     <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
   </data>
   <data name="AnthropicTemperatureTooltip" xml:space="preserve">
-    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+    <value>एआई के उत्तरों की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
   </data>
   <data name="OllamaBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
@@ -998,7 +1016,10 @@
     <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
   </data>
   <data name="OllamaTemperatureTooltip" xml:space="preserve">
-    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+    <value>एआई के उत्तरों की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+  </data>
+  <data name="SetAnthropicEndpointTooltip" xml:space="preserve">
+    <value>एंथ्रॉपिक एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
   </data>
   <data name="ViewBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
@@ -1007,6 +1028,102 @@
     <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयासों की संख्या।</value>
   </data>
   <data name="ViewTemperatureTooltip" xml:space="preserve">
-    <value>AI के उत्तरों की रैंडमनेस को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+    <value>एआई के उत्तरों की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
+  </data>
+  <data name="ViewEndpointTooltip" xml:space="preserve">
+    <value>व्यू एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
+  </data>
+  <data name="OllamaHostNameTooltip" xml:space="preserve">
+    <value>ओल्लामा होस्ट नाम या URL दर्ज करें।</value>
+  </data>
+  <data name="ViewSystemPromptTooltip" xml:space="preserve">
+    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
+  </data>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
+  </data>
+  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
+    <value>ज्ञान आधार हटाएं</value>
+  </data>
+  <data name="ClearConsoleTooltip" xml:space="preserve">
+    <value>कंसोल साफ़ करें</value>
+  </data>
+  <data name="DownloadLogsTooltip" xml:space="preserve">
+    <value>लॉग डाउनलोड करें</value>
+  </data>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी को अनुकूलित करें</value>
+  </data>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
+  </data>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
+  </data>
+  <data name="SetOllamaEndpointTooltip" xml:space="preserve">
+    <value>ओल्लामा एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
+  </data>
+  <data name="EnterCustomSystemPrompt" xml:space="preserve">
+    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>व्यू एक्सेस कुंजी दर्ज करें।</value>
+  </data>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
+  </data>
+  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
+    <value>वॉयेजएआई एपीआई कुंजी दर्ज करें।</value>
+  </data>
+  <data name="AdvancedRAG" xml:space="preserve">
+    <value>उन्नत RAG</value>
+  </data>
+  <data name="AdvancedRAGTitle" xml:space="preserve">
+    <value>उन्नत RAG</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>ज्ञान आधार स्रोत</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओपनएआई एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे text-embedding-3-small।</value>
+  </data>
+  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
+    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
+  </data>
+  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
+    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए टोकन की अधिकतम संख्या।</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए वॉयेजएआई एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे voyage-3।</value>
+  </data>
+  <data name="SetVoyageAIEndpointTooltip" xml:space="preserve">
+    <value>वॉयेजएआई एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
+  </data>
+  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
+  </data>
+  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओल्लामा एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
+  </data>
+  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
+    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
+  </data>
+  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
+    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस किए जाने वाले टोकन की अधिकतम संख्या।</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>संदर्भ में शामिल किए जाने के लिए दस्तावेज़ों के लिए आवश्यक न्यूनतम समानता स्कोर।</value>
+  </data>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी को अनुकूलित करें</value>
   </data>
 </root>
