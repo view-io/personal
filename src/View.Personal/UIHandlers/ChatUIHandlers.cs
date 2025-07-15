@@ -138,9 +138,9 @@ namespace View.Personal.UIHandlers
                         {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
-                            
+
                             mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
-                            
+
                             var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                             if (chatHistoryList != null)
                             {
@@ -234,10 +234,9 @@ namespace View.Personal.UIHandlers
                 var conversationText = string.Join("\n", messages.Select(m => $"{m.Role}: {m.Content}"));
                 var summaryPrompt = $"""
                                         You will be given a series of user messages from a single chat conversation.
-
                                         Your task is to create a single, short title that summarizes the main topic(s) of the entire conversation based on these user inputs.
-                                                                  Output language:
-                                     - You must respond ONLY in **{languageName}**
+                                        Output language:
+                                        - You must respond ONLY in **{languageName}**
                                         Rules:
                                         - The title must be under {maxLength} characters.
                                         - Respond ONLY with the plain text title.
@@ -492,7 +491,7 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
-       
+
         #endregion
     }
 }
