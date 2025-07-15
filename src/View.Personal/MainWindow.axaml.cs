@@ -1893,7 +1893,7 @@ namespace View.Personal
         /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:", enableValidation: true, validationErrorMessage: "Please enter a knowledgebase name");
+            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync(ResourceManagerService.GetString("CreateNewKnowledgebase"), ResourceManagerService.GetString("EnterKnowledgebaseName"), enableValidation: true, validationErrorMessage: ResourceManagerService.GetString("PleaseEnterKnowledgebaseName"));
             if (!string.IsNullOrWhiteSpace(text) && result == ButtonResult.Ok) CreateNewGraph(text);
         }
 

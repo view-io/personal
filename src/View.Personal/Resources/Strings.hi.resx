@@ -226,7 +226,7 @@
     <value>व्यू सेटिंग्स</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
-    <value>एम्बेडिंग्स API कुंजी</value>
+    <value>एम्बेडिंग्स एपीआई कुंजी</value>
   </data>
   <data name="ViewEndpoint" xml:space="preserve">
     <value>व्यू एंडपॉइंट</value>
@@ -502,6 +502,9 @@
   <data name="SelectAtLeastOneFile" xml:space="preserve">
     <value>कृपया हटाने के लिए कम से कम एक फ़ाइल का चयन करें।</value>
   </data>
+  <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
+    <value>क्या आप वाकई ज्ञानकोष से चयनित फ़ाइलें हटाना चाहते हैं?</value>
+  </data>
   <data name="ErrorIngesting" xml:space="preserve">
     <value>{0} को इंजेस्ट करने में त्रुटि: {1}</value>
   </data>
@@ -569,10 +572,13 @@
     <value>इंजेस्शन के लिए फ़ाइलों और फ़ोल्डरों की निरंतर निगरानी करें</value>
   </data>
   <data name="ConfigureLLM" xml:space="preserve">
-    <value>अपने LLM और API कुंजियों को कॉन्फ़िगर करें</value>
+    <value>अपने एलएलएम और एपीआई कुंजियों को कॉन्फ़िगर करें</value>
   </data>
   <data name="ChatWithData" xml:space="preserve">
     <value>अपने डेटा के साथ चैट करें</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>चैट</value>
   </data>
   <data name="UploadFiles" xml:space="preserve">
     <value>फ़ाइलें अपलोड करें</value>
@@ -643,6 +649,15 @@
   <data name="EnterUserMessage" xml:space="preserve">
     <value>उपयोगकर्ता संदेश दर्ज करें...</value>
   </data>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>आप किस बारे में चैट करना चाहते हैं?</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>साफ़ करें</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>डाउनलोड करें</value>
+  </data>
   <data name="Copyright" xml:space="preserve">
     <value>©2025 व्यू सिस्टम्स इंक.</value>
   </data>
@@ -683,10 +698,10 @@
     <value>ज्ञान आधार</value>
   </data>
   <data name="YourApiKeyHere" xml:space="preserve">
-    <value>आपकी_API_कुंजी_यहां</value>
+    <value>आपकी_एपीआई_कुंजी_यहां</value>
   </data>
   <data name="EnterOpenAIApiKey" xml:space="preserve">
-    <value>अपनी ओपनएआई API कुंजी दर्ज करें।</value>
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
   </data>
   <data name="SpecifyOpenAIModel" xml:space="preserve">
     <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
@@ -695,7 +710,7 @@
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
   <data name="SetOpenAIEndpoint" xml:space="preserve">
-    <value>ओपनएआई API एंडपॉइंट सेट करें।</value>
+    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="EnterAnthropicApiKey" xml:space="preserve">
     <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
@@ -762,6 +777,77 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>रद्द करें</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>ठीक है</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>हां</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>नहीं</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>निरस्त करें</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>पुनः प्रयास करें</value>
+  </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>अनदेखा करें</value>
+  </data>
+  <data name="ConfirmDeletion" xml:space="preserve">
+    <value>हटाने की पुष्टि करें</value>
+  </data>
+  <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
+    <value>क्या आप वाकई नॉलेजबेस '{0}' को हटाना चाहते हैं?</value>
+  </data>
+  <data name="ConfirmWatch" xml:space="preserve">
+    <value>वॉच की पुष्टि करें</value>
+  </data>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
+  </data>
+  <data name="ConfirmWatchMessage" xml:space="preserve">
+    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
+  </data>
+  <data name="ConfirmUnwatchMessage" xml:space="preserve">
+    <value>'{0}' की वॉच बंद करें? इससे {1} फ़ाइल{2} प्रभावित होंगी।</value>
+  </data>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>केवल वॉच बंद करें</value>
+  </data>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>वॉच बंद करें और हटाएं</value>
+  </data>
+  <data name="ConfirmRemoveFile" xml:space="preserve">
+    <value>क्या आप वाकई '{0}' को हटाना चाहते हैं</value>
+  </data>
+  <data name="FromKnowledgebase" xml:space="preserve">
+    <value>नॉलेजबेस से?</value>
+  </data>
+
+  <data name="NeedInstallOllama" xml:space="preserve">
+    <value>AI मॉडल को पुल और उपयोग करने के लिए आपको ओलामा इंस्टॉल करने की आवश्यकता है।</value>
+  </data>
+  <data name="DeleteModel" xml:space="preserve">
+    <value>मॉडल हटाएं</value>
+  </data>
+  <data name="ConfirmDeleteModel" xml:space="preserve">
+    <value>क्या आप वाकई मॉडल '{0}' को हटाना चाहते हैं?</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>यह क्रिया वापस नहीं की जा सकती है।</value>
+  </data>
+
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>व्यू पर्सनल शुरू करने में असमर्थ</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>व्यू पर्सनल निम्नलिखित अपवाद के कारण शुरू नहीं हो सका:</value>
+  </data>
+  <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
+    <value>कृपया सेटिंग्स में एक एम्बेडिंग प्रदाता चुनें।</value>
   </data>
   <data name="DownloadedModels" xml:space="preserve">
     <value>डाउनलोड किए गए मॉडल</value>
@@ -966,7 +1052,7 @@
     <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
   </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
-    <value>ओपनएआई API एंडपॉइंट सेट करें।</value>
+    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित किये जाने वाले अनुरोधों की संख्या.</value>

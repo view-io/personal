@@ -169,10 +169,10 @@ namespace View.Personal.Views
                     pullButton.IsEnabled = true;
                     cancelButton.IsVisible = false;
                     const string ollamaDownloadUrl = "https://ollama.com/download";
-                    var textLines = new List<string> { "You need to install Ollama to pull and use AI models." };
-                    await CustomMessageBoxHelper.ShowServiceNotInstalledAsync("Ollama Not Installed",
-                                                                              "Ollama is not installed or not running on the system defined in the settings.",
-                                                                              "Download Ollama",
+                    var textLines = new List<string> { ResourceManagerService.GetString("OllamaInstallationRequired") };
+                    await CustomMessageBoxHelper.ShowServiceNotInstalledAsync(ResourceManagerService.GetString("OllamaNotInstalled"),
+                                                                              ResourceManagerService.GetString("OllamaNotInstalledMessage"),
+                                                                              ResourceManagerService.GetString("DownloadOllama"),
                                                                                ollamaDownloadUrl,
                                                                                textLines: textLines);
                 }
@@ -402,10 +402,10 @@ namespace View.Personal.Views
                 if (App.Current!.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     var mainWindow = (MainWindow)desktop.MainWindow!;
-                    var textLines = new List<string> { "This action cannot be undone." };
+                    var textLines = new List<string> { Services.ResourceManagerService.GetString("ActionCannotBeUndone") };
 
-                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Delete Model",
-                                 $"Are you sure you want to delete the model '{modelName}'?",
+                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync(Services.ResourceManagerService.GetString("DeleteModel"),
+                                 string.Format(Services.ResourceManagerService.GetString("ConfirmDeleteModel"), modelName),
                                  icon: MessageBoxIcon.Warning,
                                  textLines: textLines);
 

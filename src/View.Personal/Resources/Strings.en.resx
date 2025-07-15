@@ -514,6 +514,9 @@ need to re-import all documents.</value>
   <data name="SelectAtLeastOneFile" xml:space="preserve">
     <value>Please select at least one file to remove.</value>
   </data>
+  <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
+    <value>Are you sure you want to remove the selected files from the knowledgebase?</value>
+  </data>
   <data name="ErrorIngesting" xml:space="preserve">
     <value>Error ingesting {0}: {1}</value>
   </data>
@@ -655,6 +658,15 @@ need to re-import all documents.</value>
   <data name="EnterUserMessage" xml:space="preserve">
     <value>Enter user message...</value>
   </data>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>What do you want to chat about?</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
   <data name="Copyright" xml:space="preserve">
     <value>Â©2025 View Systems Inc.</value>
   </data>
@@ -768,6 +780,75 @@ need to re-import all documents.</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>Abort</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>Ignore</value>
+  </data>
+  <data name="ConfirmDeletion" xml:space="preserve">
+    <value>Confirm Deletion</value>
+  </data>
+  <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
+    <value>Are you sure you want to delete the knowledgebase '{0}'?</value>
+  </data>
+  <data name="ConfirmWatch" xml:space="preserve">
+    <value>Confirm Watch</value>
+  </data>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
+  </data>
+  <data name="ConfirmWatchMessage" xml:space="preserve">
+    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
+  </data>
+  <data name="ConfirmUnwatchMessage" xml:space="preserve">
+    <value>Stop watching '{0}'? This will affect {1} file{2}.</value>
+  </data>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>Unwatch Only</value>
+  </data>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>Unwatch and Delete</value>
+  </data>
+  <data name="ConfirmRemoveFile" xml:space="preserve">
+    <value>Are you sure you want to remove '{0}'</value>
+  </data>
+  <data name="FromKnowledgebase" xml:space="preserve">
+    <value>from the knowledgebase?</value>
+  </data>
+  <data name="NeedInstallOllama" xml:space="preserve">
+    <value>You need to install Ollama to pull and use AI models.</value>
+  </data>
+  <data name="DeleteModel" xml:space="preserve">
+    <value>Delete Model</value>
+  </data>
+  <data name="ConfirmDeleteModel" xml:space="preserve">
+    <value>Are you sure you want to delete the model '{0}'?</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>This action cannot be undone.</value>
+  </data>
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>Unable to start View Personal</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>View Personal was unable to start due to the following exception:</value>
+  </data>
+  <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
+    <value>Please select an embedding provider in the settings.</value>
   </data>
   <data name="DownloadedModels" xml:space="preserve">
     <value>Downloaded models</value>

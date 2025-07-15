@@ -265,8 +265,8 @@ namespace View.Personal
                     _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
                     _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
                     CustomMessageBoxHelper.ShowErrorAsync(
-                        "Unable to start View Personal",
-                        "View Personal was unable to start due to the following exception:" + Environment.NewLine +
+                        Services.ResourceManagerService.GetString("UnableToStartViewPersonal"),
+                        Services.ResourceManagerService.GetString("ViewPersonalStartupError") + Environment.NewLine +
                         Environment.NewLine + e.Message).Wait();
                     Environment.Exit(1);
                 }

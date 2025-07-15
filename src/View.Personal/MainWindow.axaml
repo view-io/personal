@@ -2202,8 +2202,8 @@
                                                        VerticalAlignment="Top" />
 								<Button.ContextMenu>
 									<ContextMenu>
-										<MenuItem Header="Clear" x:Name="ClearMenuItem" Click="ClearChat_Click" />
-										<MenuItem Header="Download" x:Name="DownloadMenuItem"
+										<MenuItem Header="{l:Localize Clear}" x:Name="ClearMenuItem" Click="ClearChat_Click" />
+										<MenuItem Header="{l:Localize Download}" x:Name="DownloadMenuItem"
                                                   Click="DownloadChat_Click" />
 									</ContextMenu>
 								</Button.ContextMenu>
@@ -2227,7 +2227,7 @@
                                   Margin="0,-100,0,0">
 								<StackPanel Spacing="10">
 									<TextBlock x:Name="ChatPlaceholder"
-                                               Text="What do you want to chat about?"
+                                               Text="{l:Localize WhatDoYouWantToChatAbout}"
                                                FontSize="28"
 										       FontWeight="Bold"
                                                Foreground="#1A1C1E"

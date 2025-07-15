@@ -42,8 +42,8 @@ namespace View.Personal.Services
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
-                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                                        $"Are you sure you want to remove '{file.Name}'", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
+                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync(ResourceManagerService.GetString("ConfirmDeletion"),
+                                        string.Format(ResourceManagerService.GetString("ConfirmRemoveFile"), file.Name), MessageBoxIcon.Warning, textLines: new List<string> { ResourceManagerService.GetString("FromKnowledgebase") });
 
                     if (result != ButtonResult.Yes)
                         return;
@@ -103,8 +103,8 @@ namespace View.Personal.Services
             var filesList = files.ToList();
             if (!filesList.Any()) return false;
 
-            var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                           $"Are you sure you want to remove the selected files", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
+            var result = await CustomMessageBoxHelper.ShowConfirmationAsync(ResourceManagerService.GetString("ConfirmDeletion"),
+                           ResourceManagerService.GetString("ConfirmRemoveSelectedFiles"), MessageBoxIcon.Warning, textLines: new List<string> { ResourceManagerService.GetString("FromKnowledgebase") });
             if (result != ButtonResult.Yes) return false;
 
             var app = (App)App.Current;

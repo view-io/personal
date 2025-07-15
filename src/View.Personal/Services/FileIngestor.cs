@@ -904,7 +904,7 @@ namespace View.Personal.Services
                 if (string.IsNullOrEmpty(embeddingProvider))
                 {
                     await CustomMessageBoxHelper.ShowErrorAsync(
-                        "Error", "Please select an embedding provider");
+                        ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("PleaseSelectEmbeddingProvider"));
                     return;
                 }
 
