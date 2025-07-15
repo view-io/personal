@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,1021 +118,1021 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppTitle" xml:space="preserve">
-    <value>View Personal</value>
+    <value>パーソナルを見る</value>
   </data>
   <data name="Knowledgebase" xml:space="preserve">
-    <value>Knowledgebase</value>
+    <value>ナレッジベース</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>設定</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Language</value>
+    <value>言語</value>
   </data>
   <data name="English" xml:space="preserve">
-    <value>English</value>
+    <value>英語</value>
   </data>
   <data name="Hindi" xml:space="preserve">
-    <value>Hindi</value>
+    <value>ヒンディー語</value>
   </data>
   <data name="SaveSettings" xml:space="preserve">
-    <value>Save Settings</value>
+    <value>設定を保存</value>
   </data>
   <data name="ErrorStartingApp" xml:space="preserve">
-    <value>Unable to start View Personal</value>
+    <value>パーソナルを見る を起動できません</value>
   </data>
   <data name="ErrorGeneric" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>エラーが発生しました</value>
   </data>
   <data name="SettingsSaved" xml:space="preserve">
-    <value>Settings saved successfully</value>
+    <value>設定が正常に保存されました</value>
   </data>
   <data name="LanguageChanged" xml:space="preserve">
-    <value>Language changed to {0}</value>
+    <value>言語が{0}に変更されました</value>
   </data>
   <data name="StartNewChat" xml:space="preserve">
-    <value>Start New Chat</value>
+    <value>新しいチャットを開始</value>
   </data>
   <data name="OpenAIProvider" xml:space="preserve">
     <value>OpenAI</value>
   </data>
   <data name="OpenAIDescription" xml:space="preserve">
-    <value>Gain access to OpenAI models</value>
+    <value>OpenAIモデルにアクセスします</value>
   </data>
   <data name="OpenAISettings" xml:space="preserve">
-    <value>OpenAI Settings</value>
+    <value>OpenAI 設定</value>
   </data>
   <data name="OpenAIApiKey" xml:space="preserve">
-    <value>OpenAI API Key</value>
+    <value>OpenAI APIキー</value>
   </data>
   <data name="OpenAICompletionModel" xml:space="preserve">
-    <value>OpenAI Completion Model</value>
+    <value>OpenAI 補完モデル</value>
   </data>
   <data name="SystemPrompt" xml:space="preserve">
-    <value>System Prompt</value>
+    <value>システムプロンプト</value>
   </data>
   <data name="OpenAIEndpoint" xml:space="preserve">
-    <value>OpenAI Endpoint</value>
+    <value>OpenAI エンドポイント</value>
   </data>
   <data name="BatchSize" xml:space="preserve">
-    <value>Batch Size</value>
+    <value>バッチサイズ</value>
   </data>
   <data name="MaxRetries" xml:space="preserve">
-    <value>Max Retries</value>
+    <value>最大リトライ回数</value>
   </data>
   <data name="Temperature" xml:space="preserve">
     <value>Temperature</value>
   </data>
   <data name="EnableRAG" xml:space="preserve">
-    <value>Enable RAG</value>
+    <value>RAGを有効にする</value>
   </data>
   <data name="AdvancedSettings" xml:space="preserve">
-    <value>Advanced Settings</value>
+    <value>詳細設定</value>
   </data>
   <data name="SimilarityThreshold" xml:space="preserve">
-    <value>Similarity Threshold</value>
+    <value>類似度のしきい値</value>
   </data>
   <data name="AnthropicProvider" xml:space="preserve">
     <value>Anthropic</value>
   </data>
   <data name="AnthropicDescription" xml:space="preserve">
-    <value>Gain access to Anthropic models</value>
+    <value>Anthropicモデルへのアクセスを取得</value>
   </data>
   <data name="AnthropicSettings" xml:space="preserve">
-    <value>Anthropic Settings</value>
+    <value>Anthropic 設定</value>
   </data>
   <data name="AnthropicApiKey" xml:space="preserve">
-    <value>Anthropic API Key</value>
+    <value>Anthropic APIキー</value>
   </data>
   <data name="AnthropicCompletionModel" xml:space="preserve">
-    <value>Anthropic Completion Model</value>
+    <value>Anthropic 補完モデル</value>
   </data>
   <data name="AnthropicEndpoint" xml:space="preserve">
-    <value>Anthropic Endpoint</value>
+    <value>Anthropic エンドポイント</value>
   </data>
   <data name="LocalProvider" xml:space="preserve">
-    <value>Local</value>
+    <value>ローカル</value>
   </data>
   <data name="LocalDescription" xml:space="preserve">
-    <value>Gain access to a local model</value>
+    <value>ローカルモデルにアクセスします</value>
   </data>
   <data name="OllamaSettings" xml:space="preserve">
-    <value>Ollama Settings</value>
+    <value>Ollama 設定</value>
   </data>
   <data name="OllamaCompletionModel" xml:space="preserve">
-    <value>Ollama Completion Model</value>
+    <value>Ollama 補完モデル</value>
   </data>
   <data name="ViewSettings" xml:space="preserve">
-    <value>View Settings</value>
+    <value>View 設定</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
-    <value>Embeddings API Key</value>
+    <value>埋め込みAPIキー</value>
   </data>
   <data name="ViewEndpoint" xml:space="preserve">
-    <value>View Endpoint</value>
+    <value>View エンドポイント</value>
   </data>
   <data name="OllamaHostName" xml:space="preserve">
-    <value>Ollama Host Name</value>
+    <value>Ollama ホスト名</value>
   </data>
   <data name="AccessKey" xml:space="preserve">
-    <value>Access Key</value>
+    <value>アクセスキー</value>
   </data>
   <data name="TenantGuid" xml:space="preserve">
-    <value>Tenant Guid</value>
+    <value>テナントGUID</value>
   </data>
   <data name="KnowledgebaseSource" xml:space="preserve">
-    <value>Knowledgebase Source</value>
+    <value>ナレッジベースソース</value>
   </data>
   <data name="CompletionModel" xml:space="preserve">
-    <value>Completion Model</value>
+    <value>補完モデル</value>
   </data>
   <data name="MaxRetrieved" xml:space="preserve">
-    <value>Max retrieved</value>
+    <value>最大取得数</value>
   </data>
   <data name="QueryOptimization" xml:space="preserve">
-    <value>Query optimization</value>
+    <value>クエリ最適化</value>
   </data>
   <data name="Simplified Chinese" xml:space="preserve">
-    <value>Simplified Chinese</value>
+    <value>簡体字中国語</value>
   </data>
   <data name="EnableContextSortingTooltip" xml:space="preserve">
-    <value>Sort context by relevance</value>
+    <value>コンテキストを関連性で並べ替える</value>
   </data>
   <data name="EnableRAGTooltip" xml:space="preserve">
-    <value>Enable Retrieval Augmented Generation. When enabled, the AI will use your knowledge base to augment its responses.</value>
+    <value>検索拡張生成 (RAG) を有効にします。有効にすると、AI はナレッジベースを使用して応答を拡張します。</value>
   </data>
   <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
-    <value>Configure advanced RAG settings</value>
+    <value>高度なRAG設定を構成</value>
   </data>
   <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
-    <value>Maximum number of documents to retrieve</value>
+    <value>取得するドキュメントの最大数</value>
   </data>
   <data name="RAGSettings" xml:space="preserve">
-    <value>RAG Settings</value>
+    <value>RAG設定</value>
   </data>
   <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>Embeddings Generation</value>
+    <value>埋め込み生成</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
-    <value>Select the local or cloud provider
-embedding model to be used to
-generate vector embeddings.</value>
+    <value>ベクトル埋め込みの生成に使用する
+ローカルまたはクラウドプロバイダーの
+埋め込みモデルを選択します。</value>
   </data>
   <data name="EmbeddingsGenerationWarning" xml:space="preserve">
-    <value>WARNING: If you update or change
-your embedding model, you will
-need to re-import all documents.</value>
+    <value>警告：埋め込みモデルを更新または
+変更した場合、すべてのドキュメントを
+再インポートする必要があります。</value>
   </data>
   <data name="ModelName" xml:space="preserve">
-    <value>Model Name</value>
+    <value>モデル名</value>
   </data>
   <data name="Dimensionality" xml:space="preserve">
-    <value>Dimensionality</value>
+    <value>次元数</value>
   </data>
   <data name="MaxTokens" xml:space="preserve">
-    <value>Max Tokens</value>
+    <value>最大トークン数</value>
   </data>
   <data name="GainAccessToAnthropic" xml:space="preserve">
-    <value>Gain access to Anthropic models</value>
+    <value>Anthropicモデルへのアクセスを取得</value>
   </data>
   <data name="GainAccessToLocalModel" xml:space="preserve">
-    <value>Gain access to a local model.</value>
+    <value>ローカルモデルへのアクセスを取得します。</value>
   </data>
   <data name="GainAccessToViewModel" xml:space="preserve">
-    <value>Gain access to View models</value>
+    <value>Viewモデルへのアクセスを取得</value>
   </data>
   <data name="LanguageSettingSaved" xml:space="preserve">
-    <value>Language Setting Saved</value>
+    <value>言語設定が保存されました</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Error</value>
+    <value>エラー</value>
   </data>
   <data name="FailedToSaveLanguage" xml:space="preserve">
-    <value>Failed to save language setting</value>
+    <value>言語設定の保存に失敗しました</value>
   </data>
   <data name="PleaseEnterValueFor" xml:space="preserve">
-    <value>Please enter value for the {0}.</value>
+    <value>{0}の値を入力してください。</value>
   </data>
   <data name="OllamaNotInstalled" xml:space="preserve">
-    <value>Ollama Not Installed</value>
+    <value>Ollamaがインストールされていません</value>
   </data>
   <data name="OllamaNotRunning" xml:space="preserve">
-    <value>Ollama is not installed or not running on the system defined in the settings.</value>
+    <value>Ollamaがインストールされていないか、設定で定義されたシステムで実行されていません。</value>
   </data>
   <data name="DownloadOllama" xml:space="preserve">
-    <value>Download Ollama</value>
+    <value>Ollamaをダウンロード</value>
   </data>
   <data name="FileDeleted" xml:space="preserve">
-    <value>File Deleted</value>
+    <value>ファイルが削除されました</value>
   </data>
   <data name="FileDeletedSuccess" xml:space="preserve">
-    <value>{0} was deleted successfully!</value>
+    <value>{0} は正常に削除されました！</value>
   </data>
   <data name="DeletionError" xml:space="preserve">
-    <value>Deletion Error</value>
+    <value>削除エラー</value>
   </data>
   <data name="DeletionWarning" xml:space="preserve">
-    <value>Deletion Warning</value>
+    <value>削除警告</value>
   </data>
   <data name="FilesDeleted" xml:space="preserve">
-    <value>Files Deleted</value>
+    <value>ファイルが削除されました</value>
   </data>
   <data name="IngestionError" xml:space="preserve">
-    <value>Ingestion Error</value>
+    <value>取り込みエラー</value>
   </data>
   <data name="NoFileSelected" xml:space="preserve">
-    <value>No file selected.</value>
+    <value>ファイルが選択されていません。</value>
   </data>
   <data name="FileIngested" xml:space="preserve">
-    <value>File Ingested</value>
+    <value>ファイルが取り込まれました</value>
   </data>
   <data name="FileIngestedSuccess" xml:space="preserve">
-    <value>{0} ingested successfully!</value>
+    <value>{0} は正常に取り込まれました！</value>
   </data>
   <data name="ReingestionError" xml:space="preserve">
-    <value>Re-ingestion Error</value>
+    <value>再取り込みエラー</value>
   </data>
   <data name="BatchIngestionComplete" xml:space="preserve">
-    <value>Batch Ingestion Complete</value>
+    <value>バッチ取り込み完了</value>
   </data>
   <data name="BatchIngestionError" xml:space="preserve">
-    <value>Batch Ingestion Error</value>
+    <value>バッチ取り込みエラー</value>
   </data>
   <data name="IngestionCancelled" xml:space="preserve">
-    <value>Ingestion Cancelled</value>
+    <value>取り込みがキャンセルされました</value>
   </data>
   <data name="FilePathNotAvailable" xml:space="preserve">
-    <value>File path is not available.</value>
+    <value>ファイルパスが利用できません。</value>
   </data>
   <data name="FileDoesNotExist" xml:space="preserve">
-    <value>File does not exist on disk.</value>
+    <value>ファイルがディスクに存在しません。</value>
   </data>
   <data name="CouldNotOpenFileLocation" xml:space="preserve">
-    <value>Could not open file location: {0}</value>
+    <value>ファイルの場所を開けませんでした: {0}</value>
   </data>
   <data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
-    <value>File path is not available for reprocessing.</value>
+    <value>再処理のためのファイルパスが利用できません。</value>
   </data>
   <data name="FileReprocessed" xml:space="preserve">
-    <value>File Reprocessed</value>
+    <value>ファイルが再処理されました</value>
   </data>
   <data name="FileReprocessedSuccess" xml:space="preserve">
-    <value>{0} was reprocessed successfully!</value>
+    <value>{0} は正常に再処理されました！</value>
   </data>
   <data name="KnowledgebaseDeleted" xml:space="preserve">
-    <value>Knowledgebase Deleted</value>
+    <value>ナレッジベースが削除されました</value>
   </data>
   <data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
-    <value>{0} was deleted successfully!</value>
+    <value>{0} は正常に削除されました！</value>
   </data>
   <data name="ModelDeleted" xml:space="preserve">
-    <value>Model Deleted</value>
+    <value>モデルが削除されました</value>
   </data>
   <data name="ModelDeletedSuccess" xml:space="preserve">
-    <value>{0} was deleted successfully!</value>
+    <value>{0} は正常に削除されました！</value>
   </data>
   <data name="FailedToDeleteModel" xml:space="preserve">
-    <value>Failed to delete {0}. Please try again.</value>
+    <value>{0} の削除に失敗しました。もう一度お試しください。</value>
   </data>
   <data name="ErrorPullingModel" xml:space="preserve">
-    <value>Error pulling model: {0}</value>
+    <value>モデルのプルエラー: {0}</value>
   </data>
   <data name="CreateNewKnowledgebase" xml:space="preserve">
-    <value>Create New Knowledgebase</value>
+    <value>新しいナレッジベースを作成</value>
   </data>
   <data name="EnterKnowledgebaseName" xml:space="preserve">
-    <value>Enter Knowledgebase name:</value>
+    <value>ナレッジベース名を入力してください:</value>
   </data>
   <data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
-    <value>Please enter a knowledgebase name</value>
+    <value>ナレッジベース名を入力してください</value>
   </data>
   <data name="NoSelection" xml:space="preserve">
-    <value>No Selection</value>
+    <value>未選択</value>
   </data>
   <data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
-    <value>Please select at least one file to remove.</value>
+    <value>削除するファイルを少なくとも1つ選択してください。</value>
   </data>
   <data name="ConsoleLogsSaved" xml:space="preserve">
-    <value>Console logs saved successfully</value>
+    <value>コンソールログが正常に保存されました</value>
   </data>
   <data name="InvalidEndpoint" xml:space="preserve">
-    <value>Invalid Endpoint</value>
+    <value>無効なエンドポイント</value>
   </data>
   <data name="OllamaEndpointFormat" xml:space="preserve">
-    <value>Ollama endpoint must be in the format: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
+    <value>Ollamaエンドポイントは次の形式である必要があります: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
   </data>
   <data name="HostnameNotResolvable" xml:space="preserve">
-    <value>The {0} endpoint hostname could not be resolved via DNS.</value>
+    <value>{0} エンドポイントのホスト名はDNSで解決できませんでした。</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
-    <value>Access Denied</value>
+    <value>アクセスが拒否されました</value>
   </data>
   <data name="CannotAccessPath" xml:space="preserve">
-    <value>Cannot access {0}: {1}</value>
+    <value>{0}にアクセスできません: {1}</value>
   </data>
   <data name="FailedToLoadDirectory" xml:space="preserve">
-    <value>Failed to load directory: {0}</value>
+    <value>ディレクトリの読み込みに失敗しました: {0}</value>
   </data>
   <data name="InvalidPath" xml:space="preserve">
-    <value>Invalid Path</value>
+    <value>無効なパス</value>
   </data>
   <data name="PleaseEnterValidPath" xml:space="preserve">
-    <value>Please enter a valid path.</value>
+    <value>有効なパスを入力してください。</value>
   </data>
   <data name="PathNotFound" xml:space="preserve">
-    <value>Path Not Found</value>
+    <value>パスが見つかりません</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>The path '{0}' does not exist.</value>
+    <value>パス '{0}' は存在しません。</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>Failed to navigate to '{0}': {1}</value>
+    <value>'{0}'へのナビゲーションに失敗しました: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
-    <value>Model Downloaded</value>
+    <value>モデルがダウンロードされました</value>
   </data>
   <data name="ModelDownloadedSuccess" xml:space="preserve">
-    <value>{0} was pulled successfully!</value>
+    <value>{0} は正常にプルされました！</value>
   </data>
   <data name="FilesDeletedPartial" xml:space="preserve">
-    <value>Deleted {0} files. Failed to delete {1} files.</value>
+    <value>{0}個のファイルを削除しました。{1}個のファイルの削除に失敗しました。</value>
   </data>
   <data name="FilesDeletedSuccess" xml:space="preserve">
-    <value>{0} files were deleted successfully!</value>
+    <value>{0}個のファイルが正常に削除されました！</value>
   </data>
   <data name="FailedToGenerateEmbeddings" xml:space="preserve">
-    <value>Failed to generate embeddings for chunks with status {0}</value>
+    <value>ステータス{0}のチャンクの埋め込み生成に失敗しました</value>
   </data>
   <data name="LanguagePreferenceSaved" xml:space="preserve">
-    <value>Your language preference has been saved and applied.</value>
+    <value>言語設定が保存され、適用されました。</value>
   </data>
   <data name="FailedToSaveLanguageSetting" xml:space="preserve">
-    <value>Failed to save language setting: {0}</value>
+    <value>言語設定の保存に失敗しました: {0}</value>
   </data>
   <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
-    <value>Are you sure you want to remove the selected files from the knowledgebase?</value>
+    <value>選択したファイルをナレッジベースから削除してもよろしいですか？</value>
   </data>
   <data name="ErrorIngesting" xml:space="preserve">
-    <value>Error ingesting {0}: {1}</value>
+    <value>{0}の取り込みエラー: {1}</value>
   </data>
   <data name="BatchIngestionPartialSuccess" xml:space="preserve">
-    <value>Successfully ingested {0} files. {1} files failed.</value>
+    <value>{0}個のファイルの取り込みに成功しました。{1}個のファイルは失敗しました。</value>
   </data>
   <data name="BatchIngestionFullSuccess" xml:space="preserve">
-    <value>Successfully ingested all {0} files.</value>
+    <value>全{0}個のファイルの取り込みに成功しました。</value>
   </data>
   <data name="IngestionCancelledMessage" xml:space="preserve">
-    <value>Ingestion of {0} was cancelled.</value>
+    <value>{0}の取り込みはキャンセルされました。</value>
   </data>
   <data name="ErrorResumingIngestion" xml:space="preserve">
-    <value>Error resuming ingestion: {0}</value>
+    <value>取り込み再開エラー: {0}</value>
   </data>
   <data name="FailedToLoadDrives" xml:space="preserve">
-    <value>Failed to load drives: {0}</value>
+    <value>ドライブの読み込みに失敗しました: {0}</value>
   </data>
   <data name="NoWatchedPathsToSync" xml:space="preserve">
-    <value>No watched paths to sync.</value>
+    <value>同期する監視対象パスがありません。</value>
   </data>
   <data name="AccessDeniedToDirectory" xml:space="preserve">
-    <value>Access denied to directory: {0}.</value>
+    <value>ディレクトリへのアクセスが拒否されました: {0}。</value>
   </data>
   <data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>OpenAI embedding settings incomplete.</value>
+    <value>OpenAI埋め込み設定が不完全です。</value>
   </data>
   <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
-    <value>Local embedding model not configured.</value>
+    <value>ローカル埋め込みモデルが設定されていません。</value>
   </data>
   <data name="NoConsoleLogs" xml:space="preserve">
-    <value>No console logs to download</value>
+    <value>ダウンロードするコンソールログはありません</value>
   </data>
   <data name="FailedToSaveConsoleLogs" xml:space="preserve">
-    <value>Failed to save console logs</value>
+    <value>コンソールログの保存に失敗しました</value>
   </data>
   <data name="Files" xml:space="preserve">
-    <value>Files</value>
+    <value>ファイル</value>
   </data>
   <data name="DataMonitor" xml:space="preserve">
-    <value>Data Monitor</value>
+    <value>データモニター</value>
   </data>
   <data name="Console" xml:space="preserve">
-    <value>Console</value>
+    <value>コンソール</value>
   </data>
   <data name="ChatHistory" xml:space="preserve">
-    <value>Chat History</value>
+    <value>チャット履歴</value>
   </data>
   <data name="ManageFiles" xml:space="preserve">
-    <value>Manage the files you want to chat with</value>
+    <value>チャットしたいファイルを管理する</value>
   </data>
   <data name="MonitorFiles" xml:space="preserve">
-    <value>Continuously monitor files and folders for ingestion</value>
+    <value>ファイルとフォルダを取り込みのために継続的に監視する</value>
   </data>
   <data name="ConfigureLLM" xml:space="preserve">
-    <value>Configure your LLM and API keys</value>
+    <value>LLMとAPIキーを設定する</value>
   </data>
   <data name="ChatWithData" xml:space="preserve">
-    <value>Chat with your data</value>
+    <value>データとチャットする</value>
   </data>
   <data name="ClickToUpload" xml:space="preserve">
-    <value>Click to upload </value>
+    <value>クリックしてアップロード </value>
   </data>
   <data name="OrDragAndDrop" xml:space="preserve">
-    <value>or drag and drop</value>
+    <value>またはドラッグアンドドロップ</value>
   </data>
   <data name="MaxFileSize" xml:space="preserve">
-    <value>(max file size 500mb)</value>
+    <value>(最大ファイルサイズ 500MB)</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>Name</value>
+    <value>名前</value>
   </data>
   <data name="DateCreated" xml:space="preserve">
-    <value>Date Created</value>
+    <value>作成日</value>
   </data>
   <data name="Actions" xml:space="preserve">
-    <value>Actions</value>
+    <value>アクション</value>
   </data>
   <data name="OpenInFileExplorer" xml:space="preserve">
-    <value>Open in File Explorer</value>
+    <value>ファイルエクスプローラーで開く</value>
   </data>
   <data name="DeleteFile" xml:space="preserve">
-    <value>Delete file</value>
+    <value>ファイルを削除</value>
   </data>
   <data name="NoItemsToDisplay" xml:space="preserve">
-    <value>No items to display</value>
+    <value>表示する項目はありません</value>
   </data>
   <data name="NoPages" xml:space="preserve">
-    <value>No pages</value>
+    <value>ページがありません</value>
   </data>
   <data name="FirstPage" xml:space="preserve">
-    <value>First page</value>
+    <value>最初のページ</value>
   </data>
   <data name="PreviousPage" xml:space="preserve">
-    <value>Previous page</value>
+    <value>前のページ</value>
   </data>
   <data name="NextPage" xml:space="preserve">
-    <value>Next page</value>
+    <value>次のページ</value>
   </data>
   <data name="LastPage" xml:space="preserve">
-    <value>Last page</value>
+    <value>最後のページ</value>
   </data>
   <data name="ItemsPerPage" xml:space="preserve">
-    <value>Items per page:</value>
+    <value>ページあたりの項目数:</value>
   </data>
   <data name="EnterUserMessage" xml:space="preserve">
-    <value>Enter user message...</value>
+    <value>ユーザーメッセージを入力...</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>クリア</value>
   </data>
   <data name="Download" xml:space="preserve">
-    <value>Download</value>
+    <value>ダウンロード</value>
   </data>
   <data name="Copyright" xml:space="preserve">
     <value>©2025 View Systems Inc.</value>
   </data>
   <data name="NewKnowledgebase" xml:space="preserve">
-    <value>New Knowledgebase</value>
+    <value>新しいナレッジベース</value>
   </data>
   <data name="ExportToGEXF" xml:space="preserve">
-    <value>Export to GEXF</value>
+    <value>GEXFにエクスポート</value>
   </data>
   <data name="GUID" xml:space="preserve">
     <value>GUID</value>
   </data>
   <data name="Nodes" xml:space="preserve">
-    <value>Nodes</value>
+    <value>ノード</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Created</value>
+    <value>作成日時</value>
   </data>
   <data name="LastUpdate" xml:space="preserve">
-    <value>Last Update</value>
+    <value>最終更新</value>
   </data>
   <data name="DeleteKnowledgebase" xml:space="preserve">
-    <value>Delete knowledgebase</value>
+    <value>ナレッジベースを削除</value>
   </data>
   <data name="Providers" xml:space="preserve">
-    <value>Providers</value>
+    <value>プロバイダー</value>
   </data>
   <data name="OpenAI" xml:space="preserve">
     <value>OpenAI</value>
   </data>
   <data name="GainAccessToOpenAI" xml:space="preserve">
-    <value>Gain access to OpenAI models</value>
+    <value>OpenAIモデルへのアクセスを取得</value>
   </data>
   <data name="Knowledgebases" xml:space="preserve">
-    <value>Knowledgebases</value>
+    <value>ナレッジベース</value>
   </data>
   <data name="EnterOpenAIApiKey" xml:space="preserve">
-    <value>Enter your OpenAI API key.</value>
+    <value>OpenAI APIキーを入力してください。</value>
   </data>
   <data name="EnterSystemPrompt" xml:space="preserve">
-    <value>Enter a custom system prompt for the model.</value>
+    <value>モデルのカスタムシステムプロンプトを入力します。</value>
   </data>
   <data name="EnterAnthropicApiKey" xml:space="preserve">
-    <value>Enter your Anthropic API key.</value>
+    <value>Anthropic APIキーを入力してください。</value>
   </data>
   <data name="BatchSizeTooltip" xml:space="preserve">
-    <value>Number of requests to process in a single batch.</value>
+    <value>1つのバッチで処理するリクエストの数。</value>
   </data>
   <data name="MaxRetriesTooltip" xml:space="preserve">
-    <value>Maximum number of retry attempts for failed requests.</value>
+    <value>失敗したリクエストの最大再試行回数。</value>
   </data>
   <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
-    <value>Configure advanced RAG settings</value>
+    <value>高度なRAG設定を構成</value>
   </data>
   <data name="AdvancedRAG" xml:space="preserve">
-    <value>Advanced RAG</value>
+    <value>高度なRAG</value>
   </data>
   <data name="MaxRetrievedTooltip" xml:space="preserve">
-    <value>Maximum number of documents to retrieve</value>
+    <value>取得するドキュメントの最大数</value>
   </data>
   <data name="QueryOptimizationTooltip" xml:space="preserve">
-    <value>Optimize queries for better retrieval results</value>
+    <value>より良い検索結果のためにクエリを最適化する</value>
   </data>
   <data name="EnableCitationsTooltip" xml:space="preserve">
-    <value>Include citations in the generated responses</value>
+    <value>生成された応答に引用を含める</value>
   </data>
   <data name="EnableCitations" xml:space="preserve">
-    <value>Enable citations</value>
+    <value>引用を有効にする</value>
   </data>
   <data name="EnableContextSorting" xml:space="preserve">
-    <value>Enable context sorting</value>
+    <value>コンテキストの並べ替えを有効にする</value>
   </data>
   <data name="LocalModels" xml:space="preserve">
-    <value>Local Models</value>
+    <value>ローカルモデル</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
-    <value>Pull a new model</value>
+    <value>新しいモデルをプル</value>
   </data>
   <data name="ClickHere" xml:space="preserve">
-    <value>Click here</value>
+    <value>ここをクリック </value>
   </data>
   <data name="ExploreAvailableModels" xml:space="preserve">
-    <value>to explore available models</value>
+    <value>して利用可能なモデルを探す</value>
   </data>
   <data name="EnterOllamaModelTag" xml:space="preserve">
-    <value>Enter Ollama compatible model tag (e.g. qwen2.5:7b)</value>
+    <value>Ollama互換モデルタグ（例: qwen2.5:7b）を入力</value>
   </data>
   <data name="Pull" xml:space="preserve">
-    <value>Pull</value>
+    <value>プル</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>キャンセル</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>OK</value>
+    <value>わかりました</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>No</value>
+    <value>いいえ</value>
   </data>
   <data name="Abort" xml:space="preserve">
-    <value>Abort</value>
+    <value>中止</value>
   </data>
   <data name="Ignore" xml:space="preserve">
-    <value>Ignore</value>
+    <value>無視</value>
   </data>
   <data name="ConfirmDeletion" xml:space="preserve">
-    <value>Confirm Deletion</value>
+    <value>削除の確認</value>
   </data>
   <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-    <value>Are you sure you want to delete the knowledgebase '{0}'?</value>
+    <value>ナレッジベース「{0}」を削除してもよろしいですか？</value>
   </data>
   <data name="ConfirmWatch" xml:space="preserve">
-    <value>Confirm Watch</value>
+    <value>監視の確認</value>
   </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
-    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
+    <value>「{0}」を監視しますか？これにより{1}個のファイル{2}が取り込まれます。</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
-    <value>Stop watching '{0}'? This will affect {1} file{2}.</value>
+    <value>「{0}」の監視を停止しますか？これにより{1}個のファイル{2}に影響があります。</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
-    <value>Are you sure you want to remove '{0}'</value>
+    <value>「{0}」を削除してもよろしいですか</value>
   </data>
   <data name="FromKnowledgebase" xml:space="preserve">
-    <value>from the knowledgebase?</value>
+    <value>ナレッジベースから？</value>
   </data>
   <data name="NeedInstallOllama" xml:space="preserve">
-    <value>You need to install Ollama to pull and use AI models.</value>
+    <value>AIモデルをプルして使用するには、Ollamaをインストールする必要があります。</value>
   </data>
   <data name="DeleteModel" xml:space="preserve">
-    <value>Delete Model</value>
+    <value>モデルを削除</value>
   </data>
   <data name="ConfirmDeleteModel" xml:space="preserve">
-    <value>Are you sure you want to delete the model '{0}'?</value>
+    <value>モデル「{0}」を削除してもよろしいですか？</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
-    <value>This action cannot be undone.</value>
+    <value>この操作は元に戻せません。</value>
   </data>
   <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
-    <value>Please select an embedding provider in the settings.</value>
+    <value>設定で埋め込みプロバイダーを選択してください。</value>
   </data>
   <data name="DownloadedModels" xml:space="preserve">
-    <value>Downloaded models</value>
+    <value>ダウンロード済みモデル</value>
   </data>
   <data name="ChooseFromExistingModels" xml:space="preserve">
-    <value>Choose from existing models</value>
+    <value>既存のモデルから選択</value>
   </data>
   <data name="ParameterSize" xml:space="preserve">
-    <value>parameter size: {0}</value>
+    <value>パラメータサイズ: {0}</value>
   </data>
   <data name="OllamaSystemPrompt" xml:space="preserve">
-    <value>Ollama system prompt</value>
+    <value>Ollamaシステムプロンプト</value>
   </data>
   <data name="OllamaEndpoint" xml:space="preserve">
-    <value>Ollama Endpoint</value>
+    <value>Ollama エンドポイント</value>
   </data>
   <data name="OllamaTemperature" xml:space="preserve">
     <value>Ollama Temperature</value>
   </data>
   <data name="OllamaBatchSize" xml:space="preserve">
-    <value>Ollama Batch Size</value>
+    <value>Ollama バッチサイズ</value>
   </data>
   <data name="OllamaMaxRetries" xml:space="preserve">
-    <value>Ollama Max Retries</value>
+    <value>Ollama 最大リトライ回数</value>
   </data>
   <data name="OllamaEmbeddingModel" xml:space="preserve">
-    <value>Ollama Embedding Model</value>
+    <value>Ollama 埋め込みモデル</value>
   </data>
   <data name="DimensionalityTooltip" xml:space="preserve">
-    <value>The dimensionality of embedding vectors produced by this model.</value>
+    <value>このモデルによって生成される埋め込みベクトルの次元数。</value>
   </data>
   <data name="MaxTokensTooltip" xml:space="preserve">
-    <value>Maximum number of tokens to process for each embedding operation.</value>
+    <value>各埋め込み操作で処理する最大トークン数。</value>
   </data>
   <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
-    <value>The dimensionality of the embedding vectors generated by this model.</value>
+    <value>このモデルによって生成される埋込みベクトルの次元数。</value>
   </data>
   <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
-    <value>The maximum number of tokens to process for each embedding operation.</value>
+    <value>各埋め込み操作で処理する最大トークン数。</value>
   </data>
   <data name="OllamaEnableRAG" xml:space="preserve">
-    <value>Ollama Enable RAG</value>
+    <value>Ollama RAGを有効にする</value>
   </data>
   <data name="OllamaRagSettingsPanel" xml:space="preserve">
-    <value>Ollama RAG Settings Panel</value>
+    <value>Ollama RAG設定パネル</value>
   </data>
   <data name="OllamaKnowledgeSource" xml:space="preserve">
-    <value>Ollama Knowledge Source</value>
+    <value>Ollamaナレッジソース</value>
   </data>
   <data name="OllamaEnableContextSorting" xml:space="preserve">
-    <value>Ollama Enable Context Sorting</value>
+    <value>Ollamaコンテキスト並べ替えを有効にする</value>
   </data>
   <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
-    <value>Enter your View Embeddings API key.</value>
+    <value>View埋め込みAPIキーを入力してください。</value>
   </data>
   <data name="EnterOllamaHostName" xml:space="preserve">
-    <value>Enter the Ollama host name or URL.</value>
+    <value>Ollamaホスト名またはURLを入力します。</value>
   </data>
   <data name="EnterViewAccessKey" xml:space="preserve">
-    <value>Enter your View access key for authentication.</value>
+    <value>認証用のViewアクセスキーを入力してください。</value>
   </data>
   <data name="EnterViewTenantGUID" xml:space="preserve">
-    <value>Enter your View tenant GUID for multi-tenant environments.</value>
+    <value>マルチテナント環境用のViewテナントGUIDを入力してください。</value>
   </data>
   <data name="EnterCustomSystemPrompt" xml:space="preserve">
-    <value>Enter a custom system prompt for the model.</value>
+    <value>モデル用のカスタムシステムプロンプトを入力します。</value>
   </data>
   <data name="DataMonitorTitle" xml:space="preserve">
-    <value>Data Monitor</value>
+    <value>データモニター</value>
   </data>
   <data name="AdvancedRAGTitle" xml:space="preserve">
-    <value>Advanced RAG</value>
+    <value>高度なRAG</value>
   </data>
   <data name="AdvancedSettingsTitle" xml:space="preserve">
-    <value>Advanced Settings</value>
+    <value>詳細設定</value>
   </data>
   <data name="RAGSettingsTitle" xml:space="preserve">
-    <value>RAG Settings</value>
+    <value>RAG設定</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Enter your OpenAI API key.</value>
+    <value>OpenAI APIキーを入力してください。</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Enter your Anthropic API key.</value>
+    <value>Anthropic APIキーを入力してください。</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
-    <value>Enter your View embeddings API key.</value>
+    <value>View埋め込みAPIキーを入力してください。</value>
   </data>
   <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
-    <value>Enter your View access key for authentication.</value>
+    <value>認証用のViewアクセスキーを入力してください。</value>
   </data>
   <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
-    <value>Enter your View tenant GUID for multi-tenant environments.</value>
+    <value>マルチテナント環境用のViewテナントGUIDを入力してください。</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Enter your VoyageAI API key for authentication.</value>
+    <value>認証用のVoyageAI APIキーを入力してください。</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
-    <value>OpenAI Embedding Model</value>
+    <value>OpenAI 埋め込みモデル</value>
   </data>
   <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
-    <value>Ollama Embedding Model</value>
+    <value>Ollama 埋め込みモデル</value>
   </data>
   <data name="EmbeddingModelName" xml:space="preserve">
-    <value>Model Name</value>
+    <value>モデル名</value>
   </data>
   <data name="EmbeddingDimensionality" xml:space="preserve">
-    <value>Dimensionality</value>
+    <value>次元数</value>
   </data>
   <data name="EmbeddingMaxTokens" xml:space="preserve">
-    <value>Max Tokens</value>
+    <value>最大トークン数</value>
   </data>
   <data name="ApiKey" xml:space="preserve">
-    <value>API Key</value>
+    <value>APIキー</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>Endpoint</value>
+    <value>エンドポイント</value>
   </data>
   <data name="PaginationShowingItems" xml:space="preserve">
-    <value>Showing {0}-{1} of {2} items</value>
+    <value>{2}件中 {0}-{1}件を表示</value>
   </data>
   <data name="PaginationNoItems" xml:space="preserve">
-    <value>No items to display</value>
+    <value>表示する項目はありません</value>
   </data>
   <data name="PaginationPageInfo" xml:space="preserve">
-    <value>Page {0} of {1}</value>
+    <value>{1}ページ中 {0}ページ</value>
   </data>
   <data name="PaginationNoPages" xml:space="preserve">
-    <value>No pages</value>
+    <value>ページがありません</value>
   </data>
   <data name="FileIngestionProgress" xml:space="preserve">
-    <value>File Ingestion Progress</value>
+    <value>ファイル取り込みの進捗</value>
   </data>
   <data name="CurrentIngestion" xml:space="preserve">
-    <value>Current Ingestion ({0})</value>
+    <value>現在の取り込み ({0})</value>
   </data>
   <data name="PendingQueue" xml:space="preserve">
-    <value>Pending Queue ({0})</value>
+    <value>待機キュー ({0})</value>
   </data>
   <data name="CancelAll" xml:space="preserve">
-    <value>Cancel All</value>
+    <value>すべてキャンセル</value>
   </data>
   <data name="CancelIngestion" xml:space="preserve">
-    <value>Cancel ingestion</value>
+    <value>取り込みをキャンセル</value>
   </data>
   <data name="AvailableDrives" xml:space="preserve">
-    <value>Available Drives</value>
+    <value>利用可能なドライブ</value>
   </data>
   <data name="EnterPathToNavigate" xml:space="preserve">
-    <value>Enter path to navigate...</value>
+    <value>ナビゲートするパスを入力...</value>
   </data>
   <data name="LastModified" xml:space="preserve">
-    <value>Last Modified</value>
+    <value>最終更新日時</value>
   </data>
   <data name="ItemIsBeingWatched" xml:space="preserve">
-    <value>This item is being watched</value>
+    <value>この項目は監視されています</value>
   </data>
   <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
-    <value>Number of requests to process in a single batch.</value>
+    <value>1つのバッチで処理するリクエストの数。</value>
   </data>
   <data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
-    <value>Maximum number of retry attempts for failed requests.</value>
+    <value>失敗したリクエストの最大再試行回数。</value>
   </data>
   <data name="OpenAITemperatureTooltip" xml:space="preserve">
-    <value>Maximum number of retry attempts for failed requests.</value>
+    <value>AIの応答のランダム性を制御します。高い値（例：0.8）はより創造的な出力を生成し、低い値（例：0.2）は応答をより焦点を絞った決定的なものにします。</value>
   </data>
   <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
-    <value>The number of requests to process in a batch.</value>
+    <value>バッチで処理するリクエストの数。</value>
   </data>
   <data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
-    <value>Maximum number of retries for failed requests.</value>
+    <value>失敗したリクエストの最大再試行回数。</value>
   </data>
   <data name="AnthropicTemperatureTooltip" xml:space="preserve">
-    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+    <value>AIの応答のランダム性を制御します。高い値（例：0.8）はより創造的な出力を生成し、低い値（例：0.2）は応答をより焦点を絞った決定的なものにします。</value>
   </data>
   <data name="OllamaBatchSizeTooltip" xml:space="preserve">
-    <value>The number of requests to process in a batch.</value>
+    <value>バッチで処理するリクエストの数。</value>
   </data>
   <data name="OllamaMaxRetriesTooltip" xml:space="preserve">
-    <value>Maximum number of retries for failed requests.</value>
+    <value>失敗したリクエストの最大再試行回数。</value>
   </data>
   <data name="OllamaTemperatureTooltip" xml:space="preserve">
-    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+    <value>AIの応答のランダム性を制御します。高い値（例：0.8）はより創造的な出力を生成し、低い値（例：0.2）は応答をより焦点を絞った決定的なものにします。</value>
   </data>
   <data name="OllamaHostNameTooltip" xml:space="preserve">
-    <value>Enter the Ollama host name or URL.</value>
+    <value>Ollamaホスト名またはURLを入力します。</value>
   </data>
   <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
-    <value>Delete knowledgebase</value>
+    <value>ナレッジベースを削除</value>
   </data>
   <data name="ClearConsoleTooltip" xml:space="preserve">
-    <value>Clear Console</value>
+    <value>コンソールをクリア</value>
   </data>
   <data name="DownloadLogsTooltip" xml:space="preserve">
-    <value>Download Logs</value>
+    <value>ログをダウンロード</value>
   </data>
   <data name="Chat" xml:space="preserve">
-    <value>Chat</value>
+    <value>チャット</value>
   </data>
   <data name="Japanese" xml:space="preserve">
-    <value>Japanese</value>
+    <value>日本語</value>
   </data>
   <data name="ViewProvider" xml:space="preserve">
-    <value>View Provider</value>
+    <value>View プロバイダー</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
-    <value>Save Language Setting</value>
+    <value>言語設定を保存</value>
   </data>
   <data name="RestartRequired" xml:space="preserve">
-    <value>Your language preference has been saved and applied.</value>
+    <value>言語設定が保存され、適用されました。</value>
   </data>
   <data name="SelectLanguage" xml:space="preserve">
-    <value>Select your preferred language:</value>
+    <value>ご希望の言語を選択してください:</value>
   </data>
   <data name="ValidationError" xml:space="preserve">
-    <value>Validation Error</value>
+    <value>検証エラー</value>
   </data>
   <data name="Success" xml:space="preserve">
-    <value>Success</value>
+    <value>成功</value>
   </data>
   <data name="Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>警告</value>
   </data>
   <data name="UnexpectedError" xml:space="preserve">
-    <value>Unexpected Error</value>
+    <value>予期しないエラー</value>
   </data>
   <data name="SettingsSavedMessage" xml:space="preserve">
-    <value>Your settings have been successfully saved.</value>
+    <value>設定は正常に保存されました。</value>
   </data>
   <data name="SomethingWentWrong" xml:space="preserve">
-    <value>Something went wrong: {0}</value>
+    <value>問題が発生しました: {0}</value>
   </data>
   <data name="UnsupportedFileType" xml:space="preserve">
-    <value>Unsupported file type.</value>
+    <value>サポートされていないファイルタイプです。</value>
   </data>
   <data name="ResumingIngestion" xml:space="preserve">
-    <value>Resuming Ingestion</value>
+    <value>取り込みを再開中</value>
   </data>
   <data name="ReprocessingError" xml:space="preserve">
-    <value>Remove Selected Files</value>
+    <value>再処理エラー</value>
   </data>
   <data name="UnreachableHost" xml:space="preserve">
-    <value>Unreachable Host</value>
+    <value>到達不能なホスト</value>
   </data>
   <data name="ViewEndpointFormat" xml:space="preserve">
-    <value>View endpoint must be in the format: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
+    <value>Viewエンドポイントは次の形式である必要があります: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
   </data>
   <data name="SelectAtLeastOneFile" xml:space="preserve">
-    <value>Please select at least one file to remove.</value>
+    <value>削除するファイルを少なくとも1つ選択してください。</value>
   </data>
   <data name="Sync" xml:space="preserve">
-    <value>Sync</value>
+    <value>同期</value>
   </data>
   <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>VoyageAI embedding settings incomplete.</value>
+    <value>VoyageAI埋め込み設定が不完全です。</value>
   </data>
   <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>View embedding settings incomplete.</value>
+    <value>View埋め込み設定が不完全です。</value>
   </data>
   <data name="WelcomeToView" xml:space="preserve">
-    <value>Welcome to View</value>
+    <value>Viewへようこそ</value>
   </data>
   <data name="UploadFiles" xml:space="preserve">
-    <value>Upload Files</value>
+    <value>ファイルをアップロード</value>
   </data>
   <data name="Select" xml:space="preserve">
-    <value>Select</value>
+    <value>選択</value>
   </data>
   <data name="Size" xml:space="preserve">
-    <value>Size</value>
+    <value>サイズ</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Type</value>
+    <value>タイプ</value>
   </data>
   <data name="ReprocessFile" xml:space="preserve">
-    <value>Reprocess the file</value>
+    <value>ファイルを再処理</value>
   </data>
   <data name="SelectAll" xml:space="preserve">
-    <value>Select All</value>
+    <value>すべて選択</value>
   </data>
   <data name="RemoveSelectedFiles" xml:space="preserve">
-    <value>Remove Selected Files</value>
+    <value>選択したファイルを削除</value>
   </data>
   <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
-    <value>What do you want to chat about?</value>
+    <value>何についてチャットしますか？</value>
   </data>
   <data name="Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>削除</value>
   </data>
   <data name="YourApiKeyHere" xml:space="preserve">
-    <value>YOUR_API_KEY_HERE</value>
+    <value>あなたのAPIキーをここに入力</value>
   </data>
   <data name="SpecifyOpenAIModel" xml:space="preserve">
-    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+    <value>使用するOpenAIモデル（例: gpt-3.5-turbo、gpt-4）を指定します。</value>
   </data>
   <data name="SetOpenAIEndpoint" xml:space="preserve">
-    <value>Set the OpenAI API endpoint.</value>
+    <value>OpenAI APIエンドポイントを設定します。</value>
   </data>
   <data name="SpecifyAnthropicModel" xml:space="preserve">
-    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+    <value>使用するAnthropicモデル（例: claude-2、claude-instant-1）を指定します。</value>
   </data>
   <data name="SetAnthropicEndpoint" xml:space="preserve">
-    <value>Set the Anthropic API endpoint.</value>
+    <value>Anthropic APIエンドポイントを設定します。</value>
   </data>
   <data name="TemperatureTooltip" xml:space="preserve">
-    <value>Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused.</value>
+    <value>補完のランダム性を制御します。高い値（0.8）は出力をよりランダムにし、低い値（0.2）はより焦点を絞ったものにします。</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>はい</value>
   </data>
   <data name="Retry" xml:space="preserve">
-    <value>Retry</value>
+    <value>再試行</value>
   </data>
   <data name="WatchFileQuestion" xml:space="preserve">
-    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
+    <value>「{0}」を監視しますか？これにより{1}個のファイル{2}が取り込まれます。</value>
   </data>
   <data name="UnwatchOnly" xml:space="preserve">
-    <value>Unwatch Only</value>
+    <value>監視のみ停止</value>
   </data>
   <data name="UnwatchAndDelete" xml:space="preserve">
-    <value>Unwatch and Delete</value>
+    <value>監視を停止して削除</value>
   </data>
   <data name="UnableToStartApp" xml:space="preserve">
-    <value>Unable to start View Personal</value>
+    <value>パーソナルを見る を起動できません</value>
   </data>
   <data name="StartupError" xml:space="preserve">
-    <value>View Personal was unable to start due to the following exception:</value>
+    <value>次の例外のため、パーソナルを見る を起動できませんでした:</value>
   </data>
   <data name="SpecifyOllamaModel" xml:space="preserve">
-    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+    <value>使用するOllamaモデル（例: llama2-7B-q4、mistral-7B）を指定します。</value>
   </data>
   <data name="SetOllamaEndpoint" xml:space="preserve">
-    <value>Set the Ollama API endpoint.</value>
+    <value>Ollama APIエンドポイントを設定します。</value>
   </data>
   <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
-    <value>Specify the Ollama embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
+    <value>使用するOllama埋め込みモデル（例: sentence-transformers/all-MiniLM-L6-v2）を指定します。</value>
   </data>
   <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
-    <value>Specify the View embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
+    <value>使用するView埋め込みモデル（例: sentence-transformers/all-MiniLM-L6-v2）を指定します。</value>
   </data>
   <data name="SimilarityThresholdTooltip" xml:space="preserve">
-    <value>Minimum similarity score required for documents to be included in the context.</value>
+    <value>コンテキストに含めるために必要なドキュメントの最小類似度スコア。</value>
   </data>
   <data name="SetViewApiEndpoint" xml:space="preserve">
-    <value>Set the View API endpoint URL.</value>
+    <value>View APIエンドポイントURLを設定します。</value>
   </data>
   <data name="ViewCompletionModel" xml:space="preserve">
-    <value>View Completion Model</value>
+    <value>View 補完モデル</value>
   </data>
   <data name="SpecifyViewModel" xml:space="preserve">
-    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+    <value>使用するViewモデル（例: llama3.1:8b）を指定します。</value>
   </data>
   <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-    <value>VoyageAI embedding settings incompatible.</value>
+    <value>VoyageAI埋め込み設定に互換性がありません。</value>
   </data>
   <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_API_KEY_HERE</value>
+    <value>あなたのAPIキーをここに入力</value>
   </data>
   <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_EMBEDDINGS_API_KEY</value>
+    <value>あなたの埋め込みAPIキー</value>
   </data>
   <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
-    <value>VoyageAI Embedding Model</value>
+    <value>VoyageAI 埋め込みモデル</value>
   </data>
   <data name="ViewEmbeddingModelHeader" xml:space="preserve">
-    <value>View Embedding Model</value>
+    <value>View 埋め込みモデル</value>
   </data>
   <data name="SavingSettings" xml:space="preserve">
-    <value>Saving settings...</value>
+    <value>設定を保存中...</value>
   </data>
   <data name="UnselectAll" xml:space="preserve">
-    <value>Unselect All</value>
+    <value>すべて選択解除</value>
   </data>
   <data name="Watching" xml:space="preserve">
-    <value>Watching</value>
+    <value>監視中</value>
   </data>
   <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+    <value>使用するOpenAIモデル（例: gpt-3.5-turbo、gpt-4）を指定します。</value>
   </data>
   <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+    <value>使用するAnthropicモデル（例: claude-2、claude-instant-1）を指定します。</value>
   </data>
   <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+    <value>使用するOllamaモデル（例: llama2-7B-q4、mistral-7B）を指定します。</value>
   </data>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
-    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+    <value>使用するViewモデル（例: llama3.1:8b）を指定します。</value>
   </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
-    <value>Set the OpenAI API endpoint.</value>
+    <value>OpenAI APIエンドポイントを設定します。</value>
   </data>
   <data name="ViewBatchSizeTooltip" xml:space="preserve">
-    <value>The number of requests to process in a batch.</value>
+    <value>バッチで処理するリクエストの数。</value>
   </data>
   <data name="ViewMaxRetriesTooltip" xml:space="preserve">
-    <value>Maximum number of retries for failed requests.</value>
+    <value>失敗したリクエストの最大再試行回数。</value>
   </data>
   <data name="ViewTemperatureTooltip" xml:space="preserve">
-    <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
+    <value>AIの応答のランダム性を制御します。高い値（例：0.8）はより創造的な出力を生成し、低い値（例：0.2）は応答をより焦点を絞った決定的なものにします。</value>
   </data>
   <data name="ViewEndpointTooltip" xml:space="preserve">
-    <value>Set the View API endpoint URL.</value>
+    <value>View APIエンドポイントURLを設定します。</value>
   </data>
   <data name="ViewSystemPromptTooltip" xml:space="preserve">
-    <value>Enter a custom system prompt for the model.</value>
+    <value>モデル用のカスタムシステムプロンプトを入力します。</value>
   </data>
   <data name="German" xml:space="preserve">
-    <value>German</value>
+    <value>ドイツ語</value>
   </data>
 </root>

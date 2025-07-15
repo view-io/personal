@@ -252,6 +252,21 @@
   <data name="QueryOptimization" xml:space="preserve">
     <value>क्वेरी अनुकूलन</value>
   </data>
+  <data name="Simplified Chinese" xml:space="preserve">
+    <value>सरलीकृत चीनी</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो एआई अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
+  </data>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
+  </data>
+  <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
+  </data>
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG सेटिंग्स</value>
   </data>
@@ -283,17 +298,8 @@
   <data name="GainAccessToLocalModel" xml:space="preserve">
     <value>स्थानीय मॉडल तक पहुंच प्राप्त करें।</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>व्यू प्रदाता</value>
-  </data>
   <data name="GainAccessToViewModel" xml:space="preserve">
     <value>व्यू मॉडल तक पहुंच प्राप्त करें</value>
-  </data>
-  <data name="SaveLanguage" xml:space="preserve">
-    <value>भाषा सेटिंग सहेजें</value>
-  </data>
-  <data name="RestartRequired" xml:space="preserve">
-    <value>आपकी भाषा प्राथमिकता सहेज ली गई है और लागू कर दी गई है।</value>
   </data>
   <data name="LanguageSettingSaved" xml:space="preserve">
     <value>भाषा सेटिंग सहेजी गई</value>
@@ -304,20 +310,8 @@
   <data name="FailedToSaveLanguage" xml:space="preserve">
     <value>भाषा सेटिंग सहेजने में विफल</value>
   </data>
-  <data name="SelectLanguage" xml:space="preserve">
-    <value>अपनी पसंदीदा भाषा चुनें:</value>
-  </data>
-  <data name="ValidationError" xml:space="preserve">
-    <value>मान्यता त्रुटि</value>
-  </data>
   <data name="PleaseEnterValueFor" xml:space="preserve">
     <value>कृपया {0} के लिए मान दर्ज करें।</value>
-  </data>
-  <data name="Success" xml:space="preserve">
-    <value>सफलता</value>
-  </data>
-  <data name="Warning" xml:space="preserve">
-    <value>चेतावनी</value>
   </data>
   <data name="OllamaNotInstalled" xml:space="preserve">
     <value>ओलामा स्थापित नहीं है</value>
@@ -328,12 +322,6 @@
   <data name="DownloadOllama" xml:space="preserve">
     <value>ओलामा डाउनलोड करें</value>
   </data>
-  <data name="UnexpectedError" xml:space="preserve">
-    <value>अप्रत्याशित त्रुटि</value>
-  </data>
-  <data name="SettingsSavedMessage" xml:space="preserve">
-    <value>आपकी सेटिंग्स सफलतापूर्वक सहेज ली गई हैं।</value>
-  </data>
   <data name="FileDeleted" xml:space="preserve">
     <value>फ़ाइल हटा दी गई</value>
   </data>
@@ -343,9 +331,6 @@
   <data name="DeletionError" xml:space="preserve">
     <value>हटाने में त्रुटि</value>
   </data>
-  <data name="SomethingWentWrong" xml:space="preserve">
-    <value>कुछ गलत हो गया: {0}</value>
-  </data>
   <data name="DeletionWarning" xml:space="preserve">
     <value>हटाने की चेतावनी</value>
   </data>
@@ -354,9 +339,6 @@
   </data>
   <data name="IngestionError" xml:space="preserve">
     <value>अंतर्ग्रहण त्रुटि</value>
-  </data>
-  <data name="UnsupportedFileType" xml:space="preserve">
-    <value>असमर्थित फ़ाइल प्रकार।</value>
   </data>
   <data name="NoFileSelected" xml:space="preserve">
     <value>कोई फ़ाइल चयनित नहीं।</value>
@@ -379,9 +361,6 @@
   <data name="IngestionCancelled" xml:space="preserve">
     <value>अंतर्ग्रहण रद्द किया गया</value>
   </data>
-  <data name="ResumingIngestion" xml:space="preserve">
-    <value>अंतर्ग्रहण फिर से शुरू हो रहा है</value>
-  </data>
   <data name="FilePathNotAvailable" xml:space="preserve">
     <value>फ़ाइल पथ उपलब्ध नहीं है।</value>
   </data>
@@ -399,9 +378,6 @@
   </data>
   <data name="FileReprocessedSuccess" xml:space="preserve">
     <value>{0} सफलतापूर्वक पुनः प्रसंस्करित किया गया!</value>
-  </data>
-  <data name="ReprocessingError" xml:space="preserve">
-    <value>पुनः प्रसंस्करण त्रुटि</value>
   </data>
   <data name="KnowledgebaseDeleted" xml:space="preserve">
     <value>ज्ञानआधार हटा दिया गया</value>
@@ -445,14 +421,8 @@
   <data name="OllamaEndpointFormat" xml:space="preserve">
     <value>ओलामा एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
   </data>
-  <data name="UnreachableHost" xml:space="preserve">
-    <value>अपहुंच योग्य होस्ट</value>
-  </data>
   <data name="HostnameNotResolvable" xml:space="preserve">
     <value>{0} एंडपॉइंट होस्टनेम DNS के माध्यम से हल नहीं किया जा सका।</value>
-  </data>
-  <data name="ViewEndpointFormat" xml:space="preserve">
-    <value>व्यू एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
     <value>पहुंच अस्वीकृत</value>
@@ -499,9 +469,6 @@
   <data name="FailedToSaveLanguageSetting" xml:space="preserve">
     <value>भाषा सेटिंग सहेजने में विफल: {0}</value>
   </data>
-  <data name="SelectAtLeastOneFile" xml:space="preserve">
-    <value>कृपया हटाने के लिए कम से कम एक फ़ाइल का चयन करें।</value>
-  </data>
   <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
     <value>क्या आप वाकई ज्ञानकोष से चयनित फ़ाइलें हटाना चाहते हैं?</value>
   </data>
@@ -523,9 +490,6 @@
   <data name="FailedToLoadDrives" xml:space="preserve">
     <value>ड्राइव लोड करने में विफल: {0}</value>
   </data>
-  <data name="Sync" xml:space="preserve">
-    <value>सिंक</value>
-  </data>
   <data name="NoWatchedPathsToSync" xml:space="preserve">
     <value>सिंक करने के लिए कोई निगरानी वाले पथ नहीं हैं।</value>
   </data>
@@ -537,12 +501,6 @@
   </data>
   <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
     <value>स्थानीय एम्बेडिंग मॉडल कॉन्फ़िगर नहीं किया गया है।</value>
-  </data>
-  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>VoyageAI एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
-  </data>
-  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>View एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
   </data>
   <data name="NoConsoleLogs" xml:space="preserve">
     <value>डाउनलोड करने के लिए कोई कंसोल लॉग नहीं</value>
@@ -562,9 +520,6 @@
   <data name="ChatHistory" xml:space="preserve">
     <value>चैट इतिहास</value>
   </data>
-  <data name="WelcomeToView" xml:space="preserve">
-    <value>व्यू में आपका स्वागत है</value>
-  </data>
   <data name="ManageFiles" xml:space="preserve">
     <value>उन फ़ाइलों का प्रबंधन करें जिनके साथ आप चैट करना चाहते हैं</value>
   </data>
@@ -577,12 +532,6 @@
   <data name="ChatWithData" xml:space="preserve">
     <value>अपने डेटा के साथ चैट करें</value>
   </data>
-  <data name="Chat" xml:space="preserve">
-    <value>चैट</value>
-  </data>
-  <data name="UploadFiles" xml:space="preserve">
-    <value>फ़ाइलें अपलोड करें</value>
-  </data>
   <data name="ClickToUpload" xml:space="preserve">
     <value>अपलोड करने के लिए क्लिक करें </value>
   </data>
@@ -592,17 +541,8 @@
   <data name="MaxFileSize" xml:space="preserve">
     <value>(अधिकतम फ़ाइल आकार 500mb)</value>
   </data>
-  <data name="Select" xml:space="preserve">
-    <value>चुनें</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>नाम</value>
-  </data>
-  <data name="Size" xml:space="preserve">
-    <value>आकार</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>प्रकार</value>
   </data>
   <data name="DateCreated" xml:space="preserve">
     <value>बनाने की तिथि</value>
@@ -612,9 +552,6 @@
   </data>
   <data name="OpenInFileExplorer" xml:space="preserve">
     <value>फ़ाइल एक्सप्लोरर में खोलें</value>
-  </data>
-  <data name="ReprocessFile" xml:space="preserve">
-    <value>फ़ाइल को फिर से प्रोसेस करें</value>
   </data>
   <data name="DeleteFile" xml:space="preserve">
     <value>फ़ाइल हटाएं</value>
@@ -640,17 +577,8 @@
   <data name="ItemsPerPage" xml:space="preserve">
     <value>प्रति पृष्ठ आइटम:</value>
   </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>सभी चुनें</value>
-  </data>
-  <data name="RemoveSelectedFiles" xml:space="preserve">
-    <value>चयनित फ़ाइलें हटाएं</value>
-  </data>
   <data name="EnterUserMessage" xml:space="preserve">
     <value>उपयोगकर्ता संदेश दर्ज करें...</value>
-  </data>
-  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
-    <value>आप किस बारे में चैट करना चाहते हैं?</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>साफ़ करें</value>
@@ -679,9 +607,6 @@
   <data name="LastUpdate" xml:space="preserve">
     <value>अंतिम अपडेट</value>
   </data>
-  <data name="Remove" xml:space="preserve">
-    <value>हटाएं</value>
-  </data>
   <data name="DeleteKnowledgebase" xml:space="preserve">
     <value>ज्ञान आधार हटाएं</value>
   </data>
@@ -697,29 +622,14 @@
   <data name="Knowledgebases" xml:space="preserve">
     <value>ज्ञान आधार</value>
   </data>
-  <data name="YourApiKeyHere" xml:space="preserve">
-    <value>आपकी_एपीआई_कुंजी_यहां</value>
-  </data>
   <data name="EnterOpenAIApiKey" xml:space="preserve">
     <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
-  </data>
-  <data name="SpecifyOpenAIModel" xml:space="preserve">
-    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
   </data>
   <data name="EnterSystemPrompt" xml:space="preserve">
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
-  <data name="SetOpenAIEndpoint" xml:space="preserve">
-    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
-  </data>
   <data name="EnterAnthropicApiKey" xml:space="preserve">
     <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
-  </data>
-  <data name="SpecifyAnthropicModel" xml:space="preserve">
-    <value>उपयोग करने के लिए एंथ्रोपिक मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
-  </data>
-  <data name="SetAnthropicEndpoint" xml:space="preserve">
-    <value>एंथ्रोपिक एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="BatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में प्रोसेस करने के लिए अनुरोधों की संख्या।</value>
@@ -727,35 +637,26 @@
   <data name="MaxRetriesTooltip" xml:space="preserve">
     <value>विफल अनुरोधों के लिए अधिकतम पुनः प्रयास प्रयासों की संख्या।</value>
   </data>
-  <data name="TemperatureTooltip" xml:space="preserve">
-    <value>पूर्णताओं में यादृच्छिकता को नियंत्रित करता है। उच्च मान (0.8) आउटपुट को अधिक यादृच्छिक बनाते हैं, निम्न मान (0.2) इसे अधिक केंद्रित बनाते हैं।</value>
-  </data>
-  <data name="EnableRAGTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो एआई अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
-  </data>
   <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
     <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
   </data>
   <data name="AdvancedRAG" xml:space="preserve">
     <value>उन्नत RAG</value>
   </data>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
+  </data>
   <data name="QueryOptimizationTooltip" xml:space="preserve">
     <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी अनुकूलित करें</value>
-  </data>
-  <data name="EnableCitations" xml:space="preserve">
-    <value>उद्धरण सक्षम करें</value>
   </data>
   <data name="EnableCitationsTooltip" xml:space="preserve">
     <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
   </data>
-  <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
+  <data name="EnableCitations" xml:space="preserve">
+    <value>उद्धरण सक्षम करें</value>
   </data>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
-  </data>
-  <data name="EnableContextSortingTooltip" xml:space="preserve">
-    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
   </data>
   <data name="LocalModels" xml:space="preserve">
     <value>स्थानीय मॉडल</value>
@@ -781,17 +682,11 @@
   <data name="OK" xml:space="preserve">
     <value>ठीक है</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>हां</value>
-  </data>
   <data name="No" xml:space="preserve">
     <value>नहीं</value>
   </data>
   <data name="Abort" xml:space="preserve">
     <value>निरस्त करें</value>
-  </data>
-  <data name="Retry" xml:space="preserve">
-    <value>पुनः प्रयास करें</value>
   </data>
   <data name="Ignore" xml:space="preserve">
     <value>अनदेखा करें</value>
@@ -805,20 +700,11 @@
   <data name="ConfirmWatch" xml:space="preserve">
     <value>वॉच की पुष्टि करें</value>
   </data>
-  <data name="WatchFileQuestion" xml:space="preserve">
-    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
-  </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
     <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
     <value>'{0}' की वॉच बंद करें? इससे {1} फ़ाइल{2} प्रभावित होंगी।</value>
-  </data>
-  <data name="UnwatchOnly" xml:space="preserve">
-    <value>केवल वॉच बंद करें</value>
-  </data>
-  <data name="UnwatchAndDelete" xml:space="preserve">
-    <value>वॉच बंद करें और हटाएं</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
     <value>क्या आप वाकई '{0}' को हटाना चाहते हैं</value>
@@ -826,7 +712,6 @@
   <data name="FromKnowledgebase" xml:space="preserve">
     <value>नॉलेजबेस से?</value>
   </data>
-
   <data name="NeedInstallOllama" xml:space="preserve">
     <value>AI मॉडल को पुल और उपयोग करने के लिए आपको ओलामा इंस्टॉल करने की आवश्यकता है।</value>
   </data>
@@ -838,13 +723,6 @@
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>यह क्रिया वापस नहीं की जा सकती है।</value>
-  </data>
-
-  <data name="UnableToStartApp" xml:space="preserve">
-    <value>व्यू पर्सनल शुरू करने में असमर्थ</value>
-  </data>
-  <data name="StartupError" xml:space="preserve">
-    <value>व्यू पर्सनल निम्नलिखित अपवाद के कारण शुरू नहीं हो सका:</value>
   </data>
   <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
     <value>कृपया सेटिंग्स में एक एम्बेडिंग प्रदाता चुनें।</value>
@@ -858,17 +736,11 @@
   <data name="ParameterSize" xml:space="preserve">
     <value>पैरामीटर आकार: {0}</value>
   </data>
-  <data name="SpecifyOllamaModel" xml:space="preserve">
-    <value>उपयोग करने के लिए ओलामा मॉडल निर्दिष्ट करें, जैसे, llama2-7B-q4 या mistral-7B।</value>
-  </data>
   <data name="OllamaSystemPrompt" xml:space="preserve">
     <value>ओल्लामा सिस्टम प्रॉम्प्ट</value>
   </data>
   <data name="OllamaEndpoint" xml:space="preserve">
     <value>ओल्लामा एंडपॉइंट</value>
-  </data>
-  <data name="SetOllamaEndpoint" xml:space="preserve">
-    <value>ओल्लामा एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="OllamaTemperature" xml:space="preserve">
     <value>ओल्लामा तापमान</value>
@@ -882,14 +754,17 @@
   <data name="OllamaEmbeddingModel" xml:space="preserve">
     <value>ओलामा एम्बेडिंग मॉडल</value>
   </data>
-  <data name="SpecifyOllamaEmbeddingModel" xml:space="preserve">
-    <value>उपयोग करने के लिए ओल्लामा एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे, llama2।</value>
-  </data>
   <data name="DimensionalityTooltip" xml:space="preserve">
     <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिता।</value>
   </data>
   <data name="MaxTokensTooltip" xml:space="preserve">
     <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए अधिकतम टोकन।</value>
+  </data>
+  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
+    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
+  </data>
+  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
+    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए टोकन की अधिकतम संख्या।</value>
   </data>
   <data name="OllamaEnableRAG" xml:space="preserve">
     <value>ओल्लामा RAG सक्षम करें</value>
@@ -906,9 +781,6 @@
   <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
     <value>अपनी व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
   </data>
-  <data name="SetViewApiEndpoint" xml:space="preserve">
-    <value>व्यू एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
-  </data>
   <data name="EnterOllamaHostName" xml:space="preserve">
     <value>ओल्लामा होस्ट नाम या यूआरएल दर्ज करें।</value>
   </data>
@@ -918,15 +790,8 @@
   <data name="EnterViewTenantGUID" xml:space="preserve">
     <value>मल्टी-टेनेंट वातावरण के लिए अपना व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
   </data>
-  <data name="ViewCompletionModel" xml:space="preserve">
-    <value>व्यू पूर्णता मॉडल</value>
-  </data>
-  <data name="SpecifyViewModel" xml:space="preserve">
-    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे, llama3.1:8b।</value>
-  </data>
-
-  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-    <value>वॉयजएआई एम्बेडिंग सेटिंग्स असंगत हैं।</value>
+  <data name="EnterCustomSystemPrompt" xml:space="preserve">
+    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
   <data name="DataMonitorTitle" xml:space="preserve">
     <value>डेटा मॉनिटर</value>
@@ -939,12 +804,6 @@
   </data>
   <data name="RAGSettingsTitle" xml:space="preserve">
     <value>RAG सेटिंग्स</value>
-  </data>
-  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
-    <value>आपकी_एपीआई_कुंजी_यहां</value>
-  </data>
-  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
-    <value>आपकी_एम्बेडिंग्स_एपीआई_कुंजी</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
     <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
@@ -967,14 +826,8 @@
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>ओपनएआई एम्बेडिंग मॉडल</value>
   </data>
-  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
-    <value>वॉयजएआई एम्बेडिंग मॉडल</value>
-  </data>
   <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
     <value>ओल्लामा एम्बेडिंग मॉडल</value>
-  </data>
-  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
-    <value>व्यू एम्बेडिंग मॉडल</value>
   </data>
   <data name="EmbeddingModelName" xml:space="preserve">
     <value>मॉडल नाम</value>
@@ -990,12 +843,6 @@
   </data>
   <data name="Endpoint" xml:space="preserve">
     <value>एंडपॉइंट</value>
-  </data>
-  <data name="SavingSettings" xml:space="preserve">
-    <value>सेटिंग्स सहेजी जा रही हैं...</value>
-  </data>
-  <data name="UnselectAll" xml:space="preserve">
-    <value>सभी चयन हटाएँ</value>
   </data>
   <data name="PaginationShowingItems" xml:space="preserve">
     <value>{2} में से {0}-{1} आइटम दिखा रहे हैं</value>
@@ -1033,26 +880,8 @@
   <data name="LastModified" xml:space="preserve">
     <value>अंतिम संशोधित</value>
   </data>
-  <data name="Watching" xml:space="preserve">
-    <value>निगरानी</value>
-  </data>
   <data name="ItemIsBeingWatched" xml:space="preserve">
     <value>यह आइटम निगरानी में है</value>
-  </data>
-  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे gpt-3.5-turbo या gpt-4।</value>
-  </data>
-  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए एंथ्रॉपिक मॉडल निर्दिष्ट करें, जैसे claude-2 या claude-instant-1।</value>
-  </data>
-  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए ओल्लामा मॉडल निर्दिष्ट करें, जैसे llama2-7B-q4 या mistral-7B।</value>
-  </data>
-  <data name="SpecifyViewModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
-  </data>
-  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
-    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित किये जाने वाले अनुरोधों की संख्या.</value>
@@ -1062,12 +891,6 @@
   </data>
   <data name="OpenAITemperatureTooltip" xml:space="preserve">
     <value>AI की प्रतिक्रियाओं की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे, 0.8) अधिक रचनात्मक परिणाम देते हैं, जबकि निम्न मान (जैसे, 0.2) प्रतिक्रियाओं को अधिक केंद्रित और नियतात्मक बनाते हैं।</value>
-  </data>
-  <data name="SimilarityThresholdTooltip" xml:space="preserve">
-    <value>संदर्भ में शामिल करने के लिए दस्तावेज़ों के लिए न्यूनतम समानता स्कोर।</value>
-  </data>
-  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
-    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
   </data>
   <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
@@ -1087,8 +910,212 @@
   <data name="OllamaTemperatureTooltip" xml:space="preserve">
     <value>एआई के उत्तरों की यादृच्छिकता को नियंत्रित करता है। उच्च मान (जैसे 0.8) अधिक रचनात्मक आउटपुट देते हैं, जबकि कम मान (जैसे 0.2) उत्तरों को अधिक केंद्रित और निर्धारक बनाते हैं।</value>
   </data>
-  <data name="SetAnthropicEndpointTooltip" xml:space="preserve">
-    <value>एंथ्रॉपिक एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
+  <data name="OllamaHostNameTooltip" xml:space="preserve">
+    <value>ओल्लामा होस्ट नाम या URL दर्ज करें।</value>
+  </data>
+  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
+    <value>ज्ञान आधार हटाएं</value>
+  </data>
+  <data name="ClearConsoleTooltip" xml:space="preserve">
+    <value>कंसोल साफ़ करें</value>
+  </data>
+  <data name="DownloadLogsTooltip" xml:space="preserve">
+    <value>लॉग डाउनलोड करें</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>चैट</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>जापानी</value>
+  </data>
+  <data name="ViewProvider" xml:space="preserve">
+    <value>व्यू प्रदाता</value>
+  </data>
+  <data name="SaveLanguage" xml:space="preserve">
+    <value>भाषा सेटिंग सहेजें</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>आपकी भाषा प्राथमिकता सहेज ली गई है और लागू कर दी गई है।</value>
+  </data>
+  <data name="SelectLanguage" xml:space="preserve">
+    <value>अपनी पसंदीदा भाषा चुनें:</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>मान्यता त्रुटि</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>सफलता</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>चेतावनी</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>अप्रत्याशित त्रुटि</value>
+  </data>
+  <data name="SettingsSavedMessage" xml:space="preserve">
+    <value>आपकी सेटिंग्स सफलतापूर्वक सहेज ली गई हैं।</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>कुछ गलत हो गया: {0}</value>
+  </data>
+  <data name="UnsupportedFileType" xml:space="preserve">
+    <value>असमर्थित फ़ाइल प्रकार।</value>
+  </data>
+  <data name="ResumingIngestion" xml:space="preserve">
+    <value>अंतर्ग्रहण फिर से शुरू हो रहा है</value>
+  </data>
+  <data name="ReprocessingError" xml:space="preserve">
+    <value>पुनः प्रसंस्करण त्रुटि</value>
+  </data>
+  <data name="UnreachableHost" xml:space="preserve">
+    <value>अपहुंच योग्य होस्ट</value>
+  </data>
+  <data name="ViewEndpointFormat" xml:space="preserve">
+    <value>व्यू एंडपॉइंट इस प्रारूप में होना चाहिए: http://&lt;होस्टनेम या IP&gt;:&lt;पोर्ट&gt;/</value>
+  </data>
+  <data name="SelectAtLeastOneFile" xml:space="preserve">
+    <value>कृपया हटाने के लिए कम से कम एक फ़ाइल का चयन करें।</value>
+  </data>
+  <data name="Sync" xml:space="preserve">
+    <value>सिंक</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>VoyageAI एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
+  </data>
+  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>View एम्बेडिंग सेटिंग्स अपूर्ण हैं।</value>
+  </data>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>व्यू में आपका स्वागत है</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>फ़ाइलें अपलोड करें</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>चुनें</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>आकार</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>प्रकार</value>
+  </data>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>फ़ाइल को फिर से प्रोसेस करें</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>सभी चुनें</value>
+  </data>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>चयनित फ़ाइलें हटाएं</value>
+  </data>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>आप किस बारे में चैट करना चाहते हैं?</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>हटाएं</value>
+  </data>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>आपकी_एपीआई_कुंजी_यहां</value>
+  </data>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे, gpt-3.5-turbo या gpt-4।</value>
+  </data>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>उपयोग करने के लिए एंथ्रोपिक मॉडल निर्दिष्ट करें, जैसे, claude-2 या claude-instant-1।</value>
+  </data>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>एंथ्रोपिक एपीआई एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>पूर्णताओं में यादृच्छिकता को नियंत्रित करता है। उच्च मान (0.8) आउटपुट को अधिक यादृच्छिक बनाते हैं, निम्न मान (0.2) इसे अधिक केंद्रित बनाते हैं।</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>हां</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>पुनः प्रयास करें</value>
+  </data>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
+  </data>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>केवल वॉच बंद करें</value>
+  </data>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>वॉच बंद करें और हटाएं</value>
+  </data>
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>व्यू पर्सनल शुरू करने में असमर्थ</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>व्यू पर्सनल निम्नलिखित अपवाद के कारण शुरू नहीं हो सका:</value>
+  </data>
+  <data name="SpecifyOllamaModel" xml:space="preserve">
+    <value>उपयोग करने के लिए ओलामा मॉडल निर्दिष्ट करें, जैसे, llama2-7B-q4 या mistral-7B।</value>
+  </data>
+  <data name="SetOllamaEndpoint" xml:space="preserve">
+    <value>ओल्लामा एपीआई एंडपॉइंट सेट करें।</value>
+  </data>
+  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओल्लामा एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
+  </data>
+  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>संदर्भ में शामिल करने के लिए दस्तावेज़ों के लिए न्यूनतम समानता स्कोर।</value>
+  </data>
+  <data name="SetViewApiEndpoint" xml:space="preserve">
+    <value>व्यू एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
+  </data>
+  <data name="ViewCompletionModel" xml:space="preserve">
+    <value>व्यू पूर्णता मॉडल</value>
+  </data>
+  <data name="SpecifyViewModel" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे, llama3.1:8b।</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
+    <value>वॉयजएआई एम्बेडिंग सेटिंग्स असंगत हैं।</value>
+  </data>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>आपकी_एपीआई_कुंजी_यहां</value>
+  </data>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>आपकी_एम्बेडिंग्स_एपीआई_कुंजी</value>
+  </data>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>वॉयजएआई एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>व्यू एम्बेडिंग मॉडल</value>
+  </data>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>सेटिंग्स सहेजी जा रही हैं...</value>
+  </data>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>सभी चयन हटाएँ</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>निगरानी</value>
+  </data>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओपनएआई मॉडल निर्दिष्ट करें, जैसे gpt-3.5-turbo या gpt-4।</value>
+  </data>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए एंथ्रॉपिक मॉडल निर्दिष्ट करें, जैसे claude-2 या claude-instant-1।</value>
+  </data>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए ओल्लामा मॉडल निर्दिष्ट करें, जैसे llama2-7B-q4 या mistral-7B।</value>
+  </data>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
   <data name="ViewBatchSizeTooltip" xml:space="preserve">
     <value>एक बैच में संसाधित करने के लिए अनुरोधों की संख्या।</value>
@@ -1102,49 +1129,10 @@
   <data name="ViewEndpointTooltip" xml:space="preserve">
     <value>व्यू एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
   </data>
-  <data name="OllamaHostNameTooltip" xml:space="preserve">
-    <value>ओल्लामा होस्ट नाम या URL दर्ज करें।</value>
-  </data>
   <data name="ViewSystemPromptTooltip" xml:space="preserve">
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
-  <data name="MaxRetrievedTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
-  </data>
-  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
-    <value>ज्ञान आधार हटाएं</value>
-  </data>
-  <data name="ClearConsoleTooltip" xml:space="preserve">
-    <value>कंसोल साफ़ करें</value>
-  </data>
-  <data name="DownloadLogsTooltip" xml:space="preserve">
-    <value>लॉग डाउनलोड करें</value>
-  </data>
-  <data name="SetOllamaEndpointTooltip" xml:space="preserve">
-    <value>ओल्लामा एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
-  </data>
-  <data name="EnterCustomSystemPrompt" xml:space="preserve">
-    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
-  </data>
-  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए ओपनएआई एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे text-embedding-3-small।</value>
-  </data>
-  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
-    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए टोकन की अधिकतम संख्या।</value>
-  </data>
-  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए वॉयेजएआई एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे voyage-3।</value>
-  </data>
-  <data name="SetVoyageAIEndpointTooltip" xml:space="preserve">
-    <value>वॉयेजएआई एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
-  </data>
-  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए व्यू एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
-  </data>
-  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
-    <value>उपयोग करने के लिए ओल्लामा एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे sentence-transformers/all-MiniLM-L6-v2।</value>
-  </data>
-  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
-    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
+  <data name="German" xml:space="preserve">
+    <value>जर्मन</value>
   </data>
 </root>

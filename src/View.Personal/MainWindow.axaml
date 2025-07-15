@@ -44,7 +44,7 @@
 							<avalonia:MaterialIcon Kind="SquareEditOutline" Foreground="#1A1C1E"
                                                    VerticalAlignment="Top"
                                                    Height="16" Width="16" />
-							<TextBlock Text="{l:Localize StartNewChat}" FontWeight="400" />
+							<TextBlock Text="{l:Localize StartNewChat}" FontWeight="400"  TextWrapping="Wrap" MaxWidth="100"/>
 						</StackPanel>
 					</Button>
 					<ComboBox x:Name="GraphComboBox" DockPanel.Dock="Top" Margin="12 8 12 0" Width="149"
@@ -1717,8 +1717,9 @@
 											<StackPanel x:Name="LanguageSelectionPanel" Margin="0,12,0,0" Spacing="8">
 												<RadioButton x:Name="EnglishLanguageRadio" GroupName="Language" Content="{l:Localize English}" IsChecked="True" Tag="en" />
 												<RadioButton x:Name="HindiLanguageRadio" GroupName="Language" Content="{l:Localize Hindi}" Tag="hi" />
-												<!-- Additional languages can be added here in the future -->
-												<!-- Example: <RadioButton GroupName="Language" Content="{l:Localize Spanish}" Tag="es" /> -->
+												<RadioButton x:Name="SimplifiedChineseLanguageRadio" GroupName="Language" Content="{l:Localize Simplified Chinese}" Tag="zh-CN" />
+												<RadioButton x:Name="JapaneseLanguageRadio" GroupName="Language" Content="{l:Localize Japanese}" Tag="ja" />
+												<RadioButton x:Name="GermanLanguageRadio" GroupName="Language" Content="{l:Localize German}" Tag="de" />
 											</StackPanel>
 										</StackPanel>
 										<StackPanel VerticalAlignment="Bottom" Margin="0,20,0,0">

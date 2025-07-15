@@ -243,6 +243,18 @@
   <data name="KnowledgebaseSource" xml:space="preserve">
     <value>Knowledgebase Source</value>
   </data>
+  <data name="CompletionModel" xml:space="preserve">
+    <value>Completion Model</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>Max retrieved</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>Query optimization</value>
+  </data>
+  <data name="Simplified Chinese" xml:space="preserve">
+    <value>Simplified Chinese</value>
+  </data>
   <data name="EnableContextSortingTooltip" xml:space="preserve">
     <value>Sort context by relevance</value>
   </data>
@@ -254,15 +266,6 @@
   </data>
   <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
     <value>Maximum number of documents to retrieve</value>
-  </data>
-  <data name="CompletionModel" xml:space="preserve">
-    <value>Completion Model</value>
-  </data>
-  <data name="MaxRetrieved" xml:space="preserve">
-    <value>Max retrieved</value>
-  </data>
-  <data name="QueryOptimization" xml:space="preserve">
-    <value>Query optimization</value>
   </data>
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG Settings</value>
@@ -295,17 +298,8 @@ need to re-import all documents.</value>
   <data name="GainAccessToLocalModel" xml:space="preserve">
     <value>Gain access to a local model.</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View Provider</value>
-  </data>
   <data name="GainAccessToViewModel" xml:space="preserve">
     <value>Gain access to View models</value>
-  </data>
-  <data name="SaveLanguage" xml:space="preserve">
-    <value>Save Language Setting</value>
-  </data>
-  <data name="RestartRequired" xml:space="preserve">
-    <value>Your language preference has been saved and applied.</value>
   </data>
   <data name="LanguageSettingSaved" xml:space="preserve">
     <value>Language Setting Saved</value>
@@ -316,20 +310,8 @@ need to re-import all documents.</value>
   <data name="FailedToSaveLanguage" xml:space="preserve">
     <value>Failed to save language setting</value>
   </data>
-  <data name="SelectLanguage" xml:space="preserve">
-    <value>Select your preferred language:</value>
-  </data>
-  <data name="ValidationError" xml:space="preserve">
-    <value>Validation Error</value>
-  </data>
   <data name="PleaseEnterValueFor" xml:space="preserve">
     <value>Please enter value for the {0}.</value>
-  </data>
-  <data name="Success" xml:space="preserve">
-    <value>Success</value>
-  </data>
-  <data name="Warning" xml:space="preserve">
-    <value>Warning</value>
   </data>
   <data name="OllamaNotInstalled" xml:space="preserve">
     <value>Ollama Not Installed</value>
@@ -340,12 +322,6 @@ need to re-import all documents.</value>
   <data name="DownloadOllama" xml:space="preserve">
     <value>Download Ollama</value>
   </data>
-  <data name="UnexpectedError" xml:space="preserve">
-    <value>Unexpected Error</value>
-  </data>
-  <data name="SettingsSavedMessage" xml:space="preserve">
-    <value>Your settings have been successfully saved.</value>
-  </data>
   <data name="FileDeleted" xml:space="preserve">
     <value>File Deleted</value>
   </data>
@@ -355,9 +331,6 @@ need to re-import all documents.</value>
   <data name="DeletionError" xml:space="preserve">
     <value>Deletion Error</value>
   </data>
-  <data name="SomethingWentWrong" xml:space="preserve">
-    <value>Something went wrong: {0}</value>
-  </data>
   <data name="DeletionWarning" xml:space="preserve">
     <value>Deletion Warning</value>
   </data>
@@ -366,9 +339,6 @@ need to re-import all documents.</value>
   </data>
   <data name="IngestionError" xml:space="preserve">
     <value>Ingestion Error</value>
-  </data>
-  <data name="UnsupportedFileType" xml:space="preserve">
-    <value>Unsupported file type.</value>
   </data>
   <data name="NoFileSelected" xml:space="preserve">
     <value>No file selected.</value>
@@ -391,9 +361,6 @@ need to re-import all documents.</value>
   <data name="IngestionCancelled" xml:space="preserve">
     <value>Ingestion Cancelled</value>
   </data>
-  <data name="ResumingIngestion" xml:space="preserve">
-    <value>Resuming Ingestion</value>
-  </data>
   <data name="FilePathNotAvailable" xml:space="preserve">
     <value>File path is not available.</value>
   </data>
@@ -411,9 +378,6 @@ need to re-import all documents.</value>
   </data>
   <data name="FileReprocessedSuccess" xml:space="preserve">
     <value>{0} was reprocessed successfully!</value>
-  </data>
-  <data name="ReprocessingError" xml:space="preserve">
-    <value>Reprocessing Error</value>
   </data>
   <data name="KnowledgebaseDeleted" xml:space="preserve">
     <value>Knowledgebase Deleted</value>
@@ -457,14 +421,8 @@ need to re-import all documents.</value>
   <data name="OllamaEndpointFormat" xml:space="preserve">
     <value>Ollama endpoint must be in the format: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
   </data>
-  <data name="UnreachableHost" xml:space="preserve">
-    <value>Unreachable Host</value>
-  </data>
   <data name="HostnameNotResolvable" xml:space="preserve">
     <value>The {0} endpoint hostname could not be resolved via DNS.</value>
-  </data>
-  <data name="ViewEndpointFormat" xml:space="preserve">
-    <value>View endpoint must be in the format: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
     <value>Access Denied</value>
@@ -511,9 +469,6 @@ need to re-import all documents.</value>
   <data name="FailedToSaveLanguageSetting" xml:space="preserve">
     <value>Failed to save language setting: {0}</value>
   </data>
-  <data name="SelectAtLeastOneFile" xml:space="preserve">
-    <value>Please select at least one file to remove.</value>
-  </data>
   <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
     <value>Are you sure you want to remove the selected files from the knowledgebase?</value>
   </data>
@@ -535,9 +490,6 @@ need to re-import all documents.</value>
   <data name="FailedToLoadDrives" xml:space="preserve">
     <value>Failed to load drives: {0}</value>
   </data>
-  <data name="Sync" xml:space="preserve">
-    <value>Sync</value>
-  </data>
   <data name="NoWatchedPathsToSync" xml:space="preserve">
     <value>No watched paths to sync.</value>
   </data>
@@ -549,12 +501,6 @@ need to re-import all documents.</value>
   </data>
   <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
     <value>Local embedding model not configured.</value>
-  </data>
-  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>VoyageAI embedding settings incomplete.</value>
-  </data>
-  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
-    <value>View embedding settings incomplete.</value>
   </data>
   <data name="NoConsoleLogs" xml:space="preserve">
     <value>No console logs to download</value>
@@ -574,9 +520,6 @@ need to re-import all documents.</value>
   <data name="ChatHistory" xml:space="preserve">
     <value>Chat History</value>
   </data>
-  <data name="WelcomeToView" xml:space="preserve">
-    <value>Welcome to View</value>
-  </data>
   <data name="ManageFiles" xml:space="preserve">
     <value>Manage the files you want to chat with</value>
   </data>
@@ -589,9 +532,6 @@ need to re-import all documents.</value>
   <data name="ChatWithData" xml:space="preserve">
     <value>Chat with your data</value>
   </data>
-  <data name="UploadFiles" xml:space="preserve">
-    <value>Upload Files</value>
-  </data>
   <data name="ClickToUpload" xml:space="preserve">
     <value>Click to upload </value>
   </data>
@@ -601,17 +541,8 @@ need to re-import all documents.</value>
   <data name="MaxFileSize" xml:space="preserve">
     <value>(max file size 500mb)</value>
   </data>
-  <data name="Select" xml:space="preserve">
-    <value>Select</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
-  </data>
-  <data name="Size" xml:space="preserve">
-    <value>Size</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>Type</value>
   </data>
   <data name="DateCreated" xml:space="preserve">
     <value>Date Created</value>
@@ -621,9 +552,6 @@ need to re-import all documents.</value>
   </data>
   <data name="OpenInFileExplorer" xml:space="preserve">
     <value>Open in File Explorer</value>
-  </data>
-  <data name="ReprocessFile" xml:space="preserve">
-    <value>Reprocess file</value>
   </data>
   <data name="DeleteFile" xml:space="preserve">
     <value>Delete file</value>
@@ -649,17 +577,8 @@ need to re-import all documents.</value>
   <data name="ItemsPerPage" xml:space="preserve">
     <value>Items per page:</value>
   </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select All</value>
-  </data>
-  <data name="RemoveSelectedFiles" xml:space="preserve">
-    <value>Remove Selected Files</value>
-  </data>
   <data name="EnterUserMessage" xml:space="preserve">
     <value>Enter user message...</value>
-  </data>
-  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
-    <value>What do you want to chat about?</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
@@ -668,7 +587,7 @@ need to re-import all documents.</value>
     <value>Download</value>
   </data>
   <data name="Copyright" xml:space="preserve">
-    <value>Â©2025 View Systems Inc.</value>
+    <value>©2025 View Systems Inc.</value>
   </data>
   <data name="NewKnowledgebase" xml:space="preserve">
     <value>New Knowledgebase</value>
@@ -688,9 +607,6 @@ need to re-import all documents.</value>
   <data name="LastUpdate" xml:space="preserve">
     <value>Last Update</value>
   </data>
-  <data name="Remove" xml:space="preserve">
-    <value>Remove</value>
-  </data>
   <data name="DeleteKnowledgebase" xml:space="preserve">
     <value>Delete knowledgebase</value>
   </data>
@@ -706,38 +622,20 @@ need to re-import all documents.</value>
   <data name="Knowledgebases" xml:space="preserve">
     <value>Knowledgebases</value>
   </data>
-  <data name="YourApiKeyHere" xml:space="preserve">
-    <value>YOUR_API_KEY_HERE</value>
-  </data>
   <data name="EnterOpenAIApiKey" xml:space="preserve">
     <value>Enter your OpenAI API key.</value>
-  </data>
-  <data name="SpecifyOpenAIModel" xml:space="preserve">
-    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
   </data>
   <data name="EnterSystemPrompt" xml:space="preserve">
     <value>Enter a custom system prompt for the model.</value>
   </data>
-  <data name="SetOpenAIEndpoint" xml:space="preserve">
-    <value>Set the OpenAI API endpoint.</value>
-  </data>
   <data name="EnterAnthropicApiKey" xml:space="preserve">
     <value>Enter your Anthropic API key.</value>
-  </data>
-  <data name="SpecifyAnthropicModel" xml:space="preserve">
-    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
-  </data>
-  <data name="SetAnthropicEndpoint" xml:space="preserve">
-    <value>Set the Anthropic API endpoint.</value>
   </data>
   <data name="BatchSizeTooltip" xml:space="preserve">
     <value>Number of requests to process in a single batch.</value>
   </data>
   <data name="MaxRetriesTooltip" xml:space="preserve">
     <value>Maximum number of retry attempts for failed requests.</value>
-  </data>
-  <data name="TemperatureTooltip" xml:space="preserve">
-    <value>Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused.</value>
   </data>
   <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
     <value>Configure advanced RAG settings</value>
@@ -784,17 +682,11 @@ need to re-import all documents.</value>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
   <data name="Abort" xml:space="preserve">
     <value>Abort</value>
-  </data>
-  <data name="Retry" xml:space="preserve">
-    <value>Retry</value>
   </data>
   <data name="Ignore" xml:space="preserve">
     <value>Ignore</value>
@@ -808,20 +700,11 @@ need to re-import all documents.</value>
   <data name="ConfirmWatch" xml:space="preserve">
     <value>Confirm Watch</value>
   </data>
-  <data name="WatchFileQuestion" xml:space="preserve">
-    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
-  </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
     <value>Watch '{0}'? This will ingest {1} file{2}.</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
     <value>Stop watching '{0}'? This will affect {1} file{2}.</value>
-  </data>
-  <data name="UnwatchOnly" xml:space="preserve">
-    <value>Unwatch Only</value>
-  </data>
-  <data name="UnwatchAndDelete" xml:space="preserve">
-    <value>Unwatch and Delete</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
     <value>Are you sure you want to remove '{0}'</value>
@@ -841,12 +724,6 @@ need to re-import all documents.</value>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>This action cannot be undone.</value>
   </data>
-  <data name="UnableToStartApp" xml:space="preserve">
-    <value>Unable to start View Personal</value>
-  </data>
-  <data name="StartupError" xml:space="preserve">
-    <value>View Personal was unable to start due to the following exception:</value>
-  </data>
   <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
     <value>Please select an embedding provider in the settings.</value>
   </data>
@@ -859,17 +736,11 @@ need to re-import all documents.</value>
   <data name="ParameterSize" xml:space="preserve">
     <value>parameter size: {0}</value>
   </data>
-  <data name="SpecifyOllamaModel" xml:space="preserve">
-    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
-  </data>
   <data name="OllamaSystemPrompt" xml:space="preserve">
     <value>Ollama system prompt</value>
   </data>
   <data name="OllamaEndpoint" xml:space="preserve">
     <value>Ollama Endpoint</value>
-  </data>
-  <data name="SetOllamaEndpoint" xml:space="preserve">
-    <value>Set the Ollama API endpoint.</value>
   </data>
   <data name="OllamaTemperature" xml:space="preserve">
     <value>Ollama Temperature</value>
@@ -883,12 +754,6 @@ need to re-import all documents.</value>
   <data name="OllamaEmbeddingModel" xml:space="preserve">
     <value>Ollama Embedding Model</value>
   </data>
-  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
-    <value>Specify the Ollama embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
-  </data>
-  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
-    <value>Specify the View embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
-  </data>
   <data name="DimensionalityTooltip" xml:space="preserve">
     <value>The dimensionality of embedding vectors produced by this model.</value>
   </data>
@@ -900,9 +765,6 @@ need to re-import all documents.</value>
   </data>
   <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
     <value>The maximum number of tokens to process for each embedding operation.</value>
-  </data>
-  <data name="SimilarityThresholdTooltip" xml:space="preserve">
-    <value>Minimum similarity score required for documents to be included in the context.</value>
   </data>
   <data name="OllamaEnableRAG" xml:space="preserve">
     <value>Ollama Enable RAG</value>
@@ -919,9 +781,6 @@ need to re-import all documents.</value>
   <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
     <value>Enter your View Embeddings API key.</value>
   </data>
-  <data name="SetViewApiEndpoint" xml:space="preserve">
-    <value>Set the View API endpoint URL.</value>
-  </data>
   <data name="EnterOllamaHostName" xml:space="preserve">
     <value>Enter the Ollama host name or URL.</value>
   </data>
@@ -931,17 +790,8 @@ need to re-import all documents.</value>
   <data name="EnterViewTenantGUID" xml:space="preserve">
     <value>Enter your View tenant GUID for multi-tenant environments.</value>
   </data>
-  <data name="ViewCompletionModel" xml:space="preserve">
-    <value>View Completion Model</value>
-  </data>
-  <data name="SpecifyViewModel" xml:space="preserve">
-    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
-  </data>
   <data name="EnterCustomSystemPrompt" xml:space="preserve">
     <value>Enter a custom system prompt for the model.</value>
-  </data>
-  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-    <value>VoyageAI embedding settings incompatible.</value>
   </data>
   <data name="DataMonitorTitle" xml:space="preserve">
     <value>Data Monitor</value>
@@ -954,12 +804,6 @@ need to re-import all documents.</value>
   </data>
   <data name="RAGSettingsTitle" xml:space="preserve">
     <value>RAG Settings</value>
-  </data>
-  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_API_KEY_HERE</value>
-  </data>
-  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
-    <value>YOUR_EMBEDDINGS_API_KEY</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
     <value>Enter your OpenAI API key.</value>
@@ -982,14 +826,8 @@ need to re-import all documents.</value>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI Embedding Model</value>
   </data>
-  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
-    <value>VoyageAI Embedding Model</value>
-  </data>
   <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
     <value>Ollama Embedding Model</value>
-  </data>
-  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
-    <value>View Embedding Model</value>
   </data>
   <data name="EmbeddingModelName" xml:space="preserve">
     <value>Model Name</value>
@@ -1005,12 +843,6 @@ need to re-import all documents.</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
     <value>Endpoint</value>
-  </data>
-  <data name="SavingSettings" xml:space="preserve">
-    <value>Saving settings...</value>
-  </data>
-  <data name="UnselectAll" xml:space="preserve">
-    <value>Unselect All</value>
   </data>
   <data name="PaginationShowingItems" xml:space="preserve">
     <value>Showing {0}-{1} of {2} items</value>
@@ -1048,26 +880,8 @@ need to re-import all documents.</value>
   <data name="LastModified" xml:space="preserve">
     <value>Last Modified</value>
   </data>
-  <data name="Watching" xml:space="preserve">
-    <value>Watching</value>
-  </data>
   <data name="ItemIsBeingWatched" xml:space="preserve">
     <value>This item is being watched</value>
-  </data>
-  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
-  </data>
-  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
-  </data>
-  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
-  </data>
-  <data name="SpecifyViewModelTooltip" xml:space="preserve">
-    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
-  </data>
-  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
-    <value>Set the OpenAI API endpoint.</value>
   </data>
   <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
     <value>Number of requests to process in a single batch.</value>
@@ -1096,6 +910,213 @@ need to re-import all documents.</value>
   <data name="OllamaTemperatureTooltip" xml:space="preserve">
     <value>Controls randomness of the AI's responses. Higher values (e.g., 0.8) produce more creative output, while lower values (e.g., 0.2) make responses more focused and deterministic.</value>
   </data>
+  <data name="OllamaHostNameTooltip" xml:space="preserve">
+    <value>Enter the Ollama host name or URL.</value>
+  </data>
+  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
+    <value>Delete knowledgebase</value>
+  </data>
+  <data name="ClearConsoleTooltip" xml:space="preserve">
+    <value>Clear Console</value>
+  </data>
+  <data name="DownloadLogsTooltip" xml:space="preserve">
+    <value>Download Logs</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="ViewProvider" xml:space="preserve">
+    <value>View Provider</value>
+  </data>
+  <data name="SaveLanguage" xml:space="preserve">
+    <value>Save Language Setting</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Your language preference has been saved and applied.</value>
+  </data>
+  <data name="SelectLanguage" xml:space="preserve">
+    <value>Select your preferred language:</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>Validation Error</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Unexpected Error</value>
+  </data>
+  <data name="SettingsSavedMessage" xml:space="preserve">
+    <value>Your settings have been successfully saved.</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Something went wrong: {0}</value>
+  </data>
+  <data name="UnsupportedFileType" xml:space="preserve">
+    <value>Unsupported file type.</value>
+  </data>
+  <data name="ResumingIngestion" xml:space="preserve">
+    <value>Resuming Ingestion</value>
+  </data>
+  <data name="ReprocessingError" xml:space="preserve">
+    <value>Remove Selected Files</value>
+  </data>
+  <data name="UnreachableHost" xml:space="preserve">
+    <value>Unreachable Host</value>
+  </data>
+  <data name="ViewEndpointFormat" xml:space="preserve">
+    <value>View endpoint must be in the format: http://&lt;hostname or IP&gt;:&lt;port&gt;/</value>
+  </data>
+  <data name="SelectAtLeastOneFile" xml:space="preserve">
+    <value>Please select at least one file to remove.</value>
+  </data>
+  <data name="Sync" xml:space="preserve">
+    <value>Sync</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>VoyageAI embedding settings incomplete.</value>
+  </data>
+  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>View embedding settings incomplete.</value>
+  </data>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>Welcome to View</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>Upload Files</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>Reprocess the file</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>Remove Selected Files</value>
+  </data>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>What do you want to chat about?</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>YOUR_API_KEY_HERE</value>
+  </data>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+  </data>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>Set the OpenAI API endpoint.</value>
+  </data>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+  </data>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>Set the Anthropic API endpoint.</value>
+  </data>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>Controls randomness in completions. Higher values (0.8) make output more random, lower values (0.2) make it more focused.</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>Watch '{0}'? This will ingest {1} file{2}.</value>
+  </data>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>Unwatch Only</value>
+  </data>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>Unwatch and Delete</value>
+  </data>
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>Unable to start View Personal</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>View Personal was unable to start due to the following exception:</value>
+  </data>
+  <data name="SpecifyOllamaModel" xml:space="preserve">
+    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+  </data>
+  <data name="SetOllamaEndpoint" xml:space="preserve">
+    <value>Set the Ollama API endpoint.</value>
+  </data>
+  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
+    <value>Specify the Ollama embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
+  </data>
+  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
+    <value>Specify the View embedding model to use, e.g., sentence-transformers/all-MiniLM-L6-v2.</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>Minimum similarity score required for documents to be included in the context.</value>
+  </data>
+  <data name="SetViewApiEndpoint" xml:space="preserve">
+    <value>Set the View API endpoint URL.</value>
+  </data>
+  <data name="ViewCompletionModel" xml:space="preserve">
+    <value>View Completion Model</value>
+  </data>
+  <data name="SpecifyViewModel" xml:space="preserve">
+    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
+    <value>VoyageAI embedding settings incompatible.</value>
+  </data>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_API_KEY_HERE</value>
+  </data>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>YOUR_EMBEDDINGS_API_KEY</value>
+  </data>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>VoyageAI Embedding Model</value>
+  </data>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>View Embedding Model</value>
+  </data>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>Saving settings...</value>
+  </data>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>Unselect All</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>Watching</value>
+  </data>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+  </data>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+  </data>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+  </data>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>Set the OpenAI API endpoint.</value>
+  </data>
   <data name="ViewBatchSizeTooltip" xml:space="preserve">
     <value>The number of requests to process in a batch.</value>
   </data>
@@ -1108,19 +1129,10 @@ need to re-import all documents.</value>
   <data name="ViewEndpointTooltip" xml:space="preserve">
     <value>Set the View API endpoint URL.</value>
   </data>
-  <data name="OllamaHostNameTooltip" xml:space="preserve">
-    <value>Enter the Ollama host name or URL.</value>
-  </data>
   <data name="ViewSystemPromptTooltip" xml:space="preserve">
     <value>Enter a custom system prompt for the model.</value>
   </data>
-  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
-    <value>Delete knowledgebase</value>
-  </data>
-  <data name="ClearConsoleTooltip" xml:space="preserve">
-    <value>Clear Console</value>
-  </data>
-  <data name="DownloadLogsTooltip" xml:space="preserve">
-    <value>Download Logs</value>
+  <data name="German" xml:space="preserve">
+    <value>German</value>
   </data>
 </root>

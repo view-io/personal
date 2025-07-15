@@ -624,11 +624,18 @@ namespace View.Personal
                 {
                     var englishRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
                     var hindiRadio = this.FindControl<RadioButton>("HindiLanguageRadio");
+                    var simplifiedChineseRadio = this.FindControl<RadioButton>("SimplifiedChineseLanguageRadio");
+                    var japaneseRadio = this.FindControl<RadioButton>("JapaneseLanguageRadio");
+                    var germanRadio = this.FindControl<RadioButton>("GermanLanguageRadio");
                     
                     if (hindiRadio?.IsChecked == true)
-                    {
                         languageCode = "hi";
-                    }
+                    else if (simplifiedChineseRadio?.IsChecked == true)
+                        languageCode = "zh-CN";
+                    else if (japaneseRadio?.IsChecked == true)
+                        languageCode = "ja";
+                    else if (germanRadio?.IsChecked == true)
+                        languageCode = "de";
                 }
                 
                 app.ApplicationSettings.PreferredLanguage = languageCode;   
@@ -696,6 +703,15 @@ namespace View.Personal
                             break;
                         case "hi":
                             this.FindControl<RadioButton>("HindiLanguageRadio").IsChecked = true;
+                            break;
+                        case "zh-CN":
+                            this.FindControl<RadioButton>("SimplifiedChineseLanguageRadio").IsChecked = true;
+                            break;
+                        case "ja":
+                            this.FindControl<RadioButton>("JapaneseLanguageRadio").IsChecked = true;
+                            break;
+                        case "de":
+                            this.FindControl<RadioButton>("GermanLanguageRadio").IsChecked = true;
                             break;
                         default:
                             this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
