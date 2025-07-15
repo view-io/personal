@@ -606,24 +606,34 @@ namespace View.Personal
             {
                 spinner.IsVisible = true;
                 
-                // Determine selected language
-                var englishRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
-                var hindiRadio = this.FindControl<RadioButton>("HindiLanguageRadio");
-                
                 string languageCode = "en";
-                if (hindiRadio.IsChecked == true)
+                
+                var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
+                if (languagePanel != null)
                 {
-                    languageCode = "hi";
+                    foreach (var child in languagePanel.Children)
+                    {
+                        if (child is RadioButton radioButton && radioButton.IsChecked == true)
+                        {
+                            languageCode = radioButton.Tag?.ToString() ?? "en";
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    var englishRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
+                    var hindiRadio = this.FindControl<RadioButton>("HindiLanguageRadio");
+                    
+                    if (hindiRadio?.IsChecked == true)
+                    {
+                        languageCode = "hi";
+                    }
                 }
                 
-                // Update application settings
-                app.ApplicationSettings.PreferredLanguage = languageCode;
-                
-                // Save settings
+                app.ApplicationSettings.PreferredLanguage = languageCode;   
                 app.SaveSettings();
-                
-                // Update culture - this will trigger the CultureChanged event
-                // which will update all localized strings in the UI
+              
                 Services.ResourceManagerService.SetCulture(new System.Globalization.CultureInfo(languageCode));
                 
                 // Show success notification
@@ -650,17 +660,47 @@ namespace View.Personal
             // Set language radio buttons based on preferred language
             if (!string.IsNullOrEmpty(settings.PreferredLanguage))
             {
-                switch (settings.PreferredLanguage.ToLower())
+                var languageCode = settings.PreferredLanguage.ToLower();
+                var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
+                
+                if (languagePanel != null)
                 {
-                    case "en":
-                        this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
-                        break;
-                    case "hi":
-                        this.FindControl<RadioButton>("HindiLanguageRadio").IsChecked = true;
-                        break;
-                    default:
-                        this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
-                        break;
+                    bool foundMatchingRadioButton = false;
+                   
+                    foreach (var child in languagePanel.Children)
+                    {
+                        if (child is RadioButton radioButton && 
+                            radioButton.Tag?.ToString()?.ToLower() == languageCode)
+                        {
+                            radioButton.IsChecked = true;
+                            foundMatchingRadioButton = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundMatchingRadioButton)
+                    {
+                        var defaultRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
+                        if (defaultRadio != null)
+                        {
+                            defaultRadio.IsChecked = true;
+                        }
+                    }
+                }
+                else
+                {
+                    switch (languageCode)
+                    {
+                        case "en":
+                            this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                            break;
+                        case "hi":
+                            this.FindControl<RadioButton>("HindiLanguageRadio").IsChecked = true;
+                            break;
+                        default:
+                            this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                            break;
+                    }
                 }
             }
 
@@ -934,14 +974,29 @@ namespace View.Personal
                 _ => string.Empty
             };
 
+            var preferredLanguage = app.ApplicationSettings.PreferredLanguage;
+            var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(preferredLanguage);
+            var languageName = cultureInfo.DisplayName;
+            
+            string languageInstruction = $"Please respond ONLY in {languageName}. Do not provide translations to other languages.";
+            
             if (!string.IsNullOrWhiteSpace(customSystemPrompt))
             {
                 finalList.Add(new ChatMessage
                 {
                     Role = "system",
-                    Content = customSystemPrompt
+                    Content = $"{languageInstruction} {customSystemPrompt}"
                 });
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt for {selectedProvider}");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt with language preference for {selectedProvider}");
+            }
+            else
+            {
+                finalList.Add(new ChatMessage
+                {
+                    Role = "system",
+                    Content = languageInstruction
+                });
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added language preference system prompt for {selectedProvider}");
             }
 
             int maxContextCharacters = 24000;
@@ -1087,7 +1142,7 @@ namespace View.Personal
                       Content = summaryPrompt
                    }
                 };
-
+                
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
                 app.LogWithTimestamp(SeverityEnum.Debug, $"Sending summarization request to {selectedProvider}");
 
@@ -1205,9 +1260,9 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             app.LogWithTimestamp(SeverityEnum.Info, $"Creating summarization request body for {provider}");
+            
             switch (provider)
             {
-                //ToDo: need to grab control settings dynamically
                 case "OpenAI":
                     return new
                     {

@@ -1714,9 +1714,11 @@
 										<StackPanel Spacing="8">
 											<TextBlock Text="{l:Localize Language}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 											<TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" Text="{l:Localize SelectLanguage}" />
-											<StackPanel Margin="0,12,0,0" Spacing="8">
-												<RadioButton x:Name="EnglishLanguageRadio" GroupName="Language" Content="{l:Localize English}" IsChecked="True" />
-												<RadioButton x:Name="HindiLanguageRadio" GroupName="Language" Content="{l:Localize Hindi}" />
+											<StackPanel x:Name="LanguageSelectionPanel" Margin="0,12,0,0" Spacing="8">
+												<RadioButton x:Name="EnglishLanguageRadio" GroupName="Language" Content="{l:Localize English}" IsChecked="True" Tag="en" />
+												<RadioButton x:Name="HindiLanguageRadio" GroupName="Language" Content="{l:Localize Hindi}" Tag="hi" />
+												<!-- Additional languages can be added here in the future -->
+												<!-- Example: <RadioButton GroupName="Language" Content="{l:Localize Spanish}" Tag="es" /> -->
 											</StackPanel>
 										</StackPanel>
 										<StackPanel VerticalAlignment="Bottom" Margin="0,20,0,0">
