@@ -724,9 +724,6 @@
   <data name="AdvancedRAG" xml:space="preserve">
     <value>उन्नत RAG</value>
   </data>
-  <data name="MaxRetrievedTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
-  </data>
   <data name="QueryOptimizationTooltip" xml:space="preserve">
     <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी अनुकूलित करें</value>
   </data>
@@ -735,18 +732,6 @@
   </data>
   <data name="EnableCitationsTooltip" xml:space="preserve">
     <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
-  </data>
-  <data name="KnowledgebaseSource" xml:space="preserve">
-    <value>ज्ञानकोष स्रोत</value>
-  </data>
-  <data name="EnableContextSortingTooltip" xml:space="preserve">
-    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
-  </data>
-  <data name="EnableRAGTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्ति संवर्धित पीढ़ी सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञानकोष का उपयोग करेगा।</value>
-  </data>
-  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
-    <value>उन्नत RAG सेटिंग्स कॉन्फ़िगर करें</value>
   </data>
   <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
     <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
@@ -853,9 +838,7 @@
   <data name="SpecifyViewModel" xml:space="preserve">
     <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे, llama3.1:8b।</value>
   </data>
-  <data name="EnterCustomSystemPrompt" xml:space="preserve">
-    <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
-  </data>
+
   <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
     <value>वॉयजएआई एम्बेडिंग सेटिंग्स असंगत हैं।</value>
   </data>
@@ -1039,9 +1022,6 @@
   <data name="ViewSystemPromptTooltip" xml:space="preserve">
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
-  <data name="EnableRAGTooltip" xml:space="preserve">
-    <value>पुनर्प्राप्ति संवर्धित जनरेशन सक्षम करें। जब सक्षम किया जाता है, तो AI अपनी प्रतिक्रियाओं को बढ़ाने के लिए आपके ज्ञान आधार का उपयोग करेगा।</value>
-  </data>
   <data name="MaxRetrievedTooltip" xml:space="preserve">
     <value>पुनर्प्राप्त करने के लिए दस्तावेज़ों की अधिकतम संख्या</value>
   </data>
@@ -1054,50 +1034,14 @@
   <data name="DownloadLogsTooltip" xml:space="preserve">
     <value>लॉग डाउनलोड करें</value>
   </data>
-  <data name="QueryOptimizationTooltip" xml:space="preserve">
-    <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी को अनुकूलित करें</value>
-  </data>
-  <data name="EnableCitationsTooltip" xml:space="preserve">
-    <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
-  </data>
-  <data name="EnableCitationsTooltip" xml:space="preserve">
-    <value>उत्पन्न प्रतिक्रियाओं में उद्धरण शामिल करें</value>
-  </data>
-  <data name="EnableContextSortingTooltip" xml:space="preserve">
-    <value>प्रासंगिकता के अनुसार संदर्भ को क्रमबद्ध करें</value>
-  </data>
   <data name="SetOllamaEndpointTooltip" xml:space="preserve">
     <value>ओल्लामा एपीआई एंडपॉइंट यूआरएल सेट करें।</value>
   </data>
   <data name="EnterCustomSystemPrompt" xml:space="preserve">
     <value>मॉडल के लिए एक कस्टम सिस्टम प्रॉम्प्ट दर्ज करें।</value>
   </data>
-  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
-    <value>व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
-  </data>
-  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
-    <value>व्यू एक्सेस कुंजी दर्ज करें।</value>
-  </data>
-  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
-    <value>व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
-  </data>
-  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>वॉयेजएआई एपीआई कुंजी दर्ज करें।</value>
-  </data>
-  <data name="AdvancedRAG" xml:space="preserve">
-    <value>उन्नत RAG</value>
-  </data>
-  <data name="AdvancedRAGTitle" xml:space="preserve">
-    <value>उन्नत RAG</value>
-  </data>
-  <data name="KnowledgebaseSource" xml:space="preserve">
-    <value>ज्ञान आधार स्रोत</value>
-  </data>
   <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
     <value>उपयोग करने के लिए ओपनएआई एम्बेडिंग मॉडल निर्दिष्ट करें, जैसे text-embedding-3-small।</value>
-  </data>
-  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
-    <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
   </data>
   <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
     <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस करने के लिए टोकन की अधिकतम संख्या।</value>
@@ -1116,14 +1060,5 @@
   </data>
   <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
     <value>इस मॉडल द्वारा उत्पन्न एम्बेडिंग वेक्टर्स की आयामिकता।</value>
-  </data>
-  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
-    <value>प्रत्येक एम्बेडिंग ऑपरेशन के लिए प्रोसेस किए जाने वाले टोकन की अधिकतम संख्या।</value>
-  </data>
-  <data name="SimilarityThresholdTooltip" xml:space="preserve">
-    <value>संदर्भ में शामिल किए जाने के लिए दस्तावेज़ों के लिए आवश्यक न्यूनतम समानता स्कोर।</value>
-  </data>
-  <data name="QueryOptimizationTooltip" xml:space="preserve">
-    <value>बेहतर पुनर्प्राप्ति परिणामों के लिए क्वेरी को अनुकूलित करें</value>
   </data>
 </root>
