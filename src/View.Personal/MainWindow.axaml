@@ -1720,6 +1720,10 @@
 												<RadioButton x:Name="SimplifiedChineseLanguageRadio" GroupName="Language" Content="{l:Localize Simplified Chinese}" Tag="zh-CN" />
 												<RadioButton x:Name="JapaneseLanguageRadio" GroupName="Language" Content="{l:Localize Japanese}" Tag="ja" />
 												<RadioButton x:Name="GermanLanguageRadio" GroupName="Language" Content="{l:Localize German}" Tag="de" />
+												<RadioButton x:Name="SpanishLanguageRadio" GroupName="Language" Content="{l:Localize Spanish}" Tag="es" />
+												<RadioButton x:Name="KoreanLanguageRadio" GroupName="Language" Content="{l:Localize Korean}" Tag="ko" />
+												<RadioButton x:Name="PortugueseLanguageRadio" GroupName="Language" Content="{l:Localize Portuguese}" Tag="pt" />
+												<RadioButton x:Name="FrenchLanguageRadio" GroupName="Language" Content="{l:Localize French}" Tag="fr" />
 											</StackPanel>
 										</StackPanel>
 										<StackPanel VerticalAlignment="Bottom" Margin="0,20,0,0">

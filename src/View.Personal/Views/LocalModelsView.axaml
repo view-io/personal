@@ -36,13 +36,13 @@
 					<TextBlock Text="{l:Localize PullNewModel}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 					<StackPanel Orientation="Horizontal">
 						<Button x:Name="ExploreModelsButton"
-                               Content="{l:Localize ClickHere}"
-                               Foreground="#0472EF"
-                               Background="Transparent"
-                               BorderThickness="0"
-                               Padding="0"
-                               Cursor="Hand"
-                               Click="ExploreModelsButton_Click">
+								Content="{l:Localize ClickHere}"
+								Foreground="#0472EF"
+								Background="Transparent"
+								BorderThickness="0"
+								Padding="0"
+								Cursor="Hand"
+								Click="ExploreModelsButton_Click">
 							<Button.Styles>
 								<Style Selector="Button:pointerover">
 									<Setter Property="Foreground" Value="#0472EF"/>
@@ -52,21 +52,21 @@
 							<Button.Template>
 								<ControlTemplate>
 									<TextBlock Text="{TemplateBinding Content}"
-                                               Foreground="#6A6B6F"
-                                               TextDecorations="Underline"
-                                               FontWeight="SemiBold"
-                                               FontSize="12"/>
+											   Foreground="#6A6B6F"
+											   TextDecorations="Underline"
+											   FontWeight="SemiBold"
+											   FontSize="12"/>
 								</ControlTemplate>
 							</Button.Template>
 						</Button>
 						<TextBlock Text="{l:Localize ExploreAvailableModels}"
-                                 Foreground="#6A6B6F"
+								   Foreground="#6A6B6F"
                                  FontSize="12"/>
 					</StackPanel>
 				</StackPanel>
 
 				<!-- Right Column - Input and Button -->
-				<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
+				<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="90,0,0,0">
 					<TextBox Grid.Row="0" Grid.Column="0" x:Name="ModelNameTextBox"
 							 Classes="no-shadow"
                              Watermark="{l:Localize EnterOllamaModelTag}"
@@ -144,7 +144,7 @@
 					<TextBlock Text="{l:Localize ChooseFromExistingModels}" FontSize="12" Foreground="#6A6B6F" />
 				</StackPanel>
 				<!-- Scrollable models list -->
-				<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="40,8,0,16">
+				<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="90,8,0,16">
 					<ItemsControl x:Name="ModelsDataGrid">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>

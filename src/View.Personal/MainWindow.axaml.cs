@@ -627,6 +627,10 @@ namespace View.Personal
                     var simplifiedChineseRadio = this.FindControl<RadioButton>("SimplifiedChineseLanguageRadio");
                     var japaneseRadio = this.FindControl<RadioButton>("JapaneseLanguageRadio");
                     var germanRadio = this.FindControl<RadioButton>("GermanLanguageRadio");
+                    var spanishRadio = this.FindControl<RadioButton>("SpanishLanguageRadio");
+                    var koreanRadio = this.FindControl<RadioButton>("KoreanLanguageRadio");
+                    var portugueseRadio = this.FindControl<RadioButton>("PortugueseLanguageRadio");
+                    var frenchRadio = this.FindControl<RadioButton>("FrenchLanguageRadio");
                     
                     if (hindiRadio?.IsChecked == true)
                         languageCode = "hi";
@@ -636,6 +640,14 @@ namespace View.Personal
                         languageCode = "ja";
                     else if (germanRadio?.IsChecked == true)
                         languageCode = "de";
+                    else if (spanishRadio?.IsChecked == true)
+                        languageCode = "es";
+                    else if (koreanRadio?.IsChecked == true)
+                        languageCode = "ko";
+                    else if (portugueseRadio?.IsChecked == true)
+                        languageCode = "pt";
+                    else if (frenchRadio?.IsChecked == true)
+                        languageCode = "fr";
                 }
                 
                 app.ApplicationSettings.PreferredLanguage = languageCode;   
@@ -712,6 +724,18 @@ namespace View.Personal
                             break;
                         case "de":
                             this.FindControl<RadioButton>("GermanLanguageRadio").IsChecked = true;
+                            break;
+                        case "es":
+                            this.FindControl<RadioButton>("SpanishLanguageRadio").IsChecked = true;
+                            break;
+                        case "ko":
+                            this.FindControl<RadioButton>("KoreanLanguageRadio").IsChecked = true;
+                            break;
+                        case "pt":
+                            this.FindControl<RadioButton>("PortugueseLanguageRadio").IsChecked = true;
+                            break;
+                        case "fr":
+                            this.FindControl<RadioButton>("FrenchLanguageRadio").IsChecked = true;
                             break;
                         default:
                             this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
