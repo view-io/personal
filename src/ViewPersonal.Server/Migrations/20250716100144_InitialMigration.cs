@@ -15,10 +15,10 @@ namespace ViewPersonal.Server.Migrations
                 name: "Versions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VersionNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    VersionNumber = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,11 +29,11 @@ namespace ViewPersonal.Server.Migrations
                 name: "VersionOsDetails",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OperatingSystem = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DownloadUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    AppVersionId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    OperatingSystem = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    DownloadUrl = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    AppVersionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
