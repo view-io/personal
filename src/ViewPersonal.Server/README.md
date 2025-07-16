@@ -17,8 +17,9 @@ This API provides endpoints for managing application versions with OS-specific d
 
 ### Setup
 
-1. The application uses SQL Server LocalDB by default. Make sure you have it installed.
-2. The database will be automatically created and migrated on first run.
+1. The application uses SQLite as its database provider. No additional database setup is required — the database file will be created automatically.
+2. On first run, the database will be automatically created and migrated using Entity Framework Core.
+3. The SQLite database file (view-personal-server.db) will be stored in the application’s root directory by default.
 
 ### API Endpoints
 
