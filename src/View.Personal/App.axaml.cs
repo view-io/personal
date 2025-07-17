@@ -250,6 +250,9 @@ namespace View.Personal
                     {
                         var localModelService = new Services.LocalModelService(this);
                         await localModelService.PreloadModelsAtStartupAsync();
+                        
+                        Services.VoskModelService.SetApp(this);
+                        await Services.VoskModelService.InitializeVoskModelAsync();
                     });
 
                     _Logging.Debug(_Header + "Storing application version in file");

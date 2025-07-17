@@ -13,6 +13,7 @@ namespace View.Personal.UIHandlers
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using View.Personal.Controls.Dialogs;
     using System.Threading.Tasks;
     using View.Personal.Controls.Renderer;
     using View.Personal.Enums;
@@ -40,6 +41,60 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Public-Methods
+
+        /// <summary>
+        /// Handles the click event for the microphone button in the chat interface.
+        /// Opens the speech-to-text dialog and sets the transcribed text to the appropriate input box.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">Event data associated with the click event.</param>
+        /// <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
+        public static async void MicrophoneButton_Click(
+            object sender,
+            RoutedEventArgs e,
+            Window window)
+        {
+            var mainWindow = window as MainWindow;
+            if (mainWindow == null) return;
+
+            var app = (App)App.Current;
+
+            try
+            {
+                var transcribedText = await SpeechToTextDialog.ShowAsync(window);
+                
+                if (!string.IsNullOrWhiteSpace(transcribedText))
+                {
+                    var conversationContainer = mainWindow.FindControl<StackPanel>("ConversationContainer");
+                    var hasExistingConversation = conversationContainer?.Children.Count > 0;
+                    
+                    if (hasExistingConversation)
+                    {
+                        var inputBox = mainWindow.FindControl<TextBox>("ChatInputBox");
+                        if (inputBox != null)
+                        {
+                            inputBox.Text = transcribedText;
+                            inputBox.Focus();
+                            inputBox.CaretIndex = transcribedText.Length;
+                        }
+                    }
+                    else
+                    {
+                        var emptyInputBox = mainWindow.FindControl<TextBox>("EmptyChatInputBox");
+                        if (emptyInputBox != null)
+                        {
+                            emptyInputBox.Text = transcribedText;
+                            emptyInputBox.Focus();
+                            emptyInputBox.CaretIndex = transcribedText.Length;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                app.Log(SeverityEnum.Error, $"Error in speech-to-text: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Handles the click event for sending a test message in a chat interface.

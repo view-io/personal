@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net9.0</TargetFramework>
@@ -46,6 +46,8 @@
 		<PackageReference Include="Timestamps" Version="1.0.11" />
         <PackageReference Include="View.Sdk" Version="1.4.0.70" />
 		<PackageReference Include="NPOI" Version="2.7.4" />
+		<PackageReference Include="Vosk" Version="0.3.38" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>

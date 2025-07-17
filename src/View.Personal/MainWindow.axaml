@@ -2252,25 +2252,36 @@
                                                      BorderBrush="#DBDBDB"
                                                      BorderThickness="1"
                                                      CornerRadius="12"
-                                                     Padding="20,10,48,10"
+                                                     Padding="20,10,88,10"
                                                      Height="56"
-													 FontSize="14"
+															 FontSize="14"
                                                      KeyDown="ChatInputBox_KeyDown" />
-											<Button x:Name="EmptyInlineSendButton"
-                                                    Background="#0472EF"
-                                                    BorderThickness="0"
-                                                    Margin="0,0,10,0"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Center"
-                                                    Height="32"
-                                                    Width="32"
-                                                    CornerRadius="8"
-                                                    Click="SendMessageTest_Click">
-												<avalonia:MaterialIcon Kind="SendOutline"
-                                                                       Foreground="#FFFFFF"
-                                                                       Height="20"
-                                                                       Width="20" />
-											</Button>
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+												<Button x:Name="EmptyMicrophoneButton"
+                                                        Background="#0472EF"
+                                                        BorderThickness="0"
+                                                        Margin="0,0,8,0"
+                                                        Height="32"
+                                                        Width="32"
+                                                        CornerRadius="8">
+													<avalonia:MaterialIcon Kind="Microphone"
+                                                                           Foreground="#FFFFFF"
+                                                                           Height="20"
+                                                                           Width="20" />
+												</Button>
+												<Button x:Name="EmptyInlineSendButton"
+                                                        Background="#0472EF"
+                                                        BorderThickness="0"
+                                                        Height="32"
+                                                        Width="32"
+                                                        CornerRadius="8"
+                                                        Click="SendMessageTest_Click">
+													<avalonia:MaterialIcon Kind="SendOutline"
+                                                                           Foreground="#FFFFFF"
+                                                                           Height="20"
+                                                                           Width="20" />
+												</Button>
+											</StackPanel>
 										</Grid>
 									</StackPanel>
 								</StackPanel>
@@ -2291,23 +2302,33 @@
                                              BorderBrush="#DBDBDB"
                                              BorderThickness="1"
                                              CornerRadius="8"
-                                             Padding="16,8,40,8"
+                                             Padding="16,8,80,8"
                                              Height="48"
                                              KeyDown="ChatInputBox_KeyDown" />
-									<Button x:Name="InlineSendButton"
-                                            Background="#0472EF"
-                                            BorderThickness="0"
-                                            Margin="0,0,10,0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Height="32"
-                                            Width="32"
-                                            CornerRadius="8"
-                                            Click="SendMessageTest_Click">
-										<avalonia:MaterialIcon Kind="SendOutline"
-                                                               Foreground="#FFFFFF"
-                                                               Background="#0472EF" />
-									</Button>
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+										<Button x:Name="MicrophoneButton"
+                                                Background="#0472EF"
+                                                BorderThickness="0"
+                                                Margin="0,0,8,0"
+                                                Height="32"
+                                                Width="32"
+                                                CornerRadius="8">
+											<avalonia:MaterialIcon Kind="Microphone"
+                                                                   Foreground="#FFFFFF"
+                                                                   Background="#0472EF" />
+										</Button>
+										<Button x:Name="InlineSendButton"
+                                                Background="#0472EF"
+                                                BorderThickness="0"
+                                                Height="32"
+                                                Width="32"
+                                                CornerRadius="8"
+                                                Click="SendMessageTest_Click">
+											<avalonia:MaterialIcon Kind="SendOutline"
+                                                                   Foreground="#FFFFFF"
+                                                                   Background="#0472EF" />
+										</Button>
+									</StackPanel>
 								</Grid>
 							</StackPanel>
 						</Grid>

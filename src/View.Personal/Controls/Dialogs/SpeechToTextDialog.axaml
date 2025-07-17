@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="450"
+             x:Class="View.Personal.Controls.Dialogs.SpeechToTextDialog">
+
+    <UserControl.Styles>
+        <!-- Close Button Style -->
+        <Style Selector="Button.close-button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style Selector="Button.close-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#20000000"/>
+        </Style>
+        <Style Selector="Button.close-button:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#40000000"/>
+        </Style>
+
+        <!-- Microphone Animation Container Style -->
+        <Style Selector="Border.microphone-container">
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="CornerRadius" Value="60"/>
+            <Setter Property="Background" Value="#0472EF"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,20,0,20"/>
+        </Style>
+
+        <!-- Action Button Style -->
+        <Style Selector="Button.action-button">
+            <Setter Property="Background" Value="#0472EF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+        <Style Selector="Button.action-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#0366D6"/>
+        </Style>
+        <Style Selector="Button.action-button:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#0255BC"/>
+        </Style>
+
+        <!-- Stop Button Style -->
+        <Style Selector="Button.stop-button">
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+        <Style Selector="Button.stop-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#D32F2F"/>
+        </Style>
+        <Style Selector="Button.stop-button:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#C62828"/>
+        </Style>
+
+        <!-- Transcription TextBox Style -->
+        <Style Selector="TextBox.transcription-box">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#DBDBDB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <!-- Progress Bar Style -->
+        <Style Selector="ProgressBar.download-progress">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Foreground" Value="#0472EF"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="0,10"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="White" CornerRadius="12" BoxShadow="0 4 8 0 #20000000">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header with Close Button -->
+            <Grid Grid.Row="0">
+                <TextBlock Text="Speech to Text" 
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Center"
+                           FontWeight="SemiBold"
+                           FontSize="16"/>
+                <Button x:Name="CloseButton" Classes="close-button">
+                    <avalonia:MaterialIcon Kind="Close" Width="16" Height="16" Foreground="#757575"/>
+                </Button>
+            </Grid>
+
+            <!-- Content Area -->
+            <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                <!-- Microphone Animation Container -->
+                <Border x:Name="MicrophoneContainer" Classes="microphone-container">
+                    <avalonia:MaterialIcon x:Name="MicrophoneIcon" Kind="Microphone" Width="48" Height="48" Foreground="White"/>
+                </Border>
+
+                <!-- Status Text -->
+                <TextBlock x:Name="StatusText" Text="Listening..." HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Margin="0,10"/>
+
+                <!-- Transcription Box -->
+                <TextBox x:Name="TranscriptionBox" Classes="transcription-box" Watermark="Transcription will appear here..."/>
+
+                <!-- Download Progress Container (Hidden - now using separate dialog) -->
+                <Border x:Name="DownloadProgressContainer" IsVisible="False" Height="0" />
+            </StackPanel>
+
+            <!-- Button Area -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <Button x:Name="StopButton" Classes="stop-button" Content="Stop" />
+                <Button x:Name="SendButton" Classes="action-button" Content="Send" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

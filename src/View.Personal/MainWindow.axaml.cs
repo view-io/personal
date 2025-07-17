@@ -46,7 +46,7 @@ namespace View.Personal
 #pragma warning disable CS8618, CS9264
 #pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS0618 // Type or member is obsolete
-
+        
         #region Public-Members
 
         /// <summary>
@@ -127,6 +127,20 @@ namespace View.Personal
                 Directory.CreateDirectory(_TempPath); // ensure path exists
                 _TypeDetector = new TypeDetector(_TempPath);
                 InitializeComponent();
+                
+                var emptyMicrophoneButton = this.FindControl<Button>("EmptyMicrophoneButton");
+                var microphoneButton = this.FindControl<Button>("MicrophoneButton");
+                
+                if (emptyMicrophoneButton != null)
+                {
+                    emptyMicrophoneButton.Click += (s, e) => UIHandlers.ChatUIHandlers.MicrophoneButton_Click(s, e, this);
+                }
+                
+                if (microphoneButton != null)
+                {
+                    microphoneButton.Click += (s, e) => UIHandlers.ChatUIHandlers.MicrophoneButton_Click(s, e, this);
+                }
+                
                 Opened += (_, __) =>
                 {
                     MainWindowUIHandlers.MainWindow_Opened(this);

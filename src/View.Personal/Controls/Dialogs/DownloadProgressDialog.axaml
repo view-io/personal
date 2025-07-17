@@ -1,0 +1,96 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="View.Personal.Controls.Dialogs.DownloadProgressDialog">
+
+	<Border Background="White"
+            CornerRadius="8"
+            BorderThickness="2"
+            BorderBrush="#CCCCCC"
+            Padding="0"
+            MinWidth="380"
+            MaxWidth="460">
+
+		<StackPanel Spacing="0">
+			<!-- Title Bar -->
+			<Border Background="#F8F8F8"
+                    CornerRadius="8,8,0,0"
+                    Height="48">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<TextBlock Text="Speech to Text Model Download"
+							   Grid.Column="0"
+							   VerticalAlignment="Center"
+							   HorizontalAlignment="Center"
+							   FontWeight="SemiBold"
+							   FontSize="16"
+							   Margin="16,0" />
+
+					<!-- Close (✕) Button -->
+					<Button x:Name="CloseButton"
+							Grid.Column="1"
+							Width="40"
+							Height="40"
+							Background="Transparent"
+							BorderThickness="0"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Center"
+							Padding="0"
+							Classes="flat"
+							Margin="0,0,8,0">
+						<avalonia:MaterialIcon Kind="Close" Width="20" Height="20" Foreground="#505050" />
+					</Button>
+				</Grid>
+			</Border>
+			<!-- Main Content -->
+			<StackPanel Margin="24,32,24,24"
+                        Spacing="20"
+                        HorizontalAlignment="Center">
+
+				<!-- Icon -->
+				<StackPanel HorizontalAlignment="Center">
+					<avalonia:MaterialIcon Kind="CloudDownloadOutline"
+                                           Width="48"
+                                           Height="48"
+                                           Foreground="#0472EF"
+                                           HorizontalAlignment="Center" />
+				</StackPanel>
+
+				<!-- Status Text -->
+				<TextBlock x:Name="DownloadStatusText"
+                           Text="Downloading Vosk model..."
+                           HorizontalAlignment="Center"
+                           FontSize="14"
+                           Foreground="#505050" />
+
+				<!-- Progress Bar -->
+				<ProgressBar x:Name="DownloadProgressBar"
+                             Width="280"
+                             Height="6"
+                             Background="#E0E0E0"
+                             Foreground="#0472EF"
+                             CornerRadius="3"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="0" />
+
+				<!-- Action Button -->
+				<Button x:Name="ContinueInBackgroundButton"
+                        Content="Continue in background"
+                        HorizontalAlignment="Center"
+                        MinWidth="160"
+                        Height="40"
+                        CornerRadius="8"
+                        Background="White"
+                        BorderBrush="#EEEEEE"
+                        Foreground="#0472EF"
+                        BorderThickness="1"
+                        Padding="12,0" />
+			</StackPanel>
+		</StackPanel>
+	</Border>
+</UserControl>

@@ -1419,6 +1419,18 @@
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
+        <member name="M:View.Personal.Controls.Dialogs.DownloadProgressDialog.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.InitializeComponent(System.Boolean)">
+            <summary>
+            Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
+            </summary>
+            <param name="loadXaml">Should the XAML be loaded into the component.</param>
+        </member>
         <member name="T:View.Personal.Controls.IngestionProgressPopup">
             <summary>
             A collapsible popup control that displays real-time file ingestion progress and pending queue.
@@ -3152,12 +3164,69 @@
             <param name="args">The arguments to format the string with.</param>
             <returns>The formatted localized string, or the key itself if not found.</returns>
         </member>
+        <member name="T:View.Personal.Services.VoskModelService">
+            <summary>
+            Service for managing Vosk speech recognition model downloads and status.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.VoskModelService.IsDownloading">
+            <summary>
+            Gets a value indicating whether the Vosk model is currently downloading.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.VoskModelService.DownloadProgress">
+            <summary>
+            Gets the current download progress as a percentage (0-100).
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.VoskModelService.IsModelInstalled">
+            <summary>
+            Gets a value indicating whether the Vosk model is installed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.VoskModelService.ModelPath">
+            <summary>
+            Gets the path to the Vosk model directory.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.SetApp(View.Personal.App)">
+            <summary>
+            Sets the application instance for logging
+            </summary>
+            <param name="app">The application instance</param>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.InitializeVoskModelAsync">
+            <summary>
+            Checks if the Vosk model is installed, and if not, starts downloading it in the background.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.DownloadVoskModelAsync">
+            <summary>
+            Downloads the Vosk model in the background.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.CancelDownload">
+            <summary>
+            Cancels the current download if one is in progress
+            </summary>
+        </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>
             Provides static event handlers and utility methods for managing the chat user interface.
             Contains methods for sending messages, handling user input, clearing conversations,
             downloading chat history, and updating the conversation display.
             </summary>
+        </member>
+        <member name="M:View.Personal.UIHandlers.ChatUIHandlers.MicrophoneButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window)">
+            <summary>
+            Handles the click event for the microphone button in the chat interface.
+            Opens the speech-to-text dialog and sets the transcribed text to the appropriate input box.
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="e">Event data associated with the click event.</param>
+            <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
         </member>
         <member name="M:View.Personal.UIHandlers.ChatUIHandlers.SendMessageTest_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs,Avalonia.Controls.Window,System.Collections.Generic.List{View.Personal.Classes.ChatMessage},System.Func{System.String,System.Action{System.String},System.Threading.Tasks.Task{System.String}})">
             <summary>
