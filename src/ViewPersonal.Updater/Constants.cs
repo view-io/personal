@@ -7,7 +7,7 @@ namespace ViewPersonal.Updater
     {
         internal static string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 
-        internal static string VersionCheckApiUrl = "http://192.168.101.190:8055/api/Versions/latest";
+        internal static string VersionCheckApiUrl = "http://desktop-personal-versions.view.io:5000/api/Versions/latest";
 
         internal static string LogDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
