@@ -8,8 +8,8 @@
 		<AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>View.Personal.xml</DocumentationFile>
-		<Version>1.1.0</Version>
-		<AssemblyVersion>1.1.0</AssemblyVersion>
+		<Version>1.1.1</Version>
+		<AssemblyVersion>1.1.1</AssemblyVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -151,6 +151,13 @@ namespace ViewPersonal.Updater
                 {
                     _Logging?.Debug(_Header + "No updates available or unable to check for updates");
                     _FileLogging?.Debug(_Header + "No updates available or unable to check for updates");
+                    if (_desktop != null)
+                    {
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                        {
+                            _desktop.Shutdown();
+                        });
+                    }
                     return;
                 }
 

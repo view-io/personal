@@ -6,8 +6,8 @@
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
-		<Version>1.0.0</Version>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<Version>1.1.1</Version>
+		<AssemblyVersion>1.1.1</AssemblyVersion>
 	</PropertyGroup>
 	<ItemGroup>
 	  <AvaloniaResource Include="Assets\glyph.png">
