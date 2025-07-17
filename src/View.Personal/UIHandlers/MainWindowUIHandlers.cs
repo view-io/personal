@@ -410,8 +410,8 @@ namespace View.Personal.UIHandlers
             var saveText = window.FindControl<TextBlock>("SaveSettingsText");
             var spinner = window.FindControl<MaterialIcon>("SaveSettingsSpinner");
 
-            string originalButtonText = "Save Settings";
-            saveText.Text = "Saving settings...";
+            string originalButtonText = ResourceManagerService.GetString("SaveSettings");
+            saveText.Text = ResourceManagerService.GetString("SavingSettings");
             spinner.IsVisible = true;
             try
             {
@@ -430,14 +430,16 @@ namespace View.Personal.UIHandlers
                 {
                     if (!Regex.IsMatch(ollamaEndpoint, endpointPattern))
                     {
-                        window.ShowNotification("Invalid Endpoint", "Ollama endpoint must be in the format http://<hostname or IP>:<port>/",
+                        window.ShowNotification(ResourceManagerService.GetString("InvalidEndpoint"), 
+                            ResourceManagerService.GetString("OllamaEndpointFormat"),
                             NotificationType.Error);
                         return;
                     }
 
                     if (!IsHostnameResolvable(ollamaEndpoint))
                     {
-                        window.ShowNotification("Unreachable Host", "The Ollama endpoint hostname could not be resolved via DNS.",
+                        window.ShowNotification(ResourceManagerService.GetString("UnreachableHost"), 
+                            ResourceManagerService.GetString("HostnameNotResolvable", "Ollama"),
                             NotificationType.Error);
                         return;
                     }
@@ -454,14 +456,16 @@ namespace View.Personal.UIHandlers
                 {
                     if (!Regex.IsMatch(viewEndpoint, endpointPattern))
                     {
-                        window.ShowNotification("Invalid Endpoint", "View endpoint must be in the format http://<hostname or IP>:<port>/",
+                        window.ShowNotification(ResourceManagerService.GetString("InvalidEndpoint"), 
+                            ResourceManagerService.GetString("ViewEndpointFormat"),
                             NotificationType.Error);
                         return;
                     }
 
                     if (!IsHostnameResolvable(viewEndpoint))
                     {
-                        window.ShowNotification("Unreachable Host", "The View endpoint hostname could not be resolved via DNS.",
+                        window.ShowNotification(ResourceManagerService.GetString("UnreachableHost"), 
+                            ResourceManagerService.GetString("HostnameNotResolvable", "View"),
                             NotificationType.Error);
                         return;
                     }
@@ -604,17 +608,23 @@ namespace View.Personal.UIHandlers
                     providerSettings.SelectedProvider = "OpenAI";
                     if (string.IsNullOrWhiteSpace(openAiSettings.ApiKey))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI API Key.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "OpenAI API Key"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(openAiSettings.CompletionModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Completion Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "OpenAI Completion Model"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(openAiSettings.Endpoint))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Endpoint.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "OpenAI Endpoint"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -623,17 +633,23 @@ namespace View.Personal.UIHandlers
                     providerSettings.SelectedProvider = "Anthropic";
                     if (string.IsNullOrWhiteSpace(anthropicSettings.ApiKey))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic API Key.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Anthropic API Key"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(anthropicSettings.CompletionModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic Completion Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Anthropic Completion Model"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(anthropicSettings.Endpoint))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Anthropic Endpoint.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Anthropic Endpoint"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -642,12 +658,16 @@ namespace View.Personal.UIHandlers
                     providerSettings.SelectedProvider = "Ollama";
                     if (string.IsNullOrWhiteSpace(ollamaSettings.CompletionModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Completion Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Ollama Completion Model"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(ollamaSettings.Endpoint))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Endpoint.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Ollama Endpoint"), 
+                            NotificationType.Error);
                         return;
                     }
 
@@ -655,9 +675,9 @@ namespace View.Personal.UIHandlers
                     bool isOllamaAvailable = await localModelService.IsOllamaAvailableAsync();
                     if (!isOllamaAvailable)
                     {
-                        window.ShowNotificationWithLink("Ollama Not Installed",
-                                                         "Ollama is not installed or not running on the system defined in the settings.",
-                                                         "Download Ollama", "https://ollama.com/download",
+                        window.ShowNotificationWithLink(ResourceManagerService.GetString("OllamaNotInstalled"),
+                                                         ResourceManagerService.GetString("OllamaNotRunning"),
+                                                         ResourceManagerService.GetString("DownloadOllama"), "https://ollama.com/download",
                                                           NotificationType.Warning);
                         return;
                     }
@@ -674,32 +694,44 @@ namespace View.Personal.UIHandlers
                     providerSettings.SelectedProvider = "View";
                     if (string.IsNullOrWhiteSpace(viewSettings.ApiKey))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the View API Key.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "View API Key"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(viewSettings.Endpoint))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the View Endpoint.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "View Endpoint"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(viewSettings.OllamaHostName))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the OllamaHostName.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "OllamaHostName"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(viewSettings.AccessKey))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the AccessKey.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "AccessKey"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(viewSettings.TenantGuid))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the TenantGuid.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "TenantGuid"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(viewSettings.CompletionModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the View Completion Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "View Completion Model"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -721,7 +753,9 @@ namespace View.Personal.UIHandlers
                     embeddingSettings.OllamaEmbeddingModelMaxTokens = ollamaTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.OllamaEmbeddingModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Ollama Embedding Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Ollama Embedding Model"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -735,7 +769,9 @@ namespace View.Personal.UIHandlers
                     embeddingSettings.ViewEmbeddingModelMaxTokens = viewTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.ViewEmbeddingModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the View Embedding Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "View Embedding Model"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -749,7 +785,9 @@ namespace View.Personal.UIHandlers
                     embeddingSettings.OpenAIEmbeddingModelMaxTokens = openAiTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.OpenAIEmbeddingModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the OpenAI Embedding Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "OpenAI Embedding Model"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -765,17 +803,23 @@ namespace View.Personal.UIHandlers
                     embeddingSettings.VoyageEmbeddingModelMaxTokens = voyageTokens;
                     if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEmbeddingModel))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Voyage Embedding Model.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Voyage Embedding Model"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageApiKey))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Voyage API Key.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Voyage API Key"), 
+                            NotificationType.Error);
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(embeddingSettings.VoyageEndpoint))
                     {
-                        window.ShowNotification("Validation Error", "Please enter value for the Voyage Endpoint.", NotificationType.Error);
+                        window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                            ResourceManagerService.GetString("PleaseEnterValueFor", "Voyage Endpoint"), 
+                            NotificationType.Error);
                         return;
                     }
                 }
@@ -790,7 +834,8 @@ namespace View.Personal.UIHandlers
                 UpdateUIAfterSave(window);
 
                 // Show a success notification
-                window.ShowNotification("Settings Saved", "Your settings have been successfully saved.",
+                window.ShowNotification(ResourceManagerService.GetString("SettingsSaved"), 
+                    ResourceManagerService.GetString("SettingsSavedMessage"),
                     NotificationType.Success);
 
                 saveText.Text = originalButtonText;
@@ -798,7 +843,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                window.ShowNotification("Unexpected Error", ex.Message, NotificationType.Error);
+                window.ShowNotification(ResourceManagerService.GetString("UnexpectedError"), ex.Message, NotificationType.Error);
                 var app = App.Current as App;
                 app?.Log(Enums.SeverityEnum.Error, $"Error while saving settings: {ex.Message}");
                 app?.LogExceptionToFile(ex, $"Error while saving settings");
@@ -854,13 +899,15 @@ namespace View.Personal.UIHandlers
                         out var errorMessage))
                 {
                     app.Log(Enums.SeverityEnum.Info, $"Graph {graphGuid} exported to {filePath} successfully!");
-                    window.ShowNotification("File Exported", "File was exported successfully!",
+                    window.ShowNotification(ResourceManagerService.GetString("FileExported"), 
+                        ResourceManagerService.GetString("FileExportedSuccessfully"),
                         NotificationType.Success);
                 }
                 else
                 {
                     app.Log(Enums.SeverityEnum.Error, $"Error exporting graph to GEXF: {errorMessage}");
-                    window.ShowNotification("Export Error", $"Error exporting graph to GEXF: {errorMessage}",
+                    window.ShowNotification(ResourceManagerService.GetString("ExportError"), 
+                        ResourceManagerService.GetString("ErrorExportingGraph", errorMessage),
                         NotificationType.Error);
                 }
 
@@ -940,7 +987,9 @@ namespace View.Personal.UIHandlers
             var text = window.FindControl<TextBox>(controlName).Text;
             if (!int.TryParse(text, out result) || result <= 0)
             {
-                window.ShowNotification("Validation Error", $"Please enter a valid positive integer for {label}.", NotificationType.Error);
+                window.ShowNotification(ResourceManagerService.GetString("ValidationError"), 
+                    ResourceManagerService.GetString("EnterValidPositiveInteger", label), 
+                    NotificationType.Error);
                 return false;
             }
             return true;

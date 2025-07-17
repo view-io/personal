@@ -129,12 +129,15 @@ namespace View.Personal.UIHandlers
             }
             catch (UnauthorizedAccessException ex)
             {
-                mainWindow.ShowNotification("Access Denied", $"Cannot access {path}: {ex.Message}",
+                mainWindow.ShowNotification(ResourceManagerService.GetString("AccessDenied"), 
+                    ResourceManagerService.GetString("CannotAccessPath", path, ex.Message),
                     NotificationType.Error);
             }
             catch (Exception ex)
             {
-                mainWindow.ShowNotification("Error", $"Failed to load directory: {ex.Message}", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                    ResourceManagerService.GetString("FailedToLoadDirectory", ex.Message), 
+                    NotificationType.Error);
             }
         }
 
@@ -175,7 +178,7 @@ namespace View.Personal.UIHandlers
 
                 // Set a special path to indicate we're at the drives view
                 mainWindow._CurrentPath = "Drives";
-                pathTextBox.Text = "Available Drives";
+                pathTextBox.Text = ResourceManagerService.GetString("AvailableDrives");
 
                 var entries = new List<FileSystemEntry>();
                 var drives = DriveInfo.GetDrives();
@@ -228,7 +231,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                mainWindow.ShowNotification("Error", $"Failed to load drives: {ex.Message}", NotificationType.Error);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToLoadDrives", ex.Message), NotificationType.Error);
             }
         }
 
@@ -258,7 +261,7 @@ namespace View.Personal.UIHandlers
                 var enteredPath = textBox.Text?.Trim();
                 if (string.IsNullOrEmpty(enteredPath))
                 {
-                    mainWindow.ShowNotification("Invalid Path", "Please enter a valid path.", NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("InvalidPath"), ResourceManagerService.GetString("PleaseEnterValidPath"), NotificationType.Error);
                     return;
                 }
 
@@ -271,21 +274,21 @@ namespace View.Personal.UIHandlers
                     }
                     else
                     {
-                        mainWindow.ShowNotification("Path Not Found", $"The path '{enteredPath}' does not exist.",
-                            NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("PathNotFound"), ResourceManagerService.GetString("PathDoesNotExist", enteredPath),
+                    NotificationType.Error);
                         textBox.Text = mainWindow._CurrentPath;
                     }
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    mainWindow.ShowNotification("Access Denied", $"Cannot access '{enteredPath}': {ex.Message}",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("AccessDenied"), ResourceManagerService.GetString("CannotAccessPath", enteredPath, ex.Message),
+                    NotificationType.Error);
                     textBox.Text = mainWindow._CurrentPath;
                 }
                 catch (Exception ex)
                 {
-                    mainWindow.ShowNotification("Error", $"Failed to navigate to '{enteredPath}': {ex.Message}",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToNavigatePath", enteredPath, ex.Message),
+                    NotificationType.Error);
                     textBox.Text = mainWindow._CurrentPath;
                 }
             }
@@ -301,7 +304,7 @@ namespace View.Personal.UIHandlers
         {
             if (mainWindow.WatchedPaths.Count == 0)
             {
-                mainWindow.ShowNotification("Sync", "No watched paths to sync.", NotificationType.Information);
+                mainWindow.ShowNotification(ResourceManagerService.GetString("Sync"), ResourceManagerService.GetString("NoWatchedPathsToSync"), NotificationType.Information);
                 return;
             }
 
@@ -485,8 +488,8 @@ namespace View.Personal.UIHandlers
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    mainWindow.ShowNotification("Ingestion Error", $"Access denied to directory: {entry.FullPath}.",
-                        NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionError"), ResourceManagerService.GetString("AccessDeniedToDirectory", entry.FullPath),
+                    NotificationType.Error);
                     mainWindow.LogToConsole($"[{SeverityEnum.Error}] Access denied to directory: {entry.FullPath}");
                     checkBox.IsChecked = false;
                     return;
@@ -512,8 +515,8 @@ namespace View.Personal.UIHandlers
             }
 
             var result = await CustomMessageBoxHelper.ShowConfirmationAsync(
-                "Confirm Watch",
-                $"Watch '{entry.Name}'? This will ingest {fileCount} file{(fileCount == 1 ? "" : "s")}.",
+                Services.ResourceManagerService.GetString("ConfirmWatch"),
+                string.Format(Services.ResourceManagerService.GetString("ConfirmWatchMessage"), entry.Name, fileCount, (fileCount == 1 ? "" : "s")),
                 MessageBoxIcon.Question);
 
             if (result == ButtonResult.Yes)
@@ -673,15 +676,15 @@ namespace View.Personal.UIHandlers
             // Create custom message box parameters with custom buttons
             var parameters = new CustomMessageBoxParams
             {
-                Title = "Confirm Unwatch",
-                Message = $"Stop watching '{entry.Name}'? (This affects {fileCount} file{(fileCount == 1 ? "" : "s")})",
+                Title = Services.ResourceManagerService.GetString("ConfirmUnwatch"),
+                Message = string.Format(Services.ResourceManagerService.GetString("ConfirmUnwatchMessage"), entry.Name, fileCount, (fileCount == 1 ? "" : "s")),
                 Icon = MessageBoxIcon.Question,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Buttons = new List<ButtonDefinition>
                 {
-                    new ButtonDefinition("Unwatch Only", ButtonResult.Yes),
-                    new ButtonDefinition("Unwatch and Delete", ButtonResult.No),
-                    new ButtonDefinition("Cancel", ButtonResult.Cancel)
+                    new ButtonDefinition(Services.ResourceManagerService.GetString("UnwatchOnly"), ButtonResult.Yes),
+                    new ButtonDefinition(Services.ResourceManagerService.GetString("UnwatchAndDelete"), ButtonResult.No),
+                    new ButtonDefinition(Services.ResourceManagerService.GetString("Cancel"), ButtonResult.Cancel)
                 }
             };
 
@@ -690,14 +693,14 @@ namespace View.Personal.UIHandlers
             // Map the button result to the expected string result
             string result = buttonResult switch
             {
-                ButtonResult.Yes => "Unwatch Only",
-                ButtonResult.No => "Unwatch and Delete",
-                _ => "Cancel"
+                ButtonResult.Yes => Services.ResourceManagerService.GetString("UnwatchOnly"),
+                ButtonResult.No => Services.ResourceManagerService.GetString("UnwatchAndDelete"),
+                _ => Services.ResourceManagerService.GetString("Cancel")
             };
 
             switch (result)
             {
-                case "Unwatch Only":
+                case var unwatchOnly when unwatchOnly == Services.ResourceManagerService.GetString("UnwatchOnly"):
                     mainWindow.WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
@@ -705,7 +708,7 @@ namespace View.Personal.UIHandlers
                     mainWindow.LogToConsole($"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' without deleting files.");
                     break;
 
-                case "Unwatch and Delete":
+                case var unwatchAndDelete when unwatchAndDelete == Services.ResourceManagerService.GetString("UnwatchAndDelete"):
                     mainWindow.WatchedPaths.Remove(entry.FullPath);
                     LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
@@ -752,7 +755,7 @@ namespace View.Personal.UIHandlers
                         $"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
                     break;
 
-                case "Cancel":
+                case var cancel when cancel == Services.ResourceManagerService.GetString("Cancel"):
                     checkBox.IsChecked = true;
                     mainWindow.LogToConsole($"[{SeverityEnum.Info}] Unwatch cancelled for '{entry.Name}' by user.");
                     return;

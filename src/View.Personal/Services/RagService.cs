@@ -145,17 +145,41 @@ namespace View.Personal.Services
         {
             if (string.IsNullOrEmpty(context))
             {
-                // If no context was found, just return the conversation with the user input
                 var basicMessages = new List<ChatMessage>(conversationHistory);
                 basicMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 return basicMessages;
             }
 
-            // Create a system message with the retrieved context
+            var systemMessages = conversationHistory.Where(m => m.Role == "system").ToList();
+            string languageInstruction = string.Empty;
+            
+            if (systemMessages.Any())
+            {   
+                var firstSystemMessage = systemMessages.First();
+                if (firstSystemMessage.Content.StartsWith("Please respond ONLY in "))
+                {
+                    int endIndex = firstSystemMessage.Content.IndexOf("Do not provide translations") + "Do not provide translations to other languages.".Length;
+                    if (endIndex > 0)
+                    {
+                        languageInstruction = firstSystemMessage.Content.Substring(0, endIndex) + " ";
+                    }
+                }
+                else if (firstSystemMessage.Content.StartsWith("Please respond in "))
+                {
+                    int endIndex = firstSystemMessage.Content.IndexOf(".");
+                    if (endIndex > 0)
+                    {
+                        string originalInstruction = firstSystemMessage.Content.Substring(0, endIndex + 1);
+                        string updatedInstruction = originalInstruction.Replace("Please respond in ", "Please respond ONLY in ");
+                        languageInstruction = updatedInstruction + " Do not provide translations to other languages. ";
+                    }
+                }
+            }
+            
             var contextMessage = new ChatMessage
             {
                 Role = "system",
-                Content = "You are an assistant answering based solely on the provided document context. " +
+                Content = languageInstruction + "You are an assistant answering based solely on the provided document context. " +
                           "Do not use general knowledge unless explicitly asked. Here is the relevant context:\n\n" + context
             };
 

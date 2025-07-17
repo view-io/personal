@@ -5,6 +5,7 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:classes="clr-namespace:View.Personal.Classes"
              xmlns:helpers="clr-namespace:View.Personal.Helpers"
+             xmlns:l="clr-namespace:View.Personal.Helpers"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="View.Personal.Views.LocalModelsView"
              Background="White">
@@ -32,16 +33,16 @@
 		<Grid Grid.Row="2" RowDefinitions="Auto,*">
 			<Grid Grid.Row="0" ColumnDefinitions="200,*" Margin="0,8,0,0">
 				<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Center">
-					<TextBlock Text="Pull a new model" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+					<TextBlock Text="{l:Localize PullNewModel}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
 					<StackPanel Orientation="Horizontal">
 						<Button x:Name="ExploreModelsButton"
-                               Content="Click here"
-                               Foreground="#0472EF"
-                               Background="Transparent"
-                               BorderThickness="0"
-                               Padding="0"
-                               Cursor="Hand"
-                               Click="ExploreModelsButton_Click">
+								Content="{l:Localize ClickHere}"
+								Foreground="#0472EF"
+								Background="Transparent"
+								BorderThickness="0"
+								Padding="0"
+								Cursor="Hand"
+								Click="ExploreModelsButton_Click">
 							<Button.Styles>
 								<Style Selector="Button:pointerover">
 									<Setter Property="Foreground" Value="#0472EF"/>
@@ -51,24 +52,24 @@
 							<Button.Template>
 								<ControlTemplate>
 									<TextBlock Text="{TemplateBinding Content}"
-                                               Foreground="#6A6B6F"
-                                               TextDecorations="Underline"
-                                               FontWeight="SemiBold"
-                                               FontSize="12"/>
+											   Foreground="#6A6B6F"
+											   TextDecorations="Underline"
+											   FontWeight="SemiBold"
+											   FontSize="12"/>
 								</ControlTemplate>
 							</Button.Template>
 						</Button>
-						<TextBlock Text=" to explore available models"
-                                 Foreground="#6A6B6F"
+						<TextBlock Text="{l:Localize ExploreAvailableModels}"
+								   Foreground="#6A6B6F"
                                  FontSize="12"/>
 					</StackPanel>
 				</StackPanel>
 
 				<!-- Right Column - Input and Button -->
-				<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="40,0,0,0">
+				<Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" Margin="90,0,0,0">
 					<TextBox Grid.Row="0" Grid.Column="0" x:Name="ModelNameTextBox"
 							 Classes="no-shadow"
-                             Watermark="Enter Ollama compatible model tag (e.g. qwen2.5:7b)"
+                             Watermark="{l:Localize EnterOllamaModelTag}"
                              Margin="0,0,8,0"
                              Height="36" />
 					<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
@@ -82,7 +83,7 @@
                                 Padding="16,8"
                                 Height="36" >
 							<StackPanel Orientation="Horizontal" Spacing="8">
-								<TextBlock Text="Pull" Foreground="White" FontWeight="400" />
+								<TextBlock Text="{l:Localize Pull}" Foreground="White" FontWeight="400" />
 							</StackPanel>
 						</Button>
 						<Button x:Name="CancelButton"
@@ -93,7 +94,7 @@
 								Content="Cancel"
 	                            Height="36">
 							<StackPanel Orientation="Horizontal" Spacing="8">
-								<TextBlock Text="Cancel" Foreground="#1A1C1E" FontWeight="400" />
+								<TextBlock Text="{l:Localize Cancel}" Foreground="#1A1C1E" FontWeight="400" />
 							</StackPanel>
 						</Button>
 					</StackPanel>
@@ -139,11 +140,11 @@
 			</Grid>
 			<Grid Grid.Row="1" ColumnDefinitions="200,*" Margin="0,24,0,0">
 				<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="8" VerticalAlignment="Top" Margin="0,8,0,0">
-					<TextBlock Text="Downloaded models" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
-					<TextBlock Text="Choose from existing models" FontSize="12" Foreground="#6A6B6F" />
+					<TextBlock Text="{l:Localize DownloadedModels}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+					<TextBlock Text="{l:Localize ChooseFromExistingModels}" FontSize="12" Foreground="#6A6B6F" />
 				</StackPanel>
 				<!-- Scrollable models list -->
-				<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="40,8,0,16">
+				<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="90,8,0,16">
 					<ItemsControl x:Name="ModelsDataGrid">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
@@ -151,8 +152,14 @@
 									<Grid ColumnDefinitions="*,Auto,Auto">
 										<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
 											<TextBlock Text="{Binding Name}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
-											<TextBlock Text="{Binding ParameterCount, StringFormat='parameter size: {0}'}"
-                                                       FontSize="12" Foreground="#6A6B6F" />
+											<TextBlock FontSize="12" Foreground="#6A6B6F">
+                                                        <TextBlock.Text>
+                                                             <MultiBinding StringFormat="{}{0}: {1}">
+                                                                 <Binding Path="." Source="{l:Localize ParameterSize}"/>
+                                                                 <Binding Path="ParameterCount"/>
+                                                             </MultiBinding>
+                                                         </TextBlock.Text>
+                                                    </TextBlock>
 										</StackPanel>
 										<Button Grid.Column="1"
                                             Classes="flat"

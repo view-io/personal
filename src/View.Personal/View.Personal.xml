@@ -242,6 +242,12 @@
             Gets or sets the list of paths being actively watched by the Data Monitor.
             </summary>
         </member>
+        <member name="P:View.Personal.Classes.AppSettings.PreferredLanguage">
+            <summary>
+            Gets or sets the preferred language/culture for the application UI.
+            Default is "en" for English.
+            </summary>
+        </member>
         <member name="T:View.Personal.Classes.AppSettings.OpenAISettings">
             <summary>
             Settings specific to the OpenAI service.
@@ -1846,6 +1852,42 @@
             <returns>Nothing, as this method throws an exception.</returns>
             <exception cref="T:System.NotImplementedException">Always thrown as this method is not implemented.</exception>
         </member>
+        <member name="T:View.Personal.Helpers.DynamicLocalizationSource">
+            <summary>
+            A helper class that provides dynamic localization values that update when the culture changes.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Helpers.DynamicLocalizationSource.CultureChanged">
+            <summary>
+            Event that is raised when the culture changes.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.DynamicLocalizationSource._key">
+            <summary>
+            The resource key used to retrieve the localized string.
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.DynamicLocalizationSource.ValueProperty">
+            <summary>
+            Gets or sets the DirectProperty for the localized value.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Helpers.DynamicLocalizationSource.Value">
+            <summary>
+            Gets the localized string value for the specified key.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.DynamicLocalizationSource.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Helpers.DynamicLocalizationSource"/> class.
+            </summary>
+            <param name="key">The resource key to use for localization.</param>
+        </member>
+        <member name="M:View.Personal.Helpers.DynamicLocalizationSource.NotifyCultureChanged">
+            <summary>
+            Notifies all instances that the culture has changed, triggering UI updates.
+            </summary>
+        </member>
         <member name="T:View.Personal.Helpers.FilePaginationHelper">
             <summary>
             Provides helper methods for managing file pagination in the application.
@@ -1944,6 +1986,72 @@
             <param name="window">The main window</param>
             <param name="newPageSize">The new page size</param>
             <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="T:View.Personal.Helpers.LocalizationConverter">
+            <summary>
+            Converter that translates a resource key into a localized string using the ResourceManagerService.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizationConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a resource key to a localized string.
+            </summary>
+            <param name="value">The resource key.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">Optional parameter (not used).</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>The localized string.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizationConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Not implemented as we don't need to convert back.
+            </summary>
+        </member>
+        <member name="T:View.Personal.Helpers.LocalizeExtension">
+            <summary>
+            Markup extension for localizing strings in XAML.
+            Usage: Text="{l:Localize ResourceKey}"
+            </summary>
+        </member>
+        <member name="F:View.Personal.Helpers.LocalizeExtension._eventHandlerRegistered">
+            <summary>
+            Flag indicating whether the event handler has been registered.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Helpers.LocalizeExtension.Key">
+            <summary>
+            Gets or sets the resource key to look up.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizeExtension.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Helpers.LocalizeExtension"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizeExtension.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Helpers.LocalizeExtension"/> class with the specified key.
+            </summary>
+            <param name="key">The resource key.</param>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizeExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides the value for the markup extension.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+            <returns>The localized string or a binding that updates when the culture changes.</returns>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizeExtension.EnsureEventHandlerRegistered">
+            <summary>
+            Ensures that the culture changed event handler is registered.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Helpers.LocalizeExtension.OnCultureChanged(System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Handles the culture changed event.
+            </summary>
+            <param name="sender">The event sender.</param>
+            <param name="e">The culture information.</param>
         </member>
         <member name="T:View.Personal.Helpers.MainWindowHelpers">
             <summary>
@@ -3001,6 +3109,48 @@
             </summary>
             <param name="node">The node to get content from.</param>
             <returns>The node content.</returns>
+        </member>
+        <member name="T:View.Personal.Services.ResourceManagerService">
+            <summary>
+            Service for managing localized resources and handling language/culture changes.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Services.ResourceManagerService.CultureChanged">
+            <summary>
+            Event that is raised when the application's culture/language is changed.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.ResourceManagerService.CurrentCulture">
+            <summary>
+            Gets the current culture being used for resource lookups.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.ResourceManagerService.Initialize(View.Personal.Classes.AppSettings)">
+            <summary>
+            Initializes the ResourceManager with the culture specified in application settings.
+            </summary>
+            <param name="settings">The application settings containing the preferred language.</param>
+        </member>
+        <member name="M:View.Personal.Services.ResourceManagerService.SetCulture(System.Globalization.CultureInfo)">
+            <summary>
+            Sets the current culture for the application and raises the CultureChanged event.
+            </summary>
+            <param name="culture">The culture to set.</param>
+        </member>
+        <member name="M:View.Personal.Services.ResourceManagerService.GetString(System.String)">
+            <summary>
+            Gets a localized string from the resource file based on the current culture.
+            </summary>
+            <param name="key">The resource key.</param>
+            <returns>The localized string, or the key itself if not found.</returns>
+        </member>
+        <member name="M:View.Personal.Services.ResourceManagerService.GetString(System.String,System.Object[])">
+            <summary>
+            Gets a formatted localized string, replacing format items with the provided arguments.
+            </summary>
+            <param name="key">The resource key.</param>
+            <param name="args">The arguments to format the string with.</param>
+            <returns>The formatted localized string, or the key itself if not found.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>

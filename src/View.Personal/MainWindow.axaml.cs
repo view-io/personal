@@ -12,6 +12,7 @@ namespace View.Personal
     using DocumentAtom.TypeDetection;
     using Helpers;
     using LiteGraph;
+    using Material.Icons.Avalonia;
     using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
@@ -547,18 +548,24 @@ namespace View.Personal
                     bool success = await app.LoggingService.DownloadLogsAsync(filePath);
                     if (success)
                     {
-                        ShowNotification("Success", "Console logs saved successfully", NotificationType.Success);
+                        ShowNotification(ResourceManagerService.GetString("Success"), 
+                            ResourceManagerService.GetString("ConsoleLogsSavedSuccessfully"), 
+                            NotificationType.Success);
                     }
                     else
                     {
-                        ShowNotification("Warning", "No console logs to download", NotificationType.Warning);
+                        ShowNotification(ResourceManagerService.GetString("Warning"), 
+                            ResourceManagerService.GetString("NoConsoleLogsToDownload"), 
+                            NotificationType.Warning);
                     }
                 }
                 catch (Exception ex)
                 {
                     app.Log(SeverityEnum.Error, $"Error saving console logs: {ex.Message}");
                     app.LogExceptionToFile(ex, "Error saving console logs");
-                    ShowNotification("Error", "Failed to save console logs", NotificationType.Error);
+                    ShowNotification(ResourceManagerService.GetString("Error"), 
+                        ResourceManagerService.GetString("FailedToSaveConsoleLogs"), 
+                        NotificationType.Error);
                 }
             }
         }
@@ -589,11 +596,153 @@ namespace View.Personal
             MainWindowUIHandlers.SaveSettings2_Click(this);
         }
 
+        private void SaveLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var saveButton = this.FindControl<Button>("SaveLanguageButton");
+            var spinner = this.FindControl<MaterialIcon>("SaveLanguageSpinner");
+            
+            try
+            {
+                spinner.IsVisible = true;
+                
+                string languageCode = "en";
+                
+                var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
+                if (languagePanel != null)
+                {
+                    foreach (var child in languagePanel.Children)
+                    {
+                        if (child is RadioButton radioButton && radioButton.IsChecked == true)
+                        {
+                            languageCode = radioButton.Tag?.ToString() ?? "en";
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    var englishRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
+                    var hindiRadio = this.FindControl<RadioButton>("HindiLanguageRadio");
+                    var simplifiedChineseRadio = this.FindControl<RadioButton>("SimplifiedChineseLanguageRadio");
+                    var japaneseRadio = this.FindControl<RadioButton>("JapaneseLanguageRadio");
+                    var germanRadio = this.FindControl<RadioButton>("GermanLanguageRadio");
+                    var spanishRadio = this.FindControl<RadioButton>("SpanishLanguageRadio");
+                    var koreanRadio = this.FindControl<RadioButton>("KoreanLanguageRadio");
+                    var portugueseRadio = this.FindControl<RadioButton>("PortugueseLanguageRadio");
+                    var frenchRadio = this.FindControl<RadioButton>("FrenchLanguageRadio");
+                    
+                    if (hindiRadio?.IsChecked == true)
+                        languageCode = "hi";
+                    else if (simplifiedChineseRadio?.IsChecked == true)
+                        languageCode = "zh-CN";
+                    else if (japaneseRadio?.IsChecked == true)
+                        languageCode = "ja";
+                    else if (germanRadio?.IsChecked == true)
+                        languageCode = "de";
+                    else if (spanishRadio?.IsChecked == true)
+                        languageCode = "es";
+                    else if (koreanRadio?.IsChecked == true)
+                        languageCode = "ko";
+                    else if (portugueseRadio?.IsChecked == true)
+                        languageCode = "pt";
+                    else if (frenchRadio?.IsChecked == true)
+                        languageCode = "fr";
+                }
+                
+                app.ApplicationSettings.PreferredLanguage = languageCode;   
+                app.SaveSettings();
+              
+                Services.ResourceManagerService.SetCulture(new System.Globalization.CultureInfo(languageCode));
+                
+                // Show success notification
+                this.ShowNotification(ResourceManagerService.GetString("LanguageSettingSaved"), 
+                    ResourceManagerService.GetString("LanguagePreferenceSaved"), 
+                    NotificationType.Success);
+            }
+            catch (Exception ex)
+            {
+                this.ShowNotification(ResourceManagerService.GetString("Error"), ResourceManagerService.GetString("FailedToSaveLanguageSetting", ex.Message), NotificationType.Error);
+            }
+            finally
+            {
+                spinner.IsVisible = false;
+            }
+        }
+
         private void LoadSettingsFromFile()
         {
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
             var app = (App)Application.Current;
             var settings = app.ApplicationSettings;
+            
+            // Set language radio buttons based on preferred language
+            if (!string.IsNullOrEmpty(settings.PreferredLanguage))
+            {
+                var languageCode = settings.PreferredLanguage.ToLower();
+                var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
+                
+                if (languagePanel != null)
+                {
+                    bool foundMatchingRadioButton = false;
+                   
+                    foreach (var child in languagePanel.Children)
+                    {
+                        if (child is RadioButton radioButton && 
+                            radioButton.Tag?.ToString()?.ToLower() == languageCode)
+                        {
+                            radioButton.IsChecked = true;
+                            foundMatchingRadioButton = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundMatchingRadioButton)
+                    {
+                        var defaultRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
+                        if (defaultRadio != null)
+                        {
+                            defaultRadio.IsChecked = true;
+                        }
+                    }
+                }
+                else
+                {
+                    switch (languageCode)
+                    {
+                        case "en":
+                            this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                            break;
+                        case "hi":
+                            this.FindControl<RadioButton>("HindiLanguageRadio").IsChecked = true;
+                            break;
+                        case "zh-CN":
+                            this.FindControl<RadioButton>("SimplifiedChineseLanguageRadio").IsChecked = true;
+                            break;
+                        case "ja":
+                            this.FindControl<RadioButton>("JapaneseLanguageRadio").IsChecked = true;
+                            break;
+                        case "de":
+                            this.FindControl<RadioButton>("GermanLanguageRadio").IsChecked = true;
+                            break;
+                        case "es":
+                            this.FindControl<RadioButton>("SpanishLanguageRadio").IsChecked = true;
+                            break;
+                        case "ko":
+                            this.FindControl<RadioButton>("KoreanLanguageRadio").IsChecked = true;
+                            break;
+                        case "pt":
+                            this.FindControl<RadioButton>("PortugueseLanguageRadio").IsChecked = true;
+                            break;
+                        case "fr":
+                            this.FindControl<RadioButton>("FrenchLanguageRadio").IsChecked = true;
+                            break;
+                        default:
+                            this.FindControl<RadioButton>("EnglishLanguageRadio").IsChecked = true;
+                            break;
+                    }
+                }
+            }
 
             if (File.Exists(filePath))
             {
@@ -713,7 +862,7 @@ namespace View.Personal
 
                 if (!selectedFiles.Any())
                 {
-                    ShowNotification("No Selection", "Please select at least one file to remove.", NotificationType.Warning);
+                    ShowNotification(ResourceManagerService.GetString("NoSelection"), ResourceManagerService.GetString("SelectAtLeastOneFile"), NotificationType.Warning);
                     return;
                 }
                 
@@ -729,7 +878,7 @@ namespace View.Personal
                         
                         if (textBlock != null)
                         {
-                            textBlock.Text = "Select All";
+                            textBlock.Text = ResourceManagerService.GetString("SelectAll");
                         }
                         
                         if (icon != null)
@@ -865,14 +1014,29 @@ namespace View.Personal
                 _ => string.Empty
             };
 
+            var preferredLanguage = app.ApplicationSettings.PreferredLanguage;
+            var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(preferredLanguage);
+            var languageName = cultureInfo.DisplayName;
+            
+            string languageInstruction = $"Please respond ONLY in {languageName}. Do not provide translations to other languages.";
+            
             if (!string.IsNullOrWhiteSpace(customSystemPrompt))
             {
                 finalList.Add(new ChatMessage
                 {
                     Role = "system",
-                    Content = customSystemPrompt
+                    Content = $"{languageInstruction} {customSystemPrompt}"
                 });
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt for {selectedProvider}");
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt with language preference for {selectedProvider}");
+            }
+            else
+            {
+                finalList.Add(new ChatMessage
+                {
+                    Role = "system",
+                    Content = languageInstruction
+                });
+                app.LogWithTimestamp(SeverityEnum.Debug, $"Added language preference system prompt for {selectedProvider}");
             }
 
             int maxContextCharacters = 24000;
@@ -1018,7 +1182,7 @@ namespace View.Personal
                       Content = summaryPrompt
                    }
                 };
-
+                
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
                 app.LogWithTimestamp(SeverityEnum.Debug, $"Sending summarization request to {selectedProvider}");
 
@@ -1136,9 +1300,9 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             app.LogWithTimestamp(SeverityEnum.Info, $"Creating summarization request body for {provider}");
+            
             switch (provider)
             {
-                //ToDo: need to grab control settings dynamically
                 case "OpenAI":
                     return new
                     {
@@ -1574,12 +1738,12 @@ namespace View.Personal
                         
                         if (allChecked)
                         {
-                            textBlock.Text = "Unselect All";
+                            textBlock.Text = ResourceManagerService.GetString("UnselectAll");
                             icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline;
                         }
                         else if (noneChecked)
                         {
-                            textBlock.Text = "Select All";
+                            textBlock.Text = ResourceManagerService.GetString("SelectAll");
                             icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
                         }
                     }
@@ -1600,7 +1764,7 @@ namespace View.Personal
                 var selectAllButton = this.FindControl<Button>("SelectAllButton");
                 
                 // Get the current button text to determine the action
-                string currentButtonText = "Select All";
+                string currentButtonText = ResourceManagerService.GetString("SelectAll");
                 if (selectAllButton != null && selectAllButton.Content is StackPanel stackPanel)
                 {
                     var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
@@ -1612,7 +1776,7 @@ namespace View.Personal
                 
                 // If button says "Unselect All", we want to unselect all files
                 // If button says "Select All", we want to select all files
-                bool newCheckedState = currentButtonText == "Select All";
+                bool newCheckedState = currentButtonText == ResourceManagerService.GetString("SelectAll");
                 
                 foreach (var file in filesList)
                 {
@@ -1627,7 +1791,7 @@ namespace View.Personal
                     
                     if (textBlock != null)
                     {
-                        textBlock.Text = newCheckedState ? "Unselect All" : "Select All";
+                        textBlock.Text = newCheckedState ? ResourceManagerService.GetString("UnselectAll") : ResourceManagerService.GetString("SelectAll");
                     }
                     
                     if (icon != null)
@@ -1784,7 +1948,7 @@ namespace View.Personal
                                 var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
                                 if (textBlock != null)
                                 {
-                                    textBlock.Text = "Select All";
+                                    textBlock.Text = ResourceManagerService.GetString("SelectAll");
                                 }
                             }
                         }
@@ -1824,7 +1988,7 @@ namespace View.Personal
         /// <param name="e">The routed event arguments containing event data.</param>
         private async void CreateGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync("Create New Knowledgebase", "Enter Knowledgebase name:", enableValidation: true, validationErrorMessage: "Please enter a knowledgebase name");
+            var (text, result) = await CustomMessageBoxHelper.ShowInputDialogAsync(ResourceManagerService.GetString("CreateNewKnowledgebase"), ResourceManagerService.GetString("EnterKnowledgebaseName"), enableValidation: true, validationErrorMessage: ResourceManagerService.GetString("PleaseEnterKnowledgebaseName"));
             if (!string.IsNullOrWhiteSpace(text) && result == ButtonResult.Ok) CreateNewGraph(text);
         }
 

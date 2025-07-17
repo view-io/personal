@@ -1,0 +1,1149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>查看个人</value>
+  </data>
+  <data name="Knowledgebase" xml:space="preserve">
+    <value>知识库</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>英语</value>
+  </data>
+  <data name="Hindi" xml:space="preserve">
+    <value>印地语</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>保存设置</value>
+  </data>
+  <data name="ErrorStartingApp" xml:space="preserve">
+    <value>无法启动 查看个人</value>
+  </data>
+  <data name="ErrorGeneric" xml:space="preserve">
+    <value>发生错误</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>设置保存成功</value>
+  </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>语言已更改为 {0}</value>
+  </data>
+  <data name="StartNewChat" xml:space="preserve">
+    <value>开始新对话</value>
+  </data>
+  <data name="OpenAIProvider" xml:space="preserve">
+    <value>开放人工智能</value>
+  </data>
+  <data name="OpenAIDescription" xml:space="preserve">
+    <value>获取 开放人工智能 模型的访问权限</value>
+  </data>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>开放人工智能 设置</value>
+  </data>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>开放人工智能 应用程序编程接口 密钥</value>
+  </data>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>开放人工智能 完成模型</value>
+  </data>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>系统提示</value>
+  </data>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>开放人工智能 端点</value>
+  </data>
+  <data name="BatchSize" xml:space="preserve">
+    <value>批处理大小</value>
+  </data>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>最大重试次数</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>温度</value>
+  </data>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>启用 RAG</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="SimilarityThreshold" xml:space="preserve">
+    <value>相似度阈值</value>
+  </data>
+  <data name="AnthropicProvider" xml:space="preserve">
+    <value>人择</value>
+  </data>
+  <data name="AnthropicDescription" xml:space="preserve">
+    <value>获取 人择 模型的访问权限</value>
+  </data>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>人择 设置</value>
+  </data>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>人择 应用程序编程接口 密钥</value>
+  </data>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>人择 完成模型</value>
+  </data>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>人择 端点</value>
+  </data>
+  <data name="LocalProvider" xml:space="preserve">
+    <value>本地</value>
+  </data>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>获取本地模型的访问权限</value>
+  </data>
+  <data name="OllamaSettings" xml:space="preserve">
+    <value>奥拉马 设置</value>
+  </data>
+  <data name="OllamaCompletionModel" xml:space="preserve">
+    <value>奥拉马 完成模型</value>
+  </data>
+  <data name="ViewSettings" xml:space="preserve">
+    <value>View 设置</value>
+  </data>
+  <data name="EmbeddingsApiKey" xml:space="preserve">
+    <value>嵌入 应用程序编程接口 密钥</value>
+  </data>
+  <data name="ViewEndpoint" xml:space="preserve">
+    <value>View 端点</value>
+  </data>
+  <data name="OllamaHostName" xml:space="preserve">
+    <value>奥拉马 主机名</value>
+  </data>
+  <data name="AccessKey" xml:space="preserve">
+    <value>访问密钥</value>
+  </data>
+  <data name="TenantGuid" xml:space="preserve">
+    <value>租户 GUID</value>
+  </data>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>知识库源</value>
+  </data>
+  <data name="CompletionModel" xml:space="preserve">
+    <value>完成模型</value>
+  </data>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>最大检索数</value>
+  </data>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>查询优化</value>
+  </data>
+  <data name="Simplified Chinese" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>按相关性排序上下文</value>
+  </data>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>启用检索增强生成。启用后，AI 将使用您的知识库来增强其响应。</value>
+  </data>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>配置高级 RAG 设置</value>
+  </data>
+  <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
+    <value>要检索的文档最大数量</value>
+  </data>
+  <data name="RAGSettings" xml:space="preserve">
+    <value>RAG 设置</value>
+  </data>
+  <data name="EmbeddingsGeneration" xml:space="preserve">
+    <value>嵌入生成</value>
+  </data>
+  <data name="EmbeddingsGenerationDescription" xml:space="preserve">
+    <value>选择用于生成向量嵌入的
+本地或云提供商嵌入模型。</value>
+  </data>
+  <data name="EmbeddingsGenerationWarning" xml:space="preserve">
+    <value>警告：如果您更新或更改
+嵌入模型，您需要
+重新导入所有文档。</value>
+  </data>
+  <data name="ModelName" xml:space="preserve">
+    <value>模型名称</value>
+  </data>
+  <data name="Dimensionality" xml:space="preserve">
+    <value>维度</value>
+  </data>
+  <data name="MaxTokens" xml:space="preserve">
+    <value>最大令牌数</value>
+  </data>
+  <data name="GainAccessToAnthropic" xml:space="preserve">
+    <value>获取 人择 模型的访问权限</value>
+  </data>
+  <data name="GainAccessToLocalModel" xml:space="preserve">
+    <value>获取本地模型的访问权限。</value>
+  </data>
+  <data name="GainAccessToViewModel" xml:space="preserve">
+    <value>获取 View 模型的访问权限</value>
+  </data>
+  <data name="LanguageSettingSaved" xml:space="preserve">
+    <value>语言设置已保存</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="FailedToSaveLanguage" xml:space="preserve">
+    <value>保存语言设置失败</value>
+  </data>
+  <data name="PleaseEnterValueFor" xml:space="preserve">
+    <value>请输入 {0} 的值。</value>
+  </data>
+  <data name="OllamaNotInstalled" xml:space="preserve">
+    <value>奥拉马 未安装</value>
+  </data>
+  <data name="OllamaNotRunning" xml:space="preserve">
+    <value>奥拉马 未安装或未在设置中定义的系统上运行。</value>
+  </data>
+  <data name="DownloadOllama" xml:space="preserve">
+    <value>下载 奥拉马</value>
+  </data>
+  <data name="FileDeleted" xml:space="preserve">
+    <value>文件已删除</value>
+  </data>
+  <data name="FileDeletedSuccess" xml:space="preserve">
+    <value>{0} 删除成功！</value>
+  </data>
+  <data name="DeletionError" xml:space="preserve">
+    <value>删除错误</value>
+  </data>
+  <data name="DeletionWarning" xml:space="preserve">
+    <value>删除警告</value>
+  </data>
+  <data name="FilesDeleted" xml:space="preserve">
+    <value>文件已删除</value>
+  </data>
+  <data name="IngestionError" xml:space="preserve">
+    <value>摄取错误</value>
+  </data>
+  <data name="NoFileSelected" xml:space="preserve">
+    <value>未选择文件。</value>
+  </data>
+  <data name="FileIngested" xml:space="preserve">
+    <value>文件已摄取</value>
+  </data>
+  <data name="FileIngestedSuccess" xml:space="preserve">
+    <value>{0} 摄取成功！</value>
+  </data>
+  <data name="ReingestionError" xml:space="preserve">
+    <value>重新摄取错误</value>
+  </data>
+  <data name="BatchIngestionComplete" xml:space="preserve">
+    <value>批量摄取完成</value>
+  </data>
+  <data name="BatchIngestionError" xml:space="preserve">
+    <value>批量摄取错误</value>
+  </data>
+  <data name="IngestionCancelled" xml:space="preserve">
+    <value>摄取已取消</value>
+  </data>
+  <data name="FilePathNotAvailable" xml:space="preserve">
+    <value>文件路径不可用。</value>
+  </data>
+  <data name="FileDoesNotExist" xml:space="preserve">
+    <value>文件在磁盘上不存在。</value>
+  </data>
+  <data name="CouldNotOpenFileLocation" xml:space="preserve">
+    <value>无法打开文件位置：{0}</value>
+  </data>
+  <data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
+    <value>文件路径不可用于重新处理。</value>
+  </data>
+  <data name="FileReprocessed" xml:space="preserve">
+    <value>文件已重新处理</value>
+  </data>
+  <data name="FileReprocessedSuccess" xml:space="preserve">
+    <value>{0} 重新处理成功！</value>
+  </data>
+  <data name="KnowledgebaseDeleted" xml:space="preserve">
+    <value>知识库已删除</value>
+  </data>
+  <data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
+    <value>{0} 删除成功！</value>
+  </data>
+  <data name="ModelDeleted" xml:space="preserve">
+    <value>模型已删除</value>
+  </data>
+  <data name="ModelDeletedSuccess" xml:space="preserve">
+    <value>{0} 删除成功！</value>
+  </data>
+  <data name="FailedToDeleteModel" xml:space="preserve">
+    <value>删除 {0} 失败。请重试。</value>
+  </data>
+  <data name="ErrorPullingModel" xml:space="preserve">
+    <value>拉取模型错误：{0}</value>
+  </data>
+  <data name="CreateNewKnowledgebase" xml:space="preserve">
+    <value>创建新知识库</value>
+  </data>
+  <data name="EnterKnowledgebaseName" xml:space="preserve">
+    <value>输入知识库名称：</value>
+  </data>
+  <data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
+    <value>请输入知识库名称</value>
+  </data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>未选择</value>
+  </data>
+  <data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
+    <value>请至少选择一个文件进行删除。</value>
+  </data>
+  <data name="ConsoleLogsSaved" xml:space="preserve">
+    <value>控制台日志保存成功</value>
+  </data>
+  <data name="InvalidEndpoint" xml:space="preserve">
+    <value>无效端点</value>
+  </data>
+  <data name="OllamaEndpointFormat" xml:space="preserve">
+    <value>奥拉马 端点必须采用格式：http://&lt;主机名或 IP&gt;:&lt;端口&gt;/</value>
+  </data>
+  <data name="HostnameNotResolvable" xml:space="preserve">
+    <value>{0} 端点主机名无法通过 DNS 解析。</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>访问被拒绝</value>
+  </data>
+  <data name="CannotAccessPath" xml:space="preserve">
+    <value>无法访问 {0}：{1}</value>
+  </data>
+  <data name="FailedToLoadDirectory" xml:space="preserve">
+    <value>加载目录失败：{0}</value>
+  </data>
+  <data name="InvalidPath" xml:space="preserve">
+    <value>无效路径</value>
+  </data>
+  <data name="PleaseEnterValidPath" xml:space="preserve">
+    <value>请输入有效路径。</value>
+  </data>
+  <data name="PathNotFound" xml:space="preserve">
+    <value>路径未找到</value>
+  </data>
+  <data name="PathDoesNotExist" xml:space="preserve">
+    <value>路径 '{0}' 不存在。</value>
+  </data>
+  <data name="FailedToNavigatePath" xml:space="preserve">
+    <value>导航到 '{0}' 失败：{1}</value>
+  </data>
+  <data name="ModelDownloaded" xml:space="preserve">
+    <value>模型已下载</value>
+  </data>
+  <data name="ModelDownloadedSuccess" xml:space="preserve">
+    <value>{0} 拉取成功！</value>
+  </data>
+  <data name="FilesDeletedPartial" xml:space="preserve">
+    <value>已删除 {0} 个文件。删除 {1} 个文件失败。</value>
+  </data>
+  <data name="FilesDeletedSuccess" xml:space="preserve">
+    <value>{0} 个文件删除成功！</value>
+  </data>
+  <data name="FailedToGenerateEmbeddings" xml:space="preserve">
+    <value>为状态为 {0} 的块生成嵌入失败</value>
+  </data>
+  <data name="LanguagePreferenceSaved" xml:space="preserve">
+    <value>您的语言偏好已保存并应用。</value>
+  </data>
+  <data name="FailedToSaveLanguageSetting" xml:space="preserve">
+    <value>保存语言设置失败：{0}</value>
+  </data>
+  <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
+    <value>确定要从知识库中删除选定的文件吗？</value>
+  </data>
+  <data name="ErrorIngesting" xml:space="preserve">
+    <value>摄取 {0} 时出错：{1}</value>
+  </data>
+  <data name="BatchIngestionPartialSuccess" xml:space="preserve">
+    <value>成功摄取 {0} 个文件。{1} 个文件失败。</value>
+  </data>
+  <data name="BatchIngestionFullSuccess" xml:space="preserve">
+    <value>成功摄取所有 {0} 个文件。</value>
+  </data>
+  <data name="IngestionCancelledMessage" xml:space="preserve">
+    <value>{0} 的摄取已取消。</value>
+  </data>
+  <data name="ErrorResumingIngestion" xml:space="preserve">
+    <value>恢复摄取时出错：{0}</value>
+  </data>
+  <data name="FailedToLoadDrives" xml:space="preserve">
+    <value>加载驱动器失败：{0}</value>
+  </data>
+  <data name="NoWatchedPathsToSync" xml:space="preserve">
+    <value>没有监控的路径可同步。</value>
+  </data>
+  <data name="AccessDeniedToDirectory" xml:space="preserve">
+    <value>访问目录被拒绝：{0}。</value>
+  </data>
+  <data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>开放人工智能 嵌入设置不完整。</value>
+  </data>
+  <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
+    <value>本地嵌入模型未配置。</value>
+  </data>
+  <data name="NoConsoleLogs" xml:space="preserve">
+    <value>没有控制台日志可下载</value>
+  </data>
+  <data name="FailedToSaveConsoleLogs" xml:space="preserve">
+    <value>保存控制台日志失败</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="DataMonitor" xml:space="preserve">
+    <value>数据监控</value>
+  </data>
+  <data name="Console" xml:space="preserve">
+    <value>控制台</value>
+  </data>
+  <data name="ChatHistory" xml:space="preserve">
+    <value>聊天历史</value>
+  </data>
+  <data name="ManageFiles" xml:space="preserve">
+    <value>管理您想要聊天的文件</value>
+  </data>
+  <data name="MonitorFiles" xml:space="preserve">
+    <value>持续监控文件和文件夹进行摄取</value>
+  </data>
+  <data name="ConfigureLLM" xml:space="preserve">
+    <value>配置您的 LLM 和 应用程序编程接口 密钥</value>
+  </data>
+  <data name="ChatWithData" xml:space="preserve">
+    <value>与您的数据聊天</value>
+  </data>
+  <data name="ClickToUpload" xml:space="preserve">
+    <value>点击上传 </value>
+  </data>
+  <data name="OrDragAndDrop" xml:space="preserve">
+    <value>或拖放</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>（最大文件大小 500mb）</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>姓名</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>创建日期</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>行动</value>
+  </data>
+  <data name="OpenInFileExplorer" xml:space="preserve">
+    <value>在文件资源管理器中打开</value>
+  </data>
+  <data name="DeleteFile" xml:space="preserve">
+    <value>删除文件</value>
+  </data>
+  <data name="NoItemsToDisplay" xml:space="preserve">
+    <value>没有可显示的项目</value>
+  </data>
+  <data name="NoPages" xml:space="preserve">
+    <value>没有页面</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>第一页</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>下一页</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>最后一页</value>
+  </data>
+  <data name="ItemsPerPage" xml:space="preserve">
+    <value>每页项目数：</value>
+  </data>
+  <data name="EnterUserMessage" xml:space="preserve">
+    <value>输入用户留言...</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>©2025 查看系统公司</value>
+  </data>
+  <data name="NewKnowledgebase" xml:space="preserve">
+    <value>新知识库</value>
+  </data>
+  <data name="ExportToGEXF" xml:space="preserve">
+    <value>导出至 GEXF</value>
+  </data>
+  <data name="GUID" xml:space="preserve">
+    <value>GUID</value>
+  </data>
+  <data name="Nodes" xml:space="preserve">
+    <value>节点</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>已创建</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>最后更新</value>
+  </data>
+  <data name="DeleteKnowledgebase" xml:space="preserve">
+    <value>删除知识库</value>
+  </data>
+  <data name="Providers" xml:space="preserve">
+    <value>供应商</value>
+  </data>
+  <data name="OpenAI" xml:space="preserve">
+    <value>开放人工智能</value>
+  </data>
+  <data name="GainAccessToOpenAI" xml:space="preserve">
+    <value>获得 开放人工智能 模型的访问权限</value>
+  </data>
+  <data name="Knowledgebases" xml:space="preserve">
+    <value>知识库</value>
+  </data>
+  <data name="EnterOpenAIApiKey" xml:space="preserve">
+    <value>输入您的 开放人工智能 应用程序编程接口 密钥。</value>
+  </data>
+  <data name="EnterSystemPrompt" xml:space="preserve">
+    <value>输入模型的自定义系统提示。</value>
+  </data>
+  <data name="EnterAnthropicApiKey" xml:space="preserve">
+    <value>输入您的 Anthropic API 密钥。</value>
+  </data>
+  <data name="BatchSizeTooltip" xml:space="preserve">
+    <value>单批处理的请求数。</value>
+  </data>
+  <data name="MaxRetriesTooltip" xml:space="preserve">
+    <value>失败请求的最大重试次数。</value>
+  </data>
+  <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
+    <value>配置高级 RAG 设置</value>
+  </data>
+  <data name="AdvancedRAG" xml:space="preserve">
+    <value>高级RAG</value>
+  </data>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>检索的最大文档数</value>
+  </data>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>优化查询以获得更好的检索结果</value>
+  </data>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>在生成的响应中包含引用</value>
+  </data>
+  <data name="EnableCitations" xml:space="preserve">
+    <value>启用引用</value>
+  </data>
+  <data name="EnableContextSorting" xml:space="preserve">
+    <value>启用上下文排序</value>
+  </data>
+  <data name="LocalModels" xml:space="preserve">
+    <value>本地型号</value>
+  </data>
+  <data name="PullNewModel" xml:space="preserve">
+    <value>拉新模型</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>点击这里 </value>
+  </data>
+  <data name="ExploreAvailableModels" xml:space="preserve">
+    <value>探索可用模型</value>
+  </data>
+  <data name="EnterOllamaModelTag" xml:space="preserve">
+    <value>输入Ollama兼容型号标签（例如qwen2.5:7b）</value>
+  </data>
+  <data name="Pull" xml:space="preserve">
+    <value>拉</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>好的</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>不</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>忽略</value>
+  </data>
+  <data name="ConfirmDeletion" xml:space="preserve">
+    <value>确认删除</value>
+  </data>
+  <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
+    <value>确定要删除知识库“{0}”吗？</value>
+  </data>
+  <data name="ConfirmWatch" xml:space="preserve">
+    <value>确认观看</value>
+  </data>
+  <data name="ConfirmWatchMessage" xml:space="preserve">
+    <value>观看“{0}”？这将提取 {1} 个文件{2}。</value>
+  </data>
+  <data name="ConfirmUnwatchMessage" xml:space="preserve">
+    <value>停止观看“{0}”？这将影响 {1} 文件{2}。</value>
+  </data>
+  <data name="ConfirmRemoveFile" xml:space="preserve">
+    <value>您确定要删除“{0}”吗</value>
+  </data>
+  <data name="FromKnowledgebase" xml:space="preserve">
+    <value>来自知识库？</value>
+  </data>
+  <data name="NeedInstallOllama" xml:space="preserve">
+    <value>您需要安装 Ollama 来提取和使用 AI 模型。</value>
+  </data>
+  <data name="DeleteModel" xml:space="preserve">
+    <value>删除模型</value>
+  </data>
+  <data name="ConfirmDeleteModel" xml:space="preserve">
+    <value>您确定要删除模型“{0}”吗？</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>此操作无法撤消。</value>
+  </data>
+  <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
+    <value>请在设置中选择嵌入提供商。</value>
+  </data>
+  <data name="DownloadedModels" xml:space="preserve">
+    <value>下载的模型</value>
+  </data>
+  <data name="ChooseFromExistingModels" xml:space="preserve">
+    <value>从现有型号中选择</value>
+  </data>
+  <data name="ParameterSize" xml:space="preserve">
+    <value>参数大小：{0}</value>
+  </data>
+  <data name="OllamaSystemPrompt" xml:space="preserve">
+    <value>奥拉马 系统提示</value>
+  </data>
+  <data name="OllamaEndpoint" xml:space="preserve">
+    <value>奥拉马 端点</value>
+  </data>
+  <data name="OllamaTemperature" xml:space="preserve">
+    <value>奥拉马 温度</value>
+  </data>
+  <data name="OllamaBatchSize" xml:space="preserve">
+    <value>奥拉马 批量大小</value>
+  </data>
+  <data name="OllamaMaxRetries" xml:space="preserve">
+    <value>奥拉马 Max Retries</value>
+  </data>
+  <data name="OllamaEmbeddingModel" xml:space="preserve">
+    <value>奥拉马 嵌入模型</value>
+  </data>
+  <data name="DimensionalityTooltip" xml:space="preserve">
+    <value>该模型产生的嵌入向量的维数。</value>
+  </data>
+  <data name="MaxTokensTooltip" xml:space="preserve">
+    <value>最大代币数</value>
+  </data>
+  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
+    <value>该模型生成的嵌入向量的维数。</value>
+  </data>
+  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
+    <value>每次嵌入操作需要处理的最大标记数。</value>
+  </data>
+  <data name="OllamaEnableRAG" xml:space="preserve">
+    <value>奥拉马 启用 RAG</value>
+  </data>
+  <data name="OllamaRagSettingsPanel" xml:space="preserve">
+    <value>奥拉马 RAG 设置面板</value>
+  </data>
+  <data name="OllamaKnowledgeSource" xml:space="preserve">
+    <value>奥拉马 知识来源</value>
+  </data>
+  <data name="OllamaEnableContextSorting" xml:space="preserve">
+    <value>奥拉马 启用上下文排序</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
+    <value>输入您的 View Embeddings API 密钥。</value>
+  </data>
+  <data name="EnterOllamaHostName" xml:space="preserve">
+    <value>输入 Ollama 主机名或 URL。</value>
+  </data>
+  <data name="EnterViewAccessKey" xml:space="preserve">
+    <value>输入您的查看访问密钥进行身份验证。</value>
+  </data>
+  <data name="EnterViewTenantGUID" xml:space="preserve">
+    <value>输入多租户环境的 View 租户 GUID。</value>
+  </data>
+  <data name="EnterCustomSystemPrompt" xml:space="preserve">
+    <value>输入模型的自定义系统提示。</value>
+  </data>
+  <data name="DataMonitorTitle" xml:space="preserve">
+    <value>数据监控</value>
+  </data>
+  <data name="AdvancedRAGTitle" xml:space="preserve">
+    <value>高级RAG</value>
+  </data>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="RAGSettingsTitle" xml:space="preserve">
+    <value>RAG 设置</value>
+  </data>
+  <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
+    <value>输入您的 开放人工智能 应用程序编程接口 密钥。</value>
+  </data>
+  <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
+    <value>输入您的 Anthropic API 密钥。</value>
+  </data>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>输入您的 View 嵌入 API 密钥。</value>
+  </data>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>输入您的查看访问密钥进行身份验证。</value>
+  </data>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>输入多租户环境的 View 租户 GUID。</value>
+  </data>
+  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
+    <value>输入您的 VoyageAI API 密钥进行身份验证。</value>
+  </data>
+  <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
+    <value>开放人工智能 嵌入模型</value>
+  </data>
+  <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
+    <value>奥拉马 嵌入模型</value>
+  </data>
+  <data name="EmbeddingModelName" xml:space="preserve">
+    <value>型号名称</value>
+  </data>
+  <data name="EmbeddingDimensionality" xml:space="preserve">
+    <value>维数</value>
+  </data>
+  <data name="EmbeddingMaxTokens" xml:space="preserve">
+    <value>最大代币数</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>应用程序编程接口 密钥</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>端点</value>
+  </data>
+  <data name="PaginationShowingItems" xml:space="preserve">
+    <value>显示 {0}-{1} 个项目（共 {2} 个）</value>
+  </data>
+  <data name="PaginationNoItems" xml:space="preserve">
+    <value>没有可显示的项目</value>
+  </data>
+  <data name="PaginationPageInfo" xml:space="preserve">
+    <value>第 {0} 页（共 {1} 页）</value>
+  </data>
+  <data name="PaginationNoPages" xml:space="preserve">
+    <value>没有页面</value>
+  </data>
+  <data name="FileIngestionProgress" xml:space="preserve">
+    <value>文件提取进度</value>
+  </data>
+  <data name="CurrentIngestion" xml:space="preserve">
+    <value>当前提取 ({0})</value>
+  </data>
+  <data name="PendingQueue" xml:space="preserve">
+    <value>待处理队列 ({0})</value>
+  </data>
+  <data name="CancelAll" xml:space="preserve">
+    <value>全部取消</value>
+  </data>
+  <data name="CancelIngestion" xml:space="preserve">
+    <value>取消摄取</value>
+  </data>
+  <data name="AvailableDrives" xml:space="preserve">
+    <value>可用驱动器</value>
+  </data>
+  <data name="EnterPathToNavigate" xml:space="preserve">
+    <value>输入路径进行导航...</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>最后修改时间</value>
+  </data>
+  <data name="ItemIsBeingWatched" xml:space="preserve">
+    <value>此项目正在被关注</value>
+  </data>
+  <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
+    <value>单批处理的请求数。</value>
+  </data>
+  <data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
+    <value>失败请求的最大重试次数。</value>
+  </data>
+  <data name="OpenAITemperatureTooltip" xml:space="preserve">
+    <value>控制AI响应的随机性。较高的值（例如0.8）会产生更具创造性的输出，而较低的值（例如0.2）会使响应更具针对性和确定性。</value>
+  </data>
+  <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
+    <value>一批要处理的请求数。</value>
+  </data>
+  <data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
+    <value>失败请求的最大重试次数。</value>
+  </data>
+  <data name="AnthropicTemperatureTooltip" xml:space="preserve">
+    <value>控制AI响应的随机性。较高的值（例如0.8）会产生更具创造性的输出，而较低的值（例如0.2）会使响应更具针对性和确定性。</value>
+  </data>
+  <data name="OllamaBatchSizeTooltip" xml:space="preserve">
+    <value>一批要处理的请求数。</value>
+  </data>
+  <data name="OllamaMaxRetriesTooltip" xml:space="preserve">
+    <value>失败请求的最大重试次数。</value>
+  </data>
+  <data name="OllamaTemperatureTooltip" xml:space="preserve">
+    <value>控制AI响应的随机性。较高的值（例如0.8）会产生更具创造性的输出，而较低的值（例如0.2）会使响应更具针对性和确定性。</value>
+  </data>
+  <data name="OllamaHostNameTooltip" xml:space="preserve">
+    <value>输入 奥拉马 主机名或 URL。</value>
+  </data>
+  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
+    <value>删除知识库</value>
+  </data>
+  <data name="ClearConsoleTooltip" xml:space="preserve">
+    <value>清除控制台</value>
+  </data>
+  <data name="DownloadLogsTooltip" xml:space="preserve">
+    <value>下载日志</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>聊天</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>日本人</value>
+  </data>
+  <data name="ViewProvider" xml:space="preserve">
+    <value>View 提供商</value>
+  </data>
+  <data name="SaveLanguage" xml:space="preserve">
+    <value>保存语言设置</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>您的语言偏好已保存并应用。</value>
+  </data>
+  <data name="SelectLanguage" xml:space="preserve">
+    <value>选择您的首选语言：</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>验证错误</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>意外错误</value>
+  </data>
+  <data name="SettingsSavedMessage" xml:space="preserve">
+    <value>您的设置已成功保存。</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>出现问题：{0}</value>
+  </data>
+  <data name="UnsupportedFileType" xml:space="preserve">
+    <value>不支持的文件类型。</value>
+  </data>
+  <data name="ResumingIngestion" xml:space="preserve">
+    <value>恢复摄取</value>
+  </data>
+  <data name="ReprocessingError" xml:space="preserve">
+    <value>重新处理错误</value>
+  </data>
+  <data name="UnreachableHost" xml:space="preserve">
+    <value>主机无法访问</value>
+  </data>
+  <data name="ViewEndpointFormat" xml:space="preserve">
+    <value>View 端点必须采用格式：http://&lt;主机名或 IP&gt;:&lt;端口&gt;/</value>
+  </data>
+  <data name="SelectAtLeastOneFile" xml:space="preserve">
+    <value>请至少选择一个文件进行删除。</value>
+  </data>
+  <data name="Sync" xml:space="preserve">
+    <value>同步</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>VoyageAI 嵌入设置不完整。</value>
+  </data>
+  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>View 嵌入设置不完整。</value>
+  </data>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>欢迎使用 View</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>上传文件</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>尺寸</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>重新处理文件</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>选择全部</value>
+  </data>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>删除选定的文件</value>
+  </data>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>您想聊什么？</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>消除</value>
+  </data>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>此处输入您的 API 密钥</value>
+  </data>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>指定要使用的 开放人工智能 模型，例如 gpt-3.5-turbo 或 gpt-4。</value>
+  </data>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>设置 开放人工智能 应用程序编程接口 端点。</value>
+  </data>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>指定要使用的人择模型，例如 claude-2 或 claude-instant-1。</value>
+  </data>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>设置 人择 API 端点。</value>
+  </data>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>控制完成的随机性。较高的值（0.8）使输出更加随机，较低的值（0.2）使输出更加集中。</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是的</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>重试</value>
+  </data>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>观看“{0}”？这将提取 {1} 个文件{2}。</value>
+  </data>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>仅限取消观看</value>
+  </data>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>取消关注并删除</value>
+  </data>
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>无法启动查看个人</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>由于以下异常，查看个人 无法启动：</value>
+  </data>
+  <data name="SpecifyOllamaModel" xml:space="preserve">
+    <value>指定要使用的 奥拉马 模型，例如 llama2-7B-q4 或 mistral-7B。</value>
+  </data>
+  <data name="SetOllamaEndpoint" xml:space="preserve">
+    <value>设置 奥拉马 API 端点。</value>
+  </data>
+  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的 奥拉马 嵌入模型，例如 sentence-transformers/all-MiniLM-L6-v2。</value>
+  </data>
+  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的视图嵌入模型，例如 sentence-transformers/all-MiniLM-L6-v2。</value>
+  </data>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>文档包含在上下文中所需的最低相似度分数。</value>
+  </data>
+  <data name="SetViewApiEndpoint" xml:space="preserve">
+    <value>设置查看 API 端点 网址。</value>
+  </data>
+  <data name="ViewCompletionModel" xml:space="preserve">
+    <value>查看完成模型</value>
+  </data>
+  <data name="SpecifyViewModel" xml:space="preserve">
+    <value>指定要使用的视图模型，例如 llama3.1:8b。</value>
+  </data>
+  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
+    <value>VoyageAI 嵌入设置不兼容。</value>
+  </data>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>此处输入您的 API 密钥</value>
+  </data>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>您的嵌入API密钥</value>
+  </data>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>VoyageAI 嵌入模型</value>
+  </data>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>视图嵌入模型</value>
+  </data>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>正在保存设置...</value>
+  </data>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>取消全选</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>观看</value>
+  </data>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>指定要使用的 开放人工智能 模型，例如 gpt-3.5-turbo 或 gpt-4。</value>
+  </data>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>指定要使用的人择模型，例如 claude-2 或 claude-instant-1。</value>
+  </data>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>指定要使用的 奥拉马 模型，例如 llama2-7B-q4 或 mistral-7B。</value>
+  </data>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>指定要使用的视图模型，例如 llama3.1:8b。</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>设置 开放人工智能 应用程序编程接口 端点。</value>
+  </data>
+  <data name="ViewBatchSizeTooltip" xml:space="preserve">
+    <value>一批要处理的请求数。</value>
+  </data>
+  <data name="ViewMaxRetriesTooltip" xml:space="preserve">
+    <value>失败请求的最大重试次数。</value>
+  </data>
+  <data name="ViewTemperatureTooltip" xml:space="preserve">
+    <value>控制AI响应的随机性。较高的值（例如0.8）会产生更具创造性的输出，而较低的值（例如0.2）会使响应更具针对性和确定性。</value>
+  </data>
+  <data name="ViewEndpointTooltip" xml:space="preserve">
+    <value>设置查看 API 端点 URL。</value>
+  </data>
+  <data name="ViewSystemPromptTooltip" xml:space="preserve">
+    <value>输入模型的自定义系统提示。</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>德语</value>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>西班牙语</value>
+  </data>
+  <data name="Korean" xml:space="preserve">
+    <value>韩国人</value>
+  </data>
+  <data name="Portuguese" xml:space="preserve">
+    <value>葡萄牙语</value>
+  </data>
+  <data name="French" xml:space="preserve">
+    <value>法语</value>
+  </data>
+</root>

@@ -123,27 +123,24 @@ namespace View.Personal.UIHandlers
                 if (scrollViewer != null)
                     Dispatcher.UIThread.Post(() => scrollViewer.ScrollToEnd(), DispatcherPriority.Background);
 
-                var summarizationTask = Task.Run(async () => 
-                {
-                    var title = await GenerateConversationSummary(currentMessages, mainWindow);
-                    return title;
-                });
-                
+                var summarizationTask = GenerateConversationSummary(currentMessages, mainWindow);
+
                 app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
                 var firstTokenReceived = false;
-                var finalResponse = await getAIResponse(userText, (tokenChunk) =>
+                var finalResponse = await getAIResponse(userText, async (tokenChunk) =>
                 {
                     assistantMsg.Content += tokenChunk;
                     if (!firstTokenReceived)
                     {
                         firstTokenReceived = true;
+                        string title = await summarizationTask;
                         Dispatcher.UIThread.Post(() =>
                         {
                             UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
                             scrollViewer?.ScrollToEnd();
-                            
+
                             mainWindow.CurrentChatSession.Title = GetTitleFromMessage(userText);
-                            
+
                             var chatHistoryList = mainWindow.FindControl<ComboBox>("ChatHistoryList");
                             if (chatHistoryList != null)
                             {
@@ -230,12 +227,16 @@ namespace View.Personal.UIHandlers
 
             try
             {
+                var app = (App)App.Current;
+                var preferredLanguage = app.ApplicationSettings.PreferredLanguage;
+                var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(preferredLanguage);
+                var languageName = cultureInfo.DisplayName;
                 var conversationText = string.Join("\n", messages.Select(m => $"{m.Role}: {m.Content}"));
                 var summaryPrompt = $"""
                                         You will be given a series of user messages from a single chat conversation.
-
                                         Your task is to create a single, short title that summarizes the main topic(s) of the entire conversation based on these user inputs.
-
+                                        Output language:
+                                        - You must respond ONLY in **{languageName}**
                                         Rules:
                                         - The title must be under {maxLength} characters.
                                         - Respond ONLY with the plain text title.
@@ -490,7 +491,7 @@ namespace View.Personal.UIHandlers
         #endregion
 
         #region Private-Methods
-       
+
         #endregion
     }
 }

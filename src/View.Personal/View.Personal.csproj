@@ -59,4 +59,9 @@
 	<ItemGroup>
 		<Content Remove="icon.ico" />
 	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Strings.resx">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
 </Project>

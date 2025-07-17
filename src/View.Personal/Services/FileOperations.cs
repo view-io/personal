@@ -4,14 +4,10 @@ namespace View.Personal.Services
     using Avalonia.Controls.Notifications;
     using Avalonia.Threading;
     using Classes;
-    using LiteGraph;
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
-    using View.Personal.Enums;
-    using View.Personal.Helpers;
     using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
@@ -32,7 +28,9 @@ namespace View.Personal.Services
                 {
                     if (window is MainWindow mainWindow)
                     {
-                        mainWindow.ShowNotification("Error", "File path is not available.", NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                            ResourceManagerService.GetString("FilePathNotAvailable"), 
+                            NotificationType.Error);
                     }
                     return;
                 }
@@ -41,7 +39,9 @@ namespace View.Personal.Services
                 {
                     if (window is MainWindow mainWindow)
                     {
-                        mainWindow.ShowNotification("Error", "File does not exist on disk.", NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                            ResourceManagerService.GetString("FileDoesNotExist"), 
+                            NotificationType.Error);
                     }
                     return;
                 }
@@ -60,7 +60,9 @@ namespace View.Personal.Services
 
                 if (window is MainWindow mainWindow)
                 {
-                    mainWindow.ShowNotification("Error", $"Could not open file location: {ex.Message}", NotificationType.Error);
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                        string.Format(ResourceManagerService.GetString("CouldNotOpenFileLocation"), ex.Message), 
+                        NotificationType.Error);
                 }
             }
         }
@@ -80,7 +82,9 @@ namespace View.Personal.Services
                 {
                     if (window is MainWindow mainWindow)
                     {
-                        mainWindow.ShowNotification("Error", "File path is not available for reprocessing.", NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                            ResourceManagerService.GetString("FilePathNotAvailable"), 
+                            NotificationType.Error);
                     }
                     return;
                 }
@@ -89,7 +93,9 @@ namespace View.Personal.Services
                 {
                     if (window is MainWindow mainWindow)
                     {
-                        mainWindow.ShowNotification("Error", "File does not exist on disk.", NotificationType.Error);
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
+                            ResourceManagerService.GetString("FileDoesNotExist"), 
+                            NotificationType.Error);
                     }
                     return;
                 }
@@ -117,7 +123,9 @@ namespace View.Personal.Services
                     if (result != false)
                     {
                         await mainWindowInstance.ReIngestFileAsync(file.FilePath ?? string.Empty);
-                        mainWindowInstance.ShowNotification("File Reprocessed", $"{file.Name} was reprocessed successfully!", NotificationType.Success);
+                        mainWindowInstance.ShowNotification(ResourceManagerService.GetString("FileReprocessed"), 
+                            string.Format(ResourceManagerService.GetString("FileReprocessedSuccessfully"), file.Name), 
+                            NotificationType.Success);
                     }
                 }
             }
@@ -129,7 +137,9 @@ namespace View.Personal.Services
 
                 if (window is MainWindow mainWindowInstance)
                 {
-                    mainWindowInstance.ShowNotification("Reprocessing Error", $"Something went wrong: {ex.Message}", NotificationType.Error);
+                    mainWindowInstance.ShowNotification(ResourceManagerService.GetString("ReprocessingError"), 
+                        string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message), 
+                        NotificationType.Error);
                 }
             }
             finally

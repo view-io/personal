@@ -40,8 +40,8 @@ namespace View.Personal.Classes
 
             var buttonPanel = new StackPanel
                 { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Right };
-            var okButton = new Button { Content = "OK" };
-            var cancelButton = new Button { Content = "Cancel" };
+            var okButton = new Button { Content = Services.ResourceManagerService.GetString("OK") };
+            var cancelButton = new Button { Content = Services.ResourceManagerService.GetString("Cancel") };
             buttonPanel.Children.Add(okButton);
             buttonPanel.Children.Add(cancelButton);
 

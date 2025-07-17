@@ -1,4 +1,4 @@
-﻿namespace View.Personal.Services
+namespace View.Personal.Services
 {
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
@@ -12,7 +12,6 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using View.Personal.Enums;
     using SeverityEnum = Enums.SeverityEnum;
@@ -43,8 +42,8 @@
             if (sender is Button button && button.Tag is FileViewModel file)
                 try
                 {
-                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                                        $"Are you sure you want to remove '{file.Name}'", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
+                    var result = await CustomMessageBoxHelper.ShowConfirmationAsync(ResourceManagerService.GetString("ConfirmDeletion"),
+                                        string.Format(ResourceManagerService.GetString("ConfirmRemoveFile"), file.Name), MessageBoxIcon.Warning, textLines: new List<string> { ResourceManagerService.GetString("FromKnowledgebase") });
 
                     if (result != ButtonResult.Yes)
                         return;
@@ -65,7 +64,8 @@
                     {
                         FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                         await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
-                        mainWindow.ShowNotification("File Deleted", $"{file.Name} was deleted successfully!",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("FileDeleted"), 
+                            string.Format(ResourceManagerService.GetString("FileDeletedSuccessfully"), file.Name),
                             NotificationType.Success);
                     }
                 }
@@ -75,7 +75,8 @@
                     app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
                     app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
                     if (window is MainWindow mainWindow)
-                        mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
+                            string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
                             NotificationType.Error);
                 }
                 finally
@@ -102,8 +103,8 @@
             var filesList = files.ToList();
             if (!filesList.Any()) return false;
 
-            var result = await CustomMessageBoxHelper.ShowConfirmationAsync("Confirm Deletion",
-                           $"Are you sure you want to remove the selected files", MessageBoxIcon.Warning, textLines: new List<string> { "from the knowledgebase?" });
+            var result = await CustomMessageBoxHelper.ShowConfirmationAsync(ResourceManagerService.GetString("ConfirmDeletion"),
+                           ResourceManagerService.GetString("ConfirmRemoveSelectedFiles"), MessageBoxIcon.Warning, textLines: new List<string> { ResourceManagerService.GetString("FromKnowledgebase") });
             if (result != ButtonResult.Yes) return false;
 
             var app = (App)App.Current;
@@ -221,14 +222,14 @@
                     
                     if (failedDeletes.Any())
                     {
-                        mainWindow.ShowNotification("Deletion Warning",
-                            $"Deleted {successfulDeletes.Count} files. Failed to delete {failedDeletes.Count} files.",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionWarning"),
+                            ResourceManagerService.GetString("FilesDeletedPartial", successfulDeletes.Count, failedDeletes.Count),
                             NotificationType.Warning);
                     }
                     else
                     {
-                        mainWindow.ShowNotification("Files Deleted",
-                            $"{successfulDeletes.Count} files were deleted successfully!",
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("FilesDeleted"),
+                            ResourceManagerService.GetString("FilesDeletedSuccess", successfulDeletes.Count),
                             NotificationType.Success);
                     }
                 }
@@ -239,7 +240,8 @@
                 app?.Log(SeverityEnum.Error, $"Error in batch file deletion: {ex.Message}");
                 app?.LogExceptionToFile(ex, "Error in batch file deletion");
                 if (mainWindow != null)
-                    mainWindow.ShowNotification("Deletion Error", $"Something went wrong: {ex.Message}",
+                    mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
+                        string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
                         NotificationType.Error);
                 return false;
             }

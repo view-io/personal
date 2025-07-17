@@ -193,8 +193,8 @@ namespace View.Personal.Helpers
                 ValidationErrorMessage = validationErrorMessage,
                 Buttons = new List<ButtonDefinition>
                 {
-                    new ButtonDefinition("OK", ButtonResult.Ok),
-                    new ButtonDefinition("Cancel", ButtonResult.Cancel)
+                    new ButtonDefinition(Services.ResourceManagerService.GetString("OK"), ButtonResult.Ok),
+                    new ButtonDefinition(Services.ResourceManagerService.GetString("Cancel"), ButtonResult.Cancel)
                 }
             };
 
@@ -217,29 +217,29 @@ namespace View.Personal.Helpers
             switch (buttons)
             {
                 case MessageBoxButtons.Ok:
-                    buttonDefinitions.Add(new ButtonDefinition("OK", ButtonResult.Ok));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("OK"), ButtonResult.Ok));
                     break;
                 case MessageBoxButtons.OkCancel:
-                    buttonDefinitions.Add(new ButtonDefinition("OK", ButtonResult.Ok));
-                    buttonDefinitions.Add(new ButtonDefinition("Cancel", ButtonResult.Cancel));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("OK"), ButtonResult.Ok));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Cancel"), ButtonResult.Cancel));
                     break;
                 case MessageBoxButtons.YesNo:
-                    buttonDefinitions.Add(new ButtonDefinition("Yes", ButtonResult.Yes));
-                    buttonDefinitions.Add(new ButtonDefinition("No", ButtonResult.No));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Yes"), ButtonResult.Yes));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("No"), ButtonResult.No));
                     break;
                 case MessageBoxButtons.YesNoCancel:
-                    buttonDefinitions.Add(new ButtonDefinition("Yes", ButtonResult.Yes));
-                    buttonDefinitions.Add(new ButtonDefinition("No", ButtonResult.No));
-                    buttonDefinitions.Add(new ButtonDefinition("Cancel", ButtonResult.Cancel));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Yes"), ButtonResult.Yes));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("No"), ButtonResult.No));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Cancel"), ButtonResult.Cancel));
                     break;
                 case MessageBoxButtons.AbortRetryIgnore:
-                    buttonDefinitions.Add(new ButtonDefinition("Abort", ButtonResult.Abort));
-                    buttonDefinitions.Add(new ButtonDefinition("Retry", ButtonResult.Retry));
-                    buttonDefinitions.Add(new ButtonDefinition("Ignore", ButtonResult.Ignore));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Abort"), ButtonResult.Abort));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Retry"), ButtonResult.Retry));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Ignore"), ButtonResult.Ignore));
                     break;
                 case MessageBoxButtons.RetryCancel:
-                    buttonDefinitions.Add(new ButtonDefinition("Retry", ButtonResult.Retry));
-                    buttonDefinitions.Add(new ButtonDefinition("Cancel", ButtonResult.Cancel));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Retry"), ButtonResult.Retry));
+                    buttonDefinitions.Add(new ButtonDefinition(Services.ResourceManagerService.GetString("Cancel"), ButtonResult.Cancel));
                     break;
             }
 
