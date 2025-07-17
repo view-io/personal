@@ -5,10 +5,12 @@
   <br />
   <img src="assets/logo.png" alt="View AI Personal Logo" height="128">
   <br />
+  <br />
 </p>
 
 <p align="center">
   <strong>Transform your personal documents into intelligent, searchable knowledge bases in minutes</strong>
+  <br />
 </p>
 
 <p align="center">
