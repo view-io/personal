@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Modelo de Conclusão do Ollama</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>Configurações do View</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>Ver configurações do AI Enterprise</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>Chave de API de Embeddings</value>
@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>Configurações de RAG</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>Geração de Embeddings</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>Provedor de Embeddings</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>Selecione o modelo de embedding do provedor
@@ -282,6 +282,19 @@ gerar embeddings de vetores.</value>
     <value>AVISO: Se você atualizar ou alterar
 seu modelo de embedding, precisará
 reimportar todos os documentos.</value>
+  </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>Provedor de Completamento</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>Selecione o provedor local ou em nuvem
+a ser usado para completamento de texto
+e funcionalidade de chat.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>Escolha seu provedor de modelo de linguagem
+preferido para gerar respostas
+e processar solicitações de chat.</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>Nome do Modelo</value>
@@ -658,8 +671,8 @@ reimportar todos os documentos.</value>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>Ativar ordenação de contexto</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>Modelos Locais</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Modelos Ollama</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>Baixar um novo modelo</value>
@@ -806,10 +819,10 @@ reimportar todos os documentos.</value>
     <value>Configurações de RAG</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Digite sua chave de API da OpenAI.</value>
+    <value>Digite sua chave de API da OpenAI. Clique no botão de ajuda para mais informações.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Digite sua chave de API da Anthropic.</value>
+    <value>Digite sua chave de API da Anthropic. Clique no botão de ajuda para mais informações.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>Digite sua chave de API de embeddings do View.</value>
@@ -821,7 +834,16 @@ reimportar todos os documentos.</value>
     <value>Digite seu GUID de inquilino do View para ambientes multi-inquilino.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Digite sua chave de API da VoyageAI para autenticação.</value>
+    <value>Digite sua chave de API da VoyageAI para autenticação. Clique no botão de ajuda para mais informações.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Digite sua chave de API da OpenAI. Você pode obtê-la em https://platform.openai.com/account/api-keys</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Digite sua chave de API da Anthropic. Você pode obtê-la em https://console.anthropic.com/</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Digite sua chave de API da Voyage AI. Você pode obtê-la em https://dash.voyageai.com/</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>Modelo de Embedding da OpenAI</value>
@@ -928,8 +950,8 @@ reimportar todos os documentos.</value>
   <data name="Japanese" xml:space="preserve">
     <value>Japonês</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>Provedor View</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>Ver IA Empresarial</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>Salvar Configuração de Idioma</value>
@@ -1114,6 +1136,18 @@ reimportar todos os documentos.</value>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>Especifique o modelo do View a ser usado, por exemplo, llama3.1:8b.</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo padrão a ser usado (por exemplo, gpt-4 ou gpt-3.5-turbo). Clique aqui para explorar os modelos disponíveis: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo padrão a ser usado (por exemplo, claude-3-sonnet ou claude-3-haiku). Clique aqui para explorar os modelos disponíveis: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo Ollama a ser usado (por exemplo, llama2-7B-q4 ou mistral-7B). Clique aqui para explorar os modelos disponíveis: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Clique para obter links de ajuda e documentação</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>Defina o endpoint da API da OpenAI.</value>
   </data>
@@ -1146,5 +1180,20 @@ reimportar todos os documentos.</value>
   </data>
   <data name="French" xml:space="preserve">
     <value>Francês</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} reingerido com sucesso!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>Retomando a ingestão de arquivos...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Especifique o modelo de incorporação OpenAI a ser usado, por exemplo, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Especifique o modelo de incorporação VoyageAI a ser usado, por exemplo, text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Copiar todos os registros</value>
   </data>
 </root>

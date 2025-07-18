@@ -10,7 +10,6 @@ namespace View.Personal.Controls
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Threading.Tasks;
     using View.Personal.Classes;
     using View.Personal.Services;
 

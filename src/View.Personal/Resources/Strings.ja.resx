@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Ollama 補完モデル</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>View 設定</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>AI エンタープライズ設定の表示</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>埋め込みAPIキー</value>
@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG設定</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>埋め込み生成</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>埋め込みプロバイダー</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>ベクトル埋め込みの生成に使用する
@@ -282,6 +282,19 @@
     <value>警告：埋め込みモデルを更新または
 変更した場合、すべてのドキュメントを
 再インポートする必要があります。</value>
+  </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>コンプリーションプロバイダー</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>テキスト補完とチャット機能に
+使用するローカルまたはクラウド
+プロバイダーを選択してください。</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>応答を生成し、チャットリクエストを
+処理するための希望する言語モデル
+プロバイダーを選択してください。</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>モデル名</value>
@@ -658,8 +671,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>コンテキストの並べ替えを有効にする</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>ローカルモデル</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>オラマモデル</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>新しいモデルをプル</value>
@@ -806,10 +819,10 @@
     <value>RAG設定</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>OpenAI APIキーを入力してください。</value>
+    <value>OpenAI APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Anthropic APIキーを入力してください。</value>
+    <value>Anthropic APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>View埋め込みAPIキーを入力してください。</value>
@@ -821,7 +834,16 @@
     <value>マルチテナント環境用のViewテナントGUIDを入力してください。</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>認証用のVoyageAI APIキーを入力してください。</value>
+    <value>認証用のVoyageAI APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>OpenAI APIキーを入力してください。https://platform.openai.com/account/api-keys から取得できます</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Anthropic APIキーを入力してください。https://console.anthropic.com/ から取得できます</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Voyage AI APIキーを入力してください。https://dash.voyageai.com/ から取得できます</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI 埋め込みモデル</value>
@@ -928,8 +950,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>日本語</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View プロバイダー</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>AI エンタープライズを見る</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>言語設定を保存</value>
@@ -1114,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>使用するViewモデル（例: llama3.1:8b）を指定します。</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>使用するデフォルトモデル（例：gpt-4、gpt-3.5-turbo）を選択します。利用可能なモデルを確認するには、こちらをクリックしてください：https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>使用するデフォルトのモデル（例：claude-3-sonnet または claude-3-haiku）を選択します。利用可能なモデルを確認するには、こちらをクリックしてください: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>使用するOllamaモデルを選択してください（例：llama2-7B-q4、mistral-7B）。利用可能なモデルについては、こちらをクリックしてください：https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>ヘルプとドキュメントのリンクをクリックしてください</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>OpenAI APIエンドポイントを設定します。</value>
   </data>
@@ -1146,5 +1180,20 @@
   </data>
   <data name="French" xml:space="preserve">
     <value>フランス語</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} が正常に再摂取されました。</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>ファイルの取り込みを再開しています...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>使用する OpenAI 埋め込みモデルを指定します (例: text-embedding-3-small)。</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>使用する VoyageAI 埋め込みモデルを指定します (例: text-embedding-3-small)。</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>すべてのログをコピー</value>
   </data>
 </root>

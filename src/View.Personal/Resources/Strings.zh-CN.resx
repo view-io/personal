@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>奥拉马 完成模型</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>View 设置</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>查看AI企业设置</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>嵌入 应用程序编程接口 密钥</value>
@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG 设置</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>嵌入生成</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>嵌入提供者</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>选择用于生成向量嵌入的
@@ -281,6 +281,19 @@
     <value>警告：如果您更新或更改
 嵌入模型，您需要
 重新导入所有文档。</value>
+  </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>完成提供商</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>选择用于文本完成
+和聊天功能的本地或
+云提供商。</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>选择您首选的语言模型提供商
+用于生成响应和
+处理聊天请求。</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>模型名称</value>
@@ -657,8 +670,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>启用上下文排序</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>本地型号</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>奥拉马 模型</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>拉新模型</value>
@@ -805,10 +818,10 @@
     <value>RAG 设置</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 开放人工智能 应用程序编程接口 密钥。</value>
+    <value>输入您的 开放人工智能 应用程序编程接口 密钥。点击帮助按钮获取更多信息。</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 Anthropic API 密钥。</value>
+    <value>输入您的 Anthropic API 密钥。点击帮助按钮获取更多信息。</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>输入您的 View 嵌入 API 密钥。</value>
@@ -820,7 +833,16 @@
     <value>输入多租户环境的 View 租户 GUID。</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 VoyageAI API 密钥进行身份验证。</value>
+    <value>输入您的 VoyageAI API 密钥进行身份验证。点击帮助按钮获取更多信息。</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>输入您的开放人工智能 API 密钥。您可以从 https://platform.openai.com/account/api-keys 获取</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>输入您的 Anthropic API 密钥。您可以从 https://console.anthropic.com/ 获取</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>输入您的 Voyage AI API 密钥。您可以从 https://dash.voyageai.com/ 获取</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>开放人工智能 嵌入模型</value>
@@ -927,8 +949,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>日本人</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View 提供商</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>查看人工智能企业</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>保存语言设置</value>
@@ -1113,6 +1135,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>指定要使用的视图模型，例如 llama3.1:8b。</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>选择要使用的默认模型（例如 GPT-4 或 GPT-3.5-turbo）。点击此处探索可用模型：https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>选择要使用的默认模型（例如，claude-3-sonnet 或 claude-3-haiku）。点击此处探索可用模型：https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>选择要使用的 Ollama 模型（例如 llama2-7B-q4 或 mistral-7B）。点击此处探索可用模型：https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>单击获取帮助和文档链接</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>设置 开放人工智能 应用程序编程接口 端点。</value>
   </data>
@@ -1145,5 +1179,20 @@
   </data>
   <data name="French" xml:space="preserve">
     <value>法语</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} 已成功重新提取！</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>正在恢复文件提取...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的 OpenAI 嵌入模型，例如 text-embedding-3-small。</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的 VoyageAI 嵌入模型，例如 text-embedding-3-small。</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>复制所有日志</value>
   </data>
 </root>

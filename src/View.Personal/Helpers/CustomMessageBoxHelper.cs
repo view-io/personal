@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using View.Personal.Classes;
-using View.Personal.Controls;
-using View.Personal.Controls.Dialogs;
-using View.Personal.Enums;
-
 namespace View.Personal.Helpers
 {
+    using Avalonia.Controls;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using View.Personal.Classes;
+    using View.Personal.Controls.Dialogs;
+    using View.Personal.Enums;
+
     /// <summary>
     /// Helper class for creating styled message boxes that match the application's UI.
     /// </summary>

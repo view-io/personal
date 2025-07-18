@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Ollama 완료 모델</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>보기 설정</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>AI Enterprise 설정 보기</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>임베딩 API 키</value>
@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG 설정</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>임베딩 생성</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>임베딩 제공자</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>벡터 임베딩을 생성하는 데 사용할
@@ -282,6 +282,19 @@
     <value>경고: 임베딩 모델을 업데이트하거나
 변경하는 경우 모든 문서를
 다시 가져와야 합니다.</value>
+  </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>완성 제공업체</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>텍스트 완성 및 채팅 기능에
+사용할 로컬 또는 클라우드
+제공업체를 선택하세요.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>응답 생성 및 채팅 요청 처리를 위한
+선호하는 언어 모델 제공업체를
+선택하세요.</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>모델 이름</value>
@@ -658,8 +671,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>컨텍스트 정렬 활성화</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>로컬 모델</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>올라마 모델</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>새 모델 가져오기</value>
@@ -806,10 +819,10 @@
     <value>RAG 설정</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>OpenAI API 키를 입력하세요.</value>
+    <value>OpenAI API 키를 입력하세요. 자세한 정보는 도움말 버튼을 클릭하세요.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Anthropic API 키를 입력하세요.</value>
+    <value>Anthropic API 키를 입력하세요. 자세한 정보는 도움말 버튼을 클릭하세요.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>View 임베딩 API 키를 입력하세요.</value>
@@ -821,7 +834,16 @@
     <value>다중 테넌트 환경을 위해 View 테넌트 GUID를 입력하세요.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>인증을 위해 VoyageAI API 키를 입력하세요.</value>
+    <value>인증을 위해 VoyageAI API 키를 입력하세요. 자세한 정보는 도움말 버튼을 클릭하세요.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>OpenAI API 키를 입력하세요. https://platform.openai.com/account/api-keys 에서 얻을 수 있습니다</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Anthropic API 키를 입력하세요. https://console.anthropic.com/ 에서 얻을 수 있습니다</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Voyage AI API 키를 입력하세요. https://dash.voyageai.com/ 에서 얻을 수 있습니다</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI 임베딩 모델</value>
@@ -928,8 +950,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>일본어</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View 제공자</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>AI 엔터프라이즈 보기</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>언어 설정 저장</value>
@@ -1114,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>사용할 View 모델을 지정하세요 (예: llama3.1:8b).</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>사용할 기본 모델을 선택하세요(예: gpt-4 또는 gpt-3.5-turbo). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>사용할 기본 모델을 선택하세요(예: claude-3-sonnet 또는 claude-3-haiku). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>사용할 Ollama 모델을 선택하세요(예: llama2-7B-q4 또는 mistral-7B). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>도움말 및 문서 링크를 클릭하세요</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>OpenAI API 엔드포인트를 설정하세요.</value>
   </data>
@@ -1146,5 +1180,20 @@
   </data>
   <data name="French" xml:space="preserve">
     <value>프랑스 국민</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0}을(를) 다시 섭취했습니다!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>파일 수집을 재개합니다...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>사용할 OpenAI 임베딩 모델을 지정합니다(예: text-embedding-3-small).</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>사용할 VoyageAI 임베딩 모델을 지정합니다(예: text-embedding-3-small).</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>모든 로그 복사</value>
   </data>
 </root>

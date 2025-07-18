@@ -7,9 +7,7 @@ namespace View.Personal.Helpers
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
     using System.Threading.Tasks;
-    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing file pagination in the application.

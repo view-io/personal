@@ -1,10 +1,9 @@
-﻿using Avalonia.Controls;
-using System.Collections.Generic;
-using View.Personal.Controls;
-using View.Personal.Enums;
-
-namespace View.Personal.Classes
+﻿namespace View.Personal.Classes
 {
+    using Avalonia.Controls;
+    using System.Collections.Generic;
+    using View.Personal.Enums;
+
     /// <summary>
     /// Represents the parameters for a custom message box.
     /// </summary>
@@ -34,27 +33,27 @@ namespace View.Personal.Classes
         /// Gets or sets the buttons to display.
         /// </summary>
         public List<ButtonDefinition> Buttons { get; set; } = new List<ButtonDefinition>();
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether the message box should include a text input field.
         /// </summary>
         public bool HasInputField { get; set; } = false;
-        
+
         /// <summary>
         /// Gets or sets the prompt text for the input field.
         /// </summary>
         public string InputPrompt { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// Gets or sets the default value for the input field.
         /// </summary>
         public string InputDefaultValue { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether input validation is enabled.
         /// </summary>
         public bool EnableInputValidation { get; set; } = false;
-        
+
         /// <summary>
         /// Gets or sets the validation error message to display when input is invalid.
         /// </summary>
@@ -76,7 +75,7 @@ namespace View.Personal.Classes
         /// Gets or sets a value indicating whether the input field is currently in an error state.
         /// </summary>
         public bool IsInputInvalid { get; set; } = false;
-        
+
         /// <summary>
         /// Gets or sets a list of text lines to display in the message box.
         /// If provided, each string in the list will be displayed on a separate line.

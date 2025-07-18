@@ -6,9 +6,9 @@ namespace View.Personal.Services
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Json;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Text.Json;
     using View.Personal.Classes;
     using View.Personal.Enums;
 

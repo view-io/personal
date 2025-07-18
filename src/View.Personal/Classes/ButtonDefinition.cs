@@ -1,6 +1,5 @@
 ﻿namespace View.Personal.Classes
 {
-    using View.Personal.Controls;
     using View.Personal.Enums;
 
     /// <summary>

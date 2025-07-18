@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>ओलामा पूर्णता मॉडल</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>व्यू सेटिंग्स</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>व्यू एआई एंटरप्राइज़ सेटिंग्स</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>एम्बेडिंग्स एपीआई कुंजी</value>
@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG सेटिंग्स</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>एम्बेडिंग्स जनरेशन</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>एम्बेडिंग प्रदाता</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>स्थानीय या क्लाउड प्रदाता चुनें
@@ -282,6 +282,19 @@
     <value>चेतावनी: यदि आप अपडेट या बदलते हैं
 आपका एम्बेडिंग मॉडल, आपको
 सभी दस्तावेज़ों को फिर से आयात करना होगा।</value>
+  </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>पूर्णता प्रदाता</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>स्थानीय या क्लाउड प्रदाता चुनें
+टेक्स्ट पूर्णता और चैट कार्यक्षमता
+के लिए उपयोग किया जाना है।</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>अपना पसंदीदा भाषा मॉडल प्रदाता चुनें
+प्रतिक्रियाएं उत्पन्न करने और
+चैट अनुरोधों को संसाधित करने के लिए।</value>
   </data>
   <data name="ModelName" xml:space="preserve">
     <value>मॉडल नाम</value>
@@ -658,8 +671,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>स्थानीय मॉडल</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>ओलामा मॉडल्स</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>एक नया मॉडल पुल करें</value>
@@ -806,10 +819,10 @@
     <value>RAG सेटिंग्स</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>अपनी व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
@@ -821,7 +834,16 @@
     <value>मल्टी-टेनेंट वातावरण के लिए अपनी व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>प्रमाणीकरण के लिए अपनी वॉयजएआई एपीआई कुंजी दर्ज करें।</value>
+    <value>प्रमाणीकरण के लिए अपनी वॉयजएआई एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें। आप इसे https://platform.openai.com/account/api-keys से प्राप्त कर सकते हैं</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें। आप इसे https://console.anthropic.com/ से प्राप्त कर सकते हैं</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>अपनी वॉयज एआई एपीआई कुंजी दर्ज करें। आप इसे https://dash.voyageai.com/ से प्राप्त कर सकते हैं</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>ओपनएआई एम्बेडिंग मॉडल</value>
@@ -928,8 +950,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>जापानी</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>व्यू प्रदाता</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>व्यू एआई एंटरप्राइज़</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>भाषा सेटिंग सहेजें</value>
@@ -1114,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए डिफ़ॉल्ट मॉडल चुनें (उदाहरण के लिए, gpt-4 या gpt-3.5-turbo)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए डिफ़ॉल्ट मॉडल चुनें (उदाहरण के लिए, क्लाउड-3-सोनेट या क्लाउड-3-हाइकू)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए ओलामा मॉडल चुनें (उदाहरण के लिए, लामा2-7B-q4 या मिस्ट्रल-7B)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>सहायता और दस्तावेज़ीकरण लिंक के लिए क्लिक करें</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
@@ -1146,5 +1180,20 @@
   </data>
   <data name="French" xml:space="preserve">
     <value>फ़्रेंच</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} पुनः सफलतापूर्वक ग्रहण किया गया!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>फ़ाइल अंतर्ग्रहण पुनः आरंभ हो रहा है...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए OpenAI एम्बेडिंग मॉडल निर्दिष्ट करें, उदाहरण के लिए, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए VoyageAI एम्बेडिंग मॉडल निर्दिष्ट करें, उदाहरण के लिए, text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>सभी लॉग कॉपी करें</value>
   </data>
 </root>

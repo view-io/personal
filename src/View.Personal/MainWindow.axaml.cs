@@ -567,6 +567,41 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the copy console logs button.
+        /// Copies all console logs to the clipboard and shows feedback.
+        /// </summary>
+        private async void CopyConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var consoleOutput = this.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
+            var copyIcon = this.FindControl<MaterialIcon>("CopyConsoleIcon");
+            
+            if (consoleOutput != null && !string.IsNullOrWhiteSpace(consoleOutput.Text))
+            {
+                try
+                {
+                    var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+                    if (clipboard != null)
+                    {
+                        await clipboard.SetTextAsync(consoleOutput.Text);
+                        
+                        if (copyIcon != null)
+                        {
+                            copyIcon.Kind = Material.Icons.MaterialIconKind.CheckBold;
+                            
+                            await Task.Delay(1000);
+                            copyIcon.Kind = Material.Icons.MaterialIconKind.ContentCopy;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var app = (App)Application.Current;
+                    app.ConsoleLog(SeverityEnum.Error, $"Error copying console logs: {ex.Message}");
+                }
+            }
+        }
+
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             CurrentChatSession = new ChatSession();
@@ -936,6 +971,91 @@ namespace View.Personal
         {
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
+
+        #region Help Button Click Handlers
+
+        private void OpenAIApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OpenAIApiKeyHelpText");
+            var linkUrl = "https://platform.openai.com/account/api-keys";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OpenAIApiKey"), 
+                helpText, 
+                ResourceManagerService.GetString("OpenAIApiKey"), 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void OpenAIModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OpenAIModelHelpText");
+            var linkUrl = "https://platform.openai.com/docs/models";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OpenAICompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void AnthropicApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("AnthropicApiKeyHelpText");
+            var linkUrl = "https://console.anthropic.com/";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("AnthropicApiKey"), 
+                helpText, 
+                ResourceManagerService.GetString("AnthropicApiKey"), 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void AnthropicModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("AnthropicModelHelpText");
+            var linkUrl = "https://docs.anthropic.com/claude/docs/models-overview";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("AnthropicCompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void OllamaModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OllamaModelHelpText");
+            var linkUrl = "https://ollama.com/library";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OllamaCompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void ViewApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ShowNotification(
+                ResourceManagerService.GetString("EmbeddingsApiKey"), 
+                ResourceManagerService.GetString("EnterViewEmbeddingsApiKeyTooltip"), 
+                NotificationType.Information);
+        }
+
+        private void ViewModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ShowNotification(
+                ResourceManagerService.GetString("CompletionModel"), 
+                ResourceManagerService.GetString("SpecifyViewModelTooltip"), 
+                NotificationType.Information);
+        }
+
+        #endregion
 
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

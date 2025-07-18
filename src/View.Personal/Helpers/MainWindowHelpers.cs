@@ -9,7 +9,6 @@ namespace View.Personal.Helpers
     using System.Collections.Specialized;
     using System.IO;
     using System.Linq;
-    using View.Personal.Services;
 
     /// <summary>
     /// Provides helper methods for managing UI-related tasks and graph operations in the main window.
@@ -79,8 +78,9 @@ namespace View.Personal.Helpers
                     var createdUtc = node.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss UTC");
                     var documentType = node.Tags?["DocumentType"] ?? "Unknown";
                     var contentLength = node.Tags?["ContentLength"] ?? "Unknown";
+                    bool isCompleted = node.Tags?.AllKeys.Contains("IsCompleted") == true && node.Tags["IsCompleted"] == "True";
 
-                    if (!FileIngester.IsFileCompleted(filePath))
+                    if (!isCompleted)
                         continue;
 
                     uniqueFiles.Add(new FileViewModel
@@ -144,7 +144,8 @@ namespace View.Personal.Helpers
                     { "MimeType", typeResult.MimeType },
                     { "FileName", Path.GetFileName(filePath) },
                     { "FilePath", filePath },
-                    { "ContentLength", new FileInfo(filePath).Length.ToString() }
+                    { "ContentLength", new FileInfo(filePath).Length.ToString() },
+                    { "IsCompleted", "False" }
                 },
                 Data = atoms
             };

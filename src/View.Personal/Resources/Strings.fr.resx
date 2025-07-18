@@ -1,1149 +1,1198 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!--
-	  Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-	  Version 2.0
-
-	  The primary goals of this format is to allow a simple XML format
-	  that is mostly human readable. The generation and parsing of the
-	  various data types are done through the TypeConverter classes
-	  associated with the data types.
-
-	  Example:
-
-	  ... ado.net/XML headers & schema ...
-	  <resheader name="resmimetype">text/microsoft-resx</resheader>
-	  <resheader name="version">2.0</resheader>
-	  <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-	  <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-	  <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-	  <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-	  <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-		  <value>[base64 mime encoded serialized .NET Framework object]</value>
-	  </data>
-	  <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-		  <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-		  <comment>This is a comment</comment>
-	  </data>
-
-	  There are any number of "resheader" rows that contain simple
-	  name/value pairs.
-
-	  Each data row contains a name, and value. The row also contains a
-	  type or mimetype. Type corresponds to a .NET class that support
-	  text/value conversion through the TypeConverter architecture.
-	  Classes that don't support this are serialized and stored with the
-	  mimetype set.
-
-	  The mimetype is used for serialized objects, and tells the
-	  ResXResourceReader how to depersist the object. This is currently not
-	  extensible. For a given mimetype the value must be set accordingly:
-
-	  Note - application/x-microsoft.net.object.binary.base64 is the format
-	  that the ResXResourceWriter will generate, however the reader can
-	  read any of the formats listed below.
-
-	  mimetype: application/x-microsoft.net.object.binary.base64
-	  value   : The object must be serialized with
-			  : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-			  : and then encoded with base64 encoding.
-
-	  mimetype: application/x-microsoft.net.object.soap.base64
-	  value   : The object must be serialized with
-			  : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			  : and then encoded with base64 encoding.
-
-	  mimetype: application/x-microsoft.net.object.bytearray.base64
-	  value   : The object must be serialized into a byte array
-			  : using a System.ComponentModel.TypeConverter
-			  : and then encoded with base64 encoding.
-	  -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AppTitle" xml:space="preserve">
-		<value>Voir Personnel</value>
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Voir Personnel</value>
   </data>
-	<data name="Knowledgebase" xml:space="preserve">
-	<value>Base de connaissances</value>
+  <data name="Knowledgebase" xml:space="preserve">
+    <value>Base de connaissances</value>
   </data>
-	<data name="Settings" xml:space="preserve">
-	<value>Paramètres</value>
+  <data name="Settings" xml:space="preserve">
+    <value>Paramètres</value>
   </data>
-	<data name="Language" xml:space="preserve">
-	<value>Langue</value>
+  <data name="Language" xml:space="preserve">
+    <value>Langue</value>
   </data>
-	<data name="English" xml:space="preserve">
-	<value>Anglais</value>
+  <data name="English" xml:space="preserve">
+    <value>Anglais</value>
   </data>
-	<data name="Hindi" xml:space="preserve">
-	<value>Hindi</value>
+  <data name="Hindi" xml:space="preserve">
+    <value>Hindi</value>
   </data>
-	<data name="SaveSettings" xml:space="preserve">
-	<value>Enregistrer les paramètres</value>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Enregistrer les paramètres</value>
   </data>
-	<data name="ErrorStartingApp" xml:space="preserve">
-		<value>Impossible de démarrer Voir Personnel</value>
+  <data name="ErrorStartingApp" xml:space="preserve">
+    <value>Impossible de démarrer Voir Personnel</value>
   </data>
-	<data name="ErrorGeneric" xml:space="preserve">
-	<value>Une erreur s'est produite</value>
+  <data name="ErrorGeneric" xml:space="preserve">
+    <value>Une erreur s'est produite</value>
   </data>
-	<data name="SettingsSaved" xml:space="preserve">
-	<value>Paramètres enregistrés avec succès</value>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Paramètres enregistrés avec succès</value>
   </data>
-	<data name="LanguageChanged" xml:space="preserve">
-	<value>Langue changée en {0}</value>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>Langue changée en {0}</value>
   </data>
-	<data name="StartNewChat" xml:space="preserve">
-	<value>Démarrer une nouvelle discussion</value>
+  <data name="StartNewChat" xml:space="preserve">
+    <value>Démarrer une nouvelle discussion</value>
   </data>
-	<data name="OpenAIProvider" xml:space="preserve">
-	<value>OpenAI</value>
+  <data name="OpenAIProvider" xml:space="preserve">
+    <value>OpenAI</value>
   </data>
-	<data name="OpenAIDescription" xml:space="preserve">
-	<value>Accédez aux modèles OpenAI</value>
+  <data name="OpenAIDescription" xml:space="preserve">
+    <value>Accédez aux modèles OpenAI</value>
   </data>
-	<data name="OpenAISettings" xml:space="preserve">
-	<value>Paramètres OpenAI</value>
+  <data name="OpenAISettings" xml:space="preserve">
+    <value>Paramètres OpenAI</value>
   </data>
-	<data name="OpenAIApiKey" xml:space="preserve">
-	<value>Clé d'API OpenAI</value>
+  <data name="OpenAIApiKey" xml:space="preserve">
+    <value>Clé d'API OpenAI</value>
   </data>
-	<data name="OpenAICompletionModel" xml:space="preserve">
-	<value>Modèle de complétion OpenAI</value>
+  <data name="OpenAICompletionModel" xml:space="preserve">
+    <value>Modèle de complétion OpenAI</value>
   </data>
-	<data name="SystemPrompt" xml:space="preserve">
-	<value>Invite système</value>
+  <data name="SystemPrompt" xml:space="preserve">
+    <value>Invite système</value>
   </data>
-	<data name="OpenAIEndpoint" xml:space="preserve">
-	<value>Point de terminaison OpenAI</value>
+  <data name="OpenAIEndpoint" xml:space="preserve">
+    <value>Point de terminaison OpenAI</value>
   </data>
-	<data name="BatchSize" xml:space="preserve">
-	<value>Taille du lot</value>
+  <data name="BatchSize" xml:space="preserve">
+    <value>Taille du lot</value>
   </data>
-	<data name="MaxRetries" xml:space="preserve">
-	<value>Tentatives max.</value>
+  <data name="MaxRetries" xml:space="preserve">
+    <value>Tentatives max.</value>
   </data>
-	<data name="Temperature" xml:space="preserve">
-	<value>Température</value>
+  <data name="Temperature" xml:space="preserve">
+    <value>Température</value>
   </data>
-	<data name="EnableRAG" xml:space="preserve">
-	<value>Activer le RAG</value>
+  <data name="EnableRAG" xml:space="preserve">
+    <value>Activer le RAG</value>
   </data>
-	<data name="AdvancedSettings" xml:space="preserve">
-	<value>Paramètres avancés</value>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>Paramètres avancés</value>
   </data>
-	<data name="SimilarityThreshold" xml:space="preserve">
-	<value>Seuil de similarité</value>
+  <data name="SimilarityThreshold" xml:space="preserve">
+    <value>Seuil de similarité</value>
   </data>
-	<data name="AnthropicProvider" xml:space="preserve">
-	<value>Anthropic</value>
+  <data name="AnthropicProvider" xml:space="preserve">
+    <value>Anthropic</value>
   </data>
-	<data name="AnthropicDescription" xml:space="preserve">
-	<value>Obtenez l'accès aux modèles Anthropic</value>
+  <data name="AnthropicDescription" xml:space="preserve">
+    <value>Obtenez l'accès aux modèles Anthropic</value>
   </data>
-	<data name="AnthropicSettings" xml:space="preserve">
-	<value>Paramètres Anthropic</value>
+  <data name="AnthropicSettings" xml:space="preserve">
+    <value>Paramètres Anthropic</value>
   </data>
-	<data name="AnthropicApiKey" xml:space="preserve">
-	<value>Clé d'API Anthropic</value>
+  <data name="AnthropicApiKey" xml:space="preserve">
+    <value>Clé d'API Anthropic</value>
   </data>
-	<data name="AnthropicCompletionModel" xml:space="preserve">
-	<value>Modèle de complétion Anthropic</value>
+  <data name="AnthropicCompletionModel" xml:space="preserve">
+    <value>Modèle de complétion Anthropic</value>
   </data>
-	<data name="AnthropicEndpoint" xml:space="preserve">
-	<value>Point de terminaison Anthropic</value>
+  <data name="AnthropicEndpoint" xml:space="preserve">
+    <value>Point de terminaison Anthropic</value>
   </data>
-	<data name="LocalProvider" xml:space="preserve">
-	<value>Local</value>
+  <data name="LocalProvider" xml:space="preserve">
+    <value>Local</value>
   </data>
-	<data name="LocalDescription" xml:space="preserve">
-	<value>Accédez aux modèles locaux</value>
+  <data name="LocalDescription" xml:space="preserve">
+    <value>Accédez aux modèles locaux</value>
   </data>
-	<data name="OllamaSettings" xml:space="preserve">
-	<value>Paramètres Ollama</value>
+  <data name="OllamaSettings" xml:space="preserve">
+    <value>Paramètres Ollama</value>
   </data>
-	<data name="OllamaCompletionModel" xml:space="preserve">
-	<value>Modèle de complétion Ollama</value>
+  <data name="OllamaCompletionModel" xml:space="preserve">
+    <value>Modèle de complétion Ollama</value>
   </data>
-	<data name="ViewSettings" xml:space="preserve">
-	<value>Paramètres de View</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>Afficher les paramètres d'IA Enterprise</value>
   </data>
-	<data name="EmbeddingsApiKey" xml:space="preserve">
-	<value>Clé d'API d'embeddings</value>
+  <data name="EmbeddingsApiKey" xml:space="preserve">
+    <value>Clé d'API d'embeddings</value>
   </data>
-	<data name="ViewEndpoint" xml:space="preserve">
-	<value>Point de terminaison View</value>
+  <data name="ViewEndpoint" xml:space="preserve">
+    <value>Point de terminaison View</value>
   </data>
-	<data name="OllamaHostName" xml:space="preserve">
-	<value>Nom d'hôte Ollama</value>
+  <data name="OllamaHostName" xml:space="preserve">
+    <value>Nom d'hôte Ollama</value>
   </data>
-	<data name="AccessKey" xml:space="preserve">
-	<value>Clé d'accès</value>
+  <data name="AccessKey" xml:space="preserve">
+    <value>Clé d'accès</value>
   </data>
-	<data name="TenantGuid" xml:space="preserve">
-	<value>GUID du locataire</value>
+  <data name="TenantGuid" xml:space="preserve">
+    <value>GUID du locataire</value>
   </data>
-	<data name="KnowledgebaseSource" xml:space="preserve">
-	<value>Source de la base de connaissances</value>
+  <data name="KnowledgebaseSource" xml:space="preserve">
+    <value>Source de la base de connaissances</value>
   </data>
-	<data name="CompletionModel" xml:space="preserve">
-	<value>Modèle de complétion</value>
+  <data name="CompletionModel" xml:space="preserve">
+    <value>Modèle de complétion</value>
   </data>
-	<data name="MaxRetrieved" xml:space="preserve">
-	<value>Max récupérés</value>
+  <data name="MaxRetrieved" xml:space="preserve">
+    <value>Max récupérés</value>
   </data>
-	<data name="QueryOptimization" xml:space="preserve">
-	<value>Optimisation de la requête</value>
+  <data name="QueryOptimization" xml:space="preserve">
+    <value>Optimisation de la requête</value>
   </data>
-	<data name="Simplified Chinese" xml:space="preserve">
-	<value>Chinois simplifié</value>
+  <data name="Simplified Chinese" xml:space="preserve">
+    <value>Chinois simplifié</value>
   </data>
-	<data name="EnableContextSortingTooltip" xml:space="preserve">
-	<value>Trier le contexte par pertinence</value>
+  <data name="EnableContextSortingTooltip" xml:space="preserve">
+    <value>Trier le contexte par pertinence</value>
   </data>
-	<data name="EnableRAGTooltip" xml:space="preserve">
-	<value>Activer la Génération Augmentée par Récupération (RAG). Lorsque cette option est activée, l'IA utilisera votre base de connaissances pour enrichir ses réponses.</value>
+  <data name="EnableRAGTooltip" xml:space="preserve">
+    <value>Activer la Génération Augmentée par Récupération (RAG). Lorsque cette option est activée, l'IA utilisera votre base de connaissances pour enrichir ses réponses.</value>
   </data>
-	<data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
-	<value>Configurer les paramètres RAG avancés</value>
+  <data name="ConfigureAdvancedRAGTooltip" xml:space="preserve">
+    <value>Configurer les paramètres RAG avancés</value>
   </data>
-	<data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
-	<value>Nombre maximum de documents à récupérer</value>
+  <data name="MaxDocumentsToRetrieveTooltip" xml:space="preserve">
+    <value>Nombre maximum de documents à récupérer</value>
   </data>
-	<data name="RAGSettings" xml:space="preserve">
-	<value>Paramètres RAG</value>
+  <data name="RAGSettings" xml:space="preserve">
+    <value>Paramètres RAG</value>
   </data>
-	<data name="EmbeddingsGeneration" xml:space="preserve">
-	<value>Génération d'embeddings</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>Fournisseur d'intégrations</value>
   </data>
-	<data name="EmbeddingsGenerationDescription" xml:space="preserve">
-	<value>Sélectionnez le modèle d'embedding, local ou cloud, à utiliser
+  <data name="EmbeddingsGenerationDescription" xml:space="preserve">
+    <value>Sélectionnez le modèle d'embedding, local ou cloud, à utiliser
 pour générer des embeddings vectoriels.</value>
   </data>
-	<data name="EmbeddingsGenerationWarning" xml:space="preserve">
-	<value>AVERTISSEMENT : Si vous mettez à jour ou changez
+  <data name="EmbeddingsGenerationWarning" xml:space="preserve">
+    <value>AVERTISSEMENT : Si vous mettez à jour ou changez
 votre modèle d'embedding, vous devrez
 réimporter tous les documents.</value>
   </data>
-	<data name="ModelName" xml:space="preserve">
-	<value>Nom du modèle</value>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>Fournisseur de Complétion</value>
   </data>
-	<data name="Dimensionality" xml:space="preserve">
-	<value>Dimensionalité</value>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>Sélectionnez le fournisseur local ou cloud
+à utiliser pour la complétion de texte
+et la fonctionnalité de chat.</value>
   </data>
-	<data name="MaxTokens" xml:space="preserve">
-	<value>Jetons max.</value>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>Choisissez votre fournisseur de modèle de langage
+préféré pour générer des réponses
+et traiter les demandes de chat.</value>
   </data>
-	<data name="GainAccessToAnthropic" xml:space="preserve">
-	<value>Obtenez l'accès aux modèles Anthropic</value>
+  <data name="ModelName" xml:space="preserve">
+    <value>Nom du modèle</value>
   </data>
-	<data name="GainAccessToLocalModel" xml:space="preserve">
-	<value>Obtenez l'accès à un modèle local.</value>
+  <data name="Dimensionality" xml:space="preserve">
+    <value>Dimensionalité</value>
   </data>
-	<data name="GainAccessToViewModel" xml:space="preserve">
-	<value>Obtenez l'accès aux modèles View</value>
+  <data name="MaxTokens" xml:space="preserve">
+    <value>Jetons max.</value>
   </data>
-	<data name="LanguageSettingSaved" xml:space="preserve">
-	<value>Paramètre de langue enregistré</value>
+  <data name="GainAccessToAnthropic" xml:space="preserve">
+    <value>Obtenez l'accès aux modèles Anthropic</value>
   </data>
-	<data name="Error" xml:space="preserve">
-	<value>Erreur</value>
+  <data name="GainAccessToLocalModel" xml:space="preserve">
+    <value>Obtenez l'accès à un modèle local.</value>
   </data>
-	<data name="FailedToSaveLanguage" xml:space="preserve">
-	<value>Échec de l'enregistrement du paramètre de langue</value>
+  <data name="GainAccessToViewModel" xml:space="preserve">
+    <value>Obtenez l'accès aux modèles View</value>
   </data>
-	<data name="PleaseEnterValueFor" xml:space="preserve">
-	<value>Veuillez saisir une valeur pour le {0}.</value>
+  <data name="LanguageSettingSaved" xml:space="preserve">
+    <value>Paramètre de langue enregistré</value>
   </data>
-	<data name="OllamaNotInstalled" xml:space="preserve">
-	<value>Ollama non installé</value>
+  <data name="Error" xml:space="preserve">
+    <value>Erreur</value>
   </data>
-	<data name="OllamaNotRunning" xml:space="preserve">
-	<value>Ollama n'est pas installé ou ne fonctionne pas sur le système défini dans les paramètres.</value>
+  <data name="FailedToSaveLanguage" xml:space="preserve">
+    <value>Échec de l'enregistrement du paramètre de langue</value>
   </data>
-	<data name="DownloadOllama" xml:space="preserve">
-	<value>Télécharger Ollama</value>
+  <data name="PleaseEnterValueFor" xml:space="preserve">
+    <value>Veuillez saisir une valeur pour le {0}.</value>
   </data>
-	<data name="FileDeleted" xml:space="preserve">
-	<value>Fichier supprimé</value>
+  <data name="OllamaNotInstalled" xml:space="preserve">
+    <value>Ollama non installé</value>
   </data>
-	<data name="FileDeletedSuccess" xml:space="preserve">
-	<value>{0} a été supprimé avec succès !</value>
+  <data name="OllamaNotRunning" xml:space="preserve">
+    <value>Ollama n'est pas installé ou ne fonctionne pas sur le système défini dans les paramètres.</value>
   </data>
-	<data name="DeletionError" xml:space="preserve">
-	<value>Erreur de suppression</value>
+  <data name="DownloadOllama" xml:space="preserve">
+    <value>Télécharger Ollama</value>
   </data>
-	<data name="DeletionWarning" xml:space="preserve">
-	<value>Avertissement de suppression</value>
+  <data name="FileDeleted" xml:space="preserve">
+    <value>Fichier supprimé</value>
   </data>
-	<data name="FilesDeleted" xml:space="preserve">
-	<value>Fichiers supprimés</value>
+  <data name="FileDeletedSuccess" xml:space="preserve">
+    <value>{0} a été supprimé avec succès !</value>
   </data>
-	<data name="IngestionError" xml:space="preserve">
-	<value>Erreur d'ingestion</value>
+  <data name="DeletionError" xml:space="preserve">
+    <value>Erreur de suppression</value>
   </data>
-	<data name="NoFileSelected" xml:space="preserve">
-	<value>Aucun fichier sélectionné.</value>
+  <data name="DeletionWarning" xml:space="preserve">
+    <value>Avertissement de suppression</value>
   </data>
-	<data name="FileIngested" xml:space="preserve">
-	<value>Fichier ingéré</value>
+  <data name="FilesDeleted" xml:space="preserve">
+    <value>Fichiers supprimés</value>
   </data>
-	<data name="FileIngestedSuccess" xml:space="preserve">
-	<value>{0} a été ingéré avec succès !</value>
+  <data name="IngestionError" xml:space="preserve">
+    <value>Erreur d'ingestion</value>
   </data>
-	<data name="ReingestionError" xml:space="preserve">
-	<value>Erreur de réingestion</value>
+  <data name="NoFileSelected" xml:space="preserve">
+    <value>Aucun fichier sélectionné.</value>
   </data>
-	<data name="BatchIngestionComplete" xml:space="preserve">
-	<value>Ingestion par lot terminée</value>
+  <data name="FileIngested" xml:space="preserve">
+    <value>Fichier ingéré</value>
   </data>
-	<data name="BatchIngestionError" xml:space="preserve">
-	<value>Erreur d'ingestion par lot</value>
+  <data name="FileIngestedSuccess" xml:space="preserve">
+    <value>{0} a été ingéré avec succès !</value>
   </data>
-	<data name="IngestionCancelled" xml:space="preserve">
-	<value>Ingestion annulée</value>
+  <data name="ReingestionError" xml:space="preserve">
+    <value>Erreur de réingestion</value>
   </data>
-	<data name="FilePathNotAvailable" xml:space="preserve">
-	<value>Le chemin du fichier n'est pas disponible.</value>
+  <data name="BatchIngestionComplete" xml:space="preserve">
+    <value>Ingestion par lot terminée</value>
   </data>
-	<data name="FileDoesNotExist" xml:space="preserve">
-	<value>Le fichier n'existe pas sur le disque.</value>
+  <data name="BatchIngestionError" xml:space="preserve">
+    <value>Erreur d'ingestion par lot</value>
   </data>
-	<data name="CouldNotOpenFileLocation" xml:space="preserve">
-	<value>Impossible d'ouvrir l'emplacement du fichier : {0}</value>
+  <data name="IngestionCancelled" xml:space="preserve">
+    <value>Ingestion annulée</value>
   </data>
-	<data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
-	<value>Le chemin du fichier n'est pas disponible pour le retraitement.</value>
+  <data name="FilePathNotAvailable" xml:space="preserve">
+    <value>Le chemin du fichier n'est pas disponible.</value>
   </data>
-	<data name="FileReprocessed" xml:space="preserve">
-	<value>Fichier retraité</value>
+  <data name="FileDoesNotExist" xml:space="preserve">
+    <value>Le fichier n'existe pas sur le disque.</value>
   </data>
-	<data name="FileReprocessedSuccess" xml:space="preserve">
-	<value>{0} a été retraité avec succès !</value>
+  <data name="CouldNotOpenFileLocation" xml:space="preserve">
+    <value>Impossible d'ouvrir l'emplacement du fichier : {0}</value>
   </data>
-	<data name="KnowledgebaseDeleted" xml:space="preserve">
-	<value>Base de connaissances supprimée</value>
+  <data name="FilePathNotAvailableForReprocessing" xml:space="preserve">
+    <value>Le chemin du fichier n'est pas disponible pour le retraitement.</value>
   </data>
-	<data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
-	<value>{0} a été supprimée avec succès !</value>
+  <data name="FileReprocessed" xml:space="preserve">
+    <value>Fichier retraité</value>
   </data>
-	<data name="ModelDeleted" xml:space="preserve">
-	<value>Modèle supprimé</value>
+  <data name="FileReprocessedSuccess" xml:space="preserve">
+    <value>{0} a été retraité avec succès !</value>
   </data>
-	<data name="ModelDeletedSuccess" xml:space="preserve">
-	<value>{0} a été supprimé avec succès !</value>
+  <data name="KnowledgebaseDeleted" xml:space="preserve">
+    <value>Base de connaissances supprimée</value>
   </data>
-	<data name="FailedToDeleteModel" xml:space="preserve">
-	<value>Échec de la suppression de {0}. Veuillez réessayer.</value>
+  <data name="KnowledgebaseDeletedSuccess" xml:space="preserve">
+    <value>{0} a été supprimée avec succès !</value>
   </data>
-	<data name="ErrorPullingModel" xml:space="preserve">
-	<value>Erreur lors du téléchargement du modèle : {0}</value>
+  <data name="ModelDeleted" xml:space="preserve">
+    <value>Modèle supprimé</value>
   </data>
-	<data name="CreateNewKnowledgebase" xml:space="preserve">
-	<value>Créer une nouvelle base de connaissances</value>
+  <data name="ModelDeletedSuccess" xml:space="preserve">
+    <value>{0} a été supprimé avec succès !</value>
   </data>
-	<data name="EnterKnowledgebaseName" xml:space="preserve">
-	<value>Saisir le nom de la base de connaissances :</value>
+  <data name="FailedToDeleteModel" xml:space="preserve">
+    <value>Échec de la suppression de {0}. Veuillez réessayer.</value>
   </data>
-	<data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
-	<value>Veuillez saisir un nom de base de connaissances</value>
+  <data name="ErrorPullingModel" xml:space="preserve">
+    <value>Erreur lors du téléchargement du modèle : {0}</value>
   </data>
-	<data name="NoSelection" xml:space="preserve">
-	<value>Aucune sélection</value>
+  <data name="CreateNewKnowledgebase" xml:space="preserve">
+    <value>Créer une nouvelle base de connaissances</value>
   </data>
-	<data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
-	<value>Veuillez sélectionner au moins un fichier à supprimer.</value>
+  <data name="EnterKnowledgebaseName" xml:space="preserve">
+    <value>Saisir le nom de la base de connaissances :</value>
   </data>
-	<data name="ConsoleLogsSaved" xml:space="preserve">
-	<value>Journaux de la console enregistrés avec succès</value>
+  <data name="PleaseEnterKnowledgebaseName" xml:space="preserve">
+    <value>Veuillez saisir un nom de base de connaissances</value>
   </data>
-	<data name="InvalidEndpoint" xml:space="preserve">
-	<value>Point de terminaison invalide</value>
+  <data name="NoSelection" xml:space="preserve">
+    <value>Aucune sélection</value>
   </data>
-	<data name="OllamaEndpointFormat" xml:space="preserve">
-	<value>Le point de terminaison Ollama doit être au format : http://&lt;nom d'hôte=d'hôte ou=ou IP=IP&gt;:&lt;port&gt;/</value>
-</data>
-	<data name="HostnameNotResolvable" xml:space="preserve">
-	<value>Le nom d'hôte du point de terminaison {0} n'a pas pu être résolu via DNS.</value>
+  <data name="PleaseSelectAtLeastOneFile" xml:space="preserve">
+    <value>Veuillez sélectionner au moins un fichier à supprimer.</value>
   </data>
-	<data name="AccessDenied" xml:space="preserve">
-	<value>Accès refusé</value>
+  <data name="ConsoleLogsSaved" xml:space="preserve">
+    <value>Journaux de la console enregistrés avec succès</value>
   </data>
-	<data name="CannotAccessPath" xml:space="preserve">
-	<value>Impossible d'accéder à {0} : {1}</value>
+  <data name="InvalidEndpoint" xml:space="preserve">
+    <value>Point de terminaison invalide</value>
   </data>
-	<data name="FailedToLoadDirectory" xml:space="preserve">
-	<value>Échec du chargement du répertoire : {0}</value>
+  <data name="OllamaEndpointFormat" xml:space="preserve">
+    <value>Le point de terminaison Ollama doit être au format : http://&lt;nom d'hôte=d'hôte ou=ou IP=IP&gt;:&lt;port&gt;/</value>
   </data>
-	<data name="InvalidPath" xml:space="preserve">
-	<value>Chemin invalide</value>
+  <data name="HostnameNotResolvable" xml:space="preserve">
+    <value>Le nom d'hôte du point de terminaison {0} n'a pas pu être résolu via DNS.</value>
   </data>
-	<data name="PleaseEnterValidPath" xml:space="preserve">
-	<value>Veuillez saisir un chemin valide.</value>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Accès refusé</value>
   </data>
-	<data name="PathNotFound" xml:space="preserve">
-	<value>Chemin non trouvé</value>
+  <data name="CannotAccessPath" xml:space="preserve">
+    <value>Impossible d'accéder à {0} : {1}</value>
   </data>
-	<data name="PathDoesNotExist" xml:space="preserve">
-	<value>Le chemin {0} n'existe pas.</value>
+  <data name="FailedToLoadDirectory" xml:space="preserve">
+    <value>Échec du chargement du répertoire : {0}</value>
   </data>
-	<data name="FailedToNavigatePath" xml:space="preserve">
-	<value>Échec de la navigation vers {0} : {1}</value>
+  <data name="InvalidPath" xml:space="preserve">
+    <value>Chemin invalide</value>
   </data>
-	<data name="ModelDownloaded" xml:space="preserve">
-	<value>Modèle téléchargé</value>
+  <data name="PleaseEnterValidPath" xml:space="preserve">
+    <value>Veuillez saisir un chemin valide.</value>
   </data>
-	<data name="ModelDownloadedSuccess" xml:space="preserve">
-	<value>{0} a été téléchargé avec succès !</value>
+  <data name="PathNotFound" xml:space="preserve">
+    <value>Chemin non trouvé</value>
   </data>
-	<data name="FilesDeletedPartial" xml:space="preserve">
-	<value>{0} fichiers supprimés. Échec de la suppression de {1} fichiers.</value>
+  <data name="PathDoesNotExist" xml:space="preserve">
+    <value>Le chemin {0} n'existe pas.</value>
   </data>
-	<data name="FilesDeletedSuccess" xml:space="preserve">
-	<value>{0} fichiers ont été supprimés avec succès !</value>
+  <data name="FailedToNavigatePath" xml:space="preserve">
+    <value>Échec de la navigation vers {0} : {1}</value>
   </data>
-	<data name="FailedToGenerateEmbeddings" xml:space="preserve">
-	<value>Échec de la génération des embeddings pour les morceaux avec le statut {0}</value>
+  <data name="ModelDownloaded" xml:space="preserve">
+    <value>Modèle téléchargé</value>
   </data>
-	<data name="LanguagePreferenceSaved" xml:space="preserve">
-	<value>Votre préférence de langue a été enregistrée et appliquée.</value>
+  <data name="ModelDownloadedSuccess" xml:space="preserve">
+    <value>{0} a été téléchargé avec succès !</value>
   </data>
-	<data name="FailedToSaveLanguageSetting" xml:space="preserve">
-	<value>Échec de l'enregistrement du paramètre de langue : {0}</value>
+  <data name="FilesDeletedPartial" xml:space="preserve">
+    <value>{0} fichiers supprimés. Échec de la suppression de {1} fichiers.</value>
   </data>
-	<data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer les fichiers sélectionnés de la base de connaissances ?</value>
+  <data name="FilesDeletedSuccess" xml:space="preserve">
+    <value>{0} fichiers ont été supprimés avec succès !</value>
   </data>
-	<data name="ErrorIngesting" xml:space="preserve">
-	<value>Erreur lors de l'ingestion de {0} : {1}</value>
+  <data name="FailedToGenerateEmbeddings" xml:space="preserve">
+    <value>Échec de la génération des embeddings pour les morceaux avec le statut {0}</value>
   </data>
-	<data name="BatchIngestionPartialSuccess" xml:space="preserve">
-	<value>{0} fichiers ingérés avec succès. Échec pour {1} fichiers.</value>
+  <data name="LanguagePreferenceSaved" xml:space="preserve">
+    <value>Votre préférence de langue a été enregistrée et appliquée.</value>
   </data>
-	<data name="BatchIngestionFullSuccess" xml:space="preserve">
-	<value>Tous les {0} fichiers ont été ingérés avec succès.</value>
+  <data name="FailedToSaveLanguageSetting" xml:space="preserve">
+    <value>Échec de l'enregistrement du paramètre de langue : {0}</value>
   </data>
-	<data name="IngestionCancelledMessage" xml:space="preserve">
-	<value>L'ingestion de {0} a été annulée.</value>
+  <data name="ConfirmRemoveSelectedFiles" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir supprimer les fichiers sélectionnés de la base de connaissances ?</value>
   </data>
-	<data name="ErrorResumingIngestion" xml:space="preserve">
-	<value>Erreur lors de la reprise de l'ingestion : {0}</value>
+  <data name="ErrorIngesting" xml:space="preserve">
+    <value>Erreur lors de l'ingestion de {0} : {1}</value>
   </data>
-	<data name="FailedToLoadDrives" xml:space="preserve">
-	<value>Échec du chargement des lecteurs : {0}</value>
+  <data name="BatchIngestionPartialSuccess" xml:space="preserve">
+    <value>{0} fichiers ingérés avec succès. Échec pour {1} fichiers.</value>
   </data>
-	<data name="NoWatchedPathsToSync" xml:space="preserve">
-	<value>Aucun chemin surveillé à synchroniser.</value>
+  <data name="BatchIngestionFullSuccess" xml:space="preserve">
+    <value>Tous les {0} fichiers ont été ingérés avec succès.</value>
   </data>
-	<data name="AccessDeniedToDirectory" xml:space="preserve">
-	<value>Accès refusé au répertoire : {0}.</value>
+  <data name="IngestionCancelledMessage" xml:space="preserve">
+    <value>L'ingestion de {0} a été annulée.</value>
   </data>
-	<data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
-	<value>Paramètres d'embedding OpenAI incomplets.</value>
+  <data name="ErrorResumingIngestion" xml:space="preserve">
+    <value>Erreur lors de la reprise de l'ingestion : {0}</value>
   </data>
-	<data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
-	<value>Modèle d'embedding local non configuré.</value>
+  <data name="FailedToLoadDrives" xml:space="preserve">
+    <value>Échec du chargement des lecteurs : {0}</value>
   </data>
-	<data name="NoConsoleLogs" xml:space="preserve">
-	<value>Aucun journal de console à télécharger</value>
+  <data name="NoWatchedPathsToSync" xml:space="preserve">
+    <value>Aucun chemin surveillé à synchroniser.</value>
   </data>
-	<data name="FailedToSaveConsoleLogs" xml:space="preserve">
-	<value>Échec de l'enregistrement des journaux de la console</value>
+  <data name="AccessDeniedToDirectory" xml:space="preserve">
+    <value>Accès refusé au répertoire : {0}.</value>
   </data>
-	<data name="Files" xml:space="preserve">
-	<value>Fichiers</value>
+  <data name="OpenAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>Paramètres d'embedding OpenAI incomplets.</value>
   </data>
-	<data name="DataMonitor" xml:space="preserve">
-	<value>Moniteur de données</value>
+  <data name="LocalEmbeddingModelNotConfigured" xml:space="preserve">
+    <value>Modèle d'embedding local non configuré.</value>
   </data>
-	<data name="Console" xml:space="preserve">
-	<value>Console</value>
+  <data name="NoConsoleLogs" xml:space="preserve">
+    <value>Aucun journal de console à télécharger</value>
   </data>
-	<data name="ChatHistory" xml:space="preserve">
-	<value>Historique des discussions</value>
+  <data name="FailedToSaveConsoleLogs" xml:space="preserve">
+    <value>Échec de l'enregistrement des journaux de la console</value>
   </data>
-	<data name="ManageFiles" xml:space="preserve">
-	<value>Gérez les fichiers avec lesquels vous voulez discuter</value>
+  <data name="Files" xml:space="preserve">
+    <value>Fichiers</value>
   </data>
-	<data name="MonitorFiles" xml:space="preserve">
-	<value>Surveillez en continu les fichiers et dossiers pour l'ingestion</value>
+  <data name="DataMonitor" xml:space="preserve">
+    <value>Moniteur de données</value>
   </data>
-	<data name="ConfigureLLM" xml:space="preserve">
-	<value>Configurez votre LLM et vos clés d'API</value>
+  <data name="Console" xml:space="preserve">
+    <value>Console</value>
   </data>
-	<data name="ChatWithData" xml:space="preserve">
-	<value>Discutez avec vos données</value>
+  <data name="ChatHistory" xml:space="preserve">
+    <value>Historique des discussions</value>
   </data>
-	<data name="ClickToUpload" xml:space="preserve">
-	<value>Cliquez pour téléverser </value>
+  <data name="ManageFiles" xml:space="preserve">
+    <value>Gérez les fichiers avec lesquels vous voulez discuter</value>
   </data>
-	<data name="OrDragAndDrop" xml:space="preserve">
-	<value>ou glissez-déposez</value>
+  <data name="MonitorFiles" xml:space="preserve">
+    <value>Surveillez en continu les fichiers et dossiers pour l'ingestion</value>
   </data>
-	<data name="MaxFileSize" xml:space="preserve">
-	<value>(taille de fichier max 500 Mo)</value>
+  <data name="ConfigureLLM" xml:space="preserve">
+    <value>Configurez votre LLM et vos clés d'API</value>
   </data>
-	<data name="Name" xml:space="preserve">
-	<value>Nom</value>
+  <data name="ChatWithData" xml:space="preserve">
+    <value>Discutez avec vos données</value>
   </data>
-	<data name="DateCreated" xml:space="preserve">
-	<value>Date de création</value>
+  <data name="ClickToUpload" xml:space="preserve">
+    <value>Cliquez pour téléverser </value>
   </data>
-	<data name="Actions" xml:space="preserve">
-	<value>Actions</value>
+  <data name="OrDragAndDrop" xml:space="preserve">
+    <value>ou glissez-déposez</value>
   </data>
-	<data name="OpenInFileExplorer" xml:space="preserve">
-	<value>Ouvrir dans l'Explorateur de fichiers</value>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>(taille de fichier max 500 Mo)</value>
   </data>
-	<data name="DeleteFile" xml:space="preserve">
-	<value>Supprimer le fichier</value>
+  <data name="Name" xml:space="preserve">
+    <value>Nom</value>
   </data>
-	<data name="NoItemsToDisplay" xml:space="preserve">
-	<value>Aucun élément à afficher</value>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Date de création</value>
   </data>
-	<data name="NoPages" xml:space="preserve">
-	<value>Aucune page</value>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
   </data>
-	<data name="FirstPage" xml:space="preserve">
-	<value>Première page</value>
+  <data name="OpenInFileExplorer" xml:space="preserve">
+    <value>Ouvrir dans l'Explorateur de fichiers</value>
   </data>
-	<data name="PreviousPage" xml:space="preserve">
-	<value>Page précédente</value>
+  <data name="DeleteFile" xml:space="preserve">
+    <value>Supprimer le fichier</value>
   </data>
-	<data name="NextPage" xml:space="preserve">
-	<value>Page suivante</value>
+  <data name="NoItemsToDisplay" xml:space="preserve">
+    <value>Aucun élément à afficher</value>
   </data>
-	<data name="LastPage" xml:space="preserve">
-	<value>Dernière page</value>
+  <data name="NoPages" xml:space="preserve">
+    <value>Aucune page</value>
   </data>
-	<data name="ItemsPerPage" xml:space="preserve">
-	<value>Éléments par page :</value>
+  <data name="FirstPage" xml:space="preserve">
+    <value>Première page</value>
   </data>
-	<data name="EnterUserMessage" xml:space="preserve">
-	<value>Saisir le message de l'utilisateur...</value>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Page précédente</value>
   </data>
-	<data name="Clear" xml:space="preserve">
-	<value>Effacer</value>
+  <data name="NextPage" xml:space="preserve">
+    <value>Page suivante</value>
   </data>
-	<data name="Download" xml:space="preserve">
-	<value>Télécharger</value>
+  <data name="LastPage" xml:space="preserve">
+    <value>Dernière page</value>
   </data>
-	<data name="Copyright" xml:space="preserve">
-	<value>©2025 View Systems Inc.</value>
+  <data name="ItemsPerPage" xml:space="preserve">
+    <value>Éléments par page :</value>
   </data>
-	<data name="NewKnowledgebase" xml:space="preserve">
-	<value>Nouvelle base de connaissances</value>
+  <data name="EnterUserMessage" xml:space="preserve">
+    <value>Saisir le message de l'utilisateur...</value>
   </data>
-	<data name="ExportToGEXF" xml:space="preserve">
-	<value>Exporter vers GEXF</value>
+  <data name="Clear" xml:space="preserve">
+    <value>Effacer</value>
   </data>
-	<data name="GUID" xml:space="preserve">
-	<value>GUID</value>
+  <data name="Download" xml:space="preserve">
+    <value>Télécharger</value>
   </data>
-	<data name="Nodes" xml:space="preserve">
-	<value>Nœuds</value>
+  <data name="Copyright" xml:space="preserve">
+    <value>©2025 View Systems Inc.</value>
   </data>
-	<data name="Created" xml:space="preserve">
-	<value>Créé le</value>
+  <data name="NewKnowledgebase" xml:space="preserve">
+    <value>Nouvelle base de connaissances</value>
   </data>
-	<data name="LastUpdate" xml:space="preserve">
-	<value>Dernière mise à jour</value>
+  <data name="ExportToGEXF" xml:space="preserve">
+    <value>Exporter vers GEXF</value>
   </data>
-	<data name="DeleteKnowledgebase" xml:space="preserve">
-	<value>Supprimer la base de connaissances</value>
+  <data name="GUID" xml:space="preserve">
+    <value>GUID</value>
   </data>
-	<data name="Providers" xml:space="preserve">
-	<value>Fournisseurs</value>
+  <data name="Nodes" xml:space="preserve">
+    <value>Nœuds</value>
   </data>
-	<data name="OpenAI" xml:space="preserve">
-	<value>OpenAI</value>
+  <data name="Created" xml:space="preserve">
+    <value>Créé le</value>
   </data>
-	<data name="GainAccessToOpenAI" xml:space="preserve">
-	<value>Accédez aux modèles OpenAI</value>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>Dernière mise à jour</value>
   </data>
-	<data name="Knowledgebases" xml:space="preserve">
-	<value>Bases de connaissances</value>
+  <data name="DeleteKnowledgebase" xml:space="preserve">
+    <value>Supprimer la base de connaissances</value>
   </data>
-	<data name="EnterOpenAIApiKey" xml:space="preserve">
-	<value>Saisissez votre clé d'API OpenAI.</value>
+  <data name="Providers" xml:space="preserve">
+    <value>Fournisseurs</value>
   </data>
-	<data name="EnterSystemPrompt" xml:space="preserve">
-	<value>Saisissez une invite système personnalisée pour le modèle.</value>
+  <data name="OpenAI" xml:space="preserve">
+    <value>OpenAI</value>
   </data>
-	<data name="EnterAnthropicApiKey" xml:space="preserve">
-	<value>Saisissez votre clé d'API Anthropic.</value>
+  <data name="GainAccessToOpenAI" xml:space="preserve">
+    <value>Accédez aux modèles OpenAI</value>
   </data>
-	<data name="BatchSizeTooltip" xml:space="preserve">
-	<value>Nombre de requêtes à traiter dans un seul lot.</value>
+  <data name="Knowledgebases" xml:space="preserve">
+    <value>Bases de connaissances</value>
   </data>
-	<data name="MaxRetriesTooltip" xml:space="preserve">
-	<value>Nombre maximal de tentatives pour les requêtes échouées.</value>
+  <data name="EnterOpenAIApiKey" xml:space="preserve">
+    <value>Saisissez votre clé d'API OpenAI.</value>
   </data>
-	<data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
-	<value>Configurer les paramètres RAG avancés</value>
+  <data name="EnterSystemPrompt" xml:space="preserve">
+    <value>Saisissez une invite système personnalisée pour le modèle.</value>
   </data>
-	<data name="AdvancedRAG" xml:space="preserve">
-	<value>RAG avancé</value>
+  <data name="EnterAnthropicApiKey" xml:space="preserve">
+    <value>Saisissez votre clé d'API Anthropic.</value>
   </data>
-	<data name="MaxRetrievedTooltip" xml:space="preserve">
-	<value>Nombre maximum de documents à récupérer</value>
+  <data name="BatchSizeTooltip" xml:space="preserve">
+    <value>Nombre de requêtes à traiter dans un seul lot.</value>
   </data>
-	<data name="QueryOptimizationTooltip" xml:space="preserve">
-	<value>Optimiser les requêtes pour de meilleurs résultats de récupération</value>
+  <data name="MaxRetriesTooltip" xml:space="preserve">
+    <value>Nombre maximal de tentatives pour les requêtes échouées.</value>
   </data>
-	<data name="EnableCitationsTooltip" xml:space="preserve">
-	<value>Inclure les citations dans les réponses générées</value>
+  <data name="ConfigureAdvancedRAGSettings" xml:space="preserve">
+    <value>Configurer les paramètres RAG avancés</value>
   </data>
-	<data name="EnableCitations" xml:space="preserve">
-	<value>Activer les citations</value>
+  <data name="AdvancedRAG" xml:space="preserve">
+    <value>RAG avancé</value>
   </data>
-	<data name="EnableContextSorting" xml:space="preserve">
-	<value>Activer le tri du contexte</value>
+  <data name="MaxRetrievedTooltip" xml:space="preserve">
+    <value>Nombre maximum de documents à récupérer</value>
   </data>
-	<data name="LocalModels" xml:space="preserve">
-	<value>Modèles locaux</value>
+  <data name="QueryOptimizationTooltip" xml:space="preserve">
+    <value>Optimiser les requêtes pour de meilleurs résultats de récupération</value>
   </data>
-	<data name="PullNewModel" xml:space="preserve">
-	<value>Télécharger un nouveau modèle</value>
+  <data name="EnableCitationsTooltip" xml:space="preserve">
+    <value>Inclure les citations dans les réponses générées</value>
   </data>
-	<data name="ClickHere" xml:space="preserve">
-	<value>Cliquez ici </value>
+  <data name="EnableCitations" xml:space="preserve">
+    <value>Activer les citations</value>
   </data>
-	<data name="ExploreAvailableModels" xml:space="preserve">
-	<value>pour explorer les modèles disponibles</value>
+  <data name="EnableContextSorting" xml:space="preserve">
+    <value>Activer le tri du contexte</value>
   </data>
-	<data name="EnterOllamaModelTag" xml:space="preserve">
-	<value>Saisir un tag de modèle compatible Ollama (ex. : qwen2.5:7b)</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Modèles Ollama</value>
   </data>
-	<data name="Pull" xml:space="preserve">
-	<value>Télécharger</value>
+  <data name="PullNewModel" xml:space="preserve">
+    <value>Télécharger un nouveau modèle</value>
   </data>
-	<data name="Cancel" xml:space="preserve">
-	<value>Annuler</value>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Cliquez ici </value>
   </data>
-	<data name="OK" xml:space="preserve">
-	<value>OK</value>
+  <data name="ExploreAvailableModels" xml:space="preserve">
+    <value>pour explorer les modèles disponibles</value>
   </data>
-	<data name="No" xml:space="preserve">
-	<value>Non</value>
+  <data name="EnterOllamaModelTag" xml:space="preserve">
+    <value>Saisir un tag de modèle compatible Ollama (ex. : qwen2.5:7b)</value>
   </data>
-	<data name="Abort" xml:space="preserve">
-	<value>Abandonner</value>
+  <data name="Pull" xml:space="preserve">
+    <value>Télécharger</value>
   </data>
-	<data name="Ignore" xml:space="preserve">
-	<value>Ignorer</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
   </data>
-	<data name="ConfirmDeletion" xml:space="preserve">
-	<value>Confirmer la suppression</value>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
   </data>
-	<data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer la base de connaissances {0} ?</value>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
   </data>
-	<data name="ConfirmWatch" xml:space="preserve">
-	<value>Confirmer la surveillance</value>
+  <data name="Abort" xml:space="preserve">
+    <value>Abandonner</value>
   </data>
-	<data name="ConfirmWatchMessage" xml:space="preserve">
-	<value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
+  <data name="Ignore" xml:space="preserve">
+    <value>Ignorer</value>
   </data>
-	<data name="ConfirmUnwatchMessage" xml:space="preserve">
-	<value>Arrêter la surveillance de {0} ? Cela affectera {1} fichier{2}.</value>
+  <data name="ConfirmDeletion" xml:space="preserve">
+    <value>Confirmer la suppression</value>
   </data>
-	<data name="ConfirmRemoveFile" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer {0}</value>
+  <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir supprimer la base de connaissances {0} ?</value>
   </data>
-	<data name="FromKnowledgebase" xml:space="preserve">
-	<value>de la base de connaissances ?</value>
+  <data name="ConfirmWatch" xml:space="preserve">
+    <value>Confirmer la surveillance</value>
   </data>
-	<data name="NeedInstallOllama" xml:space="preserve">
-	<value>Vous devez installer Ollama pour télécharger et utiliser les modèles d'IA.</value>
+  <data name="ConfirmWatchMessage" xml:space="preserve">
+    <value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
   </data>
-	<data name="DeleteModel" xml:space="preserve">
-	<value>Supprimer le modèle</value>
+  <data name="ConfirmUnwatchMessage" xml:space="preserve">
+    <value>Arrêter la surveillance de {0} ? Cela affectera {1} fichier{2}.</value>
   </data>
-	<data name="ConfirmDeleteModel" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer le modèle {0} ?</value>
+  <data name="ConfirmRemoveFile" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir supprimer {0}</value>
   </data>
-	<data name="ActionCannotBeUndone" xml:space="preserve">
-	<value>Cette action est irréversible.</value>
+  <data name="FromKnowledgebase" xml:space="preserve">
+    <value>de la base de connaissances ?</value>
   </data>
-	<data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
-	<value>Veuillez sélectionner un fournisseur d'embedding dans les paramètres.</value>
+  <data name="NeedInstallOllama" xml:space="preserve">
+    <value>Vous devez installer Ollama pour télécharger et utiliser les modèles d'IA.</value>
   </data>
-	<data name="DownloadedModels" xml:space="preserve">
-	<value>Modèles téléchargés</value>
+  <data name="DeleteModel" xml:space="preserve">
+    <value>Supprimer le modèle</value>
   </data>
-	<data name="ChooseFromExistingModels" xml:space="preserve">
-	<value>Choisir parmi les modèles existants</value>
+  <data name="ConfirmDeleteModel" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir supprimer le modèle {0} ?</value>
   </data>
-	<data name="ParameterSize" xml:space="preserve">
-	<value>taille des paramètres : {0}</value>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>Cette action est irréversible.</value>
   </data>
-	<data name="OllamaSystemPrompt" xml:space="preserve">
-	<value>Invite système Ollama</value>
+  <data name="PleaseSelectEmbeddingProvider" xml:space="preserve">
+    <value>Veuillez sélectionner un fournisseur d'embedding dans les paramètres.</value>
   </data>
-	<data name="OllamaEndpoint" xml:space="preserve">
-	<value>Point de terminaison Ollama</value>
+  <data name="DownloadedModels" xml:space="preserve">
+    <value>Modèles téléchargés</value>
   </data>
-	<data name="OllamaTemperature" xml:space="preserve">
-	<value>Température Ollama</value>
+  <data name="ChooseFromExistingModels" xml:space="preserve">
+    <value>Choisir parmi les modèles existants</value>
   </data>
-	<data name="OllamaBatchSize" xml:space="preserve">
-	<value>Taille du lot Ollama</value>
+  <data name="ParameterSize" xml:space="preserve">
+    <value>taille des paramètres : {0}</value>
   </data>
-	<data name="OllamaMaxRetries" xml:space="preserve">
-	<value>Tentatives max. Ollama</value>
+  <data name="OllamaSystemPrompt" xml:space="preserve">
+    <value>Invite système Ollama</value>
   </data>
-	<data name="OllamaEmbeddingModel" xml:space="preserve">
-	<value>Modèle d'embedding Ollama</value>
+  <data name="OllamaEndpoint" xml:space="preserve">
+    <value>Point de terminaison Ollama</value>
   </data>
-	<data name="DimensionalityTooltip" xml:space="preserve">
-	<value>La dimensionalité des vecteurs d'embedding produits par ce modèle.</value>
+  <data name="OllamaTemperature" xml:space="preserve">
+    <value>Température Ollama</value>
   </data>
-	<data name="MaxTokensTooltip" xml:space="preserve">
-	<value>Nombre maximum de jetons à traiter pour chaque opération d'embedding.</value>
+  <data name="OllamaBatchSize" xml:space="preserve">
+    <value>Taille du lot Ollama</value>
   </data>
-	<data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
-	<value>La dimensionalité des vecteurs d'embedding générés par ce modèle.</value>
+  <data name="OllamaMaxRetries" xml:space="preserve">
+    <value>Tentatives max. Ollama</value>
   </data>
-	<data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
-	<value>Le nombre maximum de jetons à traiter pour chaque opération d'embedding.</value>
+  <data name="OllamaEmbeddingModel" xml:space="preserve">
+    <value>Modèle d'embedding Ollama</value>
   </data>
-	<data name="OllamaEnableRAG" xml:space="preserve">
-	<value>Activer RAG pour Ollama</value>
+  <data name="DimensionalityTooltip" xml:space="preserve">
+    <value>La dimensionalité des vecteurs d'embedding produits par ce modèle.</value>
   </data>
-	<data name="OllamaRagSettingsPanel" xml:space="preserve">
-	<value>Panneau des paramètres RAG d'Ollama</value>
+  <data name="MaxTokensTooltip" xml:space="preserve">
+    <value>Nombre maximum de jetons à traiter pour chaque opération d'embedding.</value>
   </data>
-	<data name="OllamaKnowledgeSource" xml:space="preserve">
-	<value>Source de connaissances Ollama</value>
+  <data name="EmbeddingDimensionalityTooltip" xml:space="preserve">
+    <value>La dimensionalité des vecteurs d'embedding générés par ce modèle.</value>
   </data>
-	<data name="OllamaEnableContextSorting" xml:space="preserve">
-	<value>Activer le tri du contexte pour Ollama</value>
+  <data name="EmbeddingMaxTokensTooltip" xml:space="preserve">
+    <value>Le nombre maximum de jetons à traiter pour chaque opération d'embedding.</value>
   </data>
-	<data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
-	<value>Saisissez votre clé d'API d'embeddings View.</value>
+  <data name="OllamaEnableRAG" xml:space="preserve">
+    <value>Activer RAG pour Ollama</value>
   </data>
-	<data name="EnterOllamaHostName" xml:space="preserve">
-	<value>Saisissez le nom d'hôte ou l'URL d'Ollama.</value>
+  <data name="OllamaRagSettingsPanel" xml:space="preserve">
+    <value>Panneau des paramètres RAG d'Ollama</value>
   </data>
-	<data name="EnterViewAccessKey" xml:space="preserve">
-	<value>Saisissez votre clé d'accès View pour l'authentification.</value>
+  <data name="OllamaKnowledgeSource" xml:space="preserve">
+    <value>Source de connaissances Ollama</value>
   </data>
-	<data name="EnterViewTenantGUID" xml:space="preserve">
-	<value>Saisissez votre GUID de locataire View pour les environnements multi-locataires.</value>
+  <data name="OllamaEnableContextSorting" xml:space="preserve">
+    <value>Activer le tri du contexte pour Ollama</value>
   </data>
-	<data name="EnterCustomSystemPrompt" xml:space="preserve">
-	<value>Saisissez une invite système personnalisée pour le modèle.</value>
+  <data name="EnterViewEmbeddingsApiKey" xml:space="preserve">
+    <value>Saisissez votre clé d'API d'embeddings View.</value>
   </data>
-	<data name="DataMonitorTitle" xml:space="preserve">
-	<value>Moniteur de données</value>
+  <data name="EnterOllamaHostName" xml:space="preserve">
+    <value>Saisissez le nom d'hôte ou l'URL d'Ollama.</value>
   </data>
-	<data name="AdvancedRAGTitle" xml:space="preserve">
-	<value>RAG avancé</value>
+  <data name="EnterViewAccessKey" xml:space="preserve">
+    <value>Saisissez votre clé d'accès View pour l'authentification.</value>
   </data>
-	<data name="AdvancedSettingsTitle" xml:space="preserve">
-	<value>Paramètres avancés</value>
+  <data name="EnterViewTenantGUID" xml:space="preserve">
+    <value>Saisissez votre GUID de locataire View pour les environnements multi-locataires.</value>
   </data>
-	<data name="RAGSettingsTitle" xml:space="preserve">
-	<value>Paramètres RAG</value>
+  <data name="EnterCustomSystemPrompt" xml:space="preserve">
+    <value>Saisissez une invite système personnalisée pour le modèle.</value>
   </data>
-	<data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-	<value>Saisissez votre clé d'API OpenAI.</value>
+  <data name="DataMonitorTitle" xml:space="preserve">
+    <value>Moniteur de données</value>
   </data>
-	<data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-	<value>Saisissez votre clé d'API Anthropic.</value>
+  <data name="AdvancedRAGTitle" xml:space="preserve">
+    <value>RAG avancé</value>
   </data>
-	<data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
-	<value>Saisissez votre clé d'API d'embeddings View.</value>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>Paramètres avancés</value>
   </data>
-	<data name="EnterViewAccessKeyTooltip" xml:space="preserve">
-	<value>Saisissez votre clé d'accès View pour l'authentification.</value>
+  <data name="RAGSettingsTitle" xml:space="preserve">
+    <value>Paramètres RAG</value>
   </data>
-	<data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
-	<value>Saisissez votre GUID de locataire View pour les environnements multi-locataires.</value>
+  <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
+    <value>Saisissez votre clé d'API OpenAI. Cliquez sur le bouton d'aide pour plus d'informations.</value>
   </data>
-	<data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-	<value>Saisissez votre clé d'API VoyageAI pour l'authentification.</value>
+  <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
+    <value>Saisissez votre clé d'API Anthropic. Cliquez sur le bouton d'aide pour plus d'informations.</value>
   </data>
-	<data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
-	<value>Modèle d'embedding OpenAI</value>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>Saisissez votre clé d'API d'embeddings View.</value>
   </data>
-	<data name="OllamaEmbeddingModelHeader" xml:space="preserve">
-	<value>Modèle d'embedding Ollama</value>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>Saisissez votre clé d'accès View pour l'authentification.</value>
   </data>
-	<data name="EmbeddingModelName" xml:space="preserve">
-	<value>Nom du modèle</value>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>Saisissez votre GUID de locataire View pour les environnements multi-locataires.</value>
   </data>
-	<data name="EmbeddingDimensionality" xml:space="preserve">
-	<value>Dimensionalité</value>
+  <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
+    <value>Saisissez votre clé d'API VoyageAI pour l'authentification. Cliquez sur le bouton d'aide pour plus d'informations.</value>
   </data>
-	<data name="EmbeddingMaxTokens" xml:space="preserve">
-	<value>Jetons max.</value>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API OpenAI. Vous pouvez l'obtenir sur https://platform.openai.com/account/api-keys</value>
   </data>
-	<data name="ApiKey" xml:space="preserve">
-	<value>Clé d'API</value>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API Anthropic. Vous pouvez l'obtenir sur https://console.anthropic.com/</value>
   </data>
-	<data name="Endpoint" xml:space="preserve">
-	<value>Point de terminaison</value>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API Voyage AI. Vous pouvez l'obtenir sur https://dash.voyageai.com/</value>
   </data>
-	<data name="PaginationShowingItems" xml:space="preserve">
-	<value>Affichage des éléments {0}-{1} sur {2}</value>
+  <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
+    <value>Modèle d'embedding OpenAI</value>
   </data>
-	<data name="PaginationNoItems" xml:space="preserve">
-	<value>Aucun élément à afficher</value>
+  <data name="OllamaEmbeddingModelHeader" xml:space="preserve">
+    <value>Modèle d'embedding Ollama</value>
   </data>
-	<data name="PaginationPageInfo" xml:space="preserve">
-	<value>Page {0} sur {1}</value>
+  <data name="EmbeddingModelName" xml:space="preserve">
+    <value>Nom du modèle</value>
   </data>
-	<data name="PaginationNoPages" xml:space="preserve">
-	<value>Aucune page</value>
+  <data name="EmbeddingDimensionality" xml:space="preserve">
+    <value>Dimensionalité</value>
   </data>
-	<data name="FileIngestionProgress" xml:space="preserve">
-	<value>Progression de l'ingestion de fichiers</value>
+  <data name="EmbeddingMaxTokens" xml:space="preserve">
+    <value>Jetons max.</value>
   </data>
-	<data name="CurrentIngestion" xml:space="preserve">
-	<value>Ingestion en cours ({0})</value>
+  <data name="ApiKey" xml:space="preserve">
+    <value>Clé d'API</value>
   </data>
-	<data name="PendingQueue" xml:space="preserve">
-	<value>File d'attente ({0})</value>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Point de terminaison</value>
   </data>
-	<data name="CancelAll" xml:space="preserve">
-	<value>Tout annuler</value>
+  <data name="PaginationShowingItems" xml:space="preserve">
+    <value>Affichage des éléments {0}-{1} sur {2}</value>
   </data>
-	<data name="CancelIngestion" xml:space="preserve">
-	<value>Annuler l'ingestion</value>
+  <data name="PaginationNoItems" xml:space="preserve">
+    <value>Aucun élément à afficher</value>
   </data>
-	<data name="AvailableDrives" xml:space="preserve">
-	<value>Lecteurs disponibles</value>
+  <data name="PaginationPageInfo" xml:space="preserve">
+    <value>Page {0} sur {1}</value>
   </data>
-	<data name="EnterPathToNavigate" xml:space="preserve">
-	<value>Saisir un chemin pour naviguer...</value>
+  <data name="PaginationNoPages" xml:space="preserve">
+    <value>Aucune page</value>
   </data>
-	<data name="LastModified" xml:space="preserve">
-	<value>Dernière modification</value>
+  <data name="FileIngestionProgress" xml:space="preserve">
+    <value>Progression de l'ingestion de fichiers</value>
   </data>
-	<data name="ItemIsBeingWatched" xml:space="preserve">
-	<value>Cet élément est surveillé</value>
+  <data name="CurrentIngestion" xml:space="preserve">
+    <value>Ingestion en cours ({0})</value>
   </data>
-	<data name="OpenAIBatchSizeTooltip" xml:space="preserve">
-	<value>Nombre de requêtes à traiter dans un seul lot.</value>
+  <data name="PendingQueue" xml:space="preserve">
+    <value>File d'attente ({0})</value>
   </data>
-	<data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
-	<value>Nombre maximal de tentatives pour les requêtes échouées.</value>
+  <data name="CancelAll" xml:space="preserve">
+    <value>Tout annuler</value>
   </data>
-	<data name="OpenAITemperatureTooltip" xml:space="preserve">
-	<value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
+  <data name="CancelIngestion" xml:space="preserve">
+    <value>Annuler l'ingestion</value>
   </data>
-	<data name="AnthropicBatchSizeTooltip" xml:space="preserve">
-	<value>Le nombre de requêtes à traiter dans un lot.</value>
+  <data name="AvailableDrives" xml:space="preserve">
+    <value>Lecteurs disponibles</value>
   </data>
-	<data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
-	<value>Nombre maximum de tentatives pour les requêtes échouées.</value>
+  <data name="EnterPathToNavigate" xml:space="preserve">
+    <value>Saisir un chemin pour naviguer...</value>
   </data>
-	<data name="AnthropicTemperatureTooltip" xml:space="preserve">
-	<value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
+  <data name="LastModified" xml:space="preserve">
+    <value>Dernière modification</value>
   </data>
-	<data name="OllamaBatchSizeTooltip" xml:space="preserve">
-	<value>Le nombre de requêtes à traiter dans un lot.</value>
+  <data name="ItemIsBeingWatched" xml:space="preserve">
+    <value>Cet élément est surveillé</value>
   </data>
-	<data name="OllamaMaxRetriesTooltip" xml:space="preserve">
-	<value>Nombre maximum de tentatives pour les requêtes échouées.</value>
+  <data name="OpenAIBatchSizeTooltip" xml:space="preserve">
+    <value>Nombre de requêtes à traiter dans un seul lot.</value>
   </data>
-	<data name="OllamaTemperatureTooltip" xml:space="preserve">
-	<value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
+  <data name="OpenAIMaxRetriesTooltip" xml:space="preserve">
+    <value>Nombre maximal de tentatives pour les requêtes échouées.</value>
   </data>
-	<data name="OllamaHostNameTooltip" xml:space="preserve">
-	<value>Saisissez le nom d'hôte ou l'URL d'Ollama.</value>
+  <data name="OpenAITemperatureTooltip" xml:space="preserve">
+    <value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
   </data>
-	<data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
-	<value>Supprimer la base de connaissances</value>
+  <data name="AnthropicBatchSizeTooltip" xml:space="preserve">
+    <value>Le nombre de requêtes à traiter dans un lot.</value>
   </data>
-	<data name="ClearConsoleTooltip" xml:space="preserve">
-	<value>Effacer la console</value>
+  <data name="AnthropicMaxRetriesTooltip" xml:space="preserve">
+    <value>Nombre maximum de tentatives pour les requêtes échouées.</value>
   </data>
-	<data name="DownloadLogsTooltip" xml:space="preserve">
-	<value>Télécharger les journaux</value>
+  <data name="AnthropicTemperatureTooltip" xml:space="preserve">
+    <value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
   </data>
-	<data name="Chat" xml:space="preserve">
-	<value>Discussion</value>
+  <data name="OllamaBatchSizeTooltip" xml:space="preserve">
+    <value>Le nombre de requêtes à traiter dans un lot.</value>
   </data>
-	<data name="Japanese" xml:space="preserve">
-	<value>Japonais</value>
+  <data name="OllamaMaxRetriesTooltip" xml:space="preserve">
+    <value>Nombre maximum de tentatives pour les requêtes échouées.</value>
   </data>
-	<data name="ViewProvider" xml:space="preserve">
-	<value>Fournisseur View</value>
+  <data name="OllamaTemperatureTooltip" xml:space="preserve">
+    <value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
   </data>
-	<data name="SaveLanguage" xml:space="preserve">
-	<value>Enregistrer le paramètre de langue</value>
+  <data name="OllamaHostNameTooltip" xml:space="preserve">
+    <value>Saisissez le nom d'hôte ou l'URL d'Ollama.</value>
   </data>
-	<data name="RestartRequired" xml:space="preserve">
-	<value>Votre préférence de langue a été enregistrée et appliquée.</value>
+  <data name="DeleteKnowledgebaseTooltip" xml:space="preserve">
+    <value>Supprimer la base de connaissances</value>
   </data>
-	<data name="SelectLanguage" xml:space="preserve">
-	<value>Sélectionnez votre langue préférée :</value>
+  <data name="ClearConsoleTooltip" xml:space="preserve">
+    <value>Effacer la console</value>
   </data>
-	<data name="ValidationError" xml:space="preserve">
-	<value>Erreur de validation</value>
+  <data name="DownloadLogsTooltip" xml:space="preserve">
+    <value>Télécharger les journaux</value>
   </data>
-	<data name="Success" xml:space="preserve">
-	<value>Succès</value>
+  <data name="Chat" xml:space="preserve">
+    <value>Discussion</value>
   </data>
-	<data name="Warning" xml:space="preserve">
-	<value>Avertissement</value>
+  <data name="Japanese" xml:space="preserve">
+    <value>Japonais</value>
   </data>
-	<data name="UnexpectedError" xml:space="preserve">
-	<value>Erreur inattendue</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>Voir IA Entreprise</value>
   </data>
-	<data name="SettingsSavedMessage" xml:space="preserve">
-	<value>Vos paramètres ont été enregistrés avec succès.</value>
+  <data name="SaveLanguage" xml:space="preserve">
+    <value>Enregistrer le paramètre de langue</value>
   </data>
-	<data name="SomethingWentWrong" xml:space="preserve">
-	<value>Quelque chose s'est mal passé : {0}</value>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Votre préférence de langue a été enregistrée et appliquée.</value>
   </data>
-	<data name="UnsupportedFileType" xml:space="preserve">
-	<value>Type de fichier non pris en charge.</value>
+  <data name="SelectLanguage" xml:space="preserve">
+    <value>Sélectionnez votre langue préférée :</value>
   </data>
-	<data name="ResumingIngestion" xml:space="preserve">
-	<value>Reprise de l'ingestion</value>
+  <data name="ValidationError" xml:space="preserve">
+    <value>Erreur de validation</value>
   </data>
-	<data name="ReprocessingError" xml:space="preserve">
-	<value>Erreur de retraitement</value>
+  <data name="Success" xml:space="preserve">
+    <value>Succès</value>
   </data>
-	<data name="UnreachableHost" xml:space="preserve">
-	<value>Hôte inaccessible</value>
+  <data name="Warning" xml:space="preserve">
+    <value>Avertissement</value>
   </data>
-	<data name="ViewEndpointFormat" xml:space="preserve">
-	<value>Le point de terminaison View doit être au format : http://&lt;nom d'hôte=d'hôte ou=ou IP=IP&gt;:&lt;port&gt;/</value>
-</data>
-	<data name="SelectAtLeastOneFile" xml:space="preserve">
-	<value>Veuillez sélectionner au moins un fichier à supprimer.</value>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Erreur inattendue</value>
   </data>
-	<data name="Sync" xml:space="preserve">
-	<value>Synchroniser</value>
+  <data name="SettingsSavedMessage" xml:space="preserve">
+    <value>Vos paramètres ont été enregistrés avec succès.</value>
   </data>
-	<data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
-	<value>Paramètres d'embedding VoyageAI incomplets.</value>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Quelque chose s'est mal passé : {0}</value>
   </data>
-	<data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
-	<value>Paramètres d'embedding View incomplets.</value>
+  <data name="UnsupportedFileType" xml:space="preserve">
+    <value>Type de fichier non pris en charge.</value>
   </data>
-	<data name="WelcomeToView" xml:space="preserve">
-	<value>Bienvenue dans View</value>
+  <data name="ResumingIngestion" xml:space="preserve">
+    <value>Reprise de l'ingestion</value>
   </data>
-	<data name="UploadFiles" xml:space="preserve">
-	<value>Téléverser des fichiers</value>
+  <data name="ReprocessingError" xml:space="preserve">
+    <value>Erreur de retraitement</value>
   </data>
-	<data name="Select" xml:space="preserve">
-	<value>Sélectionner</value>
+  <data name="UnreachableHost" xml:space="preserve">
+    <value>Hôte inaccessible</value>
   </data>
-	<data name="Size" xml:space="preserve">
-	<value>Taille</value>
+  <data name="ViewEndpointFormat" xml:space="preserve">
+    <value>Le point de terminaison View doit être au format : http://&lt;nom d'hôte=d'hôte ou=ou IP=IP&gt;:&lt;port&gt;/</value>
   </data>
-	<data name="Type" xml:space="preserve">
-	<value>Type</value>
+  <data name="SelectAtLeastOneFile" xml:space="preserve">
+    <value>Veuillez sélectionner au moins un fichier à supprimer.</value>
   </data>
-	<data name="ReprocessFile" xml:space="preserve">
-	<value>Retraiter le fichier</value>
+  <data name="Sync" xml:space="preserve">
+    <value>Synchroniser</value>
   </data>
-	<data name="SelectAll" xml:space="preserve">
-	<value>Tout sélectionner</value>
+  <data name="VoyageAIEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>Paramètres d'embedding VoyageAI incomplets.</value>
   </data>
-	<data name="RemoveSelectedFiles" xml:space="preserve">
-	<value>Supprimer les fichiers sélectionnés</value>
+  <data name="ViewEmbeddingSettingsIncomplete" xml:space="preserve">
+    <value>Paramètres d'embedding View incomplets.</value>
   </data>
-	<data name="WhatDoYouWantToChatAbout" xml:space="preserve">
-	<value>De quoi voulez-vous discuter ?</value>
+  <data name="WelcomeToView" xml:space="preserve">
+    <value>Bienvenue dans View</value>
   </data>
-	<data name="Remove" xml:space="preserve">
-	<value>Supprimer</value>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>Téléverser des fichiers</value>
   </data>
-	<data name="YourApiKeyHere" xml:space="preserve">
-	<value>VOTRE_CLÉ_API_ICI</value>
+  <data name="Select" xml:space="preserve">
+    <value>Sélectionner</value>
   </data>
-	<data name="SpecifyOpenAIModel" xml:space="preserve">
-	<value>Spécifiez le modèle OpenAI à utiliser, ex. : gpt-3.5-turbo ou gpt-4.</value>
+  <data name="Size" xml:space="preserve">
+    <value>Taille</value>
   </data>
-	<data name="SetOpenAIEndpoint" xml:space="preserve">
-	<value>Définissez le point de terminaison de l'API OpenAI.</value>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
   </data>
-	<data name="SpecifyAnthropicModel" xml:space="preserve">
-	<value>Spécifiez le modèle Anthropic à utiliser, ex. : claude-2 ou claude-instant-1.</value>
+  <data name="ReprocessFile" xml:space="preserve">
+    <value>Retraiter le fichier</value>
   </data>
-	<data name="SetAnthropicEndpoint" xml:space="preserve">
-	<value>Définissez le point de terminaison de l'API Anthropic.</value>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Tout sélectionner</value>
   </data>
-	<data name="TemperatureTooltip" xml:space="preserve">
-	<value>Contrôle le caractère aléatoire des complétions. Des valeurs élevées (0,8) rendent les résultats plus aléatoires, des valeurs basses (0,2) les rendent plus ciblés.</value>
+  <data name="RemoveSelectedFiles" xml:space="preserve">
+    <value>Supprimer les fichiers sélectionnés</value>
   </data>
-	<data name="Yes" xml:space="preserve">
-	<value>Oui</value>
+  <data name="WhatDoYouWantToChatAbout" xml:space="preserve">
+    <value>De quoi voulez-vous discuter ?</value>
   </data>
-	<data name="Retry" xml:space="preserve">
-	<value>Réessayer</value>
+  <data name="Remove" xml:space="preserve">
+    <value>Supprimer</value>
   </data>
-	<data name="WatchFileQuestion" xml:space="preserve">
-	<value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
+  <data name="YourApiKeyHere" xml:space="preserve">
+    <value>VOTRE_CLÉ_API_ICI</value>
   </data>
-	<data name="UnwatchOnly" xml:space="preserve">
-	<value>Arrêter la surveillance seulement</value>
+  <data name="SpecifyOpenAIModel" xml:space="preserve">
+    <value>Spécifiez le modèle OpenAI à utiliser, ex. : gpt-3.5-turbo ou gpt-4.</value>
   </data>
-	<data name="UnwatchAndDelete" xml:space="preserve">
-	<value>Arrêter la surveillance et supprimer</value>
+  <data name="SetOpenAIEndpoint" xml:space="preserve">
+    <value>Définissez le point de terminaison de l'API OpenAI.</value>
   </data>
-	<data name="UnableToStartApp" xml:space="preserve">
-		<value>Impossible de démarrer Voir Personnel</value>
+  <data name="SpecifyAnthropicModel" xml:space="preserve">
+    <value>Spécifiez le modèle Anthropic à utiliser, ex. : claude-2 ou claude-instant-1.</value>
   </data>
-	<data name="StartupError" xml:space="preserve">
-		<value>Voir Personnel n'a pas pu démarrer en raison de l'exception suivante :</value>
+  <data name="SetAnthropicEndpoint" xml:space="preserve">
+    <value>Définissez le point de terminaison de l'API Anthropic.</value>
   </data>
-	<data name="SpecifyOllamaModel" xml:space="preserve">
-	<value>Spécifiez le modèle Ollama à utiliser, ex. : llama2-7B-q4 ou mistral-7B.</value>
+  <data name="TemperatureTooltip" xml:space="preserve">
+    <value>Contrôle le caractère aléatoire des complétions. Des valeurs élevées (0,8) rendent les résultats plus aléatoires, des valeurs basses (0,2) les rendent plus ciblés.</value>
   </data>
-	<data name="SetOllamaEndpoint" xml:space="preserve">
-	<value>Définissez le point de terminaison de l'API Ollama.</value>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
   </data>
-	<data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle d'embedding Ollama à utiliser, ex. : sentence-transformers/all-MiniLM-L6-v2.</value>
+  <data name="Retry" xml:space="preserve">
+    <value>Réessayer</value>
   </data>
-	<data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle d'embedding View à utiliser, ex. : sentence-transformers/all-MiniLM-L6-v2.</value>
+  <data name="WatchFileQuestion" xml:space="preserve">
+    <value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
   </data>
-	<data name="SimilarityThresholdTooltip" xml:space="preserve">
-	<value>Score de similarité minimum requis pour que les documents soient inclus dans le contexte.</value>
+  <data name="UnwatchOnly" xml:space="preserve">
+    <value>Arrêter la surveillance seulement</value>
   </data>
-	<data name="SetViewApiEndpoint" xml:space="preserve">
-	<value>Définissez l'URL du point de terminaison de l'API View.</value>
+  <data name="UnwatchAndDelete" xml:space="preserve">
+    <value>Arrêter la surveillance et supprimer</value>
   </data>
-	<data name="ViewCompletionModel" xml:space="preserve">
-	<value>Modèle de complétion View</value>
+  <data name="UnableToStartApp" xml:space="preserve">
+    <value>Impossible de démarrer Voir Personnel</value>
   </data>
-	<data name="SpecifyViewModel" xml:space="preserve">
-	<value>Spécifiez le modèle View à utiliser, ex. : llama3.1:8b.</value>
+  <data name="StartupError" xml:space="preserve">
+    <value>Voir Personnel n'a pas pu démarrer en raison de l'exception suivante :</value>
   </data>
-	<data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
-	<value>Paramètres d'embedding VoyageAI incompatibles.</value>
+  <data name="SpecifyOllamaModel" xml:space="preserve">
+    <value>Spécifiez le modèle Ollama à utiliser, ex. : llama2-7B-q4 ou mistral-7B.</value>
   </data>
-	<data name="YourApiKeyHerePlaceholder" xml:space="preserve">
-	<value>VOTRE_CLÉ_API_ICI</value>
+  <data name="SetOllamaEndpoint" xml:space="preserve">
+    <value>Définissez le point de terminaison de l'API Ollama.</value>
   </data>
-	<data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
-	<value>VOTRE_CLÉ_API_D_EMBEDDINGS</value>
+  <data name="SpecifyOllamaEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d'embedding Ollama à utiliser, ex. : sentence-transformers/all-MiniLM-L6-v2.</value>
   </data>
-	<data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
-	<value>Modèle d'embedding VoyageAI</value>
+  <data name="SpecifyViewEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d'embedding View à utiliser, ex. : sentence-transformers/all-MiniLM-L6-v2.</value>
   </data>
-	<data name="ViewEmbeddingModelHeader" xml:space="preserve">
-	<value>Modèle d'embedding View</value>
+  <data name="SimilarityThresholdTooltip" xml:space="preserve">
+    <value>Score de similarité minimum requis pour que les documents soient inclus dans le contexte.</value>
   </data>
-	<data name="SavingSettings" xml:space="preserve">
-	<value>Enregistrement des paramètres...</value>
+  <data name="SetViewApiEndpoint" xml:space="preserve">
+    <value>Définissez l'URL du point de terminaison de l'API View.</value>
   </data>
-	<data name="UnselectAll" xml:space="preserve">
-	<value>Tout désélectionner</value>
+  <data name="ViewCompletionModel" xml:space="preserve">
+    <value>Modèle de complétion View</value>
   </data>
-	<data name="Watching" xml:space="preserve">
-	<value>Surveillance en cours</value>
+  <data name="SpecifyViewModel" xml:space="preserve">
+    <value>Spécifiez le modèle View à utiliser, ex. : llama3.1:8b.</value>
   </data>
-	<data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle OpenAI à utiliser, ex. : gpt-3.5-turbo ou gpt-4.</value>
+  <data name="VoyageAIEmbeddingSettingsIncompatible" xml:space="preserve">
+    <value>Paramètres d'embedding VoyageAI incompatibles.</value>
   </data>
-	<data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle Anthropic à utiliser, ex. : claude-2 ou claude-instant-1.</value>
+  <data name="YourApiKeyHerePlaceholder" xml:space="preserve">
+    <value>VOTRE_CLÉ_API_ICI</value>
   </data>
-	<data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle Ollama à utiliser, ex. : llama2-7B-q4 ou mistral-7B.</value>
+  <data name="YourEmbeddingsApiKeyHerePlaceholder" xml:space="preserve">
+    <value>VOTRE_CLÉ_API_D_EMBEDDINGS</value>
   </data>
-	<data name="SpecifyViewModelTooltip" xml:space="preserve">
-	<value>Spécifiez le modèle View à utiliser, ex. : llama3.1:8b.</value>
+  <data name="VoyageAIEmbeddingModelHeader" xml:space="preserve">
+    <value>Modèle d'embedding VoyageAI</value>
   </data>
-	<data name="SetOpenAIEndpointTooltip" xml:space="preserve">
-	<value>Définissez le point de terminaison de l'API OpenAI.</value>
+  <data name="ViewEmbeddingModelHeader" xml:space="preserve">
+    <value>Modèle d'embedding View</value>
   </data>
-	<data name="ViewBatchSizeTooltip" xml:space="preserve">
-	<value>Le nombre de requêtes à traiter dans un lot.</value>
+  <data name="SavingSettings" xml:space="preserve">
+    <value>Enregistrement des paramètres...</value>
   </data>
-	<data name="ViewMaxRetriesTooltip" xml:space="preserve">
-	<value>Nombre maximum de tentatives pour les requêtes échouées.</value>
+  <data name="UnselectAll" xml:space="preserve">
+    <value>Tout désélectionner</value>
   </data>
-	<data name="ViewTemperatureTooltip" xml:space="preserve">
-	<value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
+  <data name="Watching" xml:space="preserve">
+    <value>Surveillance en cours</value>
   </data>
-	<data name="ViewEndpointTooltip" xml:space="preserve">
-	<value>Définissez l'URL du point de terminaison de l'API View.</value>
+  <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle OpenAI à utiliser, ex. : gpt-3.5-turbo ou gpt-4.</value>
   </data>
-	<data name="ViewSystemPromptTooltip" xml:space="preserve">
-	<value>Saisissez une invite système personnalisée pour le modèle.</value>
+  <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle Anthropic à utiliser, ex. : claude-2 ou claude-instant-1.</value>
   </data>
-	<data name="German" xml:space="preserve">
-	<value>Allemand</value>
+  <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle Ollama à utiliser, ex. : llama2-7B-q4 ou mistral-7B.</value>
   </data>
-	<data name="Spanish" xml:space="preserve">
-	<value>Espagnol</value>
+  <data name="SpecifyViewModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle View à utiliser, ex. : llama3.1:8b.</value>
   </data>
-	<data name="Korean" xml:space="preserve">
-	<value>Coréen</value>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Sélectionnez le modèle par défaut à utiliser (par exemple, gpt-4 ou gpt-3.5-turbo). Cliquez ici pour découvrir les modèles disponibles : https://platform.openai.com/docs/models</value>
   </data>
-	<data name="Portuguese" xml:space="preserve">
-	<value>Portugais</value>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Sélectionnez le modèle par défaut à utiliser (par exemple, Claude-3-sonnet ou Claude-3-haïku). Cliquez ici pour découvrir les modèles disponibles : https://docs.anthropic.com/claude/docs/models-overview</value>
   </data>
-	<data name="French" xml:space="preserve">
-	<value>Français</value>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Sélectionnez le modèle Ollama à utiliser (par exemple, llama2-7B-q4 ou mistral-7B). Cliquez ici pour découvrir les modèles disponibles : https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Cliquez pour accéder aux liens d'aide et de documentation</value>
+  </data>
+  <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
+    <value>Définissez le point de terminaison de l'API OpenAI.</value>
+  </data>
+  <data name="ViewBatchSizeTooltip" xml:space="preserve">
+    <value>Le nombre de requêtes à traiter dans un lot.</value>
+  </data>
+  <data name="ViewMaxRetriesTooltip" xml:space="preserve">
+    <value>Nombre maximum de tentatives pour les requêtes échouées.</value>
+  </data>
+  <data name="ViewTemperatureTooltip" xml:space="preserve">
+    <value>Contrôle le caractère aléatoire des réponses de l'IA. Des valeurs élevées (ex. : 0,8) produisent des résultats plus créatifs, tandis que des valeurs basses (ex. : 0,2) rendent les réponses plus ciblées et déterministes.</value>
+  </data>
+  <data name="ViewEndpointTooltip" xml:space="preserve">
+    <value>Définissez l'URL du point de terminaison de l'API View.</value>
+  </data>
+  <data name="ViewSystemPromptTooltip" xml:space="preserve">
+    <value>Saisissez une invite système personnalisée pour le modèle.</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>Allemand</value>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>Espagnol</value>
+  </data>
+  <data name="Korean" xml:space="preserve">
+    <value>Coréen</value>
+  </data>
+  <data name="Portuguese" xml:space="preserve">
+    <value>Portugais</value>
+  </data>
+  <data name="French" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} réingéré avec succès !</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>Reprise de l'ingestion de fichiers...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d’intégration OpenAI à utiliser, par exemple, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d’intégration VoyageAI à utiliser, par exemple, text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Copier tous les journaux</value>
   </data>
 </root>

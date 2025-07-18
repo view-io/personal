@@ -1,20 +1,19 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.Platform;
-using Avalonia.VisualTree;
-using DocumentFormat.OpenXml.Vml.Spreadsheet;
-using Material.Icons;
-using Material.Icons.Avalonia;
-using System.Linq;
-using System.Threading.Tasks;
-using View.Personal.Classes;
-using View.Personal.Enums;
-
-namespace View.Personal.Controls.Dialogs
+﻿namespace View.Personal.Controls.Dialogs
 {
+    using Avalonia;
+    using Avalonia.Controls;
+    using Avalonia.Controls.ApplicationLifetimes;
+    using Avalonia.Layout;
+    using Avalonia.Media;
+    using Avalonia.Platform;
+    using Avalonia.VisualTree;
+    using Material.Icons;
+    using Material.Icons.Avalonia;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using View.Personal.Classes;
+    using View.Personal.Enums;
+
     /// <summary>
     /// A customizable modal message box for displaying alerts, confirmations, and prompts in the View.Personal application.
     /// </summary>
