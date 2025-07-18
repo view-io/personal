@@ -145,7 +145,7 @@ namespace View.Personal.Helpers
                     { "FileName", Path.GetFileName(filePath) },
                     { "FilePath", filePath },
                     { "ContentLength", new FileInfo(filePath).Length.ToString() },
-                    { "IsCompleted", "False" } // Initialize with False, will be set to True after embeddings are generated
+                    { "IsCompleted", "False" }
                 },
                 Data = atoms
             };

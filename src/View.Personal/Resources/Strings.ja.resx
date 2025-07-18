@@ -1147,4 +1147,10 @@
   <data name="French" xml:space="preserve">
     <value>フランス語</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} が正常に再摂取されました。</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>ファイルの取り込みを再開しています...</value>
+  </data>
 </root>

@@ -1147,4 +1147,10 @@
   <data name="French" xml:space="preserve">
     <value>프랑스 국민</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0}을(를) 다시 섭취했습니다!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>파일 수집을 재개합니다...</value>
+  </data>
 </root>

@@ -1143,4 +1143,10 @@
   <data name="French" xml:space="preserve">
     <value>Französisch</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} erfolgreich erneut aufgenommen!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>Dateiaufnahme wird fortgesetzt …</value>
+  </data>
 </root>

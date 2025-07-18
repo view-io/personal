@@ -1146,4 +1146,10 @@
   <data name="French" xml:space="preserve">
     <value>法语</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} 已成功重新提取！</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>正在恢复文件提取...</value>
+  </data>
 </root>

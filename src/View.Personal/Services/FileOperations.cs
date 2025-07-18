@@ -8,6 +8,7 @@ namespace View.Personal.Services
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
+    using View.Personal.Helpers;
     using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>

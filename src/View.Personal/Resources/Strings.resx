@@ -1147,4 +1147,10 @@ need to re-import all documents.</value>
   <data name="French" xml:space="preserve">
     <value>French</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} re-ingested successfully!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>Resuming file ingestion...</value>
+  </data>
 </root>

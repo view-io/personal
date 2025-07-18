@@ -1147,4 +1147,10 @@ reimportar todos os documentos.</value>
   <data name="French" xml:space="preserve">
     <value>Francês</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} reingerido com sucesso!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>Retomando a ingestão de arquivos...</value>
+  </data>
 </root>

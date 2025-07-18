@@ -848,6 +848,9 @@ namespace View.Personal.Services
                 return;
             }
 
+            if (!IngestionList.Contains(filePath))
+                IngestionList.Add(filePath);
+
             IngestionProgressService.StartFileIngestion(filePath);
             IngestionProgressService.UpdatePendingFiles();
             IngestionProgressService.UpdateCurrentFileProgress(filePath, "Starting re-ingestion..", 0);
@@ -869,6 +872,8 @@ namespace View.Personal.Services
                     mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"), 
                         ResourceManagerService.GetString("NoFileSelected"), 
                         NotificationType.Error);
+                    if (!IngestionList.Contains(filePath))
+                        IngestionList.Remove(filePath);
                     return;
                 }
 
@@ -1328,12 +1333,14 @@ namespace View.Personal.Services
 
                 if (!wasCancelled && !token.IsCancellationRequested)
                 {
+                    MarkFileCompleted(filePath);
                     await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                    if (IngestionList.Contains(filePath))
+                        IngestionList.Remove(filePath);
                     var filePathTextBox = window.FindControl<TextBox>("FilePathTextBox");
                     if (filePathTextBox != null)
                         filePathTextBox.Text = "";
                     app.ConsoleLog(Enums.SeverityEnum.Info, $"file {filePath} ingested successfully");
-                    MarkFileCompleted(filePath);
                 }
                 else
                 {

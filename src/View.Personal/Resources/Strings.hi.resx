@@ -1147,4 +1147,10 @@
   <data name="French" xml:space="preserve">
     <value>फ़्रेंच</value>
   </data>
+  <data name="FileReprocessedSuccessfully" xml:space="preserve">
+    <value>{0} पुनः सफलतापूर्वक ग्रहण किया गया!</value>
+  </data>
+  <data name="ResumingIngestionMessage" xml:space="preserve">
+    <value>फ़ाइल अंतर्ग्रहण पुनः आरंभ हो रहा है...</value>
+  </data>
 </root>
