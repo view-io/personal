@@ -356,7 +356,7 @@ namespace View.Personal.Services
             var app = (App)App.Current;
 
             var documentNodes = await Task.Run(() =>
-                liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" })
+                liteGraph.Node.ReadMany(tenantGuid, graphGuid, string.Empty, new List<string> { "document" },includeSubordinates:true)
                 ?? new List<Node>());
 
             var incompleteNodes = documentNodes
