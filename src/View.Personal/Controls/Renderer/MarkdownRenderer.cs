@@ -1,18 +1,17 @@
 namespace View.Personal.Controls.Renderer
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Avalonia;
     using Avalonia.Controls;
+    using Avalonia.Controls.Documents;
+    using Avalonia.Controls.Primitives;
     using Avalonia.Layout;
     using Avalonia.Media;
     using Markdig;
+    using Markdig.Extensions.Tables;
     using Markdig.Syntax;
     using Markdig.Syntax.Inlines;
-    using Markdig.Extensions.Tables;
-    using Avalonia.Controls.Primitives;
-    using Avalonia.Controls.Documents;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Provides functionality to render Markdown content as Avalonia UI controls.

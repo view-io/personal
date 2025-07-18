@@ -1,16 +1,16 @@
 namespace View.Personal.UIHandlers
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Avalonia;
     using Avalonia.Controls;
     using Avalonia.Controls.Notifications;
     using Avalonia.Interactivity;
-    using Services;
     using LiteGraph;
-    using System.Text.RegularExpressions;
     using Material.Icons.Avalonia;
+    using Services;
+    using System;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing the main window user interface.

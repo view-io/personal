@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-
-namespace View.Personal
+﻿namespace View.Personal
 {
+    using System;
+    using System.IO;
     internal static class Constants
     {
         internal static string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";

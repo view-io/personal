@@ -1,6 +1,5 @@
 namespace View.Personal.Services
 {
-    using Avalonia.Controls.Notifications;
     using Avalonia.Threading;
     using System;
     using System.Collections.Concurrent;

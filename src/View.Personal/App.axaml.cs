@@ -2,7 +2,6 @@ namespace View.Personal
 {
     using Avalonia;
     using Avalonia.Controls.ApplicationLifetimes;
-    using Avalonia.Logging;
     using Avalonia.Markup.Xaml;
     using Classes;
     using LiteGraph;
@@ -13,15 +12,13 @@ namespace View.Personal
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
-    using Timestamps;
-    using Tmds.DBus.Protocol;
-    using View.Personal.Helpers;
-    using View.Personal.Enums;
     using System.Threading.Tasks;
-    using System.Diagnostics;
+    using Timestamps;
+    using View.Personal.Helpers;
 
 
     /// <summary>

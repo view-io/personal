@@ -15,7 +15,6 @@ namespace View.Personal.UIHandlers
     using System.Linq;
     using System.Threading.Tasks;
     using System.Timers;
-    using View.Personal.Controls;
     using View.Personal.Controls.Dialogs;
     using View.Personal.Enums;
     using View.Personal.Services;

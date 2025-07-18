@@ -6,9 +6,7 @@ namespace View.Personal.UIHandlers
     using Helpers;
     using LiteGraph;
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
-    using View.Personal.Services;
 
     /// <summary>
     /// Provides event handlers and utility methods for managing navigation in the user interface.
