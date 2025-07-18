@@ -253,6 +253,21 @@ namespace View.Personal
                         
                         Services.VoskModelService.SetApp(this);
                         await Services.VoskModelService.InitializeVoskModelAsync();
+                        
+                        // Preload Vosk model into memory for faster speech-to-text
+                        if (Services.VoskModelService.IsModelInstalled)
+                        {
+                            Log(Enums.SeverityEnum.Info, "Preloading Vosk speech recognition model...");
+                            bool preloaded = await Services.VoskModelService.PreloadModelAsync();
+                            if (preloaded)
+                            {
+                                Log(Enums.SeverityEnum.Info, "Vosk model preloaded successfully");
+                            }
+                            else
+                            {
+                                Log(Enums.SeverityEnum.Warn, "Failed to preload Vosk model");
+                            }
+                        }
                     });
 
                     _Logging.Debug(_Header + "Storing application version in file");

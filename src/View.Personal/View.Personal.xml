@@ -1419,6 +1419,28 @@
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
+        <member name="T:View.Personal.Controls.Dialogs.DownloadProgressDialog">
+            <summary>
+            Dialog for displaying download progress of speech recognition models.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Controls.Dialogs.DownloadProgressDialog.DownloadCompleted">
+            <summary>
+            Event that is raised when the download is completed.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.DownloadProgressDialog.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Controls.Dialogs.DownloadProgressDialog"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.DownloadProgressDialog.ShowAsync(Avalonia.Controls.Window)">
+            <summary>
+            Shows the download progress dialog asynchronously.
+            </summary>
+            <param name="parent">The parent window for the dialog.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains true if the download completed successfully.</returns>
+        </member>
         <member name="M:View.Personal.Controls.Dialogs.DownloadProgressDialog.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -3187,6 +3209,28 @@
         <member name="P:View.Personal.Services.VoskModelService.ModelPath">
             <summary>
             Gets the path to the Vosk model directory.
+            </summary>
+        </member>
+        <member name="P:View.Personal.Services.VoskModelService.IsModelLoading">
+            <summary>
+            Gets a value indicating whether the Vosk model is currently being loaded into memory.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.GetModelAsync">
+            <summary>
+            Gets the cached Vosk model instance, loading it asynchronously if not already loaded.
+            </summary>
+            <returns>A task that resolves to the Vosk model, or null if loading fails.</returns>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.PreloadModelAsync">
+            <summary>
+            Preloads the Vosk model into memory for faster access.
+            </summary>
+            <returns>A task that resolves to true if preloading succeeded, false otherwise.</returns>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.DisposeModel">
+            <summary>
+            Disposes of the cached model to free memory.
             </summary>
         </member>
         <member name="M:View.Personal.Services.VoskModelService.SetApp(View.Personal.App)">

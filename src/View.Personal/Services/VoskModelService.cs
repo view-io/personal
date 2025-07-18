@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Tmds.DBus.Protocol;
+using View.Personal.Enums;
 
 namespace View.Personal.Services
 {
@@ -23,6 +24,9 @@ namespace View.Personal.Services
         private static bool _isDownloading = false;
         private static float _downloadProgress = 0;
         private static App? _app;
+        private static Vosk.Model? _cachedModel = null;
+        private static bool _isModelLoading = false;
+        private static readonly object _modelLock = new object();
 
         /// <summary>
         /// Gets a value indicating whether the Vosk model is currently downloading.
@@ -38,12 +42,137 @@ namespace View.Personal.Services
         /// Gets a value indicating whether the Vosk model is installed.
         /// </summary>
         public static bool IsModelInstalled => Directory.Exists(_voskModelPath) && 
-                                              Directory.GetFiles(_voskModelPath, "*", SearchOption.AllDirectories).Length > 0;
+                                               Directory.GetFiles(_voskModelPath, "*", SearchOption.AllDirectories).Length > 0;
 
         /// <summary>
         /// Gets the path to the Vosk model directory.
         /// </summary>
         public static string ModelPath => _voskModelPath;
+
+        /// <summary>
+        /// Gets a value indicating whether the Vosk model is currently being loaded into memory.
+        /// </summary>
+        public static bool IsModelLoading => _isModelLoading;
+
+        /// <summary>
+        /// Gets the cached Vosk model instance, loading it asynchronously if not already loaded.
+        /// </summary>
+        /// <returns>A task that resolves to the Vosk model, or null if loading fails.</returns>
+        public static async Task<Vosk.Model?> GetModelAsync()
+        {
+            if (_cachedModel != null)
+            {
+                return _cachedModel;
+            }
+
+            if (!IsModelInstalled)
+            {
+                _app?.Log(Enums.SeverityEnum.Error, "Cannot load Vosk model: Model is not installed");
+                return null;
+            }
+
+            lock (_modelLock)
+            {
+                if (_isModelLoading)
+                {
+                    // Another thread is already loading, wait for it
+                    _app?.Log(Enums.SeverityEnum.Info, "Vosk model is already being loaded by another thread");
+                }
+                else
+                {
+                    _isModelLoading = true;
+                }
+            }
+
+            if (_cachedModel != null)
+            {
+                return _cachedModel;
+            }
+
+            try
+            {
+                _app?.Log(Enums.SeverityEnum.Info, "Loading Vosk model into memory...");
+                
+                // Load model on background thread
+                var model = await Task.Run(() =>
+                {
+                    try
+                    {
+                        Vosk.Vosk.SetLogLevel(0);
+                        return new Vosk.Model(_voskModelPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _app?.Log(Enums.SeverityEnum.Error, $"Error creating Vosk model: {ex.Message}");
+                        return null;
+                    }
+                });
+
+                if (model != null)
+                {
+                    lock (_modelLock)
+                    {
+                        _cachedModel = model;
+                        _isModelLoading = false;
+                    }
+                    _app?.Log(Enums.SeverityEnum.Info, "Vosk model loaded successfully");
+                    return _cachedModel;
+                }
+                else
+                {
+                    lock (_modelLock)
+                    {
+                        _isModelLoading = false;
+                    }
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                lock (_modelLock)
+                {
+                    _isModelLoading = false;
+                }
+                _app?.Log(Enums.SeverityEnum.Error, $"Error loading Vosk model: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Preloads the Vosk model into memory for faster access.
+        /// </summary>
+        /// <returns>A task that resolves to true if preloading succeeded, false otherwise.</returns>
+        public static async Task<bool> PreloadModelAsync()
+        {
+            var model = await GetModelAsync();
+            return model != null;
+        }
+
+        /// <summary>
+        /// Disposes of the cached model to free memory.
+        /// </summary>
+        public static void DisposeModel()
+        {
+            lock (_modelLock)
+            {
+                if (_cachedModel != null)
+                {
+                    try
+                    {
+                        _cachedModel.Dispose();
+                        _app?.Log(Enums.SeverityEnum.Info, "Vosk model disposed");
+                    }
+                    catch (Exception ex)
+                    {
+                        _app?.Log(Enums.SeverityEnum.Error, $"Error disposing Vosk model: {ex.Message}");
+                    }
+                    finally
+                    {
+                        _cachedModel = null;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Sets the application instance for logging
@@ -145,7 +274,6 @@ namespace View.Personal.Services
                                 if ((int)progressPercentage % 1 == 0)
                                 {
                                     await File.WriteAllTextAsync(_lockFilePath, progressPercentage.ToString(), _downloadCts.Token);
-                                    _app?.Log(Enums.SeverityEnum.Debug, $"Vosk model download progress: {progressPercentage:F0}%");
                                 }
                             }
                         }
@@ -157,7 +285,11 @@ namespace View.Personal.Services
 
                     await Task.Run(() =>
                     {
-                        System.IO.Compression.ZipFile.ExtractToDirectory(_voskModelZipPath, Path.GetDirectoryName(_voskModelPath), true);
+                        var destinationDirectory = Path.GetDirectoryName(_voskModelPath);
+                        if (!string.IsNullOrEmpty(destinationDirectory))
+                        {
+                            System.IO.Compression.ZipFile.ExtractToDirectory(_voskModelZipPath, destinationDirectory, true);
+                        }
                     }, _downloadCts.Token);
 
                     _app?.Log(Enums.SeverityEnum.Info, "Vosk model extraction complete.");

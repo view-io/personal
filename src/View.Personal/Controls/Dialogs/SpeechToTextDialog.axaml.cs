@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using View.Personal.Services;
+using View.Personal.Enums;
 
 namespace View.Personal.Controls.Dialogs
 {
@@ -26,9 +27,16 @@ namespace View.Personal.Controls.Dialogs
         {
             InitializeComponent();
 
-            CloseButton.Click += CloseButton_Click;
-            StopButton.Click += StopButton_Click;
-            SendButton.Click += SendButton_Click;
+            var closeButton = this.FindControl<Button>("CloseButton");
+            var stopButton = this.FindControl<Button>("StopButton");
+            var sendButton = this.FindControl<Button>("SendButton");
+            
+            if (closeButton != null)
+                closeButton.Click += CloseButton_Click;
+            if (stopButton != null)
+                stopButton.Click += StopButton_Click;
+            if (sendButton != null)
+                sendButton.Click += SendButton_Click;
         }
 
         private void InitializeComponent()
@@ -38,66 +46,109 @@ namespace View.Personal.Controls.Dialogs
 
         public static async Task<string?> ShowAsync(Window parent)
         {
-            if (!VoskModelService.IsModelInstalled || VoskModelService.IsDownloading)
-            {
-                bool downloadCompleted = await DownloadProgressDialog.ShowAsync(parent);
-                
-                if (!downloadCompleted)
-                    return null;
-  
-                if (!VoskModelService.IsModelInstalled)
-                    return null;
-            }
+            var app = (App)App.Current;
             
-            var dialog = new SpeechToTextDialog();
-            var window = new Window
+            try
             {
-                Title = "Speech to Text",
-                Content = dialog,
-                Width = 450,
-                Height = 450,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                CanResize = false,
-                ShowInTaskbar = false,
-                SystemDecorations = SystemDecorations.None,
-                Background = null,
-                TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent }
-            };
+                app?.Log(SeverityEnum.Info, "SpeechToTextDialog.ShowAsync called");
+                
+                bool isModelInstalled = VoskModelService.IsModelInstalled;
+                bool isDownloading = VoskModelService.IsDownloading;
+                
+                app?.Log(SeverityEnum.Info, $"Model check - Installed: {isModelInstalled}, Downloading: {isDownloading}");
+                
+                if (!isModelInstalled || isDownloading)
+                {
+                    app?.Log(SeverityEnum.Info, "Showing download progress dialog");
+                    bool downloadCompleted = await DownloadProgressDialog.ShowAsync(parent);
+                    
+                    app?.Log(SeverityEnum.Info, $"Download dialog completed: {downloadCompleted}");
+                    
+                    if (!downloadCompleted)
+                        return null;
+      
+                    if (!VoskModelService.IsModelInstalled)
+                    {
+                        app?.Log(SeverityEnum.Warn, "Model still not installed after download dialog");
+                        return null;
+                    }
+                }
+                
+                app?.Log(SeverityEnum.Info, "Creating SpeechToTextDialog window");
+                
+                var dialog = new SpeechToTextDialog();
+                var window = new Window
+                {
+                    Title = "Speech to Text",
+                    Content = dialog,
+                    Width = 450,
+                    Height = 450,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    CanResize = false,
+                    ShowInTaskbar = false,
+                    SystemDecorations = SystemDecorations.None,
+                    Background = null,
+                    TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent }
+                };
 
-            dialog._dialogWindow = window;
-            await dialog.StartRecordingAsync();
+                dialog._dialogWindow = window;
+                
+                var tcs = new TaskCompletionSource<string?>();
+                dialog.TranscriptionCompleted += (s, text) => tcs.TrySetResult(text);
+                window.Closed += (s, e) => tcs.TrySetResult(null);
 
-            var tcs = new TaskCompletionSource<string?>();
-            dialog.TranscriptionCompleted += (s, text) => tcs.TrySetResult(text);
-            window.Closed += (s, e) => tcs.TrySetResult(null);
+                app?.Log(SeverityEnum.Info, "Showing dialog window");
+                
+                if (parent != null)
+                {
+                    window.ShowDialog(parent);
+                }
+                else
+                {
+                    window.Show();
+                }
 
-            if (parent != null)
-            {
-                window.ShowDialog(parent);
+                // Start recording asynchronously after showing the window
+                app?.Log(SeverityEnum.Info, "Starting recording async");
+                _ = dialog.StartRecordingAsync();
+
+                return await tcs.Task;
             }
-            else
+            catch (Exception ex)
             {
-                window.Show();
+                app?.Log(SeverityEnum.Error, $"Error in SpeechToTextDialog.ShowAsync: {ex.Message}");
+                app?.LogExceptionToFile(ex, "SpeechToTextDialog.ShowAsync error");
+                throw;
             }
-
-            return await tcs.Task;
         }
 
         private async Task StartRecordingAsync()
         {
-            DownloadProgressContainer.IsVisible = false;
-            MicrophoneContainer.IsVisible = true;
-            StatusText.IsVisible = true;
-            TranscriptionBox.IsVisible = true;
-            StopButton.IsVisible = true;
-            SendButton.IsVisible = true;
+            var downloadProgress = this.FindControl<Border>("DownloadProgressContainer");
+            if (downloadProgress != null)
+                downloadProgress.IsVisible = false;
+
+            var microphoneContainer = this.FindControl<Border>("MicrophoneContainer");
+            var statusText = this.FindControl<TextBlock>("StatusText");
+            var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
+            var stopButton = this.FindControl<Button>("StopButton");
+            var sendButton = this.FindControl<Button>("SendButton");
+            
+            if (microphoneContainer != null) microphoneContainer.IsVisible = true;
+            if (statusText != null) statusText.IsVisible = true;
+            if (transcriptionBox != null) transcriptionBox.IsVisible = true;
+            if (stopButton != null) stopButton.IsVisible = true;
+            if (sendButton != null) sendButton.IsVisible = true;
 
             _isRecording = true;
             _recordingCts = new CancellationTokenSource();
 
             StartMicrophoneAnimation();
 
-            TranscriptionBox.Text = string.Empty;
+            if (transcriptionBox != null)
+            {
+                transcriptionBox.Text = string.Empty;
+            }
             _transcribedText = string.Empty;
 
             await Task.Run(async () =>
@@ -113,7 +164,9 @@ namespace View.Personal.Controls.Dialogs
                 {
                     Dispatcher.UIThread.Post(() =>
                     {
-                        StatusText.Text = $"Error: {ex.Message}";
+                        var statusText = this.FindControl<TextBlock>("StatusText");
+                        if (statusText != null)
+                            statusText.Text = $"Error: {ex.Message}";
                     });
                 }
             }, _recordingCts.Token);
@@ -123,9 +176,31 @@ namespace View.Personal.Controls.Dialogs
         {
             try
             {
-                Vosk.Vosk.SetLogLevel(0);
-                var modelPath = VoskModelService.ModelPath;
-                var model = new Vosk.Model(modelPath);
+                // Update status to show model loading
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var statusText = this.FindControl<TextBlock>("StatusText");
+                    if (statusText != null)
+                        statusText.Text = "Loading speech recognition model...";
+                });
+
+                // Get cached model (this will load it if not already loaded)
+                var model = await VoskModelService.GetModelAsync();
+                
+                if (model == null)
+                {
+                    Console.WriteLine("Failed to load Vosk model, falling back to simulation");
+                    await FallbackSimulationAsync();
+                    return;
+                }
+
+                // Update status to show ready for speech
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var statusText = this.FindControl<TextBlock>("StatusText");
+                    if (statusText != null)
+                        statusText.Text = "Listening...";
+                });
                 
                 // Initialize audio capture
                 var waveFormat = new NAudio.Wave.WaveFormat(16000, 1);
@@ -172,7 +247,7 @@ namespace View.Personal.Controls.Dialogs
                         var finalResult = recognizer.FinalResult();
                         ProcessTranscriptionResult(finalResult);
                         recognizer.Dispose();
-                        model.Dispose();
+                        // Don't dispose the cached model here - it's shared
                         waveIn.Dispose();
                         if (!tcs.Task.IsCompleted)
                             tcs.SetResult(true);
@@ -180,6 +255,8 @@ namespace View.Personal.Controls.Dialogs
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error during cleanup: {ex.Message}");
+                        if (!tcs.Task.IsCompleted)
+                            tcs.SetResult(true);
                     }
                 });
                 
@@ -220,8 +297,12 @@ namespace View.Personal.Controls.Dialogs
                     
                     Dispatcher.UIThread.Post(() =>
                     {
-                        TranscriptionBox.Text = _transcribedText;
-                        TranscriptionBox.CaretIndex = TranscriptionBox.Text.Length;
+                        var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
+                        if (transcriptionBox != null)
+                        {
+                            transcriptionBox.Text = _transcribedText;
+                            transcriptionBox.CaretIndex = transcriptionBox.Text?.Length ?? 0;
+                        }
                     });
                 }
             }
@@ -248,8 +329,12 @@ namespace View.Personal.Controls.Dialogs
                 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    TranscriptionBox.Text = _transcribedText;
-                    TranscriptionBox.CaretIndex = TranscriptionBox.Text.Length;
+                    var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
+                    if (transcriptionBox != null)
+                    {
+                        transcriptionBox.Text = _transcribedText;
+                        transcriptionBox.CaretIndex = transcriptionBox.Text?.Length ?? 0;
+                    }
                 });
 
                 await Task.Delay(200, _recordingCts.Token);
@@ -258,12 +343,58 @@ namespace View.Personal.Controls.Dialogs
 
         private void StartMicrophoneAnimation()
         {
-            StatusText.Text = "Listening...";
+            Dispatcher.UIThread.Post(() =>
+            {
+                var statusText = this.FindControl<TextBlock>("StatusText");
+                var microphoneContainer = this.FindControl<Border>("MicrophoneContainer");
+                var rippleEffect1 = this.FindControl<Border>("RippleEffect1");
+                var rippleEffect2 = this.FindControl<Border>("RippleEffect2");
+
+                if (statusText != null)
+                    statusText.Text = "Listening...";
+
+                // Add listening animation class to microphone container
+                if (microphoneContainer != null)
+                    microphoneContainer.Classes.Add("listening");
+
+                // Start ripple effects with staggered timing
+                if (rippleEffect1 != null)
+                    rippleEffect1.Classes.Add("active");
+
+                // Start second ripple effect with delay
+                _ = Task.Delay(750).ContinueWith(_ =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (rippleEffect2 != null)
+                            rippleEffect2.Classes.Add("active");
+                    });
+                });
+            });
         }
 
         private void StopMicrophoneAnimation()
         {
-            StatusText.Text = "Stopped";
+            Dispatcher.UIThread.Post(() =>
+            {
+                var statusText = this.FindControl<TextBlock>("StatusText");
+                var microphoneContainer = this.FindControl<Border>("MicrophoneContainer");
+                var rippleEffect1 = this.FindControl<Border>("RippleEffect1");
+                var rippleEffect2 = this.FindControl<Border>("RippleEffect2");
+
+                if (statusText != null)
+                    statusText.Text = "Recording stopped";
+
+                // Remove listening animation class
+                if (microphoneContainer != null)
+                    microphoneContainer.Classes.Remove("listening");
+
+                // Stop ripple effects
+                if (rippleEffect1 != null)
+                    rippleEffect1.Classes.Remove("active");
+                if (rippleEffect2 != null)
+                    rippleEffect2.Classes.Remove("active");
+            });
         }
 
         private void StopRecording()
@@ -290,7 +421,9 @@ namespace View.Personal.Controls.Dialogs
         private void SendButton_Click(object? sender, RoutedEventArgs e)
         {
             StopRecording();
-            TranscriptionCompleted?.Invoke(this, TranscriptionBox.Text);
+            var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
+            string transcriptionText = transcriptionBox?.Text ?? string.Empty;
+            TranscriptionCompleted?.Invoke(this, transcriptionText);
             _dialogWindow?.Close();
         }
     }

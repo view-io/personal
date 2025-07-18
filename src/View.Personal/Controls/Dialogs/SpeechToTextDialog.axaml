@@ -3,147 +3,319 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="500"
              x:Class="View.Personal.Controls.Dialogs.SpeechToTextDialog">
 
     <UserControl.Styles>
+        <!-- Container Style with Gradient Background -->
+        <Style Selector="Border.main-container">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#FFFFFF" Offset="0"/>
+                        <GradientStop Color="#FAFBFC" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="BoxShadow" Value="0 8 32 0 #30000000"/>
+            <Setter Property="BorderBrush" Value="#E1E5E9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
         <!-- Close Button Style -->
         <Style Selector="Button.close-button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="32"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
         </Style>
-        <Style Selector="Button.close-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#20000000"/>
+        <Style Selector="Button.close-button:pointerover">
+            <Setter Property="Background" Value="#F5F5F7"/>
+            <Setter Property="Opacity" Value="0.9"/>
         </Style>
-        <Style Selector="Button.close-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="#40000000"/>
+        <Style Selector="Button.close-button:pressed">
+            <Setter Property="Background" Value="#E8E8EA"/>
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
 
-        <!-- Microphone Animation Container Style -->
+        <!-- Microphone Container with Pulse Animation -->
         <Style Selector="Border.microphone-container">
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="120"/>
             <Setter Property="CornerRadius" Value="60"/>
-            <Setter Property="Background" Value="#0472EF"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                        <GradientStop Color="#7C3AED" Offset="1"/>
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,20,0,20"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BoxShadow" Value="0 8 24 0 #408B5CF6"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+                </Transitions>
+            </Setter>
         </Style>
 
-        <!-- Action Button Style -->
-        <Style Selector="Button.action-button">
-            <Setter Property="Background" Value="#0472EF"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="16,8"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="8,0"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Height" Value="40"/>
+        <!-- Microphone Container Listening Animation -->
+        <Style Selector="Border.microphone-container.listening">
+            <Style.Animations>
+                <Animation Duration="0:0:2" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.8"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
-        <Style Selector="Button.action-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#0366D6"/>
+
+        <!-- Ripple Effect Animation -->
+        <Style Selector="Border.ripple-effect">
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="CornerRadius" Value="60"/>
+            <Setter Property="BorderBrush" Value="#508B5CF6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Opacity" Value="0"/>
         </Style>
-        <Style Selector="Button.action-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="#0255BC"/>
+
+        <Style Selector="Border.ripple-effect.active">
+            <Style.Animations>
+                <Animation Duration="0:0:1.5" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Width" Value="120"/>
+                        <Setter Property="Height" Value="120"/>
+                        <Setter Property="CornerRadius" Value="60"/>
+                        <Setter Property="Opacity" Value="0.7"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Width" Value="200"/>
+                        <Setter Property="Height" Value="200"/>
+                        <Setter Property="CornerRadius" Value="100"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
 
         <!-- Stop Button Style -->
         <Style Selector="Button.stop-button">
-            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#FF6B6B" Offset="0"/>
+                        <GradientStop Color="#EE5A52" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20,12"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="8,0"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
         </Style>
-        <Style Selector="Button.stop-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#D32F2F"/>
+        <Style Selector="Button.stop-button:pointerover">
+            <Setter Property="Opacity" Value="0.9"/>
         </Style>
-        <Style Selector="Button.stop-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="#C62828"/>
+        <Style Selector="Button.stop-button:pressed">
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
 
-        <!-- Transcription TextBox Style -->
-        <Style Selector="TextBox.transcription-box">
-            <Setter Property="Background" Value="#F5F5F5"/>
-            <Setter Property="BorderBrush" Value="#DBDBDB"/>
+        <!-- Send Button Style -->
+        <Style Selector="Button.send-button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                        <GradientStop Color="#7C3AED" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.send-button:pointerover">
+            <Setter Property="Opacity" Value="0.9"/>
+        </Style>
+        <Style Selector="Button.send-button:pressed">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+
+        <!-- Text Container Border Style -->
+        <Style Selector="Border.text-container">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="12"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="AcceptsReturn" Value="True"/>
-            <Setter Property="Height" Value="120"/>
-            <Setter Property="Margin" Value="0,10"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="MinHeight" Value="46"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+                </Transitions>
+            </Setter>
         </Style>
 
-        <!-- Progress Bar Style -->
-        <Style Selector="ProgressBar.download-progress">
-            <Setter Property="Height" Value="8"/>
-            <Setter Property="Foreground" Value="#0472EF"/>
-            <Setter Property="Background" Value="#E0E0E0"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Margin" Value="0,10"/>
+        <!-- Transcription Box Style -->
+        <Style Selector="TextBox.transcription-box">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+
+        <!-- Header Text Style -->
+        <Style Selector="TextBlock.header-text">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+        </Style>
+
+        <!-- Status Text Style -->
+        <Style Selector="TextBlock.status-text">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.4"/>
+                </Transitions>
+            </Setter>
         </Style>
     </UserControl.Styles>
 
-    <Border Background="White" CornerRadius="12" BoxShadow="0 4 8 0 #20000000">
-        <Grid Margin="20">
+    <Border Classes="main-container">
+        <Grid Margin="24">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>    <!-- Header -->
+                <RowDefinition Height="Auto"/>    <!-- Microphone area -->
+                <RowDefinition Height="Auto"/>    <!-- Status text -->
+                <RowDefinition Height="*"/>       <!-- Spacer -->
+                <RowDefinition Height="Auto"/>    <!-- Selected text area -->
+                <RowDefinition Height="Auto"/>    <!-- Buttons -->
             </Grid.RowDefinitions>
 
             <!-- Header with Close Button -->
-            <Grid Grid.Row="0">
+            <Grid Grid.Row="0" Margin="0,0,0,24">
                 <TextBlock Text="Speech to Text" 
+                           Classes="header-text"
                            HorizontalAlignment="Left" 
-                           VerticalAlignment="Center"
-                           FontWeight="SemiBold"
-                           FontSize="16"/>
-                <Button x:Name="CloseButton" Classes="close-button">
-                    <avalonia:MaterialIcon Kind="Close" Width="16" Height="16" Foreground="#757575"/>
+                           VerticalAlignment="Center"/>
+                <Button x:Name="CloseButton" 
+                        Classes="close-button"
+                        HorizontalAlignment="Right">
+                    <avalonia:MaterialIcon Kind="Close" Width="18" Height="18" Foreground="#9CA3AF"/>
                 </Button>
             </Grid>
 
-            <!-- Content Area -->
-            <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                <!-- Microphone Animation Container -->
+            <!-- Microphone Animation Area -->
+            <Grid Grid.Row="1" 
+                  HorizontalAlignment="Center" 
+                  VerticalAlignment="Center" 
+                  Margin="0,0,0,20">
+                <!-- Ripple Effects -->
+                <Border x:Name="RippleEffect1" Classes="ripple-effect"/>
+                <Border x:Name="RippleEffect2" Classes="ripple-effect"/>
+                
+                <!-- Microphone Container -->
                 <Border x:Name="MicrophoneContainer" Classes="microphone-container">
-                    <avalonia:MaterialIcon x:Name="MicrophoneIcon" Kind="Microphone" Width="48" Height="48" Foreground="White"/>
+                    <avalonia:MaterialIcon x:Name="MicrophoneIcon" 
+                                           Kind="Microphone" 
+                                           Width="48" 
+                                           Height="48" 
+                                           Foreground="White"/>
                 </Border>
+            </Grid>
 
-                <!-- Status Text -->
-                <TextBlock x:Name="StatusText" Text="Listening..." HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Margin="0,10"/>
+            <!-- Status Text -->
+            <TextBlock x:Name="StatusText" 
+                       Grid.Row="2"
+                       Text="Listening..." 
+                       Classes="status-text"
+                       Margin="0,0,0,20"/>
 
-                <!-- Transcription Box -->
-                <TextBox x:Name="TranscriptionBox" Classes="transcription-box" Watermark="Transcription will appear here..."/>
+            <!-- Spacer -->
+            <Grid Grid.Row="3" MinHeight="20"/>
 
-                <!-- Download Progress Container (Hidden - now using separate dialog) -->
-                <Border x:Name="DownloadProgressContainer" IsVisible="False" Height="0" />
-            </StackPanel>
+            <!-- Selected Text Area -->
+            <Border Grid.Row="4" 
+                    Classes="text-container"
+                    Margin="0,0,0,16">
+                <TextBox x:Name="TranscriptionBox" 
+                         Classes="transcription-box"
+                         Watermark="Your speech will appear here as you talk..."
+                         VerticalAlignment="Center"
+                         Margin="16,12"/>
+            </Border>
 
             <!-- Button Area -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <Button x:Name="StopButton" Classes="stop-button" Content="Stop" />
-                <Button x:Name="SendButton" Classes="action-button" Content="Send" />
+            <StackPanel Grid.Row="5" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center">
+                <Button x:Name="StopButton" 
+                        Classes="stop-button" 
+                        Content="Stop Recording" />
+                <Button x:Name="SendButton" 
+                        Classes="send-button" 
+                        Content="Send Text" />
             </StackPanel>
+
+            <!-- Download Progress Container (Hidden) -->
+            <Border x:Name="DownloadProgressContainer" 
+                    Grid.Row="4" 
+                    IsVisible="False" 
+                    Height="0" />
         </Grid>
     </Border>
 </UserControl>

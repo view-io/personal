@@ -21,6 +21,7 @@ namespace View.Personal
     using Sdk.Embeddings.Providers.VoyageAI;
     using SerializationHelper;
     using Services;
+    using Enums;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -127,19 +128,6 @@ namespace View.Personal
                 Directory.CreateDirectory(_TempPath); // ensure path exists
                 _TypeDetector = new TypeDetector(_TempPath);
                 InitializeComponent();
-                
-                var emptyMicrophoneButton = this.FindControl<Button>("EmptyMicrophoneButton");
-                var microphoneButton = this.FindControl<Button>("MicrophoneButton");
-                
-                if (emptyMicrophoneButton != null)
-                {
-                    emptyMicrophoneButton.Click += (s, e) => UIHandlers.ChatUIHandlers.MicrophoneButton_Click(s, e, this);
-                }
-                
-                if (microphoneButton != null)
-                {
-                    microphoneButton.Click += (s, e) => UIHandlers.ChatUIHandlers.MicrophoneButton_Click(s, e, this);
-                }
                 
                 Opened += (_, __) =>
                 {
@@ -914,6 +902,38 @@ namespace View.Personal
             ChatUIHandlers.SendMessageTest_Click(sender, e, this, _ConversationHistory, GetAIResponse);
         }
 
+        private async void MicrophoneButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            try
+            {
+                app.Log(SeverityEnum.Info, "Microphone button clicked - starting speech to text dialog");
+                
+                // Check Vosk model status
+                bool isModelInstalled = Services.VoskModelService.IsModelInstalled;
+                bool isDownloading = Services.VoskModelService.IsDownloading;
+                string modelPath = Services.VoskModelService.ModelPath;
+                
+                app.Log(SeverityEnum.Info, $"Vosk Model Status - Installed: {isModelInstalled}, Downloading: {isDownloading}, Path: {modelPath}");
+                
+                // If model is not installed and not downloading, try to initialize it
+                if (!isModelInstalled && !isDownloading)
+                {
+                    app.Log(SeverityEnum.Info, "Vosk model not found, attempting to initialize download");
+                    _ = Task.Run(async () => {
+                        await Services.VoskModelService.InitializeVoskModelAsync();
+                    });
+                }
+                
+                ChatUIHandlers.MicrophoneButton_Click(sender, e, this);
+            }
+            catch (Exception ex)
+            {
+                app.Log(SeverityEnum.Error, $"Error in MicrophoneButton_Click: {ex.Message}");
+                ShowNotification("Speech to Text Error", $"Failed to open speech dialog: {ex.Message}", NotificationType.Error);
+            }
+        }
+
         private void ChatOptionsButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.ContextMenu != null) button.ContextMenu.Open(button);
@@ -1670,6 +1690,9 @@ namespace View.Personal
         {
             base.OnClosed(e);
             DataMonitorUIHandlers.CleanupFileWatchers(this);
+            
+            // Dispose cached Vosk model to free memory
+            Services.VoskModelService.DisposeModel();
         }
 
         private void NavigateUpButton_Click(object sender, RoutedEventArgs e)

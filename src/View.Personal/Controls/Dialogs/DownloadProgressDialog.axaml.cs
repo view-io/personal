@@ -9,14 +9,23 @@ using View.Personal.Services;
 
 namespace View.Personal.Controls.Dialogs
 {
+    /// <summary>
+    /// Dialog for displaying download progress of speech recognition models.
+    /// </summary>
     public partial class DownloadProgressDialog : UserControl
     {
         private Window? _dialogWindow;
         private System.Timers.Timer? _progressCheckTimer;
         private bool _downloadCompleted = false;
 
+        /// <summary>
+        /// Event that is raised when the download is completed.
+        /// </summary>
         public event EventHandler? DownloadCompleted;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DownloadProgressDialog"/> class.
+        /// </summary>
         public DownloadProgressDialog()
         {
             InitializeComponent();
@@ -33,6 +42,11 @@ namespace View.Personal.Controls.Dialogs
             AvaloniaXamlLoader.Load(this);
         }
 
+        /// <summary>
+        /// Shows the download progress dialog asynchronously.
+        /// </summary>
+        /// <param name="parent">The parent window for the dialog.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains true if the download completed successfully.</returns>
         public static async Task<bool> ShowAsync(Window parent)
         {
             var dialog = new DownloadProgressDialog();
@@ -60,7 +74,7 @@ namespace View.Personal.Controls.Dialogs
 
             if (parent != null)
             {
-                window.ShowDialog(parent);
+                await window.ShowDialog(parent);
             }
             else
             {

@@ -61,7 +61,9 @@ namespace View.Personal.UIHandlers
 
             try
             {
+                app.Log(SeverityEnum.Info, "Attempting to show SpeechToTextDialog");
                 var transcribedText = await SpeechToTextDialog.ShowAsync(window);
+                app.Log(SeverityEnum.Info, $"SpeechToTextDialog completed with result: {transcribedText ?? "null"}");
                 
                 if (!string.IsNullOrWhiteSpace(transcribedText))
                 {
@@ -93,6 +95,15 @@ namespace View.Personal.UIHandlers
             catch (Exception ex)
             {
                 app.Log(SeverityEnum.Error, $"Error in speech-to-text: {ex.Message}");
+                app.LogExceptionToFile(ex, "Speech-to-text error");
+                
+                // Show user-friendly notification
+                if (mainWindow != null)
+                {
+                    mainWindow.ShowNotification("Speech to Text Error", 
+                        $"Could not open speech recognition: {ex.Message}", 
+                        Avalonia.Controls.Notifications.NotificationType.Error);
+                }
             }
         }
 
