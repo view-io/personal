@@ -165,11 +165,12 @@ namespace View.Personal.Helpers
             var atomIndex = 0;
             var app = (App)App.Current;
 
+            int emptyAtoms = 0;
+
             foreach (var atom in atoms)
             {
                 if (string.IsNullOrWhiteSpace(atom.Text))
                 {
-                    app.Log(Enums.SeverityEnum.Info, $"Skipping empty atom at index {atomIndex}");
                     atomIndex++;
                     continue;
                 }
@@ -194,6 +195,7 @@ namespace View.Personal.Helpers
                 atomIndex++;
             }
 
+            app.Log(Enums.SeverityEnum.Info, $"Returning {chunkNodes.Count} atoms ({emptyAtoms} empty were skipped)");
             return chunkNodes;
         }
 
