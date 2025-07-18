@@ -13,7 +13,6 @@ namespace View.Personal
     using Helpers;
     using LiteGraph;
     using Material.Icons.Avalonia;
-    using NPOI.OpenXmlFormats.Dml.Chart;
     using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
@@ -30,6 +29,7 @@ namespace View.Personal
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using Timestamps;
     using UIHandlers;
     using View.Personal.Enums;
     using SeverityEnum = Enums.SeverityEnum;
@@ -546,22 +546,22 @@ namespace View.Personal
                     bool success = await app.ConsoleLogging.DownloadLogsAsync(filePath);
                     if (success)
                     {
-                        ShowNotification(ResourceManagerService.GetString("Success"), 
-                            ResourceManagerService.GetString("ConsoleLogsSavedSuccessfully"), 
+                        ShowNotification(ResourceManagerService.GetString("Success"),
+                            ResourceManagerService.GetString("ConsoleLogsSavedSuccessfully"),
                             NotificationType.Success);
                     }
                     else
                     {
-                        ShowNotification(ResourceManagerService.GetString("Warning"), 
-                            ResourceManagerService.GetString("NoConsoleLogsToDownload"), 
+                        ShowNotification(ResourceManagerService.GetString("Warning"),
+                            ResourceManagerService.GetString("NoConsoleLogsToDownload"),
                             NotificationType.Warning);
                     }
                 }
                 catch (Exception ex)
                 {
                     app.ConsoleLog(SeverityEnum.Error, $"error saving console logs:" + Environment.NewLine + ex.ToString());
-                    ShowNotification(ResourceManagerService.GetString("Error"), 
-                        ResourceManagerService.GetString("FailedToSaveConsoleLogs"), 
+                    ShowNotification(ResourceManagerService.GetString("Error"),
+                        ResourceManagerService.GetString("FailedToSaveConsoleLogs"),
                         NotificationType.Error);
                 }
             }
@@ -598,13 +598,13 @@ namespace View.Personal
             var app = (App)Application.Current;
             var saveButton = this.FindControl<Button>("SaveLanguageButton");
             var spinner = this.FindControl<MaterialIcon>("SaveLanguageSpinner");
-            
+
             try
             {
                 spinner.IsVisible = true;
-                
+
                 string languageCode = "en";
-                
+
                 var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
                 if (languagePanel != null)
                 {
@@ -628,7 +628,7 @@ namespace View.Personal
                     var koreanRadio = this.FindControl<RadioButton>("KoreanLanguageRadio");
                     var portugueseRadio = this.FindControl<RadioButton>("PortugueseLanguageRadio");
                     var frenchRadio = this.FindControl<RadioButton>("FrenchLanguageRadio");
-                    
+
                     if (hindiRadio?.IsChecked == true)
                         languageCode = "hi";
                     else if (simplifiedChineseRadio?.IsChecked == true)
@@ -646,15 +646,15 @@ namespace View.Personal
                     else if (frenchRadio?.IsChecked == true)
                         languageCode = "fr";
                 }
-                
-                app.ApplicationSettings.PreferredLanguage = languageCode;   
+
+                app.ApplicationSettings.PreferredLanguage = languageCode;
                 app.SaveSettings();
-              
+
                 Services.ResourceManagerService.SetCulture(new System.Globalization.CultureInfo(languageCode));
-                
+
                 // Show success notification
-                this.ShowNotification(ResourceManagerService.GetString("LanguageSettingSaved"), 
-                    ResourceManagerService.GetString("LanguagePreferenceSaved"), 
+                this.ShowNotification(ResourceManagerService.GetString("LanguageSettingSaved"),
+                    ResourceManagerService.GetString("LanguagePreferenceSaved"),
                     NotificationType.Success);
             }
             catch (Exception ex)
@@ -672,20 +672,20 @@ namespace View.Personal
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
             var app = (App)Application.Current;
             var settings = app.ApplicationSettings;
-            
+
             // Set language radio buttons based on preferred language
             if (!string.IsNullOrEmpty(settings.PreferredLanguage))
             {
                 var languageCode = settings.PreferredLanguage.ToLower();
                 var languagePanel = this.FindControl<StackPanel>("LanguageSelectionPanel");
-                
+
                 if (languagePanel != null)
                 {
                     bool foundMatchingRadioButton = false;
-                   
+
                     foreach (var child in languagePanel.Children)
                     {
-                        if (child is RadioButton radioButton && 
+                        if (child is RadioButton radioButton &&
                             radioButton.Tag?.ToString()?.ToLower() == languageCode)
                         {
                             radioButton.IsChecked = true;
@@ -693,7 +693,7 @@ namespace View.Personal
                             break;
                         }
                     }
-                    
+
                     if (!foundMatchingRadioButton)
                     {
                         var defaultRadio = this.FindControl<RadioButton>("EnglishLanguageRadio");
@@ -862,9 +862,9 @@ namespace View.Personal
                     ShowNotification(ResourceManagerService.GetString("NoSelection"), ResourceManagerService.GetString("SelectAtLeastOneFile"), NotificationType.Warning);
                     return;
                 }
-                
+
                 bool isDeleted = await FileDeleter.DeleteSelectedFilesAsync(selectedFiles, _LiteGraph, _TenantGuid, _ActiveGraphGuid, this);
-                
+
                 if (isDeleted)
                 {
                     var selectAllButton = this.FindControl<Button>("SelectAllButton");
@@ -872,12 +872,12 @@ namespace View.Personal
                     {
                         var textBlock = stackPanel.Children.OfType<TextBlock>().FirstOrDefault();
                         var icon = stackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
-                        
+
                         if (textBlock != null)
                         {
                             textBlock.Text = ResourceManagerService.GetString("SelectAll");
                         }
-                        
+
                         if (icon != null)
                         {
                             icon.Kind = Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
@@ -1014,9 +1014,9 @@ namespace View.Personal
             var preferredLanguage = app.ApplicationSettings.PreferredLanguage;
             var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(preferredLanguage);
             var languageName = cultureInfo.DisplayName;
-            
+
             string languageInstruction = $"Please respond ONLY in {languageName}. Do not provide translations to other languages";
-            
+
             if (!string.IsNullOrWhiteSpace(customSystemPrompt))
             {
                 finalList.Add(new ChatMessage
@@ -1083,11 +1083,9 @@ namespace View.Personal
                 var app = (App)Application.Current;
                 app.ConsoleLog(SeverityEnum.Debug, $"AI response retrieval started with provider: {app.ApplicationSettings.SelectedProvider}");
                 var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
-                var embeddingsProvider =
-                    app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
+                var embeddingsProvider = app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
 
-                // Get the RAG settings for the selected provider
                 var ragSettings = selectedProvider switch
                 {
                     "OpenAI" => app.ApplicationSettings.OpenAI.RAG,
@@ -1107,31 +1105,44 @@ namespace View.Personal
                     string processedQuery = userInput;
                     if (ragSettings.QueryOptimization)
                     {
-                        processedQuery = _RagService.OptimizeQuery(userInput, ragSettings);
-                        app.ConsoleLog(SeverityEnum.Debug, $"query optimized: {processedQuery}");
+                        using (Timestamp tsQueryOptimization = new Timestamp())
+                        {
+                            tsQueryOptimization.Start = DateTime.UtcNow;
+                            app.ConsoleLog(SeverityEnum.Debug, "beginning query optimization");
+                            processedQuery = _RagService.OptimizeQuery(userInput, ragSettings);
+                            tsQueryOptimization.End = DateTime.UtcNow;
+                            app.ConsoleLog(SeverityEnum.Debug, $"query optimized in {tsQueryOptimization?.TotalMs?.ToString("F2")}ms: {processedQuery}");
+                        }
                     }
 
-                    // Generate embeddings with the selected embeddings provider
-                    app.ConsoleLog(SeverityEnum.Debug, $"generating embeddings with provider: {embeddingsProvider}");
-                    var (sdk, embeddingsRequest) =
-                        GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
-                    var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
-                    if (promptEmbeddings == null)
-                        return "Error: Failed to generate embeddings for the prompt";
-                    app.ConsoleLog(SeverityEnum.Debug, "embeddings generated successfully");
+                    List<float> floatEmbeddings = null;
 
-                    var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
+                    using (Timestamp tsPromptEmbeddings = new Timestamp())
+                    {
+                        tsPromptEmbeddings.Start = DateTime.UtcNow;
+                        app.ConsoleLog(SeverityEnum.Debug, $"generating embeddings with provider: {embeddingsProvider}");
+                        var (sdk, embeddingsRequest) = GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
+                        var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
+                        floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
+                        tsPromptEmbeddings.End = DateTime.UtcNow;
+                        if (promptEmbeddings == null) return "Error: Failed to generate embeddings for the prompt";
+                        app.ConsoleLog(SeverityEnum.Debug, $"embeddings generated successfully in {tsPromptEmbeddings?.TotalMs?.ToString("F2")}ms");
+                    }
 
                     // Retrieve relevant documents using RAG service
                     var (searchResults, context) = await _RagService.RetrieveRelevantDocumentsAsync(floatEmbeddings, ragSettings);
 
                     if (string.IsNullOrEmpty(context))
-                    {
-                        return "I couldn't find any relevant documents in the knowledge base for your query";
-                    }
+                        return "I couldn't find any relevant documents in the knowledgebase for your query";
 
                     // Build messages with RAG context
-                    finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, await BuildPromptMessages());
+                    using (Timestamp tsBuildPrompt = new Timestamp())
+                    {
+                        tsBuildPrompt.Start = DateTime.UtcNow;
+                        finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, await BuildPromptMessages());
+                        tsBuildPrompt.End = DateTime.UtcNow;
+                        app.ConsoleLog(SeverityEnum.Debug, $"built prompt in {tsBuildPrompt?.TotalMs?.ToString("F2")}ms");
+                    }
                 }
                 else
                 {
@@ -1140,10 +1151,18 @@ namespace View.Personal
                     finalMessages = new List<ChatMessage>(await BuildPromptMessages());
                     finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 }
-                var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
-                app.ConsoleLog(SeverityEnum.Debug, $"sending API request to {selectedProvider}");
-                var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
-                app.ConsoleLog(SeverityEnum.Debug, "API request completed");
+
+                string result = null;
+
+                using (Timestamp tsApiRequest = new Timestamp())
+                {
+                    tsApiRequest.Start = DateTime.UtcNow;
+                    var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
+                    app.ConsoleLog(SeverityEnum.Debug, $"sending API request to {selectedProvider}");
+                    result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
+                    tsApiRequest.End = DateTime.UtcNow;
+                    app.ConsoleLog(SeverityEnum.Debug, $"API request completed in {tsApiRequest?.TotalMs?.ToString("F2")}ms");
+                }
                 return result;
             }
             catch (Exception ex)
@@ -1179,7 +1198,7 @@ namespace View.Personal
                       Content = summaryPrompt
                    }
                 };
-                
+
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
                 app.ConsoleLog(SeverityEnum.Debug, $"sending summarization request to {selectedProvider}");
 
@@ -1297,7 +1316,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             app.ConsoleLog(SeverityEnum.Info, $"creating summarization request body for {provider}");
-            
+
             switch (provider)
             {
                 case "OpenAI":
@@ -1414,7 +1433,7 @@ namespace View.Personal
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
-            app.ConsoleLog(SeverityEnum.Debug, $"API request completed for provider: {provider} for Summarization");
+            app.ConsoleLog(SeverityEnum.Debug, $"API request completed for provider: {provider} for summarization");
             return response;
         }
 
@@ -1708,7 +1727,7 @@ namespace View.Personal
                 UpdateSelectAllButtonState();
             }
         }
-        
+
         /// <summary>
         /// Updates the Select All button text based on the current selection state of files.
         /// </summary>
@@ -1718,17 +1737,17 @@ namespace View.Personal
             {
                 var filesList = allFiles.ToList();
                 var selectAllButton = this.FindControl<Button>("SelectAllButton");
-                
+
                 if (selectAllButton != null && selectAllButton.Content is StackPanel buttonStackPanel)
                 {
                     var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
                     var icon = buttonStackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
-                    
+
                     if (textBlock != null && icon != null)
                     {
                         bool allChecked = filesList.All(f => f.IsChecked);
                         bool noneChecked = filesList.All(f => !f.IsChecked);
-                        
+
                         if (allChecked)
                         {
                             textBlock.Text = ResourceManagerService.GetString("UnselectAll");
@@ -1743,7 +1762,7 @@ namespace View.Personal
                 }
             }
         }
-        
+
         /// <summary>
         /// Handles the Click event of the Select All button, selecting or unselecting all files on the current page.
         /// </summary>
@@ -1755,7 +1774,7 @@ namespace View.Personal
             {
                 var filesList = allFiles.ToList();
                 var selectAllButton = this.FindControl<Button>("SelectAllButton");
-                
+
                 // Get the current button text to determine the action
                 string currentButtonText = ResourceManagerService.GetString("SelectAll");
                 if (selectAllButton != null && selectAllButton.Content is StackPanel stackPanel)
@@ -1766,31 +1785,31 @@ namespace View.Personal
                         currentButtonText = textBlock.Text;
                     }
                 }
-                
+
                 // If button says "Unselect All", we want to unselect all files
                 // If button says "Select All", we want to select all files
                 bool newCheckedState = currentButtonText == ResourceManagerService.GetString("SelectAll");
-                
+
                 foreach (var file in filesList)
                 {
                     file.IsChecked = newCheckedState;
                 }
-                
+
                 // Update button text and icon based on the action performed
                 if (selectAllButton != null && selectAllButton.Content is StackPanel buttonStackPanel)
                 {
                     var textBlock = buttonStackPanel.Children.OfType<TextBlock>().FirstOrDefault();
                     var icon = buttonStackPanel.Children.OfType<Material.Icons.Avalonia.MaterialIcon>().FirstOrDefault();
-                    
+
                     if (textBlock != null)
                     {
                         textBlock.Text = newCheckedState ? ResourceManagerService.GetString("UnselectAll") : ResourceManagerService.GetString("SelectAll");
                     }
-                    
+
                     if (icon != null)
                     {
-                        icon.Kind = newCheckedState ? 
-                            Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline : 
+                        icon.Kind = newCheckedState ?
+                            Material.Icons.MaterialIconKind.CheckboxMultipleBlankOutline :
                             Material.Icons.MaterialIconKind.CheckboxMultipleMarkedOutline;
                     }
                 }
@@ -1921,7 +1940,7 @@ namespace View.Personal
                         MainWindowHelpers.GetDocumentNodes(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
                     var selectAllButton = this.FindControl<Button>("SelectAllButton");
                     var removeSelectedFilesButton = this.FindControl<Button>("RemoveSelectedFilesButton");
-                    
+
                     if (uniqueFiles.Any())
                     {
                         filesDataGrid.ItemsSource = uniqueFiles;
@@ -1929,12 +1948,12 @@ namespace View.Personal
                         filesDataGrid.IsVisible = true;
                         filePaginationControls.IsVisible = true;
                         fileOperationsPanel.IsVisible = true;
-                        
+
                         // Make Select All and Remove Selected Files buttons visible when files are present
                         if (selectAllButton != null)
                         {
                             selectAllButton.IsVisible = true;
-                            
+
                             // Reset the button text to "Select All"
                             if (selectAllButton.Content is StackPanel buttonStackPanel)
                             {
@@ -1945,7 +1964,7 @@ namespace View.Personal
                                 }
                             }
                         }
-                        
+
                         if (removeSelectedFilesButton != null)
                         {
                             removeSelectedFilesButton.IsVisible = true;
@@ -1958,13 +1977,13 @@ namespace View.Personal
                         fileOperationsPanel.IsVisible = false;
                         filePaginationControls.IsVisible = false;
                         uploadFilesPanel.IsVisible = true;
-                        
+
                         // Hide Select All and Remove Selected Files buttons when no files are present
                         if (selectAllButton != null)
                         {
                             selectAllButton.IsVisible = false;
                         }
-                        
+
                         if (removeSelectedFilesButton != null)
                         {
                             removeSelectedFilesButton.IsVisible = false;

@@ -42,7 +42,7 @@ namespace ViewPersonal.Updater
                         Directory.CreateDirectory(logDirectory);
                     }
 
-                    _FileLogging = new LoggingModule(Path.Combine(logDirectory, "View-Personal-Updater.log"));
+                    _FileLogging = new LoggingModule(Path.Combine(logDirectory, "view-personal-updater.log"));
                     _FileLogging.Debug(_Header + "File logging initialized");
 
                     var args = Environment.GetCommandLineArgs();

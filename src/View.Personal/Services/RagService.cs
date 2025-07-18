@@ -7,6 +7,7 @@ namespace View.Personal.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Timestamps;
 
     /// <summary>
     /// Service for handling Retrieval Augmented Generation (RAG) functionality.
@@ -65,10 +66,18 @@ namespace View.Personal.Services
                 _app.ConsoleLog(Enums.SeverityEnum.Debug, "performing vector search with RAG settings");
 
                 // Perform vector search
-                var searchResults = await PerformVectorSearch(
-                    queryEmbeddings,
-                    ragSettings.NumberOfDocumentsToRetrieve,
-                    ragSettings.SimilarityThreshold);
+                IEnumerable<VectorSearchResult> searchResults = null!;
+
+                using (Timestamp tsVectorSearch = new Timestamp())
+                {
+                    tsVectorSearch.Start = DateTime.UtcNow;
+                    searchResults = await PerformVectorSearch(
+                        queryEmbeddings,
+                        ragSettings.NumberOfDocumentsToRetrieve,
+                        ragSettings.SimilarityThreshold);
+                    tsVectorSearch.End = DateTime.UtcNow;
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed vector search in {tsVectorSearch?.TotalMs?.ToString("F2")}ms");
+                }
 
                 if (searchResults == null || !searchResults.Any())
                 {
@@ -79,7 +88,13 @@ namespace View.Personal.Services
                 // Apply context sorting if enabled
                 if (ragSettings.EnableContextSorting)
                 {
-                    searchResults = SortSearchResults(searchResults);
+                    using (Timestamp tsContextSorting = new Timestamp())
+                    {
+                        tsContextSorting.Start = DateTime.UtcNow;
+                        searchResults = SortSearchResults(searchResults);
+                        tsContextSorting.End = DateTime.UtcNow;
+                        _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed context sorting in {tsContextSorting?.TotalMs?.ToString("F2")}ms");
+                    }
                 }
 
                 // Build context from search results

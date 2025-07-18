@@ -102,7 +102,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.8;
+            public double Temperature { get; set; } = 0.2;
             
             /// <summary>
             /// The system prompt to use for the model.

@@ -233,10 +233,7 @@ namespace View.Personal
                     base.OnFrameworkInitializationCompleted();
                     LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
 
-                    _Logging.Debug(_Header + "creating MainWindow");
                     desktop.MainWindow = new MainWindow();
-
-                    _Logging.Debug(_Header + "showing MainWindow");
                     desktop.MainWindow.Show();
 
                     // Preload models in background after window is shown
@@ -329,7 +326,11 @@ namespace View.Personal
                 var json = JsonSerializer.Serialize(ApplicationSettings, options);
                 File.WriteAllText(_SettingsFilePath, json);
                 _Logging.Debug(_Header +
-                               $"Settings saved to {_SettingsFilePath} with GUIDs: Tenant={_TenantGuid}, Graph={_GraphGuid}, User={_UserGuid}, Credential={_CredentialGuid}");
+                               $"settings saved to {_SettingsFilePath}:" + Environment.NewLine +
+                               $"| tenant GUID     : {_TenantGuid}" + Environment.NewLine +
+                               $"| graph GUID      : {_GraphGuid}" + Environment.NewLine +
+                               $"| user GUID       : {_UserGuid}" + Environment.NewLine +
+                               $"| credential GUID : {_CredentialGuid}");
             }
             catch (Exception ex)
             {
