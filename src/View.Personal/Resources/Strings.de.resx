@@ -654,8 +654,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>Kontextsortierung aktivieren</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>Lokale Modelle</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Ollama-Modelle</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>Ein neues Modell abrufen</value>
@@ -1148,5 +1148,11 @@
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>Dateiaufnahme wird fortgesetzt …</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Geben Sie das zu verwendende OpenAI-Einbettungsmodell an, z. B. „text-embedding-3-small“.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Geben Sie das zu verwendende VoyageAI-Einbettungsmodell an, z. B. „text-embedding-3-small“.</value>
   </data>
 </root>

@@ -658,8 +658,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>컨텍스트 정렬 활성화</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>로컬 모델</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>올라마 모델</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>새 모델 가져오기</value>
@@ -1152,5 +1152,11 @@
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>파일 수집을 재개합니다...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>사용할 OpenAI 임베딩 모델을 지정합니다(예: text-embedding-3-small).</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>사용할 VoyageAI 임베딩 모델을 지정합니다(예: text-embedding-3-small).</value>
   </data>
 </root>

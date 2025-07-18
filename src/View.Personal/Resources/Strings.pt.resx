@@ -658,8 +658,8 @@ reimportar todos os documentos.</value>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>Ativar ordenação de contexto</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>Modelos Locais</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Modelos Ollama</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>Baixar um novo modelo</value>
@@ -1152,5 +1152,11 @@ reimportar todos os documentos.</value>
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>Retomando a ingestão de arquivos...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Especifique o modelo de incorporação OpenAI a ser usado, por exemplo, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Especifique o modelo de incorporação VoyageAI a ser usado, por exemplo, text-embedding-3-small.</value>
   </data>
 </root>

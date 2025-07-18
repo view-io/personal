@@ -658,8 +658,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>संदर्भ क्रमबद्ध करना सक्षम करें</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>स्थानीय मॉडल</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>ओलामा मॉडल्स</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>एक नया मॉडल पुल करें</value>
@@ -1152,5 +1152,11 @@
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>फ़ाइल अंतर्ग्रहण पुनः आरंभ हो रहा है...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए OpenAI एम्बेडिंग मॉडल निर्दिष्ट करें, उदाहरण के लिए, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>उपयोग करने के लिए VoyageAI एम्बेडिंग मॉडल निर्दिष्ट करें, उदाहरण के लिए, text-embedding-3-small.</value>
   </data>
 </root>

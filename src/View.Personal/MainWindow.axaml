@@ -1702,7 +1702,7 @@
 								</Grid>
 							</Border>
 						</TabItem>
-						<TabItem Header="{l:Localize LocalModels}">
+						<TabItem Header="{l:Localize OllamaModels}">
 							<Border Padding="0,0,0,0">
 								<controls:LocalModelsView />
 							</Border>

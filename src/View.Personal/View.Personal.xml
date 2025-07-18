@@ -186,7 +186,7 @@
         </member>
         <member name="P:View.Personal.Classes.AppSettings.SelectedProvider">
             <summary>
-            The currently selected AI provider. Default is "View".
+            The currently selected AI provider. Default is "Ollama".
             </summary>
         </member>
         <member name="P:View.Personal.Classes.AppSettings.SelectedEmbeddingsProvider">

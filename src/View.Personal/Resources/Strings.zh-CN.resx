@@ -657,8 +657,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>启用上下文排序</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>本地型号</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>奥拉马 模型</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>拉新模型</value>
@@ -1151,5 +1151,11 @@
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>正在恢复文件提取...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的 OpenAI 嵌入模型，例如 text-embedding-3-small。</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>指定要使用的 VoyageAI 嵌入模型，例如 text-embedding-3-small。</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-namespace View.Personal.Classes
+﻿namespace View.Personal.Classes
 {
     using System;
     using System.Collections.Generic;
@@ -44,9 +44,9 @@ namespace View.Personal.Classes
         public EmbeddingsSettings Embeddings { get; set; } = new();
 
         /// <summary>
-        /// The currently selected AI provider. Default is "View".
+        /// The currently selected AI provider. Default is "Ollama".
         /// </summary>
-        public string SelectedProvider { get; set; } = "View";
+        public string SelectedProvider { get; set; } = "Ollama";
 
         /// <summary>
         /// The currently selected embeddings provider. Default is "Ollama".
@@ -82,7 +82,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for completion requests.
             /// </summary>
-            public string CompletionModel { get; set; } = "";
+            public string CompletionModel { get; set; } = "gpt-4o-mini";
 
             /// <summary>
             /// The endpoint URL for OpenAI API requests.
@@ -107,8 +107,8 @@ namespace View.Personal.Classes
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "";
-            
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant. Please respond primarily out of the supplied context. Be pleasant and kind";
+
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
@@ -133,7 +133,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for completion requests.
             /// </summary>
-            public string CompletionModel { get; set; } = "";
+            public string CompletionModel { get; set; } = "claude-3-5-sonnet";
 
             /// <summary>
             /// The endpoint URL for Anthropic API requests.
@@ -153,13 +153,13 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.8;
-            
+            public double Temperature { get; set; } = 0.2;
+
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "";
-            
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant. Please respond primarily out of the supplied context. Be pleasant and kind";
+
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
@@ -179,7 +179,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for completion requests.
             /// </summary>
-            public string CompletionModel { get; set; } = "";
+            public string CompletionModel { get; set; } = "llama3";
 
             /// <summary>
             /// The endpoint URL for Ollama API requests.
@@ -199,12 +199,12 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.8;
-            
+            public double Temperature { get; set; } = 0.2;
+
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "You are a helpful AI assistant.  Please respond primarily out of the supplied context.  Be pleasant and kind";
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant. Please respond primarily out of the supplied context. Be pleasant and kind";
 
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
@@ -260,7 +260,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for completion requests.
             /// </summary>
-            public string CompletionModel { get; set; } = "";
+            public string CompletionModel { get; set; } = "llama3";
 
             /// <summary>
             /// Indicates whether the View provider is enabled.
@@ -280,13 +280,13 @@ namespace View.Personal.Classes
             /// <summary>
             /// The temperature setting for controlling randomness in completions.
             /// </summary>
-            public double Temperature { get; set; } = 0.7;
-            
+            public double Temperature { get; set; } = 0.2;
+
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "";
-            
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant. Please respond primarily out of the supplied context. Be pleasant and kind";
+
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).
             /// </summary>
@@ -343,7 +343,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for Ollama embeddings.
             /// </summary>
-            public string OllamaEmbeddingModel { get; set; } = "";
+            public string OllamaEmbeddingModel { get; set; } = "all-minilm";
 
             /// <summary>
             /// Max tokens for the Ollama embedding model.
@@ -358,7 +358,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for View embeddings.
             /// </summary>
-            public string ViewEmbeddingModel { get; set; } = "";
+            public string ViewEmbeddingModel { get; set; } = "all-minilm";
 
             /// <summary>
             /// Max tokens for the View embedding model.
@@ -378,7 +378,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for OpenAI embeddings.
             /// </summary>
-            public string OpenAIEmbeddingModel { get; set; } = "";
+            public string OpenAIEmbeddingModel { get; set; } = "text-embedding-3-small";
 
             /// <summary>
             /// Max tokens for the OpenAI embedding model.
@@ -393,7 +393,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The model name to use for Voyage embeddings.
             /// </summary>
-            public string VoyageEmbeddingModel { get; set; } = "";
+            public string VoyageEmbeddingModel { get; set; } = "voyage-3‑lite";
 
             /// <summary>
             /// Max tokens for the Voyage embedding model.

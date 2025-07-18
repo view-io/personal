@@ -657,8 +657,8 @@ réimporter tous les documents.</value>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>Activer le tri du contexte</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>Modèles locaux</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Modèles Ollama</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>Télécharger un nouveau modèle</value>
@@ -1151,5 +1151,11 @@ réimporter tous les documents.</value>
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>Reprise de l'ingestion de fichiers...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d’intégration OpenAI à utiliser, par exemple, text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Spécifiez le modèle d’intégration VoyageAI à utiliser, par exemple, text-embedding-3-small.</value>
   </data>
 </root>

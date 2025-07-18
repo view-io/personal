@@ -658,8 +658,8 @@ need to re-import all documents.</value>
   <data name="EnableContextSorting" xml:space="preserve">
     <value>Enable context sorting</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>Local Models</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>Ollama Models</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>Pull a new model</value>
@@ -1152,5 +1152,11 @@ need to re-import all documents.</value>
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>Resuming file ingestion...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Specify the OpenAI embedding model to use, e.g., text-embedding-3-small.</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>Specify the VoyageAI embedding model to use, e.g., text-embedding-3-small.</value>
   </data>
 </root>

@@ -658,8 +658,8 @@
   <data name="EnableContextSorting" xml:space="preserve">
     <value>コンテキストの並べ替えを有効にする</value>
   </data>
-  <data name="LocalModels" xml:space="preserve">
-    <value>ローカルモデル</value>
+  <data name="OllamaModels" xml:space="preserve">
+    <value>オラマモデル</value>
   </data>
   <data name="PullNewModel" xml:space="preserve">
     <value>新しいモデルをプル</value>
@@ -1152,5 +1152,11 @@
   </data>
   <data name="ResumingIngestionMessage" xml:space="preserve">
     <value>ファイルの取り込みを再開しています...</value>
+  </data>
+  <data name="SpecifyOpenAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>使用する OpenAI 埋め込みモデルを指定します (例: text-embedding-3-small)。</value>
+  </data>
+  <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
+    <value>使用する VoyageAI 埋め込みモデルを指定します (例: text-embedding-3-small)。</value>
   </data>
 </root>
