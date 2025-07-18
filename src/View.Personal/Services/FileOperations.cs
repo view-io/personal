@@ -120,9 +120,6 @@ namespace View.Personal.Services
                     if (result != false)
                     {
                         await mainWindowInstance.ReIngestFileAsync(file.FilePath ?? string.Empty);
-                        mainWindowInstance.ShowNotification(ResourceManagerService.GetString("FileReprocessed"), 
-                            string.Format(ResourceManagerService.GetString("FileReprocessedSuccessfully"), file.Name), 
-                            NotificationType.Success);
                     }
                 }
             }

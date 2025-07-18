@@ -462,7 +462,6 @@ namespace View.Personal.Services
                     if (token.IsCancellationRequested)
                     {
                         await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"ingestion cancelled after creating document node: {Path.GetFileName(filePath)}"));
-
                         return;
                     }
 
@@ -833,28 +832,19 @@ namespace View.Personal.Services
             var mainWindow = window as MainWindow;
             if (mainWindow == null) return;
 
-            var fileName = Path.GetFileName(filePath);
-            if (fileName == ".DS_Store")
-            {
-                app.ConsoleLog(Enums.SeverityEnum.Info, $"skipping system file: {filePath}");
-                return;
-            }
-
-            var extension = Path.GetExtension(filePath).ToLowerInvariant();
-            if (!SupportedExtensions.Contains(extension))
-            {
-                app.ConsoleLog(Enums.SeverityEnum.Warn, $"unsupported file extension: {extension}");
-                mainWindow.ShowNotification(ResourceManagerService.GetString("ReingestionError"), ResourceManagerService.GetString("UnsupportedFileType"), NotificationType.Error);
-                return;
-            }
-
-            if (!IngestionList.Contains(filePath))
-                IngestionList.Add(filePath);
-
             IngestionProgressService.StartFileIngestion(filePath);
             IngestionProgressService.UpdatePendingFiles();
             IngestionProgressService.UpdateCurrentFileProgress(filePath, "Starting re-ingestion..", 0);
 
+            if (!IngestionList.Contains(filePath))
+                IngestionList.Add(filePath);
+            
+            if (token.IsCancellationRequested)
+            {
+                wasCancelled = true;
+                await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"ingestion cancelled before starting: {Path.GetFileName(filePath)}"));
+                return;
+            }
             var embeddingProvider = appSettings.Embeddings.SelectedEmbeddingModel;
 
             var spinner = window.FindControl<ProgressBar>("IngestSpinner");
@@ -965,6 +955,12 @@ namespace View.Personal.Services
                                     atoms = pdfProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from PDF"));
                                     IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from PDF", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             case DocumentTypeEnum.Text:
@@ -982,6 +978,12 @@ namespace View.Personal.Services
                                     atoms = textProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from Text file"));
                                     IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Text file", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             case DocumentTypeEnum.Pptx:
@@ -998,6 +1000,13 @@ namespace View.Personal.Services
                                     var pptxProcessor = new PptxProcessor(processorSettings);
                                     atoms = pptxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from PowerPoint"));
+                                    IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Text file", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             case DocumentTypeEnum.Docx:
@@ -1015,6 +1024,12 @@ namespace View.Personal.Services
                                     atoms = docxProcessor.Extract(filePath).ToList();
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from Word document"));
                                     IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Word document", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             case DocumentTypeEnum.Markdown:
@@ -1034,6 +1049,12 @@ namespace View.Personal.Services
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from Markdown file"));
                                     IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Markdown file", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             case DocumentTypeEnum.Xlsx:
@@ -1053,6 +1074,12 @@ namespace View.Personal.Services
                                     }
                                     await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"extracted {atoms.Count} atoms from Excel file"));
                                     IngestionProgressService.UpdateProgress($"Extracted {atoms.Count} atoms from Excel file", 20);
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        wasCancelled = true;
+                                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after extraction: {Path.GetFileName(filePath)}"));
+                                        return;
+                                    }
                                     break;
                                 }
                             default:
@@ -1069,6 +1096,12 @@ namespace View.Personal.Services
                         }
                     }
 
+                    if (token.IsCancellationRequested)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"ingestion cancelled before tokenization: {Path.GetFileName(filePath)}"));
+                        return;
+                    }
+
                     const int overlap = 50;
 
                     var finalAtoms = new List<Atom>();
@@ -1077,6 +1110,11 @@ namespace View.Personal.Services
                         tokenExtractor.WordRemover.WordsToRemove = new string[0];
                         foreach (var atom in atoms)
                         {
+                            if (token.IsCancellationRequested)
+                            {
+                                await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"ingestion cancelled during tokenization: {Path.GetFileName(filePath)}"));
+                                return;
+                            }
                             var tokens = tokenExtractor.Process(atom.Text).ToList();
                             var tokenCount = tokens.Count;
                             if (tokenCount <= maxTokens)
@@ -1099,17 +1137,39 @@ namespace View.Personal.Services
                         }
                     }
 
+                    if (token.IsCancellationRequested)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"ingestion cancelled before creating document node: {Path.GetFileName(filePath)}"));
+                        return;
+                    }
+
                     IngestionProgressService.UpdateProgress($"Creating document node", 40);
                     var fileNode =
                         MainWindowHelpers.CreateDocumentNode(tenantGuid, graphGuid, filePath, finalAtoms, typeResult);
                     liteGraph.Node.Create(fileNode);
                     app.ConsoleLog(Enums.SeverityEnum.Info, $"created file document node {fileNode.GUID}");
+                    if (token.IsCancellationRequested)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Debug, $"ingestion cancelled after creating document node: {Path.GetFileName(filePath)}"));
+                        return;
+                    }
+
+                    if (token.IsCancellationRequested)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"ingestion cancelled before creating chunk nodes: {Path.GetFileName(filePath)}"));
+                        return;
+                    }
 
                     IngestionProgressService.UpdateProgress("Creating chunk nodes", 50);
                     var chunkNodes = MainWindowHelpers.CreateChunkNodes(tenantGuid, graphGuid, finalAtoms);
                     liteGraph.Node.CreateMany(tenantGuid, graphGuid, chunkNodes);
                     app.ConsoleLog(Enums.SeverityEnum.Info, $"created {chunkNodes.Count} chunk nodes");
 
+                    if (token.IsCancellationRequested)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"ingestion cancelled before creating edges: {Path.GetFileName(filePath)}"));
+                        return;
+                    }
                     IngestionProgressService.UpdateProgress("Creating edges from document to chunk nodes", 85);
                     var edges = MainWindowHelpers.CreateDocumentChunkEdges(tenantGuid, graphGuid, fileNode.GUID,
                         chunkNodes);
@@ -1281,6 +1341,12 @@ namespace View.Personal.Services
                                     return;
                                 }
 
+                                if (token.IsCancellationRequested)
+                                {
+                                    wasCancelled = true;
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled before View embeddings generation: {Path.GetFileName(filePath)}"));
+                                    return;
+                                }
                                 var viewEmbeddingsSdk = new ViewEmbeddingsServerSdk(tenantGuid,
                                     appSettings.View.Endpoint,
                                     appSettings.View.AccessKey);
@@ -1304,6 +1370,13 @@ namespace View.Personal.Services
                                     await viewEmbeddingsSdk.GenerateEmbeddings(viewEmbeddingsRequest);
                                 if (!CheckEmbeddingsResult(mainWindow, viewEmbeddingsResult, validChunkNodes.Count))
                                     return;
+
+                                if (token.IsCancellationRequested)
+                                {
+                                    wasCancelled = true;
+                                    await Dispatcher.UIThread.InvokeAsync(() => app.ConsoleLog(Enums.SeverityEnum.Info, $"re-ingestion cancelled after View embeddings generation: {Path.GetFileName(filePath)}"));
+                                    return;
+                                }
                                 for (var j = 0; j < validChunkNodes.Count; j++)
                                 {
                                     var chunkNode = validChunkNodes[j];
@@ -1341,6 +1414,14 @@ namespace View.Personal.Services
                     if (filePathTextBox != null)
                         filePathTextBox.Text = "";
                     app.ConsoleLog(Enums.SeverityEnum.Info, $"file {filePath} ingested successfully");
+                    
+                    var filename = Path.GetFileName(filePath);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("FileReprocessed"), 
+                            ResourceManagerService.GetString("FileReprocessedSuccess", filename),
+                            NotificationType.Success);
+                    });
                 }
                 else
                 {
@@ -1348,6 +1429,13 @@ namespace View.Personal.Services
                     if (IngestionList.Contains(filePath))
                         IngestionList.Remove(filePath);
                     await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
+                    
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        mainWindow.ShowNotification(ResourceManagerService.GetString("IngestionCancelled"),
+                            ResourceManagerService.GetString("IngestionCancelledMessage", Path.GetFileName(filePath)),
+                            NotificationType.Information);
+                    });
                 }
             }
             catch (Exception ex)
