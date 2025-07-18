@@ -805,877 +805,779 @@
 												</StackPanel>
 											</Grid>
 											<Border BorderBrush="#EAECF0" BorderThickness="1" />
-											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-												<!-- Left column: Provider description -->
+											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,4">
 												<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{l:Localize OpenAIProvider}" FontWeight="500" FontSize="14"
-															   Foreground="#1A1C1E" VerticalAlignment="Top" />
-													<TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" Text="{l:Localize GainAccessToOpenAI}" />
+													<TextBlock Text="{l:Localize CompletionProvider}" FontWeight="500" FontSize="14" Foreground="#1A1C1E" />
+													<TextBlock Margin="0, 0, 0, 4" FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" Text="{l:Localize CompletionProviderDescription}" />
+													<TextBlock FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap">
+														<Run Text="{l:Localize CompletionProviderWarning}" />
+													</TextBlock>
 												</StackPanel>
-												<Expander x:Name="OpenAIExpander" Grid.Column="1" IsExpanded="False"
-														  ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
-														  Padding="0" Background="#F5F5F5">
-													<Expander.Header>
-														<Grid ColumnDefinitions="Auto,*">
-															<RadioButton Grid.Column="0" GroupName="CompletionProvider"
-																		 x:Name="OpenAICompletionProvider"
-																		 VerticalAlignment="Center" />
-															<TextBlock Grid.Column="1" Text="{l:Localize OpenAISettings}"
-																	   VerticalAlignment="Center"
-																	   HorizontalAlignment="Center" FontWeight="500"
-																	   FontSize="13" />
-														</Grid>
-													</Expander.Header>
-													<StackPanel Margin="0,10,0,10" Spacing="8">
-														<TextBlock Text="{l:Localize OpenAIApiKey}" Padding="8,0,0,0"
-															   VerticalAlignment="Center" Margin="0,0,16,0"
-															   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OpenAIApiKey" Text="{l:Localize YourApiKeyHerePlaceholder}" Margin="8,0,8,0" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterOpenAIApiKeyTooltip}" />
-														<TextBlock Text="{l:Localize OpenAICompletionModel}" Padding="8,0,0,0"
-															   VerticalAlignment="Center" Margin="0,0,16,0"
-															   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OpenAICompletionModel" Classes="no-shadow"
-																 Text="gpt-3.5-turbo"
-																 Margin="8,0,8,0"
-																 ToolTip.Tip="{l:Localize SpecifyOpenAIModelTooltip}" />
-														<TextBlock Text="{l:Localize SystemPrompt}" Padding="8,0,0,0"
-															   VerticalAlignment="Center" Margin="0,0,16,0"
-															   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OpenAISystemPrompt"
-																 Text=""
-																 Margin="8,0,8,0"
-																 Height="80"
-																 TextWrapping="Wrap"
-																 AcceptsReturn="True"
-																 VerticalContentAlignment="Top"
-																 ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
-														<TextBlock Text="{l:Localize OpenAIEndpoint}" Padding="8,0,0,0"
-															   VerticalAlignment="Center" Margin="0,0,16,0"
-															   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OpenAIEndpoint"
-																 Classes="no-shadow"
-																 Text="https://api.openai.com/v1/chat/completions"
-																 Margin="8,0,8,0"
-																 ToolTip.Tip="{l:Localize SetOpenAIEndpointTooltip}" />
-														<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
-															<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="OpenAIBatchSize" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize OpenAIBatchSizeTooltip}" />
-															</StackPanel>
-															<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
-																<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="OpenAIMaxRetries" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize OpenAIMaxRetriesTooltip}" />
-															</StackPanel>
-														</Grid>
-														<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
-															<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
-																<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBlock Grid.Column="1" x:Name="OpenAITemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-															</Grid>
-															<Grid Margin="0,5,0,0">
-																<Slider x:Name="OpenAITemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																		ToolTip.Tip="{l:Localize OpenAITemperatureTooltip}" />
-															</Grid>
-														</StackPanel>
-
-														<!-- RAG Settings -->
-														<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
-															<StackPanel Spacing="8">
-																<!-- Row 1: Toggle Button only -->
-																<Grid ColumnDefinitions="*,Auto">
-																	<CheckBox Grid.Column="0" x:Name="OpenAIEnableRAG" Content="{l:Localize EnableRAG}"
-															  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
-															  HorizontalAlignment="Left" Margin="0,0,0,8" />
-
-																	<Button Grid.Column="1" x:Name="OpenAIAdvancedRagButton"
-																			Classes="flat"
-																			IsEnabled="{Binding IsChecked, ElementName=OpenAIEnableRAG}"
-																			ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
-																			VerticalAlignment="Bottom"
-																			Height="41">
-																		<StackPanel Orientation="Horizontal" Spacing="8">
-																			<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
-																			<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
-																		</StackPanel>
-																		<Button.Flyout>
-																			<Flyout Placement="Right">
-																				<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
-																					<StackPanel Spacing="16">
-																						<TextBlock Text="{l:Localize AdvancedSettings}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
-
-																						<!-- Max retrieved slider -->
-																						<StackPanel Spacing="4">
-																							<Grid ColumnDefinitions="*,Auto">
-																								<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																								<TextBlock Grid.Column="1" x:Name="OpenAIMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
-																							</Grid>
-																							<Slider x:Name="OpenAIMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
-																									ToolTip.Tip="{l:Localize MaxRetrievedTooltip}" />
-																						</StackPanel>
-
-
-
-																						<!-- Query optimization toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OpenAIQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-																						<!-- Enable citations toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableCitations" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-
-																						<!-- Enable context sorting toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																									   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																					</StackPanel>
-																				</Border>
-																			</Flyout>
-																		</Button.Flyout>
-																	</Button>
+												<StackPanel Grid.Column="1" Orientation="Vertical" Spacing="16">
+													<StackPanel Spacing="36" x:Name="CompletionProviderGroup">
+														<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+																  BorderThickness="0">
+															<Expander.Header>
+																<Grid ColumnDefinitions="Auto,*">
+																	<RadioButton Grid.Column="0"
+																				 GroupName="CompletionProvider"
+																				 x:Name="OpenAICompletionProvider"
+																				 VerticalAlignment="Center"
+																				 Margin="0,0,6,0" />
+																	<TextBlock Grid.Column="1"
+																			   Text="{l:Localize OpenAISettings}"
+																			   VerticalAlignment="Center"
+																			   HorizontalAlignment="Center"
+																			   FontWeight="500" FontSize="13" />
 																</Grid>
-
-																<StackPanel x:Name="OpenAIRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableRAG}">
-																	<!-- Knowledgebase Source Dropdown -->
-																	<StackPanel Spacing="4" Margin="0,0,0,8" >
-																		<TextBlock Text="{l:Localize KnowledgebaseSource}"
-													   FontSize="12"
-													   Foreground="#1A1C1E"
-													   FontWeight="500" />
-																		<ComboBox x:Name="OpenAIKnowledgeSource"
-																				  Width="300"
-																				  Theme="{StaticResource MaterialOutlineComboBox}"
-																				  assists:ComboBoxAssist.Label=""
-																				  Padding="12, 4"
-																				  Background="#FFFFFF"
-																				  BorderBrush="#DBDBDB"
-																				  BorderThickness="0.97"
-																				  Foreground="#1A1C1E"
-																				  HorizontalAlignment="Left">
-																			<ComboBox.Styles>
-																				<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-																					<Setter Property="MinHeight" Value="36" />
-																					<Setter Property="Margin" Value="0,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#PART_Border">
-																					<Setter Property="CornerRadius" Value="8" />
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#splitBorder">
-																					<Setter Property="Margin" Value="0,6" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#watermarkRoot">
-																					<Setter Property="VerticalAlignment" Value="Center" />
-																					<Setter Property="Margin" Value="12,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																				</Style>
-
-																				<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																					<Setter Property="BorderThickness" Value="0.97" />
-																				</Style>
-																				<Style Selector="ComboBoxItem">
-																					<Setter Property="Padding" Value="12,8" />
-																					<Setter Property="Background" Value="Transparent" />
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ ContentPresenter">
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-																					<Setter Property="Background" Value="#F5F5F5" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Path#arrow">
-																					<Setter Property="Fill" Value="#1A1C1E" />
-																				</Style>
-																			</ComboBox.Styles>
-																		</ComboBox>
+															</Expander.Header>
+															<StackPanel Orientation="Vertical" Spacing="8"
+																		Margin="16,10,8,10">
+																<TextBlock Text="{l:Localize OpenAIApiKey}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OpenAIApiKey" Text="{l:Localize YourApiKeyHerePlaceholder}" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterOpenAIApiKeyTooltip}" />
+																<TextBlock Text="{l:Localize OpenAICompletionModel}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OpenAICompletionModel" Classes="no-shadow"
+																		 Text="gpt-3.5-turbo"
+																		 ToolTip.Tip="{l:Localize SpecifyOpenAIModelTooltip}" />
+																<TextBlock Text="{l:Localize SystemPrompt}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OpenAISystemPrompt"
+																		 Text=""
+																		 Height="80"
+																		 TextWrapping="Wrap"
+																		 AcceptsReturn="True"
+																		 VerticalContentAlignment="Top"
+																		 ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
+																<TextBlock Text="{l:Localize OpenAIEndpoint}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OpenAIEndpoint"
+																		 Classes="no-shadow"
+																		 Text="https://api.openai.com/v1/chat/completions"
+																		 ToolTip.Tip="{l:Localize SetOpenAIEndpointTooltip}" />
+																<Grid ColumnDefinitions="*,*">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OpenAIBatchSize" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize OpenAIBatchSizeTooltip}" />
 																	</StackPanel>
-																	<!-- Row 3: Top-K and Threshold in same row -->
-																	<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																		<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
-																			<Grid ColumnDefinitions="*,Auto">
-																				<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																				<TextBlock Grid.Column="1" x:Name="OpenAISimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-																			</Grid>
-																			<Grid Margin="0,15,0,0">
-																				<Slider x:Name="OpenAISimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																						ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
-																			</Grid>
-																		</StackPanel>
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OpenAIMaxRetries" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize OpenAIMaxRetriesTooltip}" />
+																	</StackPanel>
+																</Grid>
+																<StackPanel Spacing="4" Height="45">
+																	<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+																		<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBlock Grid.Column="1" x:Name="OpenAITemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																	</Grid>
+																	<Grid Margin="0,5,0,0">
+																		<Slider x:Name="OpenAITemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																				ToolTip.Tip="{l:Localize OpenAITemperatureTooltip}" />
 																	</Grid>
 																</StackPanel>
-															</StackPanel>
-														</Border>
-													</StackPanel>
-												</Expander>
-											</Grid>
-											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-												<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{l:Localize AnthropicProvider}" FontWeight="500" FontSize="14"
-									                           Foreground="#1A1C1E" VerticalAlignment="Top" />
-													<TextBlock FontSize="12" Foreground="#6A6B6F" TextWrapping="Wrap" Text="{l:Localize GainAccessToAnthropic}" />
-												</StackPanel>
-												<Expander x:Name="AnthropicExpander" Grid.Column="1" IsExpanded="False"
-														  ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
-														  Padding="0" Background="#F5F5F5">
-													<Expander.Header>
-														<Grid ColumnDefinitions="Auto,*">
-															<RadioButton Grid.Column="0" GroupName="CompletionProvider"
-																		 x:Name="AnthropicCompletionProvider"
-																		 VerticalAlignment="Center" />
-															<TextBlock Grid.Column="1" Text="{l:Localize AnthropicSettings}"
-										   VerticalAlignment="Center"
-										   HorizontalAlignment="Center" FontWeight="500"
-										   FontSize="13" />
-														</Grid>
-													</Expander.Header>
-													<StackPanel Margin="0,10,0,10" Spacing="8">
-														<TextBlock Text="{l:Localize AnthropicApiKey}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="AnthropicApiKey" Text="{l:Localize YourApiKeyHerePlaceholder}" Margin="8,0,8,0" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterAnthropicApiKeyTooltip}" />
-														<TextBlock Text="{l:Localize AnthropicCompletionModel}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow"
-																 Text="claude-2"
-																 Margin="8,0,8,0"
-																 ToolTip.Tip="{l:Localize SpecifyAnthropicModelTooltip}" />
-														<TextBlock Text="{l:Localize SystemPrompt}" Padding="8,0,0,0"
-																	VerticalAlignment="Center" Margin="0,0,16,0"
-																	FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="AnthropicSystemPrompt"
-																  Text=""
-																  Margin="8,0,8,0"
-																  Height="80"
-																  TextWrapping="Wrap"
-																  AcceptsReturn="True"
-																  VerticalContentAlignment="Top"
-																  ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
-														<TextBlock Text="{l:Localize AnthropicEndpoint}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="AnthropicEndpoint"
-																 Classes="no-shadow"
-																 Text="https://api.anthropic.com/v1" Margin="8,0,8,0"
-																 ToolTip.Tip="{l:Localize SetAnthropicEndpointTooltip}" />
-														<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
-															<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="AnthropicBatchSize" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize AnthropicBatchSizeTooltip}" />
-															</StackPanel>
-															<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
-																<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="AnthropicMaxRetries" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize AnthropicMaxRetriesTooltip}" />
-															</StackPanel>
-														</Grid>
-														<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
-															<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
-																<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBlock Grid.Column="1" x:Name="AnthropicTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-															</Grid>
-															<Grid Margin="0,5,0,0">
-																<Slider x:Name="AnthropicTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																		ToolTip.Tip="{l:Localize AnthropicTemperatureTooltip}" />
-															</Grid>
-														</StackPanel>
 
-														<!-- RAG Settings -->
-														<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
-															<StackPanel Spacing="8">
-																<!-- Row 1: Toggle Button only -->
-																<Grid ColumnDefinitions="*,Auto">
-																	<CheckBox Grid.Column="0" x:Name="AnthropicEnableRAG" Content="{l:Localize EnableRAG}"
-												  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
-												  HorizontalAlignment="Left" Margin="0,0,0,8" />
-
-																	<Button Grid.Column="1" x:Name="AnthropicAdvancedRagButton"
-																		Classes="flat"
-																		IsEnabled="{Binding IsChecked, ElementName=AnthropicEnableRAG}"
-																		ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
-																		VerticalAlignment="Bottom"
-																		Height="41">
-																		<StackPanel Orientation="Horizontal" Spacing="8">
-																			<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
-																			<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
-																		</StackPanel>
-																		<Button.Flyout>
-																			<Flyout Placement="Right">
-																				<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
-																					<StackPanel Spacing="16">
-																						<TextBlock Text="{l:Localize AdvancedRAGTitle}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
-
-																						<!-- Max retrieved slider -->
-																						<StackPanel Spacing="4">
-																							<Grid ColumnDefinitions="*,Auto">
-																								<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																								<TextBlock Grid.Column="1" x:Name="AnthropicMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
-																							</Grid>
-																							<Slider x:Name="AnthropicMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
-																									ToolTip.Tip="{l:Localize MaxDocumentsToRetrieveTooltip}" />
-																						</StackPanel>
-
-
-
-																						<!-- Query optimization toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																												   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="AnthropicQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Enable citations toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																														   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableCitations" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Enable context sorting toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-																														   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Context radius slider removed -->
-																					</StackPanel>
-																				</Border>
-																			</Flyout>
-																		</Button.Flyout>
-																	</Button>
-																</Grid>
-
-																<StackPanel x:Name="AnthropicRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableRAG}">
-																	<!-- Row 2: Knowledgebase Source only -->
-																	<StackPanel Spacing="4" Margin="0,0,0,8" >
-																		<TextBlock Text="{l:Localize KnowledgebaseSource}"
-												   FontSize="12"
-												   Foreground="#1A1C1E"
-												   FontWeight="500" />
-																		<ComboBox x:Name="AnthropicKnowledgeSource"
-																				  Width="300"
-																				  Theme="{StaticResource MaterialOutlineComboBox}"
-																				  assists:ComboBoxAssist.Label=""
-																				  Padding="12, 4"
-																				  Background="#FFFFFF"
-																				  BorderBrush="#DBDBDB"
-																				  BorderThickness="0.97"
-																				  Foreground="#1A1C1E"
-																				  HorizontalAlignment="Left">
-																			<ComboBox.Styles>
-																				<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-																					<Setter Property="MinHeight" Value="36" />
-																					<Setter Property="Margin" Value="0,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#PART_Border">
-																					<Setter Property="CornerRadius" Value="8" />
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#splitBorder">
-																					<Setter Property="Margin" Value="0,6" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#watermarkRoot">
-																					<Setter Property="VerticalAlignment" Value="Center" />
-																					<Setter Property="Margin" Value="12,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																				</Style>
-
-																				<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																					<Setter Property="BorderThickness" Value="0.97" />
-																				</Style>
-																				<Style Selector="ComboBoxItem">
-																					<Setter Property="Padding" Value="12,8" />
-																					<Setter Property="Background" Value="Transparent" />
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ ContentPresenter">
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-																					<Setter Property="Background" Value="#F5F5F5" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Path#arrow">
-																					<Setter Property="Fill" Value="#1A1C1E" />
-																				</Style>
-																			</ComboBox.Styles>
-																		</ComboBox>
-																	</StackPanel>
-																	<!-- Row 3: Top-K and Threshold in same row -->
-																	<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																		<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
-																			<Grid ColumnDefinitions="*,Auto">
-																				<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																				<TextBlock Grid.Column="1" x:Name="AnthropicSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-																			</Grid>
-																			<Grid Margin="0,15,0,0">
-																				<Slider x:Name="AnthropicSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																						ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
-																			</Grid>
-																		</StackPanel>
-																	</Grid>
-																</StackPanel>
-															</StackPanel>
-														</Border>
-													</StackPanel>
-												</Expander>
-											</Grid>
-											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-												<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{l:Localize LocalProvider}" FontWeight="500"
-									                           FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-													<TextBlock FontSize="12" Foreground="#6A6B6F"
-														   TextWrapping="Wrap" Text="{l:Localize GainAccessToLocalModel}" />
-												</StackPanel>
-												<Expander x:Name="OllamaExpander" Grid.Column="1" IsExpanded="False"
-														  ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
-														  Padding="0" Background="#F5F5F5">
-													<Expander.Header>
-														<Grid ColumnDefinitions="Auto,*">
-															<RadioButton Grid.Column="0" GroupName="CompletionProvider"
-																		 x:Name="OllamaCompletionProvider"
-																		 VerticalAlignment="Center" />
-															<TextBlock Grid.Column="1" Text="{l:Localize OllamaSettings}"
-										   VerticalAlignment="Center"
-										   HorizontalAlignment="Center" FontWeight="500"
-										   FontSize="13" />
-														</Grid>
-													</Expander.Header>
-													<StackPanel Margin="0,10,0,10" Spacing="8">
-														<TextBlock Text="{l:Localize OllamaCompletionModel}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
-																 Margin="8,0,8,0" Classes="no-shadow"
-																 ToolTip.Tip="{l:Localize SpecifyOllamaModelTooltip}" />
-														<TextBlock Text="{l:Localize SystemPrompt}" Padding="8,0,0,0"
-																   VerticalAlignment="Center" Margin="0,0,16,0"
-																   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OllamaSystemPrompt"
-																  Text=""
-																  Margin="8,0,8,0"
-																  Height="80"
-																  TextWrapping="Wrap"
-																  AcceptsReturn="True"
-																  VerticalContentAlignment="Top"
-																  ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
-														<TextBlock Text="{l:Localize OllamaEndpoint}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
-																 Margin="8,0,8,0" Classes="no-shadow"
-																 ToolTip.Tip="{l:Localize SetOllamaEndpointTooltip}" />
-														<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
-															<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="OllamaBatchSize" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize OllamaBatchSizeTooltip}" />
-															</StackPanel>
-															<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
-																<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="OllamaMaxRetries" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize OllamaMaxRetriesTooltip}" />
-															</StackPanel>
-														</Grid>
-														<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
-															<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
-																<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBlock Grid.Column="1" x:Name="OllamaTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-															</Grid>
-															<Grid Margin="0,5,0,0">
-																<Slider x:Name="OllamaTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																		ToolTip.Tip="{l:Localize OllamaTemperatureTooltip}" />
-															</Grid>
-														</StackPanel>
-
-														<!-- RAG Settings -->
-														<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
-															<StackPanel Spacing="8">
-																<!-- Row 1: Toggle Button only -->
-																<Grid ColumnDefinitions="*,Auto">
-																	<CheckBox Grid.Column="0" x:Name="OllamaEnableRAG" Content="{l:Localize EnableRAG}"
-																			  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
-																			  HorizontalAlignment="Left" Margin="0,0,0,8" />
-
-																	<Button Grid.Column="1" x:Name="OllamaAdvancedRagButton"
-																			Classes="flat"
-																			IsEnabled="{Binding IsChecked, ElementName=OllamaEnableRAG}"
-																			ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
-																			VerticalAlignment="Bottom"
-																			Height="41">
-																		<StackPanel Orientation="Horizontal" Spacing="8">
-																			<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
-																			<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
-																		</StackPanel>
-																		<Button.Flyout>
-																			<Flyout Placement="Right">
-																				<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
-																					<StackPanel Spacing="16">
-																						<TextBlock Text="{l:Localize AdvancedRAG}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
-
-																						<!-- Max retrieved slider -->
-																						<StackPanel Spacing="4">
-																							<Grid ColumnDefinitions="*,Auto">
-																								<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																								<TextBlock Grid.Column="1" x:Name="OllamaMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
-																							</Grid>
-																							<Slider x:Name="OllamaMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
-																									ToolTip.Tip="{l:Localize MaxDocumentsToRetrieveTooltip}" />
-																						</StackPanel>
-
-																						<!-- Query optimization toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-												   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OllamaQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Enable citations toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-													   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableCitations" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-																						<!-- Enable context sorting toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-													   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Context radius slider removed -->
-																					</StackPanel>
-																				</Border>
-																			</Flyout>
-																		</Button.Flyout>
-																	</Button>
-																</Grid>
-
-																<StackPanel x:Name="OllamaRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OllamaEnableRAG}">
-																	<!-- Row 2: Knowledgebase Source only -->
-																	<StackPanel Spacing="4" Margin="0,0,0,8" >
-																		<TextBlock Text="{l:Localize KnowledgebaseSource}"
-												   FontSize="12"
-												   Foreground="#1A1C1E"
-												   FontWeight="500" />
-																		<ComboBox x:Name="OllamaKnowledgeSource"
-																				  Width="300"
-																				  Theme="{StaticResource MaterialOutlineComboBox}"
-																				  assists:ComboBoxAssist.Label=""
-																				  Padding="12, 4"
-																				  Background="#FFFFFF"
-																				  BorderBrush="#DBDBDB"
-																				  BorderThickness="0.97"
-																				  Foreground="#1A1C1E"
-																				  HorizontalAlignment="Left">
-																			<ComboBox.Styles>
-																				<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-																					<Setter Property="MinHeight" Value="36" />
-																					<Setter Property="Margin" Value="0,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#PART_Border">
-																					<Setter Property="CornerRadius" Value="8" />
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#splitBorder">
-																					<Setter Property="Margin" Value="0,6" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#watermarkRoot">
-																					<Setter Property="VerticalAlignment" Value="Center" />
-																					<Setter Property="Margin" Value="12,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																				</Style>
-
-																				<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																					<Setter Property="BorderThickness" Value="0.97" />
-																				</Style>
-																				<Style Selector="ComboBoxItem">
-																					<Setter Property="Padding" Value="12,8" />
-																					<Setter Property="Background" Value="Transparent" />
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ ContentPresenter">
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-																					<Setter Property="Background" Value="#F5F5F5" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Path#arrow">
-																					<Setter Property="Fill" Value="#1A1C1E" />
-																				</Style>
-																			</ComboBox.Styles>
-																		</ComboBox>
-																	</StackPanel>
-																	<!-- Row 3: Top-K and Threshold in same row -->
-																	<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																		<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
-																			<Grid ColumnDefinitions="*,Auto">
-																				<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																				<TextBlock Grid.Column="1" x:Name="OllamaSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-																			</Grid>
-																			<Grid Margin="0,15,0,0">
-																				<Slider x:Name="OllamaSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-												ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
-																			</Grid>
-																		</StackPanel>
-																	</Grid>
-																</StackPanel>
-															</StackPanel>
-														</Border>
-													</StackPanel>
-												</Expander>
-											</Grid>
-											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
-												<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{l:Localize ViewAIEnterprise}" FontWeight="500"
-															   FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
-													<TextBlock FontSize="12" Foreground="#6A6B6F"
-															   TextWrapping="Wrap" Text="{l:Localize GainAccessToViewModel}" />
-												</StackPanel>
-												<Expander x:Name="ViewExpander" Grid.Column="1" IsExpanded="False"
-														  ExpandDirection="Down" BorderThickness="0" Margin="0,-10,0,0"
-														  Padding="0" Background="#F5F5F5">
-													<Expander.Header>
-														<Grid ColumnDefinitions="Auto,*">
-															<RadioButton Grid.Column="0" GroupName="CompletionProvider"
-																		 x:Name="ViewCompletionProvider"
-																		 VerticalAlignment="Center" />
-															<TextBlock Grid.Column="1" Text="{l:Localize ViewAIEnterpriseSettings}"
-										   VerticalAlignment="Center"
-										   HorizontalAlignment="Center" FontWeight="500"
-										   FontSize="13" />
-														</Grid>
-													</Expander.Header>
-													<StackPanel Margin="0,10,0,10" Spacing="8">
-														<TextBlock Text="{l:Localize EmbeddingsApiKey}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewApiKey" Text="{l:Localize YourEmbeddingsApiKeyHerePlaceholder}" Margin="8,0,8,0" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewEmbeddingsApiKeyTooltip}" />
-														<TextBlock Text="{l:Localize ViewEndpoint}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
-																 Margin="8,0,8,0" Classes="no-shadow"
-																 ToolTip.Tip="{l:Localize ViewEndpointTooltip}" />
-														<TextBlock Text="{l:Localize OllamaHostName}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
-																 Margin="8,0,8,0" Classes="no-shadow"
-																 ToolTip.Tip="{l:Localize OllamaHostNameTooltip}" />
-														<TextBlock Text="{l:Localize AccessKey}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY" Margin="8,0,8,0" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewAccessKeyTooltip}" />
-														<TextBlock Text="{l:Localize TenantGuid}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID" Margin="8,0,8,0" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewTenantGUIDTooltip}" />
-														<TextBlock Text="{l:Localize CompletionModel}" Padding="8,0,0,0"
-									   VerticalAlignment="Center" Margin="0,0,16,0"
-									   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
-																 Margin="8,0,8,0" Classes="no-shadow"
-																 ToolTip.Tip="{l:Localize SpecifyViewModelTooltip}" />
-														<TextBlock Text="{l:Localize SystemPrompt}" Padding="8,0,0,0"
-																	   VerticalAlignment="Center" Margin="0,0,16,0"
-																	   FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-														<TextBox x:Name="ViewSystemPrompt"
-																  Text=""
-																  Margin="8,0,8,0"
-																  Height="80"
-																  TextWrapping="Wrap"
-																  AcceptsReturn="True"
-																  VerticalContentAlignment="Top"
-																  ToolTip.Tip="{l:Localize ViewSystemPromptTooltip}" />
-														<Grid ColumnDefinitions="*,*" Margin="8,0,8,0">
-															<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
-																<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="ViewBatchSize" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize ViewBatchSizeTooltip}" />
-															</StackPanel>
-															<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
-																<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBox x:Name="ViewMaxRetries" Classes="no-shadow"
-																		 ToolTip.Tip="{l:Localize ViewMaxRetriesTooltip}" />
-															</StackPanel>
-														</Grid>
-														<StackPanel Spacing="4" Margin="8,0,8,0" Height="45">
-															<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
-																<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																<TextBlock Grid.Column="1" x:Name="ViewTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-															</Grid>
-															<Grid Margin="0,5,0,0">
-																<Slider x:Name="ViewTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-																		ToolTip.Tip="{l:Localize ViewTemperatureTooltip}" />
-															</Grid>
-														</StackPanel>
-
-														<!-- RAG Settings -->
-														<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Margin="8,8,8,8" Padding="0,8,0,0">
-															<StackPanel Spacing="8">
-																<TextBlock Text="{l:Localize RAGSettingsTitle}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" Padding="0,0,0,4" />
-
-																<!-- Row 1: Toggle Button with Advanced Settings Button -->
-																<Grid ColumnDefinitions="*,Auto">
-																	<CheckBox Grid.Column="0" x:Name="ViewEnableRAG" Content="{l:Localize EnableRAG}"
+																<!-- RAG Settings -->
+																<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Padding="0,8,0,0">
+																	<StackPanel Spacing="8">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<CheckBox Grid.Column="0" x:Name="OpenAIEnableRAG" Content="{l:Localize EnableRAG}"
 																					  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
 																					  HorizontalAlignment="Left" Margin="0,0,0,8" />
+																			<Button Grid.Column="1" x:Name="OpenAIAdvancedRagButton"
+																					Classes="flat"
+																					IsEnabled="{Binding IsChecked, ElementName=OpenAIEnableRAG}"
+																					ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
+																					VerticalAlignment="Bottom"
+																					Height="41">
+																				<StackPanel Orientation="Horizontal" Spacing="8">
+																					<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																					<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
+																				</StackPanel>
+																				<Button.Flyout>
+																					<Flyout Placement="Right">
+																						<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																							<StackPanel Spacing="16">
+																								<TextBlock Text="{l:Localize AdvancedSettings}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+																								<StackPanel Spacing="4">
+																									<Grid ColumnDefinitions="*,Auto">
+																										<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																										<TextBlock Grid.Column="1" x:Name="OpenAIMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																									</Grid>
+																									<Slider x:Name="OpenAIMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																											ToolTip.Tip="{l:Localize MaxRetrievedTooltip}" />
+																								</StackPanel>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OpenAIQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OpenAIEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																							</StackPanel>
+																						</Border>
+																					</Flyout>
+																				</Button.Flyout>
+																			</Button>
+																		</Grid>
+																		<StackPanel x:Name="OpenAIRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OpenAIEnableRAG}">
+																			<StackPanel Spacing="4" Margin="0,0,0,8" >
+																				<TextBlock Text="{l:Localize KnowledgebaseSource}"
+																						   FontSize="12"
+																						   Foreground="#1A1C1E"
+																						   FontWeight="500" />
+																				<ComboBox x:Name="OpenAIKnowledgeSource"
+																						  Width="300"
+																						  Theme="{StaticResource MaterialOutlineComboBox}"
+																						  assists:ComboBoxAssist.Label=""
+																						  Padding="12, 4"
+																						  Background="#FFFFFF"
+																						  BorderBrush="#DBDBDB"
+																						  BorderThickness="0.97"
+																						  Foreground="#1A1C1E"
+																						  HorizontalAlignment="Left">
+																					<ComboBox.Styles>
+																						<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																							<Setter Property="MinHeight" Value="36" />
+																							<Setter Property="Margin" Value="0,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#PART_Border">
+																							<Setter Property="CornerRadius" Value="8" />
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#splitBorder">
+																							<Setter Property="Margin" Value="0,6" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																							<Setter Property="VerticalAlignment" Value="Center" />
+																							<Setter Property="Margin" Value="12,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																						</Style>
+																						<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																							<Setter Property="BorderThickness" Value="0.97" />
+																						</Style>
+																						<Style Selector="ComboBoxItem">
+																							<Setter Property="Padding" Value="12,8" />
+																							<Setter Property="Background" Value="Transparent" />
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ ContentPresenter">
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																							<Setter Property="Background" Value="#F5F5F5" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Path#arrow">
+																							<Setter Property="Fill" Value="#1A1C1E" />
+																						</Style>
+																					</ComboBox.Styles>
+																				</ComboBox>
+																			</StackPanel>
+																			<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																				<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																						<TextBlock Grid.Column="1" x:Name="OpenAISimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																					</Grid>
+																					<Grid Margin="0,15,0,0">
+																						<Slider x:Name="OpenAISimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="{l:Localize SimilarityThreshold}" />
+																					</Grid>
+																				</StackPanel>
+																			</Grid>
+																		</StackPanel>
+																	</StackPanel>
+																</Border>
+															</StackPanel>
+														</Expander>
+														<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+																  BorderThickness="0">
+															<Expander.Header>
+																<Grid ColumnDefinitions="Auto,*">
+																	<RadioButton Grid.Column="0"
+																				 GroupName="CompletionProvider"
+																				 x:Name="AnthropicCompletionProvider"
+																				 VerticalAlignment="Center"
+																				 Margin="0,0,6,0" />
+																	<TextBlock Grid.Column="1"
+																			   Text="{l:Localize AnthropicSettings}"
+																			   VerticalAlignment="Center"
+																			   HorizontalAlignment="Center"
+																			   FontWeight="500" FontSize="13" />
+																</Grid>
+															</Expander.Header>
+															<StackPanel Orientation="Vertical" Spacing="8"
+																		Margin="16,10,8,10">
+																<TextBlock Text="{l:Localize AnthropicApiKey}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="AnthropicApiKey" Text="{l:Localize YourApiKeyHerePlaceholder}" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterAnthropicApiKeyTooltip}" />
+																<TextBlock Text="{l:Localize AnthropicCompletionModel}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="AnthropicCompletionModel" Classes="no-shadow"
+																		 Text="claude-2"
+																		 ToolTip.Tip="{l:Localize SpecifyAnthropicModelTooltip}" />
+																<TextBlock Text="{l:Localize SystemPrompt}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="AnthropicSystemPrompt"
+																		 Text=""
+																		 Height="80"
+																		 TextWrapping="Wrap"
+																		 AcceptsReturn="True"
+																		 VerticalContentAlignment="Top"
+																		 ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
+																<TextBlock Text="{l:Localize AnthropicEndpoint}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="AnthropicEndpoint"
+																		 Classes="no-shadow"
+																		 Text="https://api.anthropic.com/v1"
+																		 ToolTip.Tip="{l:Localize SetAnthropicEndpointTooltip}" />
+																<Grid ColumnDefinitions="*,*">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="AnthropicBatchSize" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize AnthropicBatchSizeTooltip}" />
+																	</StackPanel>
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="AnthropicMaxRetries" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize AnthropicMaxRetriesTooltip}" />
+																	</StackPanel>
+																</Grid>
+																<StackPanel Spacing="4" Height="45">
+																	<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+																		<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBlock Grid.Column="1" x:Name="AnthropicTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																	</Grid>
+																	<Grid Margin="0,5,0,0">
+																		<Slider x:Name="AnthropicTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																				ToolTip.Tip="{l:Localize AnthropicTemperatureTooltip}" />
+																	</Grid>
+																</StackPanel>
 
-																	<Button Grid.Column="1" x:Name="ViewAdvancedRagButton"
+																<!-- RAG Settings -->
+																<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Padding="0,8,0,0">
+																	<StackPanel Spacing="8">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<CheckBox Grid.Column="0" x:Name="AnthropicEnableRAG" Content="{l:Localize EnableRAG}"
+																					  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
+																					  HorizontalAlignment="Left" Margin="0,0,0,8" />
+																			<Button Grid.Column="1" x:Name="AnthropicAdvancedRagButton"
+																					Classes="flat"
+																					IsEnabled="{Binding IsChecked, ElementName=AnthropicEnableRAG}"
+																					ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
+																					VerticalAlignment="Bottom"
+																					Height="41">
+																				<StackPanel Orientation="Horizontal" Spacing="8">
+																					<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																					<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
+																				</StackPanel>
+																				<Button.Flyout>
+																					<Flyout Placement="Right">
+																						<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																							<StackPanel Spacing="16">
+																								<TextBlock Text="{l:Localize AdvancedRAGTitle}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+																								<StackPanel Spacing="4">
+																									<Grid ColumnDefinitions="*,Auto">
+																										<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																										<TextBlock Grid.Column="1" x:Name="AnthropicMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																									</Grid>
+																									<Slider x:Name="AnthropicMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																											ToolTip.Tip="{l:Localize MaxDocumentsToRetrieveTooltip}" />
+																								</StackPanel>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="AnthropicQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="AnthropicEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																							</StackPanel>
+																						</Border>
+																					</Flyout>
+																				</Button.Flyout>
+																			</Button>
+																		</Grid>
+																		<StackPanel x:Name="AnthropicRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=AnthropicEnableRAG}">
+																			<StackPanel Spacing="4" Margin="0,0,0,8" >
+																				<TextBlock Text="{l:Localize KnowledgebaseSource}"
+																						   FontSize="12"
+																						   Foreground="#1A1C1E"
+																						   FontWeight="500" />
+																				<ComboBox x:Name="AnthropicKnowledgeSource"
+																						  Width="300"
+																						  Theme="{StaticResource MaterialOutlineComboBox}"
+																						  assists:ComboBoxAssist.Label=""
+																						  Padding="12, 4"
+																						  Background="#FFFFFF"
+																						  BorderBrush="#DBDBDB"
+																						  BorderThickness="0.97"
+																						  Foreground="#1A1C1E"
+																						  HorizontalAlignment="Left">
+																					<ComboBox.Styles>
+																						<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																							<Setter Property="MinHeight" Value="36" />
+																							<Setter Property="Margin" Value="0,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#PART_Border">
+																							<Setter Property="CornerRadius" Value="8" />
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#splitBorder">
+																							<Setter Property="Margin" Value="0,6" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																							<Setter Property="VerticalAlignment" Value="Center" />
+																							<Setter Property="Margin" Value="12,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																						</Style>
+																						<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																							<Setter Property="BorderThickness" Value="0.97" />
+																						</Style>
+																						<Style Selector="ComboBoxItem">
+																							<Setter Property="Padding" Value="12,8" />
+																							<Setter Property="Background" Value="Transparent" />
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ ContentPresenter">
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																							<Setter Property="Background" Value="#F5F5F5" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Path#arrow">
+																							<Setter Property="Fill" Value="#1A1C1E" />
+																						</Style>
+																					</ComboBox.Styles>
+																				</ComboBox>
+																			</StackPanel>
+																			<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																				<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																						<TextBlock Grid.Column="1" x:Name="AnthropicSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																					</Grid>
+																					<Grid Margin="0,15,0,0">
+																						<Slider x:Name="AnthropicSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
+																					</Grid>
+																				</StackPanel>
+																			</Grid>
+																		</StackPanel>
+																	</StackPanel>
+																</Border>
+															</StackPanel>
+														</Expander>
+														<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+																  BorderThickness="0">
+															<Expander.Header>
+																<Grid ColumnDefinitions="Auto,*">
+																	<RadioButton Grid.Column="0"
+																				 GroupName="CompletionProvider"
+																				 x:Name="OllamaCompletionProvider"
+																				 VerticalAlignment="Center"
+																				 Margin="0,0,6,0" />
+																	<TextBlock Grid.Column="1"
+																			   Text="{l:Localize OllamaSettings}"
+																			   VerticalAlignment="Center"
+																			   HorizontalAlignment="Center"
+																			   FontWeight="500" FontSize="13" />
+																</Grid>
+															</Expander.Header>
+															<StackPanel Orientation="Vertical" Spacing="8"
+																		Margin="16,10,8,10">
+																<TextBlock Text="{l:Localize OllamaCompletionModel}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OllamaCompletionModel" Text="llama2-7B-q4"
+																		 Classes="no-shadow"
+																		 ToolTip.Tip="{l:Localize SpecifyOllamaModelTooltip}" />
+																<TextBlock Text="{l:Localize SystemPrompt}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OllamaSystemPrompt"
+																		 Text=""
+																		 Height="80"
+																		 TextWrapping="Wrap"
+																		 AcceptsReturn="True"
+																		 VerticalContentAlignment="Top"
+																		 ToolTip.Tip="{l:Localize EnterCustomSystemPrompt}" />
+																<TextBlock Text="{l:Localize OllamaEndpoint}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OllamaEndpoint" Text="http://localhost:11434"
+																		 Classes="no-shadow"
+																		 ToolTip.Tip="{l:Localize SetOllamaEndpointTooltip}" />
+																<Grid ColumnDefinitions="*,*">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OllamaBatchSize" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize OllamaBatchSizeTooltip}" />
+																	</StackPanel>
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="OllamaMaxRetries" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize OllamaMaxRetriesTooltip}" />
+																	</StackPanel>
+																</Grid>
+																<StackPanel Spacing="4" Height="45">
+																	<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+																		<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBlock Grid.Column="1" x:Name="OllamaTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																	</Grid>
+																	<Grid Margin="0,5,0,0">
+																		<Slider x:Name="OllamaTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																				ToolTip.Tip="{l:Localize OllamaTemperatureTooltip}" />
+																	</Grid>
+																</StackPanel>
+
+																<!-- RAG Settings -->
+																<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Padding="0,8,0,0">
+																	<StackPanel Spacing="8">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<CheckBox Grid.Column="0" x:Name="OllamaEnableRAG" Content="{l:Localize EnableRAG}"
+																					  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
+																					  HorizontalAlignment="Left" Margin="0,0,0,8" />
+																			<Button Grid.Column="1" x:Name="OllamaAdvancedRagButton"
+																					Classes="flat"
+																					IsEnabled="{Binding IsChecked, ElementName=OllamaEnableRAG}"
+																					ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
+																					VerticalAlignment="Bottom"
+																					Height="41">
+																				<StackPanel Orientation="Horizontal" Spacing="8">
+																					<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																					<TextBlock Text="{l:Localize AdvancedSettings}" Foreground="#1A1C1E" FontWeight="400" />
+																				</StackPanel>
+																				<Button.Flyout>
+																					<Flyout Placement="Right">
+																						<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																							<StackPanel Spacing="16">
+																								<TextBlock Text="{l:Localize AdvancedRAG}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+																								<StackPanel Spacing="4">
+																									<Grid ColumnDefinitions="*,Auto">
+																										<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																										<TextBlock Grid.Column="1" x:Name="OllamaMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																									</Grid>
+																									<Slider x:Name="OllamaMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																											ToolTip.Tip="{l:Localize MaxDocumentsToRetrieveTooltip}" />
+																								</StackPanel>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OllamaQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="OllamaEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																							</StackPanel>
+																						</Border>
+																					</Flyout>
+																				</Button.Flyout>
+																			</Button>
+																		</Grid>
+																		<StackPanel x:Name="OllamaRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=OllamaEnableRAG}">
+																			<StackPanel Spacing="4" Margin="0,0,0,8" >
+																				<TextBlock Text="{l:Localize KnowledgebaseSource}"
+																						   FontSize="12"
+																						   Foreground="#1A1C1E"
+																						   FontWeight="500" />
+																				<ComboBox x:Name="OllamaKnowledgeSource"
+																						  Width="300"
+																						  Theme="{StaticResource MaterialOutlineComboBox}"
+																						  assists:ComboBoxAssist.Label=""
+																						  Padding="12, 4"
+																						  Background="#FFFFFF"
+																						  BorderBrush="#DBDBDB"
+																						  BorderThickness="0.97"
+																						  Foreground="#1A1C1E"
+																						  HorizontalAlignment="Left">
+																					<ComboBox.Styles>
+																						<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																							<Setter Property="MinHeight" Value="36" />
+																							<Setter Property="Margin" Value="0,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#PART_Border">
+																							<Setter Property="CornerRadius" Value="8" />
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#splitBorder">
+																							<Setter Property="Margin" Value="0,6" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																							<Setter Property="VerticalAlignment" Value="Center" />
+																							<Setter Property="Margin" Value="12,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																						</Style>
+																						<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																							<Setter Property="BorderThickness" Value="0.97" />
+																						</Style>
+																						<Style Selector="ComboBoxItem">
+																							<Setter Property="Padding" Value="12,8" />
+																							<Setter Property="Background" Value="Transparent" />
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ ContentPresenter">
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																							<Setter Property="Background" Value="#F5F5F5" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Path#arrow">
+																							<Setter Property="Fill" Value="#1A1C1E" />
+																						</Style>
+																					</ComboBox.Styles>
+																				</ComboBox>
+																			</StackPanel>
+																			<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																				<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																						<TextBlock Grid.Column="1" x:Name="OllamaSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																					</Grid>
+																					<Grid Margin="0,15,0,0">
+																						<Slider x:Name="OllamaSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
+																					</Grid>
+																				</StackPanel>
+																			</Grid>
+																		</StackPanel>
+																	</StackPanel>
+																</Border>
+															</StackPanel>
+														</Expander>
+														<Expander Background="#F5F5F5" Margin="0,-10,0,0" Padding="0"
+																  BorderThickness="0">
+															<Expander.Header>
+																<Grid ColumnDefinitions="Auto,*">
+																	<RadioButton Grid.Column="0"
+																				 GroupName="CompletionProvider"
+																				 x:Name="ViewCompletionProvider"
+																				 VerticalAlignment="Center"
+																				 Margin="0,0,6,0" />
+																	<TextBlock Grid.Column="1"
+																			   Text="{l:Localize ViewAIEnterpriseSettings}"
+																			   VerticalAlignment="Center"
+																			   HorizontalAlignment="Center"
+																			   FontWeight="500" FontSize="13" />
+																</Grid>
+															</Expander.Header>
+															<StackPanel Orientation="Vertical" Spacing="8"
+																		Margin="16,10,8,10">
+																<TextBlock Text="{l:Localize EmbeddingsApiKey}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewApiKey" Text="{l:Localize YourEmbeddingsApiKeyHerePlaceholder}" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewEmbeddingsApiKeyTooltip}" />
+																<TextBlock Text="{l:Localize ViewEndpoint}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewEndpoint" Text="https://your-view-endpoint"
+																		 Classes="no-shadow"
+																		 ToolTip.Tip="{l:Localize ViewEndpointTooltip}" />
+																<TextBlock Text="{l:Localize OllamaHostName}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="OllamaHostName" Text="https://ollama-host-name"
+																		 Classes="no-shadow"
+																		 ToolTip.Tip="{l:Localize OllamaHostNameTooltip}" />
+																<TextBlock Text="{l:Localize AccessKey}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewAccessKey" Text="YOUR_VIEW_ACCESS_KEY" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewAccessKeyTooltip}" />
+																<TextBlock Text="{l:Localize TenantGuid}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewTenantGUID" Text="YOUR_TENANT_GUID" Classes="no-shadow" ToolTip.Tip="{l:Localize EnterViewTenantGUIDTooltip}" />
+																<TextBlock Text="{l:Localize CompletionModel}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewCompletionModel" Text="llama3.1:8b"
+																		 Classes="no-shadow"
+																		 ToolTip.Tip="{l:Localize SpecifyViewModelTooltip}" />
+																<TextBlock Text="{l:Localize SystemPrompt}" FontSize="12"
+																		   Foreground="#1A1C1E" FontWeight="500" />
+																<TextBox x:Name="ViewSystemPrompt"
+																		 Text=""
+																		 Height="80"
+																		 TextWrapping="Wrap"
+																		 AcceptsReturn="True"
+																		 VerticalContentAlignment="Top"
+																		 ToolTip.Tip="{l:Localize ViewSystemPromptTooltip}" />
+																<Grid ColumnDefinitions="*,*">
+																	<StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+																		<TextBlock Text="{l:Localize BatchSize}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="ViewBatchSize" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize ViewBatchSizeTooltip}" />
+																	</StackPanel>
+																	<StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+																		<TextBlock Text="{l:Localize MaxRetries}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBox x:Name="ViewMaxRetries" Classes="no-shadow"
+																				 ToolTip.Tip="{l:Localize ViewMaxRetriesTooltip}" />
+																	</StackPanel>
+																</Grid>
+																<StackPanel Spacing="4" Height="45">
+																	<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+																		<TextBlock Grid.Column="0" Text="{l:Localize Temperature}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																		<TextBlock Grid.Column="1" x:Name="ViewTemperatureValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																	</Grid>
+																	<Grid Margin="0,5,0,0">
+																		<Slider x:Name="ViewTemperature" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																				ToolTip.Tip="{l:Localize ViewTemperatureTooltip}" />
+																	</Grid>
+																</StackPanel>
+
+																<!-- RAG Settings -->
+																<Border BorderBrush="#EAECF0" BorderThickness="0,1,0,0" Padding="0,8,0,0">
+																	<StackPanel Spacing="8">
+																		<Grid ColumnDefinitions="*,Auto">
+																			<CheckBox Grid.Column="0" x:Name="ViewEnableRAG" Content="{l:Localize EnableRAG}"
+																					  ToolTip.Tip="{l:Localize EnableRAGTooltip}"
+																					  HorizontalAlignment="Left" Margin="0,0,0,8" />
+																			<Button Grid.Column="1" x:Name="ViewAdvancedRagButton"
 																					Classes="flat"
 																					IsEnabled="{Binding IsChecked, ElementName=ViewEnableRAG}"
 																					ToolTip.Tip="{l:Localize ConfigureAdvancedRAGTooltip}"
 																					VerticalAlignment="Bottom"
 																					Height="41">
-																		<StackPanel Orientation="Horizontal" Spacing="8">
-																			<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
-																			<TextBlock Text="{l:Localize AdvancedSettingsTitle}" Foreground="#1A1C1E" FontWeight="400" />
+																				<StackPanel Orientation="Horizontal" Spacing="8">
+																					<avalonia:MaterialIcon Kind="CogOutline" VerticalAlignment="Center" Width="16" Height="16" />
+																					<TextBlock Text="{l:Localize AdvancedSettingsTitle}" Foreground="#1A1C1E" FontWeight="400" />
+																				</StackPanel>
+																				<Button.Flyout>
+																					<Flyout Placement="Right">
+																						<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
+																							<StackPanel Spacing="16">
+																								<TextBlock Text="{l:Localize AdvancedRAGTitle}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
+																								<StackPanel Spacing="4">
+																									<Grid ColumnDefinitions="*,Auto">
+																										<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																										<TextBlock Grid.Column="1" x:Name="ViewMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
+																									</Grid>
+																									<Slider x:Name="ViewMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
+																											ToolTip.Tip="{l:Localize MaxRetrievedTooltip}" />
+																								</StackPanel>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="ViewQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="ViewEnableCitations" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																								<Grid ColumnDefinitions="*,Auto">
+																									<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
+																											   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
+																									<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
+																								</Grid>
+																							</StackPanel>
+																						</Border>
+																					</Flyout>
+																				</Button.Flyout>
+																			</Button>
+																		</Grid>
+																		<StackPanel x:Name="ViewRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=ViewEnableRAG}">
+																			<StackPanel Spacing="4" Margin="0,0,0,8" >
+																				<TextBlock Text="{l:Localize KnowledgebaseSource}"
+																						   FontSize="12"
+																						   Foreground="#1A1C1E"
+																						   FontWeight="500" />
+																				<ComboBox x:Name="ViewKnowledgeSource"
+																						  Width="300"
+																						  Theme="{StaticResource MaterialOutlineComboBox}"
+																						  assists:ComboBoxAssist.Label=""
+																						  Padding="12, 4"
+																						  Background="#FFFFFF"
+																						  BorderBrush="#DBDBDB"
+																						  BorderThickness="0.97"
+																						  Foreground="#1A1C1E"
+																						  HorizontalAlignment="Left">
+																					<ComboBox.Styles>
+																						<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
+																							<Setter Property="MinHeight" Value="36" />
+																							<Setter Property="Margin" Value="0,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#PART_Border">
+																							<Setter Property="CornerRadius" Value="8" />
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#splitBorder">
+																							<Setter Property="Margin" Value="0,6" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Border#watermarkRoot">
+																							<Setter Property="VerticalAlignment" Value="Center" />
+																							<Setter Property="Margin" Value="12,0,0,0" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																						</Style>
+																						<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
+																							<Setter Property="BorderBrush" Value="#DBDBDB" />
+																							<Setter Property="BorderThickness" Value="0.97" />
+																						</Style>
+																						<Style Selector="ComboBoxItem">
+																							<Setter Property="Padding" Value="12,8" />
+																							<Setter Property="Background" Value="Transparent" />
+																							<Setter Property="Foreground" Value="#1A1C1E" />
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ ContentPresenter">
+																							<Setter Property="FontSize" Value="13" />
+																						</Style>
+																						<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+																							<Setter Property="Background" Value="#F5F5F5" />
+																						</Style>
+																						<Style Selector="ComboBox /template/ Path#arrow">
+																							<Setter Property="Fill" Value="#1A1C1E" />
+																						</Style>
+																					</ComboBox.Styles>
+																				</ComboBox>
+																			</StackPanel>
+																			<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+																				<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
+																					<Grid ColumnDefinitions="*,Auto">
+																						<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
+																						<TextBlock Grid.Column="1" x:Name="ViewSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
+																					</Grid>
+																					<Grid Margin="0,15,0,0">
+																						<Slider x:Name="ViewSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
+																								ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
+																					</Grid>
+																				</StackPanel>
+																			</Grid>
 																		</StackPanel>
-																		<Button.Flyout>
-																			<Flyout Placement="Right">
-																				<Border Background="White" BorderBrush="#DBDBDB" BorderThickness="1" CornerRadius="8" Padding="16" Width="350">
-																					<StackPanel Spacing="16">
-																						<TextBlock Text="{l:Localize AdvancedRAGTitle}" FontSize="14" FontWeight="500" Foreground="#1A1C1E" />
-
-																						<!-- Max retrieved slider -->
-																						<StackPanel Spacing="4">
-																							<Grid ColumnDefinitions="*,Auto">
-																								<TextBlock Grid.Column="0" Text="{l:Localize MaxRetrieved}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																								<TextBlock Grid.Column="1" x:Name="ViewMaxRetrievedValue" Text="10" FontSize="12" Foreground="#6A6B6F" />
-																							</Grid>
-																							<Slider x:Name="ViewMaxRetrieved" Minimum="1" Maximum="20" Value="10" TickFrequency="1" IsSnapToTickEnabled="True"
-																														ToolTip.Tip="{l:Localize MaxRetrievedTooltip}" />
-																						</StackPanel>
-
-																						<!-- Query optimization toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize QueryOptimization}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-												   ToolTip.Tip="{l:Localize QueryOptimizationTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="ViewQueryOptimization" IsChecked="True" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Enable citations toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableCitations}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-													   ToolTip.Tip="{l:Localize EnableCitationsTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="ViewEnableCitations" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Enable context sorting toggle -->
-																						<Grid ColumnDefinitions="*,Auto">
-																							<TextBlock Grid.Column="0" Text="{l:Localize EnableContextSorting}" FontSize="12" Foreground="#1A1C1E" FontWeight="500"
-													   ToolTip.Tip="{l:Localize EnableContextSortingTooltip}" />
-																							<ToggleSwitch Grid.Column="1" x:Name="ViewEnableContextSorting" IsChecked="False" OnContent="" OffContent="" />
-																						</Grid>
-
-																						<!-- Context radius slider removed -->
-																					</StackPanel>
-																				</Border>
-																			</Flyout>
-																		</Button.Flyout>
-																	</Button>
-																</Grid>
-
-																<StackPanel x:Name="ViewRagSettingsPanel" Spacing="8" IsVisible="{Binding IsChecked, ElementName=ViewEnableRAG}">
-																	<!-- Row 2: Knowledgebase Source only -->
-																	<StackPanel Spacing="4" Margin="0,0,0,8" >
-																		<TextBlock Text="{l:Localize KnowledgebaseSource}"
-												   FontSize="12"
-												   Foreground="#1A1C1E"
-												   FontWeight="500" />
-																		<ComboBox x:Name="ViewKnowledgeSource"
-																				  Width="300"
-																				  Theme="{StaticResource MaterialOutlineComboBox}"
-																				  assists:ComboBoxAssist.Label=""
-																				  Padding="12, 4"
-																				  Background="#FFFFFF"
-																				  BorderBrush="#DBDBDB"
-																				  BorderThickness="0.97"
-																				  Foreground="#1A1C1E"
-																				  HorizontalAlignment="Left">
-																			<ComboBox.Styles>
-																				<Style Selector="ComboBox /template/ Grid#PART_RootBorder">
-																					<Setter Property="MinHeight" Value="36" />
-																					<Setter Property="Margin" Value="0,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#PART_Border">
-																					<Setter Property="CornerRadius" Value="8" />
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#splitBorder">
-																					<Setter Property="Margin" Value="0,6" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Border#watermarkRoot">
-																					<Setter Property="VerticalAlignment" Value="Center" />
-																					<Setter Property="Margin" Value="12,0,0,0" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ TextBlock#floatingWatermark">
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																				</Style>
-
-																				<Style Selector="ComboBox:focus-within /template/ Border#PART_Border">
-																					<Setter Property="BorderBrush" Value="#DBDBDB" />
-																					<Setter Property="BorderThickness" Value="0.97" />
-																				</Style>
-																				<Style Selector="ComboBoxItem">
-																					<Setter Property="Padding" Value="12,8" />
-																					<Setter Property="Background" Value="Transparent" />
-																					<Setter Property="Foreground" Value="#1A1C1E" />
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ ContentPresenter">
-																					<Setter Property="FontSize" Value="13" />
-																				</Style>
-																				<Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-																					<Setter Property="Background" Value="#F5F5F5" />
-																				</Style>
-																				<Style Selector="ComboBox /template/ Path#arrow">
-																					<Setter Property="Fill" Value="#1A1C1E" />
-																				</Style>
-																			</ComboBox.Styles>
-																		</ComboBox>
 																	</StackPanel>
-																	<Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
-																		<StackPanel Grid.Column="0" Spacing="4" Margin="4,0,0,0">
-																			<Grid ColumnDefinitions="*,Auto">
-																				<TextBlock Grid.Column="0" Text="{l:Localize SimilarityThreshold}" FontSize="12" Foreground="#1A1C1E" FontWeight="500" />
-																				<TextBlock Grid.Column="1" x:Name="ViewSimilarityThresholdValue" Text="0.7" FontSize="12" Foreground="#6A6B6F" />
-																			</Grid>
-																			<Grid Margin="0,15,0,0">
-																				<Slider x:Name="ViewSimilarityThreshold" Margin="12,0" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True"
-												ToolTip.Tip="{l:Localize SimilarityThresholdTooltip}" />
-																			</Grid>
-																		</StackPanel>
-																	</Grid>
-																</StackPanel>
+																</Border>
 															</StackPanel>
-														</Border>
+														</Expander>
 													</StackPanel>
-												</Expander>
+												</StackPanel>
 											</Grid>
 										</StackPanel>
 									</ScrollViewer>

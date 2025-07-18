@@ -283,6 +283,19 @@ gerar embeddings de vetores.</value>
 seu modelo de embedding, precisará
 reimportar todos os documentos.</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>Provedor de Completamento</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>Selecione o provedor local ou em nuvem
+a ser usado para completamento de texto
+e funcionalidade de chat.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>Escolha seu provedor de modelo de linguagem
+preferido para gerar respostas
+e processar solicitações de chat.</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>Nome do Modelo</value>
   </data>

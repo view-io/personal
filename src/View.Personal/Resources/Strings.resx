@@ -283,6 +283,19 @@ generate vector embeddings.</value>
 your embedding model, you will
 need to re-import all documents.</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>Completion Provider</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>Select the local or cloud provider
+to be used for text completion
+and chat functionality.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>Choose your preferred language model
+provider for generating responses
+and processing chat requests.</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>Model Name</value>
   </data>

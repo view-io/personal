@@ -282,6 +282,19 @@
 嵌入模型，您需要
 重新导入所有文档。</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>完成提供商</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>选择用于文本完成
+和聊天功能的本地或
+云提供商。</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>选择您首选的语言模型提供商
+用于生成响应和
+处理聊天请求。</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>模型名称</value>
   </data>

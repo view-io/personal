@@ -283,6 +283,19 @@
 आपका एम्बेडिंग मॉडल, आपको
 सभी दस्तावेज़ों को फिर से आयात करना होगा।</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>पूर्णता प्रदाता</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>स्थानीय या क्लाउड प्रदाता चुनें
+टेक्स्ट पूर्णता और चैट कार्यक्षमता
+के लिए उपयोग किया जाना है।</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>अपना पसंदीदा भाषा मॉडल प्रदाता चुनें
+प्रतिक्रियाएं उत्पन्न करने और
+चैट अनुरोधों को संसाधित करने के लिए।</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>मॉडल नाम</value>
   </data>

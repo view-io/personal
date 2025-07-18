@@ -283,6 +283,19 @@
 변경하는 경우 모든 문서를
 다시 가져와야 합니다.</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>완성 제공업체</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>텍스트 완성 및 채팅 기능에
+사용할 로컬 또는 클라우드
+제공업체를 선택하세요.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>응답 생성 및 채팅 요청 처리를 위한
+선호하는 언어 모델 제공업체를
+선택하세요.</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>모델 이름</value>
   </data>

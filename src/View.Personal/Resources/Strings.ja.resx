@@ -283,6 +283,19 @@
 変更した場合、すべてのドキュメントを
 再インポートする必要があります。</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>コンプリーションプロバイダー</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>テキスト補完とチャット機能に
+使用するローカルまたはクラウド
+プロバイダーを選択してください。</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>応答を生成し、チャットリクエストを
+処理するための希望する言語モデル
+プロバイダーを選択してください。</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>モデル名</value>
   </data>

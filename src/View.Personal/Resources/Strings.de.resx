@@ -279,6 +279,15 @@
   <data name="EmbeddingsGenerationWarning" xml:space="preserve">
     <value>WARNUNG: Wenn Sie Ihr Embedding-Modell aktualisieren oder ändern, müssen Sie alle Dokumente erneut importieren.</value>
   </data>
+  <data name="CompletionProvider" xml:space="preserve">
+    <value>Vervollständigungsanbieter</value>
+  </data>
+  <data name="CompletionProviderDescription" xml:space="preserve">
+    <value>Wählen Sie den lokalen oder Cloud-Anbieter für Textvervollständigung und Chat-Funktionalität.</value>
+  </data>
+  <data name="CompletionProviderWarning" xml:space="preserve">
+    <value>Wählen Sie Ihren bevorzugten Sprachmodell-Anbieter für die Generierung von Antworten und die Verarbeitung von Chat-Anfragen.</value>
+  </data>
   <data name="ModelName" xml:space="preserve">
     <value>Modellname</value>
   </data>
