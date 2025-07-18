@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG सेटिंग्स</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>एम्बेडिंग्स जनरेशन</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>एम्बेडिंग प्रदाता</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>स्थानीय या क्लाउड प्रदाता चुनें

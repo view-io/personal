@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG Settings</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>Embeddings Generation</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>Embeddings Provider</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>Select the local or cloud provider

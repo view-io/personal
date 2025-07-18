@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG-Einstellungen</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>Erzeugung von Embeddings</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>Einbettungsanbieter</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>Wählen Sie das lokale oder Cloud-Anbieter-Embedding-Modell aus, das zur Erzeugung von Vektor-Embeddings verwendet werden soll.</value>

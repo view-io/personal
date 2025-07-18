@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>Configurações de RAG</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>Geração de Embeddings</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>Provedor de Embeddings</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>Selecione o modelo de embedding do provedor

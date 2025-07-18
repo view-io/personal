@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG 설정</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>임베딩 생성</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>임베딩 제공자</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>벡터 임베딩을 생성하는 데 사용할

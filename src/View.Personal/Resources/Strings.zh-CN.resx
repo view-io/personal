@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG 设置</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>嵌入生成</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>嵌入提供者</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>选择用于生成向量嵌入的

@@ -270,8 +270,8 @@
   <data name="RAGSettings" xml:space="preserve">
     <value>RAG設定</value>
   </data>
-  <data name="EmbeddingsGeneration" xml:space="preserve">
-    <value>埋め込み生成</value>
+  <data name="EmbeddingsProvider" xml:space="preserve">
+    <value>埋め込みプロバイダー</value>
   </data>
   <data name="EmbeddingsGenerationDescription" xml:space="preserve">
     <value>ベクトル埋め込みの生成に使用する
