@@ -123,11 +123,11 @@ Head on over to the left and click Start New Chat. Once you start a chat, it wil
 
 In the title bar, you'll notice an indicator of which completions provider you are using, and, which large language model (LLM) you are using.
 
-![Chat interface](./images/chat-interface.png)
+![Chat interface](getting_started/chat-interface.png)
 
 Pop in a question related to your data! For this example, I loaded a series of documents about Botox, Dysport, Xeomin, and neurotoxins in general.
 
-![Chat example](./images/chat-example.png)
+![Chat example](getting_started/chat-example.png)
 
 ## File an Issue
 
