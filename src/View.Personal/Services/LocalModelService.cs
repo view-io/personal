@@ -1,5 +1,6 @@
 namespace View.Personal.Services
 {
+    using SerializationHelper;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -28,11 +29,7 @@ namespace View.Personal.Services
 
         #endregion
 
-        #region Constructor
-
-        #endregion
-
-        #region Public-Methods
+        #region Constructors-and-Factories
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalModelService"/> class.
@@ -43,6 +40,10 @@ namespace View.Personal.Services
             _app = app;
             _localModels = new List<LocalModel>();
         }
+
+        #endregion
+
+        #region Public-Methods
 
         /// <summary>
         /// Preloads models in the background at application startup based on settings.
@@ -225,16 +226,20 @@ namespace View.Personal.Services
                 return false;
             }
 
+            string endpoint = "";
+            string apiPath = "";
+            HttpResponseMessage resp = null;
+
             try
             {
                 // Removed duplicate log message here as it's already logged by the caller
-                string endpoint = GetOllamaEndpoint();
+                endpoint = GetOllamaEndpoint();
                 using var httpClient = CreateHttpClient();
 
                 // Determine if it's an embedding model
                 bool isEmbeddingModel = await IsEmbeddingModelAsync(httpClient, endpoint, modelName);
 
-                string apiPath = isEmbeddingModel ? "api/embeddings" : "api/generate";
+                apiPath = isEmbeddingModel ? "api/embeddings" : "api/generate";
                 HttpContent content;
 
                 if (isEmbeddingModel)
@@ -255,15 +260,22 @@ namespace View.Personal.Services
                     });
                 }
 
-                var response = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
-                response.EnsureSuccessStatusCode();
+                resp = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
+                resp.EnsureSuccessStatusCode();
 
                 _app?.ConsoleLog(SeverityEnum.Info, $"successfully preloaded Ollama model: {modelName}");
                 return true;
             }
             catch (Exception ex)
             {
-                _app?.ConsoleLog(SeverityEnum.Error, $"error preloading model {modelName}:" + Environment.NewLine + ex.ToString());
+                _app?.ConsoleLog(SeverityEnum.Error, 
+                    $"error preloading model" + Environment.NewLine + 
+                    $"| model        : {modelName} " + Environment.NewLine +
+                    $"| endpoint     : {endpoint} " + Environment.NewLine +
+                    $"| path         : {apiPath} " + Environment.NewLine + 
+                    $"| status       : {resp.StatusCode} " + Environment.NewLine +
+                    $"| body         : {resp.Content} " + Environment.NewLine +
+                    $"| exception    : " + Environment.NewLine + ex.ToString());
                 return false;
             }
         }

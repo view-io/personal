@@ -2251,7 +2251,7 @@ namespace View.Personal.Services
                 {
                     node.Tags["IsCompleted"] = "True";
                     app._LiteGraph.Node.Update(node);
-                    app.ConsoleLog(Enums.SeverityEnum.Info, $"Updated node {node.GUID} with IsCompleted tag for file {Path.GetFileName(filePath)}");
+                    app.ConsoleLog(Enums.SeverityEnum.Info, $"updated node {node.GUID} with IsCompleted tag for file {Path.GetFileName(filePath)}");
                 }
             }
         }

@@ -7,6 +7,7 @@ namespace View.Personal
     using LiteGraph;
     using LiteGraph.GraphRepositories;
     using LiteGraph.GraphRepositories.Sqlite;
+    using SerializationHelper;
     using Services;
     using SyslogLogging;
     using System;
@@ -19,7 +20,6 @@ namespace View.Personal
     using System.Threading.Tasks;
     using Timestamps;
     using View.Personal.Helpers;
-
 
     /// <summary>
     /// Main application class for View Personal.
@@ -61,6 +61,7 @@ namespace View.Personal
         #region Private-Members
 
         internal string _Header = "[ViewPersonal] ";
+        internal Serializer _Serializer = new Serializer();
         internal LiteGraphClient _LiteGraph;
         internal GraphRepositoryBase _GraphDriver;
         internal LiteGraph.LoggingSettings _LoggingSettings;
