@@ -197,7 +197,7 @@ namespace ViewPersonal.Updater
             }
             catch (Exception ex)
             {
-                _Logging?.Error(_Header + $"Silent update check error: {ex.Message}");
+                _Logging?.Error(_Header + $"Silent update check error:" + Environment.NewLine + ex.ToString());
                 _FileLogging?.Exception(ex, _Header + "Silent update check error");
             }
         }

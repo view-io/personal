@@ -41,7 +41,7 @@ namespace ViewPersonal.Updater.Services
         {
             try
             {
-                _app.LogInfo($"{_header}Checking for updates...");
+                _app.LogInfo($"{_header}Checking for updates..");
 
                 var response = await _httpClient.GetAsync(Constants.VersionCheckApiUrl);
                 response.EnsureSuccessStatusCode();
@@ -51,7 +51,7 @@ namespace ViewPersonal.Updater.Services
 
                 if (versionInfo == null || string.IsNullOrEmpty(versionInfo.VersionNumber))
                 {
-                    _app.LogInfo($"{_header}Failed to parse version info from API response.");
+                    _app.LogInfo($"{_header}Failed to parse version info from API response");
                     return null;
                 }
 
@@ -60,7 +60,7 @@ namespace ViewPersonal.Updater.Services
             }
             catch (Exception ex)
             {
-                _app.LogError($"{_header}Error checking for updates: {ex.Message}");
+                _app.LogError($"{_header}Error checking for updates:" + Environment.NewLine + ex.ToString());
                 return null;
             }
         }
@@ -94,7 +94,7 @@ namespace ViewPersonal.Updater.Services
                         var totalBytesRead = 0L;
                         var bytesRead = 0;
 
-                        progressCallback(0, "Downloading...");
+                        progressCallback(0, "Downloading..");
 
                         while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                         {
@@ -129,7 +129,7 @@ namespace ViewPersonal.Updater.Services
             }
             catch (Exception ex)
             {
-                _app.LogError($"{_header}Error downloading update: {ex.Message}");
+                _app.LogError($"{_header}Error downloading update:" + Environment.NewLine + ex.ToString());
                 try
                 {
                     if (File.Exists(tempPath))
@@ -156,7 +156,7 @@ namespace ViewPersonal.Updater.Services
         {
             if (string.IsNullOrEmpty(_downloadedInstallerPath) || !File.Exists(_downloadedInstallerPath))
             {
-                _app.LogError($"{_header}The update installer could not be found.");
+                _app.LogError($"{_header}The update installer could not be found");
                 return false;
             }
 
@@ -172,7 +172,7 @@ namespace ViewPersonal.Updater.Services
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
                     _downloadedInstallerPath.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase))
                 {
-                    _app.LogInfo($"{_header}Mounting DMG for installation...");
+                    _app.LogInfo($"{_header}Mounting DMG for installation..");
 
                     var process = Process.Start(new ProcessStartInfo
                     {
@@ -183,7 +183,7 @@ namespace ViewPersonal.Updater.Services
 
                     if (process == null)
                     {
-                        _app.LogError($"{_header}Failed to open DMG.");
+                        _app.LogError($"{_header}Failed to open DMG");
                         return false;
                     }
 
@@ -201,7 +201,7 @@ namespace ViewPersonal.Updater.Services
 
                     if (process == null)
                     {
-                        _app.LogError($"{_header}Failed to start installer process.");
+                        _app.LogError($"{_header}Failed to start installer process");
                         return false;
                     }
 
@@ -211,7 +211,7 @@ namespace ViewPersonal.Updater.Services
             }
             catch (Exception ex)
             {
-                _app.LogError($"{_header}Error installing update: {ex.Message}");
+                _app.LogError($"{_header}Error installing update:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }
@@ -249,7 +249,7 @@ namespace ViewPersonal.Updater.Services
         {
             if (versionInfo.OsDetails == null || versionInfo.OsDetails.Count == 0)
             {
-                _app.LogInfo($"{_header}No OS details found in version info.");
+                _app.LogInfo($"{_header}No OS details found in version info");
                 return string.Empty;
             }
 
@@ -284,11 +284,11 @@ namespace ViewPersonal.Updater.Services
                 var processes = Process.GetProcessesByName(mainAppName);
                 if (processes.Length == 0)
                 {
-                    _app.LogInfo($"{_header}No running instances of {mainAppName} found.");
+                    _app.LogInfo($"{_header}No running instances of {mainAppName} found");
                     return;
                 }
 
-                _app.LogInfo($"{_header}Found {processes.Length} running instances of {mainAppName}.");
+                _app.LogInfo($"{_header}Found {processes.Length} running instances of {mainAppName}");
 
                 foreach (var process in processes)
                 {
@@ -301,14 +301,14 @@ namespace ViewPersonal.Updater.Services
                         // Wait up to 2 seconds for the process to exit gracefully
                         if (!process.WaitForExit(2000))
                         {
-                            _app.LogInfo($"{_header}Process did not close gracefully, forcing termination.");
+                            _app.LogInfo($"{_header}Process did not close gracefully, forcing termination");
                             process.Kill();
                             process.WaitForExit(1000); // Give it another second to fully terminate
                         }
                     }
                     catch (Exception ex)
                     {
-                        _app.LogError($"{_header}Error closing main application process: {ex.Message}");
+                        _app.LogError($"{_header}Error closing main application process:" + Environment.NewLine + ex.ToString());
                     }
                     finally
                     {
@@ -316,11 +316,11 @@ namespace ViewPersonal.Updater.Services
                     }
                 }
 
-                _app.LogInfo($"{_header}Main application closed successfully.");
+                _app.LogInfo($"{_header}Main application closed successfully");
             }
             catch (Exception ex)
             {
-                _app.LogError($"{_header}Error closing main application: {ex.Message}");
+                _app.LogError($"{_header}Error closing main application:" + Environment.NewLine + ex.ToString());
             }
         }
 

@@ -58,7 +58,7 @@ namespace View.Personal.Views
             _modelNameTextBox = this.FindControl<TextBox>("ModelNameTextBox");
             var app = App.Current as App;
             if (app is null)
-                throw new InvalidOperationException("Application instance is not initialized properly.");
+                throw new InvalidOperationException("Application instance is not initialized properly");
             _modelService = new LocalModelService(app);
             this.AttachedToVisualTree += LocalModelsView_AttachedToVisualTree;
         }
@@ -109,8 +109,7 @@ namespace View.Personal.Views
             catch (Exception ex)
             {
                 var app = App.Current as App;
-                app?.Log(SeverityEnum.Error, $"Error loading models: {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error loading models");
+                app?.ConsoleLog(SeverityEnum.Error, $"error loading models:" + Environment.NewLine + ex.ToString());
             }
             finally
             {
@@ -148,7 +147,7 @@ namespace View.Personal.Views
             pullProgressBar.Value = 0;
             pullProgressBar.IsIndeterminate = true;
 
-            pullStatusMessage!.Text = $"Pulling {modelName}...";
+            pullStatusMessage!.Text = $"Pulling {modelName}..";
             pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#888888"));
             pullStatusMessage.IsVisible = true;
 
@@ -292,8 +291,7 @@ namespace View.Personal.Views
             catch (Exception ex)
             {
                 var app = App.Current as App;
-                app?.Log(SeverityEnum.Error, $"Error pulling model: {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error pulling model");
+                app?.ConsoleLog(SeverityEnum.Error, $"error pulling model:" + Environment.NewLine + ex.ToString());
 
                 pullStatusMessage.Text = $"Error pulling model: {ex.Message}";
                 pullStatusMessage.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#D94242"));
@@ -437,7 +435,7 @@ namespace View.Personal.Views
 
                             mainWindow.ShowNotification(
                                 "Error",
-                                $"Failed to delete {modelName}. Please try again.",
+                                $"Failed to delete {modelName}. Please try again",
                                 Avalonia.Controls.Notifications.NotificationType.Error);
                         }
                     }

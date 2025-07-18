@@ -72,8 +72,7 @@ namespace View.Personal.Services
                 catch (Exception ex)
                 {
                     var app = (App)App.Current;
-                    app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
-                    app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
+                    app?.ConsoleLog(SeverityEnum.Error, $"error deleting file {file.Name}:" + Environment.NewLine + ex.ToString());
                     if (window is MainWindow mainWindow)
                         mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
                             string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
@@ -142,16 +141,16 @@ namespace View.Personal.Services
                         {
                             var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
                             var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                            app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                            app?.ConsoleLog(SeverityEnum.Info, $"found {chunkNodeGuids.Count} chunk nodes to delete for file {file.Name}");
 
                             if (chunkNodeGuids.Any())
                             {
                                 liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                                app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
+                                app?.ConsoleLog(SeverityEnum.Info, $"deleted {chunkNodeGuids.Count} chunk nodes");
                             }
 
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                            app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                            app?.ConsoleLog(SeverityEnum.Info, $"deleted document node {file.NodeGuid} for file {file.Name}");
                             FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                             if (mainWindow != null)
                             {
@@ -161,7 +160,7 @@ namespace View.Personal.Services
                                     if (mainWindow.WatchedPaths.Contains(filePath))
                                     {
                                         mainWindow.WatchedPaths.Remove(filePath);
-                                        app?.Log(SeverityEnum.Info, $"Removed '{file.Name}' from watched paths.");
+                                        app?.ConsoleLog(SeverityEnum.Info, $"removed {file.Name} from watched paths");
                                         watchedPathsUpdated = true;
                                     }
                                     else if (mainWindow.WatchedPaths.Any(watchedPath =>
@@ -185,12 +184,12 @@ namespace View.Personal.Services
                                             if (!hasRemainingFiles)
                                             {
                                                 mainWindow.WatchedPaths.Remove(parentWatchedDir);
-                                                app?.Log(SeverityEnum.Info, $"Removed '{System.IO.Path.GetFileName(parentWatchedDir)}' from watched paths as it no longer contains any files.");
+                                                app?.ConsoleLog(SeverityEnum.Info, $"removed {System.IO.Path.GetFileName(parentWatchedDir)} from watched paths as it no longer contains any files");
                                                 watchedPathsUpdated = true;
                                             }
                                             else
                                             {
-                                                app?.Log(SeverityEnum.Info, $"File '{file.Name}' is within a watched directory. Parent directory remains watched with {remainingFilesInDb.Count} file(s) in database.");
+                                                app?.ConsoleLog(SeverityEnum.Info, $"file {file.Name} is within a watched directory");
                                             }
                                         }
                                     }
@@ -206,8 +205,7 @@ namespace View.Personal.Services
                     catch (Exception ex)
                     {
                         failedDeletes.Add(file.Name ?? string.Empty);
-                        app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
-                        app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
+                        app?.ConsoleLog(SeverityEnum.Error, $"error deleting file {file.Name}:" + Environment.NewLine + ex.ToString());
                     }
                 }
 
@@ -217,7 +215,7 @@ namespace View.Personal.Services
                     {
                         app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
                         app.SaveSettings();
-                        app?.Log(SeverityEnum.Info, $"Saved updated watched paths after file deletion.");
+                        app?.ConsoleLog(SeverityEnum.Info, $"saved updated watched paths after file deletion");
                     }
                     
                     if (failedDeletes.Any())
@@ -237,8 +235,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                app?.Log(SeverityEnum.Error, $"Error in batch file deletion: {ex.Message}");
-                app?.LogExceptionToFile(ex, "Error in batch file deletion");
+                app?.ConsoleLog(SeverityEnum.Error, "error in batch file deletion:" + Environment.NewLine + ex.ToString());
                 if (mainWindow != null)
                     mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
                         string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),
@@ -275,33 +272,30 @@ namespace View.Personal.Services
                 {
                     var chunkNodes = liteGraph.Node.ReadChildren(tenantGuid, graphGuid, file.NodeGuid).ToList();
                     var chunkNodeGuids = chunkNodes.Select(node => node.GUID).ToList();
-                    app?.Log(SeverityEnum.Info, $"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
-                    app?.LogInfoToFile($"Found {chunkNodeGuids.Count} chunk nodes to delete for file '{file.Name}'");
+                    app?.ConsoleLog(SeverityEnum.Info, $"found {chunkNodeGuids.Count} chunk nodes to delete for file {file.Name}");
 
                     if (chunkNodeGuids.Any())
                     {
                         liteGraph.Node.DeleteMany(tenantGuid, graphGuid, chunkNodeGuids);
-                        app?.Log(SeverityEnum.Info, $"Deleted {chunkNodeGuids.Count} chunk nodes");
-                        app?.LogInfoToFile($"Deleted {chunkNodeGuids.Count} chunk nodes");
+                        app?.ConsoleLog(SeverityEnum.Info, $"deleted {chunkNodeGuids.Count} chunk nodes");
                     }
 
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
-                    app?.Log(SeverityEnum.Info, $"Deleted document node {file.NodeGuid} for file '{file.Name}'");
-                    app?.LogInfoToFile($"Deleted document node {file.NodeGuid} for file '{file.Name}'");
+                    app?.ConsoleLog(SeverityEnum.Info, $"deleted document node {file.NodeGuid} for file {file.Name}");
                 });
 
                 if (mainWindow != null)
                 {
                     var filePath = file.FilePath;
-                    app?.Log(SeverityEnum.Debug, $"FilePath: '{filePath}'");
-                    app?.Log(SeverityEnum.Debug, $"WatchedPaths: {string.Join(", ", mainWindow.WatchedPaths)}");
+                    app?.ConsoleLog(SeverityEnum.Debug, $"using file path: {filePath}");
+                    app?.ConsoleLog(SeverityEnum.Debug, $"watched paths: {string.Join(", ", mainWindow.WatchedPaths)}");
 
                     if (!string.IsNullOrEmpty(filePath))
                     {
                         if (mainWindow.WatchedPaths.Contains(filePath))
                         {
                             mainWindow.WatchedPaths.Remove(filePath);
-                            app?.Log(SeverityEnum.Info, $"Removed '{file.Name}' from watched paths.");
+                            app?.ConsoleLog(SeverityEnum.Info, $"removed {file.Name} from watched paths");
                         }
                         else if (mainWindow.WatchedPaths.Any(watchedPath =>
                                 System.IO.Directory.Exists(watchedPath) &&
@@ -324,28 +318,26 @@ namespace View.Personal.Services
                                 if (!hasRemainingFiles)
                                 {
                                     mainWindow.WatchedPaths.Remove(parentWatchedDir);
-                                    app?.Log(SeverityEnum.Info, $"Removed '{System.IO.Path.GetFileName(parentWatchedDir)}' from watched paths as it no longer contains any files.");
+                                    app?.ConsoleLog(SeverityEnum.Info, $"removed {System.IO.Path.GetFileName(parentWatchedDir)} as it is empty");
                                     app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
                                     app.SaveSettings();
-                                    app?.Log(SeverityEnum.Info, $"Saved updated watched paths after directory unwatching.");
                                 }
                                 else
                                 {
-                                    app?.Log(SeverityEnum.Info, $"File '{file.Name}' is within a watched directory. Parent directory remains watched with {remainingFilesInDb.Count} file(s) in database.");
+                                    app?.ConsoleLog(SeverityEnum.Info, $"file {file.Name} is within a watched directory");
                                 }
                             }
                         }
                         else
                         {
-                            app?.Log(SeverityEnum.Debug, $"File '{file.Name}' not watched or FilePath unavailable.");
+                            app?.ConsoleLog(SeverityEnum.Debug, $"file {file.Name} not watched or path unavailable");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                app?.Log(SeverityEnum.Error, $"Error deleting file '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error deleting file {file.Name}");
+                app?.ConsoleLog(SeverityEnum.Error, $"error deleting file {file.Name}:" + Environment.NewLine + ex.ToString());
                 return false;
             }
             return true;
@@ -382,7 +374,7 @@ namespace View.Personal.Services
                 var filePath = node.Tags?["FilePath"];
                 try
                 {
-                    app?.Log(SeverityEnum.Warn, $"[Cleanup] Removing incomplete file node: {filePath} ({node.GUID})");
+                    app?.ConsoleLog(SeverityEnum.Warn, $"removing incomplete file node: {filePath} ({node.GUID})");
 
                     // Delete child chunk nodes
                     var chunkNodes = await Task.Run(() =>
@@ -397,11 +389,11 @@ namespace View.Personal.Services
                     // Delete parent document node
                     liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
 
-                    app?.Log(SeverityEnum.Info, $"[Cleanup] Removed incomplete file node: {filePath} ({node.GUID})");
+                    app?.ConsoleLog(SeverityEnum.Info, $"removed incomplete file node: {filePath} ({node.GUID})");
                 }
                 catch (Exception ex)
                 {
-                    app?.Log(SeverityEnum.Error, $"[Cleanup Error] {filePath}: {ex.Message}");
+                    app?.ConsoleLog(SeverityEnum.Error, $"cleanup error for file {filePath}:" + Environment.NewLine + ex.ToString());
                 }
             }
         }

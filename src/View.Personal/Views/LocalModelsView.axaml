@@ -155,7 +155,7 @@
 											<TextBlock FontSize="12" Foreground="#6A6B6F">
                                                         <TextBlock.Text>
                                                              <MultiBinding StringFormat="{}{0}: {1}">
-                                                                 <Binding Path="." Source="{l:Localize ParameterSize}"/>
+                                                                 <Binding Path="" Source="{l:Localize ParameterSize}"/>
                                                                  <Binding Path="ParameterCount"/>
                                                              </MultiBinding>
                                                          </TextBlock.Text>

@@ -443,10 +443,10 @@
     <value>पथ नहीं मिला</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>पथ '{0}' मौजूद नहीं है।</value>
+    <value>पथ {0} मौजूद नहीं है।</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>'{0}' पर नेविगेट करने में विफल: {1}</value>
+    <value>{0} पर नेविगेट करने में विफल: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>मॉडल डाउनलोड किया गया</value>
@@ -695,19 +695,19 @@
     <value>हटाने की पुष्टि करें</value>
   </data>
   <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-    <value>क्या आप वाकई नॉलेजबेस '{0}' को हटाना चाहते हैं?</value>
+    <value>क्या आप वाकई नॉलेजबेस {0} को हटाना चाहते हैं?</value>
   </data>
   <data name="ConfirmWatch" xml:space="preserve">
     <value>वॉच की पुष्टि करें</value>
   </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
-    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
+    <value>{0} को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
-    <value>'{0}' की वॉच बंद करें? इससे {1} फ़ाइल{2} प्रभावित होंगी।</value>
+    <value>{0} की वॉच बंद करें? इससे {1} फ़ाइल{2} प्रभावित होंगी।</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
-    <value>क्या आप वाकई '{0}' को हटाना चाहते हैं</value>
+    <value>क्या आप वाकई {0} को हटाना चाहते हैं</value>
   </data>
   <data name="FromKnowledgebase" xml:space="preserve">
     <value>नॉलेजबेस से?</value>
@@ -719,7 +719,7 @@
     <value>मॉडल हटाएं</value>
   </data>
   <data name="ConfirmDeleteModel" xml:space="preserve">
-    <value>क्या आप वाकई मॉडल '{0}' को हटाना चाहते हैं?</value>
+    <value>क्या आप वाकई मॉडल {0} को हटाना चाहते हैं?</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>यह क्रिया वापस नहीं की जा सकती है।</value>
@@ -1040,7 +1040,7 @@
     <value>पुनः प्रयास करें</value>
   </data>
   <data name="WatchFileQuestion" xml:space="preserve">
-    <value>'{0}' को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
+    <value>{0} को वॉच करें? इससे {1} फ़ाइल{2} इंजेस्ट होगी।</value>
   </data>
   <data name="UnwatchOnly" xml:space="preserve">
     <value>केवल वॉच बंद करें</value>

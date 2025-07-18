@@ -443,10 +443,10 @@ reimportar todos los documentos.</value>
     <value>Ruta no encontrada</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>La ruta '{0}' no existe.</value>
+    <value>La ruta {0} no existe.</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>Error al navegar a '{0}': {1}</value>
+    <value>Error al navegar a {0}: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>Modelo descargado</value>
@@ -695,19 +695,19 @@ reimportar todos los documentos.</value>
     <value>Confirmar eliminación</value>
   </data>
   <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-    <value>¿Está seguro de que desea eliminar la base de conocimiento '{0}'?</value>
+    <value>¿Está seguro de que desea eliminar la base de conocimiento {0}?</value>
   </data>
   <data name="ConfirmWatch" xml:space="preserve">
     <value>Confirmar vigilancia</value>
   </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
-    <value>¿Vigilar '{0}'? Esto procesará {1} archivo{2}.</value>
+    <value>¿Vigilar {0}? Esto procesará {1} archivo{2}.</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
-    <value>¿Dejar de vigilar '{0}'? Esto afectará a {1} archivo{2}.</value>
+    <value>¿Dejar de vigilar {0}? Esto afectará a {1} archivo{2}.</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
-    <value>¿Está seguro de que desea eliminar '{0}'</value>
+    <value>¿Está seguro de que desea eliminar {0}</value>
   </data>
   <data name="FromKnowledgebase" xml:space="preserve">
     <value>de la base de conocimiento?</value>
@@ -719,7 +719,7 @@ reimportar todos los documentos.</value>
     <value>Eliminar modelo</value>
   </data>
   <data name="ConfirmDeleteModel" xml:space="preserve">
-    <value>¿Está seguro de que desea eliminar el modelo '{0}'?</value>
+    <value>¿Está seguro de que desea eliminar el modelo {0}?</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>Esta acción no se puede deshacer.</value>
@@ -1040,7 +1040,7 @@ reimportar todos los documentos.</value>
     <value>Reintentar</value>
   </data>
   <data name="WatchFileQuestion" xml:space="preserve">
-    <value>¿Vigilar '{0}'? Esto procesará {1} archivo{2}.</value>
+    <value>¿Vigilar {0}? Esto procesará {1} archivo{2}.</value>
   </data>
   <data name="UnwatchOnly" xml:space="preserve">
     <value>Solo dejar de vigilar</value>

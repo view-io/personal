@@ -443,10 +443,10 @@
     <value>パスが見つかりません</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>パス '{0}' は存在しません。</value>
+    <value>パス {0} は存在しません。</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>'{0}'へのナビゲーションに失敗しました: {1}</value>
+    <value>{0}へのナビゲーションに失敗しました: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>モデルがダウンロードされました</value>

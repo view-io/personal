@@ -442,10 +442,10 @@
     <value>路径未找到</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>路径 '{0}' 不存在。</value>
+    <value>路径 {0} 不存在。</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>导航到 '{0}' 失败：{1}</value>
+    <value>导航到 {0} 失败：{1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>模型已下载</value>

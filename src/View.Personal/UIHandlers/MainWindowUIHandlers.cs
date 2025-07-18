@@ -390,7 +390,6 @@ namespace View.Personal.UIHandlers
         public static void MainWindow_Opened(Window window)
         {
             var app = (App)Application.Current;
-            app.Log(Enums.SeverityEnum.Info, "Finished MainWindow_Opened.");
             var sidebarBorder = window.FindControl<Border>("SidebarBorder");
             var dashboardPanel = window.FindControl<Border>("DashboardPanel");
             if (sidebarBorder != null) sidebarBorder.IsVisible = true;
@@ -845,8 +844,7 @@ namespace View.Personal.UIHandlers
             {
                 window.ShowNotification(ResourceManagerService.GetString("UnexpectedError"), ex.Message, NotificationType.Error);
                 var app = App.Current as App;
-                app?.Log(Enums.SeverityEnum.Error, $"Error while saving settings: {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error while saving settings");
+                app?.ConsoleLog(Enums.SeverityEnum.Error, $"error while saving settings:" + Environment.NewLine + ex.ToString());
             }
             finally
             {
@@ -898,14 +896,14 @@ namespace View.Personal.UIHandlers
                 if (GraphExporter.TryExportGraphToGexfFile(liteGraph, tenantGuid, graphGuid, filePath,
                         out var errorMessage))
                 {
-                    app.Log(Enums.SeverityEnum.Info, $"Graph {graphGuid} exported to {filePath} successfully!");
+                    app.ConsoleLog(Enums.SeverityEnum.Info, $"graph {graphGuid} exported to {filePath} successfully");
                     window.ShowNotification(ResourceManagerService.GetString("FileExported"), 
                         ResourceManagerService.GetString("FileExportedSuccessfully"),
                         NotificationType.Success);
                 }
                 else
                 {
-                    app.Log(Enums.SeverityEnum.Error, $"Error exporting graph to GEXF: {errorMessage}");
+                    app.ConsoleLog(Enums.SeverityEnum.Error, $"error exporting graph to GEXF: {errorMessage}");
                     window.ShowNotification(ResourceManagerService.GetString("ExportError"), 
                         ResourceManagerService.GetString("ErrorExportingGraph", errorMessage),
                         NotificationType.Error);

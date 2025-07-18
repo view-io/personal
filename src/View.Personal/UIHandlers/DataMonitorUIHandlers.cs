@@ -209,7 +209,7 @@ namespace View.Personal.UIHandlers
                     }
                     catch (Exception ex)
                     {
-                        mainWindow.LogToConsole($"[WARNING] Could not access drive {drive.Name}: {ex.Message}");
+                        mainWindow.LogToConsole($"[WARNING] Could not access drive {drive.Name}:" + Environment.NewLine + ex.ToString());
                     }
 
                 dataGrid.ItemsSource = entries;
@@ -308,7 +308,7 @@ namespace View.Personal.UIHandlers
                 return;
             }
 
-            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting sync of watched files...");
+            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Starting sync of watched files..");
 
             var liteGraph = ((App)Application.Current)._LiteGraph;
             var tenantGuid = ((App)Application.Current)._TenantGuid;
@@ -358,7 +358,7 @@ namespace View.Personal.UIHandlers
                                 catch (Exception ex)
                                 {
                                     mainWindow.LogToConsole(
-                                        $"[{Enums.SeverityEnum.Error}] Failed to sync file {Path.GetFileName(filePath)}: {ex.Message}");
+                                        $"[{Enums.SeverityEnum.Error}] Failed to sync file {Path.GetFileName(filePath)}:" + Environment.NewLine + ex.ToString());
                                 }
                             }
                             else
@@ -391,7 +391,7 @@ namespace View.Personal.UIHandlers
                         catch (Exception ex)
                         {
                             mainWindow.LogToConsole(
-                                $"[{SeverityEnum.Error}] Failed to sync file {Path.GetFileName(watchedPath)}: {ex.Message}");
+                                $"[{SeverityEnum.Error}] Failed to sync file {Path.GetFileName(watchedPath)}:" + Environment.NewLine + ex.ToString());
                         }
                     }
                     else
@@ -410,10 +410,10 @@ namespace View.Personal.UIHandlers
             if (filesPanel != null && filesPanel.IsVisible)
             {
                 await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
-                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after sync.");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after sync");
             }
 
-            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Sync of watched files completed.");
+            mainWindow.LogToConsole($"[{SeverityEnum.Info}] Sync of watched files completed");
         }
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace View.Personal.UIHandlers
                             entry.FullPath.StartsWith(watchedPath + Path.DirectorySeparatorChar)))
                     {
                         mainWindow.LogToConsole(
-                            $"[{SeverityEnum.Info}] '{entry.Name}' is already implicitly watched by a parent directory.");
+                            $"[{SeverityEnum.Info}] {entry.Name} is already implicitly watched by a parent directory");
                         checkBox.IsChecked = true;
                         return;
                     }
@@ -484,7 +484,7 @@ namespace View.Personal.UIHandlers
 
                     if (fileCount == 0)
                         mainWindow.LogToConsole(
-                            $"[{SeverityEnum.Warn}] No accessible files to ingest in directory '{entry.FullPath}'.");
+                            $"[{SeverityEnum.Warn}] No accessible files to ingest in directory {entry.FullPath}");
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -530,12 +530,11 @@ namespace View.Personal.UIHandlers
                     {
                         mainWindow.WatchedPaths.Remove(subItem);
                         mainWindow.LogToConsole(
-                            $"[{SeverityEnum.Info}] Removed explicit watch on '{subItem}' as it's now implicitly watched by '{entry.FullPath}'.");
+                            $"[{SeverityEnum.Info}] Removed explicit watch on {subItem} as it's now implicitly watched by {entry.FullPath}");
                     }
                 }
 
                 mainWindow.WatchedPaths.Add(entry.FullPath);
-                LogWatchedPaths(mainWindow);
                 UpdateFileWatchers(mainWindow);
                 LoadFileSystem(mainWindow, mainWindow._CurrentPath);
 
@@ -652,7 +651,7 @@ namespace View.Personal.UIHandlers
             else
             {
                 checkBox.IsChecked = false;
-                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Watch cancelled for '{entry.Name}' by user.");
+                mainWindow.LogToConsole($"[{SeverityEnum.Info}] Watch cancelled for {entry.Name} by user");
             }
         }
 
@@ -702,15 +701,13 @@ namespace View.Personal.UIHandlers
             {
                 case var unwatchOnly when unwatchOnly == Services.ResourceManagerService.GetString("UnwatchOnly"):
                     mainWindow.WatchedPaths.Remove(entry.FullPath);
-                    LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);
-                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' without deleting files.");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Stopped watching {entry.Name} without deleting files");
                     break;
 
                 case var unwatchAndDelete when unwatchAndDelete == Services.ResourceManagerService.GetString("UnwatchAndDelete"):
                     mainWindow.WatchedPaths.Remove(entry.FullPath);
-                    LogWatchedPaths(mainWindow);
                     UpdateFileWatchers(mainWindow);
 
                     var liteGraph = ((App)Application.Current)._LiteGraph;
@@ -748,42 +745,22 @@ namespace View.Personal.UIHandlers
                     if (filesPanel != null && filesPanel.IsVisible)
                     {
                         await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
-                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after unwatch and delete.");
+                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after unwatch and delete");
                     }
 
                     mainWindow.LogToConsole(
-                        $"[{SeverityEnum.Info}] Stopped watching '{entry.Name}' and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database.");
+                        $"[{SeverityEnum.Info}] Stopped watching {entry.Name} and deleted {fileCount} file{(fileCount == 1 ? "" : "s")} from database");
                     break;
 
                 case var cancel when cancel == Services.ResourceManagerService.GetString("Cancel"):
                     checkBox.IsChecked = true;
-                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Unwatch cancelled for '{entry.Name}' by user.");
+                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Unwatch cancelled for {entry.Name} by user");
                     return;
             }
 
             var app = (App)Application.Current;
             app.ApplicationSettings.WatchedPaths = mainWindow.WatchedPaths;
             app.SaveSettings();
-        }
-
-        /// <summary>
-        /// Logs the list of currently watched paths to the console output in the UI and system console.
-        /// </summary>
-        /// <param name="mainWindow">The main application window containing UI controls.</param>
-        public static void LogWatchedPaths(MainWindow mainWindow)
-        {
-            var consoleOutput = mainWindow.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
-            if (consoleOutput != null)
-            {
-                var logMessage = $"[{SeverityEnum.Info}] Watched paths ({mainWindow.WatchedPaths.Count}): " +
-                                 string.Join("\n", mainWindow.WatchedPaths) + "\n";
-                consoleOutput.Text += logMessage;
-                Console.WriteLine(logMessage);
-            }
-            else
-            {
-                Console.WriteLine("[ERROR] ConsoleOutputTextBox not found for logging.");
-            }
         }
 
         /// <summary>
@@ -824,7 +801,7 @@ namespace View.Personal.UIHandlers
             if (string.IsNullOrEmpty(fileName)) return true;
 
             var tempPatterns = new[] { ".sb-", ".DS_Store", "~$" };
-            return tempPatterns.Any(pattern => fileName.Contains(pattern)) || fileName.StartsWith(".");
+            return tempPatterns.Any(pattern => fileName.Contains(pattern)) || fileName.StartsWith("");
         }
 
         /// <summary>
@@ -844,7 +821,7 @@ namespace View.Personal.UIHandlers
                 var nodes = liteGraph.Node.ReadAllInGraph(tenantGuid, graphGuid);
                 if (nodes == null || !nodes.Any())
                 {
-                    mainWindow.LogToConsole($"[{Enums.SeverityEnum.Warn}] No nodes found in LiteGraph for this tenant/graph.");
+                    mainWindow.LogToConsole($"[{Enums.SeverityEnum.Warn}] No nodes found in LiteGraph for this tenant/graph");
                     return null;
                 }
 
@@ -860,7 +837,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to search LiteGraph for file {filePath}: {ex.Message}");
+                mainWindow.LogToConsole($"[{SeverityEnum.Error}] Failed to search LiteGraph for file {filePath}:" + Environment.NewLine + ex.ToString());
                 return null;
             }
         }
@@ -959,7 +936,7 @@ namespace View.Personal.UIHandlers
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
                                     await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Refreshed Files panel after directory deletion.");
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Error}] Refreshed Files panel after directory deletion");
                                 }
                             });
                         }
@@ -992,7 +969,7 @@ namespace View.Personal.UIHandlers
                                 if (filesPanel != null && filesPanel.IsVisible)
                                 {
                                     await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
-                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory deletion.");
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory deletion");
                                 }
                             });
                         }
@@ -1159,7 +1136,7 @@ namespace View.Personal.UIHandlers
                                            ((App)Application.Current)._GraphGuid,
                                            mainWindow);
                                     await Dispatcher.UIThread.InvokeAsync(() =>
-                                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory ingestion."));
+                                        mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after directory ingestion"));
                                 }
                             }
                             catch (Exception ex)
@@ -1203,7 +1180,7 @@ namespace View.Personal.UIHandlers
                                         ((App)Application.Current)._GraphGuid,
                                     mainWindow);
                                 await Dispatcher.UIThread.InvokeAsync(() =>
-                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after file ingestion."));
+                                    mainWindow.LogToConsole($"[{SeverityEnum.Info}] Refreshed Files panel after file ingestion"));
                             }
                         }
                         catch (Exception ex)
@@ -1277,7 +1254,7 @@ namespace View.Personal.UIHandlers
         {
             return (fileInfo.Attributes & FileAttributes.Hidden) != 0 ||
                    (fileInfo.Attributes & FileAttributes.System) != 0 ||
-                   fileInfo.Name.StartsWith(".") ||
+                   fileInfo.Name.StartsWith("") ||
                    fileInfo.Name.Equals(".DS_Store", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -1289,10 +1266,10 @@ namespace View.Personal.UIHandlers
         private static (bool canAccess, string errorMessage) CheckFileReadPermission(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
-                return (false, "No file path provided. Please select a valid file.");
+                return (false, "No file path provided. Please select a valid file");
 
             if (!File.Exists(filePath))
-                return (false, $"File does not exist: {filePath}. Please verify the file path is correct.");
+                return (false, $"File does not exist: {filePath}. Please verify the file path is correct");
 
             try
             {
@@ -1306,21 +1283,21 @@ namespace View.Personal.UIHandlers
             catch (UnauthorizedAccessException)
             {
                 return (false,
-                    $"Permission denied: You don't have sufficient permissions to access this file. Try running the application as administrator or check file permissions.");
+                    $"Permission denied: You don't have sufficient permissions to access this file. Try running the application as administrator or check file permissions");
             }
             catch (IOException ex) when ((ex.HResult & 0x0000FFFF) == 32) // File is being used by another process
             {
                 return (false,
-                    $"File is in use by another process. Please close any programs that might be using this file and try again.");
+                    $"File is in use by another process. Please close any programs that might be using this file and try again");
             }
             catch (PathTooLongException)
             {
-                return (false, $"The file path is too long. Try moving the file to a location with a shorter path.");
+                return (false, $"The file path is too long. Try moving the file to a location with a shorter path");
             }
             catch (Exception ex)
             {
                 return (false,
-                    $"Cannot access file: {ex.Message}. Please ensure the file is not corrupted and you have appropriate permissions.");
+                    $"Cannot access file: {ex.Message}. Please ensure the file is not corrupted and you have appropriate permissions");
             }
         }
 

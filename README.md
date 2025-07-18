@@ -29,6 +29,10 @@ View AI Personal is a cross-platform desktop application that empowers you to cr
 
 > **Note**: This application is in its early stages. Please be patient and kind as we continue to improve and expand its capabilities.
 
+## Getting Started
+
+Please refer to [GETTING_STARTED.md](GETTING_STARTED.md) for how to get started quickly.
+
 ## ✨ New in Version v1.0.x
 
 🎉 **Initial Release Features:**

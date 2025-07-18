@@ -439,10 +439,10 @@
     <value>Pfad nicht gefunden</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>Der Pfad '{0}' existiert nicht.</value>
+    <value>Der Pfad {0} existiert nicht.</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>Navigation zu '{0}' fehlgeschlagen: {1}</value>
+    <value>Navigation zu {0} fehlgeschlagen: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>Modell heruntergeladen</value>
@@ -691,19 +691,19 @@
     <value>Löschung bestätigen</value>
   </data>
   <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-    <value>Möchten Sie die Wissensdatenbank '{0}' wirklich löschen?</value>
+    <value>Möchten Sie die Wissensdatenbank {0} wirklich löschen?</value>
   </data>
   <data name="ConfirmWatch" xml:space="preserve">
     <value>Überwachung bestätigen</value>
   </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
-    <value>'{0}' überwachen? Dies wird {1} Datei{2} aufnehmen.</value>
+    <value>{0} überwachen? Dies wird {1} Datei{2} aufnehmen.</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
-    <value>Überwachung von '{0}' beenden? Dies betrifft {1} Datei{2}.</value>
+    <value>Überwachung von {0} beenden? Dies betrifft {1} Datei{2}.</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
-    <value>Möchten Sie '{0}' wirklich entfernen</value>
+    <value>Möchten Sie {0} wirklich entfernen</value>
   </data>
   <data name="FromKnowledgebase" xml:space="preserve">
     <value>aus der Wissensdatenbank?</value>
@@ -715,7 +715,7 @@
     <value>Modell löschen</value>
   </data>
   <data name="ConfirmDeleteModel" xml:space="preserve">
-    <value>Möchten Sie das Modell '{0}' wirklich löschen?</value>
+    <value>Möchten Sie das Modell {0} wirklich löschen?</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>Diese Aktion kann nicht rückgängig gemacht werden.</value>
@@ -1036,7 +1036,7 @@
     <value>Wiederholen</value>
   </data>
   <data name="WatchFileQuestion" xml:space="preserve">
-    <value>'{0}' überwachen? Dies wird {1} Datei{2} aufnehmen.</value>
+    <value>{0} überwachen? Dies wird {1} Datei{2} aufnehmen.</value>
   </data>
   <data name="UnwatchOnly" xml:space="preserve">
     <value>Nur Überwachung beenden</value>

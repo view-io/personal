@@ -70,7 +70,7 @@ namespace View.Personal.Services
                         }
                         else
                         {
-                            _app?.Log(SeverityEnum.Warn, $"Selected completion model '{completionModel}' is not pulled. Skipping preload.");
+                            _app?.ConsoleLog(SeverityEnum.Warn, $"selected completion model {completionModel} is not pulled, skipping preload");
                         }
                     }
                 }
@@ -87,15 +87,14 @@ namespace View.Personal.Services
                         }
                         else
                         {
-                            _app?.Log(SeverityEnum.Warn, $"Selected embedding model '{embeddingModel}' is not pulled. Skipping preload.");
+                            _app?.ConsoleLog(SeverityEnum.Warn, $"selected embedding model {embeddingModel} is not pulled, skipping preload");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Error preloading models at startup: {ex.Message}");
-                _app?.LogExceptionToFile(ex, "Error preloading models at startup");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error preloading models at startup:" + Environment.NewLine + ex.ToString());
             }
         }
 
@@ -137,8 +136,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Ollama service is not available: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"Ollama service is not available");
+                _app?.ConsoleLog(SeverityEnum.Error, $"Ollama service is not available:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }
@@ -179,8 +177,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Error checking if model {modelName} is pulled: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"Error checking if model {modelName} is pulled");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error checking if model {modelName} is pulled:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }
@@ -198,7 +195,7 @@ namespace View.Personal.Services
         {
             if (string.IsNullOrWhiteSpace(modelName))
             {
-                _app?.Log(SeverityEnum.Error, "Cannot preload model: Model name is empty");
+                _app?.ConsoleLog(SeverityEnum.Warn, "cannot preload model, model name is empty");
                 return false;
             }
             bool isOllamaAvailable = await IsOllamaAvailableAsync();
@@ -208,7 +205,7 @@ namespace View.Personal.Services
                return await LoadModelAsync(modelName);
             else
             {
-                _app?.Log(SeverityEnum.Warn, $"Selected model '{modelName}' is not pulled. Skipping preload.");
+                _app?.ConsoleLog(SeverityEnum.Warn, $"elected model {modelName} is not pulled, skipping preload");
                 return false;
             }
         }
@@ -224,7 +221,7 @@ namespace View.Personal.Services
         {
             if (string.IsNullOrWhiteSpace(modelName))
             {
-                _app?.Log(SeverityEnum.Error, "Cannot preload model: Model name is empty");
+                _app?.ConsoleLog(SeverityEnum.Error, "cannot preload model, model name is empty");
                 return false;
             }
 
@@ -261,13 +258,12 @@ namespace View.Personal.Services
                 var response = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
                 response.EnsureSuccessStatusCode();
 
-                _app?.Log(SeverityEnum.Info, $"Successfully preloaded Ollama model: {modelName}");
+                _app?.ConsoleLog(SeverityEnum.Info, $"successfully preloaded Ollama model: {modelName}");
                 return true;
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Error preloading model {modelName}: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"Error preloading model {modelName}");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error preloading model {modelName}:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }
@@ -307,8 +303,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Error deleting model {model.Name}: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"Error deleting model {model.Name}");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error deleting model {model.Name}:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }
@@ -355,8 +350,8 @@ namespace View.Personal.Services
         /// <param name="ex">The exception that was thrown during the operation.</param>
         private void LogError(string errorMessage, Exception ex)
         {
-            _app?.Log(SeverityEnum.Error, errorMessage);
-            _app?.LogExceptionToFile(ex, errorMessage);
+            if (ex == null) _app?.ConsoleLog(SeverityEnum.Error, errorMessage);
+            else _app?.ConsoleLog(SeverityEnum.Error, errorMessage + Environment.NewLine + ex.ToString());
         }
 
         /// <summary>
@@ -373,9 +368,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app.Log(SeverityEnum.Error, $"Error loading models: {ex.Message}");
-                _app.LogExceptionToFile(ex, $"Error loading models");
-
+                _app.ConsoleLog(SeverityEnum.Error, $"error loading models:" + Environment.NewLine + ex.ToString());
                 _localModels = new List<LocalModel>();
             }
         }
@@ -406,8 +399,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app?.Log(SeverityEnum.Error, $"Error fetching Ollama models: {ex.Message}");
-                _app?.LogExceptionToFile(ex, $"Error fetching Ollama models");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error fetching Ollama models:" + Environment.NewLine + ex.ToString());
             }
 
             return models;
@@ -498,7 +490,7 @@ namespace View.Personal.Services
 
                     if (httpEx.Message.Contains("400") || httpEx.Message.Contains("Bad Request"))
                     {
-                        errorResponse.Error = $"Invalid model name '{modelName}'. Please check if the model name is correct.";
+                        errorResponse.Error = $"Invalid model name {modelName}. Please check if the model name is correct";
                     }
 
                     progressCallback?.Invoke(errorResponse);
@@ -557,7 +549,7 @@ namespace View.Personal.Services
                         if (!string.IsNullOrEmpty(pullResponse.Error) &&
                             pullResponse.Error.Contains("pull model manifest: file does not exist"))
                         {
-                            _app?.Log(SeverityEnum.Error, $"Invalid model name detected: {modelName}. Model manifest does not exist.");
+                            _app?.ConsoleLog(SeverityEnum.Error, $"invalid model name detected: {modelName}, model manifest does not exist");
                             progressCallback?.Invoke(pullResponse);
 
                             return;

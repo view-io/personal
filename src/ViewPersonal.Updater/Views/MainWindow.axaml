@@ -30,7 +30,7 @@
 					<Grid x:Name="DownloadingGrid" IsVisible="False">
 						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
-							<TextBlock Text="Downloading update..." HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" />
+							<TextBlock Text="Downloading update.." HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" />
 							<ProgressBar x:Name="DownloadProgressBar" CornerRadius="4" Value="0" Width="300" Height="12" Margin="0,0,0,10" Background="#E0E0E0" Foreground="#4CAF50" />
 							<TextBlock x:Name="DownloadProgressText" Text="0%" HorizontalAlignment="Center" Margin="0,0,0,5" />
 							<TextBlock x:Name="DownloadSizeText" Text="0 MB / 0 MB" HorizontalAlignment="Center" />
@@ -41,7 +41,7 @@
 						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
 							<TextBlock Text="Download Complete" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" />
-							<TextBlock Text="The update has been downloaded and is ready to install." HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
+							<TextBlock Text="The update has been downloaded and is ready to install" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
 							<Button x:Name="InstallNowButton" HorizontalAlignment="Center" Width="200" Height="45"
                                     Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="SemiBold" Classes="flat"
                                     CornerRadius="4" Click="InstallNowButton_Click">
@@ -71,7 +71,7 @@
 												</Style>
 											</icons:MaterialIcon.Styles>
 										</icons:MaterialIcon>
-										<TextBlock Text="Installing..." VerticalAlignment="Center" />
+										<TextBlock Text="Installing.." VerticalAlignment="Center" />
 									</StackPanel>
 								</Panel>
 							</Button>
@@ -82,7 +82,7 @@
 						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 							<Image Source="/Assets/logo.png" Width="300" Height="300" Margin="0,0,0,0" />
 							<TextBlock Text="Update Error" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" />
-							<TextBlock x:Name="ErrorMessageText" Text="An error occurred while checking for updates." HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
+							<TextBlock x:Name="ErrorMessageText" Text="An error occurred while checking for updates" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30" />
 							<Button x:Name="RetryButton" Content="Retry" HorizontalAlignment="Center" Width="200" Height="45"
                                     Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="SemiBold" Classes="flat"
                                     CornerRadius="4" Click="RetryButton_Click" />

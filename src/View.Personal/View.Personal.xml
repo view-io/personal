@@ -30,7 +30,7 @@
             entities such as tenant, graph, user, and credentials if they did not already exist.
             </summary>
         </member>
-        <member name="P:View.Personal.App.LoggingService">
+        <member name="P:View.Personal.App.ConsoleLogging">
             <summary>
             The logging service for writing to the UI console, standard console and log file.
             </summary>
@@ -59,37 +59,12 @@
             - Displaying error messages if initialization fails
             </remarks>
         </member>
-        <member name="M:View.Personal.App.Log(View.Personal.Enums.SeverityEnum,System.String)">
+        <member name="M:View.Personal.App.ConsoleLog(View.Personal.Enums.SeverityEnum,System.String)">
             <summary>
             Logs a message with a severity level to the console output in the UI and system console.
             </summary>
             <param name="severity">The severity level of the message as an enum value.</param>
             <param name="message">The message content to be logged.</param>
-        </member>
-        <member name="M:View.Personal.App.LogWithTimestamp(View.Personal.Enums.SeverityEnum,System.String)">
-            <summary>
-            Logs a message with a timestamp and severity level to both the application UI and system console.
-            </summary>
-            <param name="severity">The severity level of the message as an enum value.</param>
-            <param name="message">The message content to be logged.</param>
-        </member>
-        <member name="M:View.Personal.App.FormatLastModifiedDateTime(System.DateTime)">
-            <summary>
-            Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
-            including seconds in the output.
-            </summary>
-            <param name="dateTime">The DateTime to format.</param>
-            <returns>Formatted date time string with seconds.</returns>
-        </member>
-        <member name="M:View.Personal.App.LogInfoToFile(System.String)">
-            <summary>
-            Logs an informational message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.LogExceptionToFile(System.Exception,System.String)">
-            <summary>
-            Logs an exception to the file with a custom message.
-            </summary>
         </member>
         <member name="M:View.Personal.App.SaveSettings">
             <summary>
@@ -121,24 +96,6 @@
             Retrieves all graphs associated with the specified tenant from the LiteGraph database.
             </summary>
             <returns>A list of <see cref="T:LiteGraph.Graph"/> objects representing all graphs for the tenant. Returns an empty list if an error occurs.</returns>
-        </member>
-        <member name="M:View.Personal.App.StoreAppVersionInFile">
-            <summary>
-            Stores the current application version in a file for the updater to read.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.LaunchUpdater">
-            <summary>
-            Launches the ViewPersonal Updater application in a separate process.
-            </summary>
-        </member>
-        <member name="M:View.Personal.App.LoadSettings">
-            <summary>
-            Loads application settings from a configuration file or initializes default settings if the file does not exist.
-            </summary>
-            <remarks>
-            Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="F:View.Personal.App.ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
-            </remarks>
         </member>
         <member name="T:View.Personal.Classes.ActiveFileViewModel">
             <summary>
@@ -2479,6 +2436,36 @@
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
             <param name="attachDevTools">Should the dev tools be attached.</param>
         </member>
+        <member name="T:View.Personal.Services.ConsoleLoggingService">
+            <summary>
+            Service for logging messages to a UI console output, system console and file log.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.ConsoleLoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.SelectableTextBlock)">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Services.ConsoleLoggingService"/> class.
+            </summary>
+            <param name="window">The window hosting the UI console output.</param>
+            <param name="consoleOutput">The TextBox control for displaying console messages.</param>
+        </member>
+        <member name="M:View.Personal.Services.ConsoleLoggingService.Log(System.String)">
+            <summary>
+            Logs a message to the UI console output and system console.
+            </summary>
+            <param name="message">The message to log.</param>
+        </member>
+        <member name="M:View.Personal.Services.ConsoleLoggingService.Clear">
+            <summary>
+            Clears the console output text.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Services.ConsoleLoggingService.DownloadLogsAsync(System.String)">
+            <summary>
+            Downloads the console logs to a file asynchronously.
+            </summary>
+            <param name="filePath">The path where the logs will be saved.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
+        </member>
         <member name="T:View.Personal.Services.FileBrowserService">
             <summary>
             Service class that handles file browsing operations
@@ -2999,46 +2986,6 @@
             <param name="cancellationToken">Cancellation token to stop processing if the operation is cancelled.</param>
             <returns>A task representing the asynchronous operation.</returns>
         </member>
-        <member name="T:View.Personal.Services.LoggingService">
-            <summary>
-            Service for logging messages to a UI console output, system console and file log.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.#ctor(Avalonia.Controls.Window,Avalonia.Controls.SelectableTextBlock)">
-            <summary>
-            Initializes a new instance of the <see cref="T:View.Personal.Services.LoggingService"/> class.
-            </summary>
-            <param name="window">The window hosting the UI console output.</param>
-            <param name="consoleOutput">The TextBox control for displaying console messages.</param>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.Log(System.String)">
-            <summary>
-            Logs a message to the UI console output and system console.
-            </summary>
-            <param name="message">The message to log.</param>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.LogInfoToFile(System.String)">
-            <summary>
-            Logs an informational message to the file.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.LogExceptionToFile(System.Exception,System.String)">
-            <summary>
-            Logs an exception to the file with a custom message.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.Clear">
-            <summary>
-            Clears the console output text.
-            </summary>
-        </member>
-        <member name="M:View.Personal.Services.LoggingService.DownloadLogsAsync(System.String)">
-            <summary>
-            Downloads the console logs to a file asynchronously.
-            </summary>
-            <param name="filePath">The path where the logs will be saved.</param>
-            <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
-        </member>
         <member name="T:View.Personal.Services.RagService">
             <summary>
             Service for handling Retrieval Augmented Generation (RAG) functionality.
@@ -3170,7 +3117,7 @@
             <param name="e">Event data associated with the click event.</param>
             <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
             <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
-            <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+            <param name="getAiResponseCallback">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
             <returns>This method doesn't return a value as it's marked async void.</returns>
         </member>
         <member name="M:View.Personal.UIHandlers.ChatUIHandlers.GetTitleFromMessage(System.String,System.Int32)">
@@ -3320,12 +3267,6 @@
             <param name="checkBox">The checkbox triggering the unwatch action.</param>
             <param name="entry">The file system entry to stop watching.</param>
             <returns>A task representing the asynchronous operation.</returns>
-        </member>
-        <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.LogWatchedPaths(View.Personal.MainWindow)">
-            <summary>
-            Logs the list of currently watched paths to the console output in the UI and system console.
-            </summary>
-            <param name="mainWindow">The main application window containing UI controls.</param>
         </member>
         <member name="M:View.Personal.UIHandlers.DataMonitorUIHandlers.InitializeFileWatchers(View.Personal.MainWindow)">
             <summary>

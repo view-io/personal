@@ -49,15 +49,12 @@ namespace View.Personal.Services
                 Process.Start("explorer.exe", $"/select,\"{file.FilePath}\"");
 
                 App? app = App.Current as App;
-                app?.Log(SeverityEnum.Info, $"Opened file explorer for '{file.Name}'.");
-                app?.LogInfoToFile($"{SeverityEnum.Info} Opened file explorer for '{file.Name}'.");
+                app?.ConsoleLog(SeverityEnum.Info, $"opened file explorer for {file.Name}");
             }
             catch (Exception ex)
             {
                 App? app = App.Current as App;
-                app?.Log(SeverityEnum.Error, $"Error opening file explorer for '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error opening file explorer for {file.Name}");
-
+                app?.ConsoleLog(SeverityEnum.Error, $"error opening file explorer for {file.Name}:" + Environment.NewLine + ex.ToString());
                 if (window is MainWindow mainWindow)
                 {
                     mainWindow.ShowNotification(ResourceManagerService.GetString("Error"), 
@@ -111,12 +108,11 @@ namespace View.Personal.Services
                     }
                 }, DispatcherPriority.Normal);
 
-                app?.Log(SeverityEnum.Info, $"Reprocessing file '{file.Name}'.");
-                app?.LogInfoToFile($"{SeverityEnum.Info} Reprocessing file '{file.Name}'.");
+                app?.ConsoleLog(SeverityEnum.Info, $"reprocessing file {file.Name}");
 
                 if (window is MainWindow mainWindowInstance)
                 {
-                    var liteGraph = app?._LiteGraph ?? throw new InvalidOperationException("LiteGraph instance is null.");
+                    var liteGraph = app?._LiteGraph ?? throw new InvalidOperationException("LiteGraph instance is null");
                     var tenantGuid = app?._TenantGuid ?? Guid.Empty;
                     var activeGraphGuid = mainWindowInstance.ActiveGraphGuid;
                     var result = await FileDeleter.DeleteFile(file, liteGraph, tenantGuid, activeGraphGuid, mainWindowInstance);
@@ -132,8 +128,7 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 App? app = App.Current as App;
-                app?.Log(SeverityEnum.Error, $"Error reprocessing file '{file.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error reprocessing file {file.Name}");
+                app?.ConsoleLog(SeverityEnum.Error, $"error reprocessing file {file.Name}:" + Environment.NewLine + ex.ToString());
 
                 if (window is MainWindow mainWindowInstance)
                 {

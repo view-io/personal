@@ -51,14 +51,14 @@ namespace View.Personal.UIHandlers
         /// <param name="e">Event data associated with the click event.</param>
         /// <param name="window">The window containing the chat interface controls (must be of type MainWindow).</param>
         /// <param name="conversationHistory">The list of chat messages representing the conversation history.</param>
-        /// <param name="getAIResponse">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
+        /// <param name="getAiResponseCallback">A function that takes a user prompt and a token callback action, and returns the AI's response asynchronously.</param>
         /// <returns>This method doesn't return a value as it's marked async void.</returns>
         public static async void SendMessageTest_Click(
             object sender,
             RoutedEventArgs e,
             Window window,
             List<ChatMessage> conversationHistory,
-            Func<string, Action<string>, Task<string>> getAIResponse)
+            Func<string, Action<string>, Task<string>> getAiResponseCallback)
         {
             // Cast the window to MainWindow
             var mainWindow = window as MainWindow;
@@ -85,7 +85,6 @@ namespace View.Personal.UIHandlers
             }
             else
             {
-                app.Log(SeverityEnum.Warn, "User tried to send an empty or null message.");
                 return;
             }
 
@@ -125,9 +124,9 @@ namespace View.Personal.UIHandlers
 
                 var summarizationTask = GenerateConversationSummary(currentMessages, mainWindow);
 
-                app.LogWithTimestamp(SeverityEnum.Debug, "Calling GetAIResponse...");
+                app.ConsoleLog(SeverityEnum.Debug, "retrieving response");
                 var firstTokenReceived = false;
-                var finalResponse = await getAIResponse(userText, async (tokenChunk) =>
+                var finalResponse = await getAiResponseCallback(userText, async (tokenChunk) =>
                 {
                     assistantMsg.Content += tokenChunk;
                     if (!firstTokenReceived)
@@ -175,8 +174,8 @@ namespace View.Personal.UIHandlers
                 }
                 else if (string.IsNullOrEmpty(assistantMsg.Content))
                 {
-                    assistantMsg.Content = "No response received from the AI.";
-                    app.LogWithTimestamp(SeverityEnum.Warn, "No content accumulated in assistant message.");
+                    assistantMsg.Content = "No response received from the AI";
+                    app.ConsoleLog(SeverityEnum.Warn, "no content accumulated in assistant message");
                 }
 
                 // Final UI update
@@ -186,8 +185,7 @@ namespace View.Personal.UIHandlers
             }
             catch (Exception ex)
             {
-                app.LogWithTimestamp(SeverityEnum.Error, $"Exception in SendMessageTest_Click: {ex.Message}\n\nStackTrace: {ex.StackTrace}");
-                app?.LogExceptionToFile(ex, $"Exception in SendMessageTest_Click");
+                app.ConsoleLog(SeverityEnum.Error, $"exception sending message:" + Environment.NewLine + ex.ToString());
                 if (currentMessages.Last().Role == "assistant")
                     currentMessages.Last().Content = $"Error: {ex.Message}";
                 UpdateConversationWindow(conversationContainer, currentMessages, false, mainWindow);
@@ -207,7 +205,7 @@ namespace View.Personal.UIHandlers
             var words = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= wordCount)
                 return message;
-            return string.Join(" ", words.Take(wordCount)) + "...";
+            return string.Join(" ", words.Take(wordCount)) + "..";
         }
 
         /// <summary>
@@ -266,7 +264,7 @@ namespace View.Personal.UIHandlers
             catch (Exception ex)
             {
                 var app = (App)App.Current;
-                app.LogWithTimestamp(SeverityEnum.Error, $"Error generating conversation summary: {ex.Message}");
+                app.ConsoleLog(SeverityEnum.Error, $"error generating conversation summary:" + Environment.NewLine + ex.ToString());
             }
 
             // Fallback logic
@@ -282,7 +280,7 @@ namespace View.Personal.UIHandlers
                     {
                         truncated = truncated.Substring(0, lastSpace);
                     }
-                    return truncated + "...";
+                    return truncated + "..";
                 }
                 return userContent;
             }
@@ -385,14 +383,14 @@ namespace View.Personal.UIHandlers
                 {
                     await File.WriteAllLinesAsync(filePath,
                         conversationHistory.Select(msg => $"{msg.Role}: {msg.Content}"));
-                    app.Log(SeverityEnum.Info, $"Chat history saved to {filePath}");
+                    app.ConsoleLog(SeverityEnum.Info, $"chat history saved to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    app.Log(SeverityEnum.Error, $"Error saving chat history: {ex.Message}");
+                    app.ConsoleLog(SeverityEnum.Error, $"error saving chat history:" + Environment.NewLine + ex.ToString());
                 }
             else
-                app.Log(SeverityEnum.Warn, "No file path selected for chat history download.");
+                app.ConsoleLog(SeverityEnum.Warn, "no file path selected for chat history download");
         }
 
         /// <summary>

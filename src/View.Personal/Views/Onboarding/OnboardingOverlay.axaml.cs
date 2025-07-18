@@ -50,11 +50,11 @@ namespace View.Personal.Views
 
         private readonly List<OnboardingStep> _steps = new()
         {
-            new OnboardingStep { TargetName = "SettingsPanel", Title = "Settings", Description = "Configure your LLM and API keys here." },
-            new OnboardingStep { TargetName = "Files", Title = "Files", Description = "Manage the files you want to chat with." },
-            new OnboardingStep { TargetName = "Data Monitor", Title = "Data Monitor", Description = "Live updates for connected files and services." },
-            new OnboardingStep { TargetName = "StartNewChatButton", Title = "Start New Chat", Description = "Start a fresh conversation with your assistant." },
-            new OnboardingStep { TargetName = "Console", Title = "Console", Description = "Inspect logs and debug details." }
+            new OnboardingStep { TargetName = "SettingsPanel", Title = "Settings", Description = "Configure your LLM and API keys here" },
+            new OnboardingStep { TargetName = "Files", Title = "Files", Description = "Manage the files you want to chat with" },
+            new OnboardingStep { TargetName = "Data Monitor", Title = "Data Monitor", Description = "Live updates for connected files and services" },
+            new OnboardingStep { TargetName = "StartNewChatButton", Title = "Start New Chat", Description = "Start a fresh conversation with your assistant" },
+            new OnboardingStep { TargetName = "Console", Title = "Console", Description = "Inspect logs and debug details" }
         };
 
         private int _currentStep = 0;
@@ -171,7 +171,7 @@ namespace View.Personal.Views
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{SeverityEnum.Error} Failed to save onboarding state: {ex.Message}");
+                Console.WriteLine($"{SeverityEnum.Error} Failed to save onboarding state:" + Environment.NewLine + ex.ToString());
             }
 
             _onComplete?.Invoke();
