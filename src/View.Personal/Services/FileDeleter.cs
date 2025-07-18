@@ -62,7 +62,6 @@ namespace View.Personal.Services
 
                     if (deleteSuccess && mainWindow != null)
                     {
-                        FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                         await FilePaginationHelper.RefreshGridAsync(liteGraph, tenantGuid, graphGuid, mainWindow);
                         mainWindow.ShowNotification(ResourceManagerService.GetString("FileDeleted"), 
                             string.Format(ResourceManagerService.GetString("FileDeletedSuccessfully"), file.Name),
@@ -151,7 +150,6 @@ namespace View.Personal.Services
 
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, file.NodeGuid);
                             app?.ConsoleLog(SeverityEnum.Info, $"deleted document node {file.NodeGuid} for file {file.Name}");
-                            FileIngester.RemoveFileFromCompleted(file.FilePath ?? string.Empty);
                             if (mainWindow != null)
                             {
                                 var filePath = file.FilePath;
@@ -362,10 +360,10 @@ namespace View.Personal.Services
             var incompleteNodes = documentNodes
                 .Where(node =>
                 {
-                    var filePath = node.Tags?["FilePath"];
-                    return !FileIngester.IsFileCompleted(filePath ?? string.Empty);
+                    bool isCompleted = node.Tags?.AllKeys.Contains("IsCompleted") == true && node.Tags["IsCompleted"] == "True";
+                    return !isCompleted;
                 })
-                .GroupBy(node => node.GUID) // prevent multiple deletions of same node
+                .GroupBy(node => node.GUID)
                 .Select(g => g.First())
                 .ToList();
 

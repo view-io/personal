@@ -726,7 +726,6 @@ namespace View.Personal.UIHandlers
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({node.Tags.Get("FilePath")})");
-                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
                     else
@@ -737,7 +736,6 @@ namespace View.Personal.UIHandlers
                             liteGraph.Node.DeleteByGuid(tenantGuid, graphGuid, node.GUID);
                             mainWindow.LogToConsole(
                                 $"[{SeverityEnum.Info}] Deleted node {node.GUID} for file {node.Name} ({entry.FullPath})");
-                            FileIngester.RemoveFileFromCompleted(node.Tags["FilePath"] ?? string.Empty);
                         }
                     }
                     LoadFileSystem(mainWindow, mainWindow._CurrentPath);

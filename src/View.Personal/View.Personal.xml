@@ -2641,30 +2641,11 @@
             This is a helper method for batch processing.
             </summary>
         </member>
-        <member name="M:View.Personal.Services.FileIngester.IsFileCompleted(System.String)">
-            <summary>
-            Checks if a file has been completely ingested and processed.
-            </summary>
-            <param name="filePath">The path of the file to check.</param>
-            <returns>True if the file has been completely processed, false otherwise.</returns>
-        </member>
         <member name="M:View.Personal.Services.FileIngester.MarkFileCompleted(System.String)">
             <summary>
-            Marks a file as completely ingested and processed.
+            Marks a file as completely ingested and processed by adding an IsCompleted tag to the document node.
             </summary>
             <param name="filePath">The path of the file to mark as completed.</param>
-        </member>
-        <member name="M:View.Personal.Services.FileIngester.MarkFilePending(System.String)">
-            <summary>
-            Marks a file as pending ingestion by setting its status to <c>false</c> in the CompletedIngestions dictionary.
-            </summary>
-            <param name="filePath">The full path of the file to mark as pending.</param>
-        </member>
-        <member name="M:View.Personal.Services.FileIngester.RemoveFileFromCompleted(System.String)">
-            <summary>
-            Removes a file entry from the CompletedIngestions dictionary if it exists.
-            </summary>
-            <param name="filePath">The full path of the file to remove.</param>
         </member>
         <member name="M:View.Personal.Services.FileIngester.EnqueueFileForIngestion(System.String)">
             <summary>
