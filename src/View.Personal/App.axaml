@@ -109,6 +109,14 @@
                 <Setter Property="Background" Value="#EEEEEE" />
                 <Setter Property="BorderBrush" Value="#BBBBBB" />
             </Style>
+            
+            <Style Selector="Button.console:pointerover">
+                <Setter Property="Background" Value="#444444" />
+            </Style>
+
+            <Style Selector="Button.console:pressed">
+                <Setter Property="Background" Value="#555555" />
+            </Style>
 
             <!-- Default button -->
             <Style Selector="Button.default">

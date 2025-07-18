@@ -567,6 +567,41 @@ namespace View.Personal
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the copy console logs button.
+        /// Copies all console logs to the clipboard and shows feedback.
+        /// </summary>
+        private async void CopyConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var consoleOutput = this.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
+            var copyIcon = this.FindControl<MaterialIcon>("CopyConsoleIcon");
+            
+            if (consoleOutput != null && !string.IsNullOrWhiteSpace(consoleOutput.Text))
+            {
+                try
+                {
+                    var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+                    if (clipboard != null)
+                    {
+                        await clipboard.SetTextAsync(consoleOutput.Text);
+                        
+                        if (copyIcon != null)
+                        {
+                            copyIcon.Kind = Material.Icons.MaterialIconKind.CheckBold;
+                            
+                            await Task.Delay(1000);
+                            copyIcon.Kind = Material.Icons.MaterialIconKind.ContentCopy;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var app = (App)Application.Current;
+                    app.ConsoleLog(SeverityEnum.Error, $"Error copying console logs: {ex.Message}");
+                }
+            }
+        }
+
         private void StartNewChatButton_Click(object sender, RoutedEventArgs e)
         {
             CurrentChatSession = new ChatSession();

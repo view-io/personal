@@ -2320,8 +2320,8 @@
 		<!-- Console panel -->
 		<Border Grid.Row="2" x:Name="ConsolePanel" Background="#000000" BorderBrush="#1E1E1E" BorderThickness="1"
                 IsVisible="False">
-			<StackPanel Orientation="Vertical" Spacing="10" Margin="20, 4,20,4">
-				<DockPanel>
+			<StackPanel Orientation="Vertical" Spacing="10" Margin="0">
+				<DockPanel Background="#333333">
 					<Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="CloseConsoleButton_Click">
 						<avalonia:MaterialIcon Kind="Close" />
@@ -2333,6 +2333,10 @@
 					<Button Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
                             Click="DownloadConsoleLogsButton_Click" Margin="0,0,5,0" ToolTip.Tip="{l:Localize DownloadLogsTooltip}">
 						<avalonia:MaterialIcon Kind="Download" />
+					</Button>
+					<Button x:Name="CopyConsoleButton" Classes="console" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                            Click="CopyConsoleButton_Click" Margin="0,0,5,0" ToolTip.Tip="Copy All Logs">
+						<avalonia:MaterialIcon x:Name="CopyConsoleIcon" Kind="ContentCopy" />
 					</Button>
 				</DockPanel>
 				<ScrollViewer VerticalScrollBarVisibility="Auto" Height="200" Background="Transparent">

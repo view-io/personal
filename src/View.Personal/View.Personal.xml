@@ -2203,6 +2203,12 @@
             Downloads the console output text to a file.
             </summary>
         </member>
+        <member name="M:View.Personal.MainWindow.CopyConsoleButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the copy console logs button.
+            Copies all console logs to the clipboard and shows feedback.
+            </summary>
+        </member>
         <member name="M:View.Personal.MainWindow.GetCompletionModel(System.String)">
             <summary>
             Retrieves the completion model name for the specified provider from the application settings.
