@@ -1280,7 +1280,7 @@
 											</Grid>
 											<Grid ColumnDefinitions="240,*" RowDefinitions="Auto" Margin="0,0,0,16">
 												<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{l:Localize ViewProvider}" FontWeight="500"
+													<TextBlock Text="{l:Localize ViewAIEnterprise}" FontWeight="500"
 															   FontSize="14" Foreground="#1A1C1E" VerticalAlignment="Top" />
 													<TextBlock FontSize="12" Foreground="#6A6B6F"
 															   TextWrapping="Wrap" Text="{l:Localize GainAccessToViewModel}" />
@@ -1293,7 +1293,7 @@
 															<RadioButton Grid.Column="0" GroupName="CompletionProvider"
 																		 x:Name="ViewCompletionProvider"
 																		 VerticalAlignment="Center" />
-															<TextBlock Grid.Column="1" Text="{l:Localize ViewSettings}"
+															<TextBlock Grid.Column="1" Text="{l:Localize ViewAIEnterpriseSettings}"
 										   VerticalAlignment="Center"
 										   HorizontalAlignment="Center" FontWeight="500"
 										   FontSize="13" />

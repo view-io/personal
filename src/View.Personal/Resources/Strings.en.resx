@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Ollama Completion Model</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>View Settings</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>View AI Enterprise Settings</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>Embeddings API Key</value>
@@ -928,8 +928,8 @@ need to re-import all documents.</value>
   <data name="Japanese" xml:space="preserve">
     <value>Japanese</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View Provider</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>View AI Enterprise</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>Save Language Setting</value>

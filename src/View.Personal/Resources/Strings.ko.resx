@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Ollama 완료 모델</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>보기 설정</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>AI Enterprise 설정 보기</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>임베딩 API 키</value>
@@ -928,8 +928,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>일본어</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View 제공자</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>AI 엔터프라이즈 보기</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>언어 설정 저장</value>

@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>ओलामा पूर्णता मॉडल</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>व्यू सेटिंग्स</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>व्यू एआई एंटरप्राइज़ सेटिंग्स</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>एम्बेडिंग्स एपीआई कुंजी</value>
@@ -928,8 +928,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>जापानी</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>व्यू प्रदाता</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>व्यू एआई एंटरप्राइज़</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>भाषा सेटिंग सहेजें</value>

@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Ollama-Vervollständigungsmodell</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>View-Einstellungen</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>AI Enterprise-Einstellungen anzeigen</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>Embeddings-API-Schlüssel</value>
@@ -924,8 +924,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>Japanisch</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View-Anbieter</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>AI Enterprise ansehen</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>Spracheinstellung speichern</value>

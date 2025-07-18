@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>Modelo de Conclusão do Ollama</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>Configurações do View</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>Ver configurações do AI Enterprise</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>Chave de API de Embeddings</value>
@@ -928,8 +928,8 @@ reimportar todos os documentos.</value>
   <data name="Japanese" xml:space="preserve">
     <value>Japonês</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>Provedor View</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>Ver IA Empresarial</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>Salvar Configuração de Idioma</value>

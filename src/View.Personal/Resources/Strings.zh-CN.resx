@@ -222,8 +222,8 @@
   <data name="OllamaCompletionModel" xml:space="preserve">
     <value>奥拉马 完成模型</value>
   </data>
-  <data name="ViewSettings" xml:space="preserve">
-    <value>View 设置</value>
+  <data name="ViewAIEnterpriseSettings" xml:space="preserve">
+    <value>查看AI企业设置</value>
   </data>
   <data name="EmbeddingsApiKey" xml:space="preserve">
     <value>嵌入 应用程序编程接口 密钥</value>
@@ -927,8 +927,8 @@
   <data name="Japanese" xml:space="preserve">
     <value>日本人</value>
   </data>
-  <data name="ViewProvider" xml:space="preserve">
-    <value>View 提供商</value>
+  <data name="ViewAIEnterprise" xml:space="preserve">
+    <value>查看人工智能企业</value>
   </data>
   <data name="SaveLanguage" xml:space="preserve">
     <value>保存语言设置</value>
