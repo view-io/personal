@@ -71,6 +71,7 @@ namespace View.Personal.Services
                 using (Timestamp tsVectorSearch = new Timestamp())
                 {
                     tsVectorSearch.Start = DateTime.UtcNow;
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning vector search");
                     searchResults = await PerformVectorSearch(
                         queryEmbeddings,
                         ragSettings.NumberOfDocumentsToRetrieve,
@@ -91,6 +92,7 @@ namespace View.Personal.Services
                     using (Timestamp tsContextSorting = new Timestamp())
                     {
                         tsContextSorting.Start = DateTime.UtcNow;
+                        _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning context sorting");
                         searchResults = SortSearchResults(searchResults);
                         tsContextSorting.End = DateTime.UtcNow;
                         _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed context sorting in {tsContextSorting?.TotalMs?.ToString("F2")}ms");
