@@ -14,7 +14,7 @@ namespace View.Personal.Services
     {
         private readonly SelectableTextBlock _ConsoleOutput;
         private readonly Window _Window;
-        private readonly LoggingModule _logger;
+        private readonly LoggingModule _Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingService"/> class.
@@ -24,14 +24,11 @@ namespace View.Personal.Services
         public LoggingService(Window window, SelectableTextBlock consoleOutput)
         {
             var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "logs");
-            if (!Directory.Exists(logDirectory))
-            {
-                Directory.CreateDirectory(logDirectory);
-            }
+            if (!Directory.Exists(logDirectory)) Directory.CreateDirectory(logDirectory);
             var logFilePath = Path.Combine(logDirectory, "view-personal.log");
             _Window = window;
             _ConsoleOutput = consoleOutput;
-            _logger = new LoggingModule(logFilePath);
+            _Logger = new LoggingModule(logFilePath);
         }
 
         /// <summary>
@@ -53,7 +50,7 @@ namespace View.Personal.Services
         /// </summary>
         public void LogInfoToFile(string message)
         {
-            _logger?.Info(message);
+            _Logger?.Info(message);
         }
 
         /// <summary>
@@ -61,7 +58,7 @@ namespace View.Personal.Services
         /// </summary>
         public void LogExceptionToFile(Exception ex, string context = "")
         {
-            _logger?.Exception(ex, context);
+            _Logger?.Exception(ex, context);
         }
 
         /// <summary>
