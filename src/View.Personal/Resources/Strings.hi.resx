@@ -1136,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>उपयोग करने के लिए व्यू मॉडल निर्दिष्ट करें, जैसे llama3.1:8b।</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए डिफ़ॉल्ट मॉडल चुनें (उदाहरण के लिए, gpt-4 या gpt-3.5-turbo)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए डिफ़ॉल्ट मॉडल चुनें (उदाहरण के लिए, क्लाउड-3-सोनेट या क्लाउड-3-हाइकू)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>उपयोग करने के लिए ओलामा मॉडल चुनें (उदाहरण के लिए, लामा2-7B-q4 या मिस्ट्रल-7B)। उपलब्ध मॉडल देखने के लिए यहां क्लिक करें: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>सहायता और दस्तावेज़ीकरण लिंक के लिए क्लिक करें</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>ओपनएआई एपीआई एंडपॉइंट सेट करें।</value>
   </data>
@@ -1180,5 +1192,8 @@
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>उपयोग करने के लिए VoyageAI एम्बेडिंग मॉडल निर्दिष्ट करें, उदाहरण के लिए, text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>सभी लॉग कॉपी करें</value>
   </data>
 </root>

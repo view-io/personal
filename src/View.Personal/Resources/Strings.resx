@@ -1193,4 +1193,7 @@ and processing chat requests.</value>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>Specify the VoyageAI embedding model to use, e.g., text-embedding-3-small.</value>
   </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Copy All Logs</value>
+  </data>
 </root>

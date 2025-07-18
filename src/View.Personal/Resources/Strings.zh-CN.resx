@@ -1135,6 +1135,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>指定要使用的视图模型，例如 llama3.1:8b。</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>选择要使用的默认模型（例如 GPT-4 或 GPT-3.5-turbo）。点击此处探索可用模型：https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>选择要使用的默认模型（例如，claude-3-sonnet 或 claude-3-haiku）。点击此处探索可用模型：https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>选择要使用的 Ollama 模型（例如 llama2-7B-q4 或 mistral-7B）。点击此处探索可用模型：https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>单击获取帮助和文档链接</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>设置 开放人工智能 应用程序编程接口 端点。</value>
   </data>
@@ -1179,5 +1191,8 @@
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>指定要使用的 VoyageAI 嵌入模型，例如 text-embedding-3-small。</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>复制所有日志</value>
   </data>
 </root>

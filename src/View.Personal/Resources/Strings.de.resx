@@ -1185,4 +1185,7 @@
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>Geben Sie das zu verwendende VoyageAI-Einbettungsmodell an, z. B. „text-embedding-3-small“.</value>
   </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Alle Protokolle kopieren</value>
+  </data>
 </root>

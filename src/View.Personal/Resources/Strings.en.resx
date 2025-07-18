@@ -824,6 +824,15 @@ and processing chat requests.</value>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
     <value>Enter your Anthropic API key. Click the help button for more information.</value>
   </data>
+  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
+    <value>Enter your View embeddings API key.</value>
+  </data>
+  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
+    <value>Enter your View access key for authentication.</value>
+  </data>
+  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
+    <value>Enter your View tenant GUID for multi-tenant environments.</value>
+  </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
     <value>Enter your VoyageAI API key for authentication. Click the help button for more information.</value>
   </data>
@@ -835,15 +844,6 @@ and processing chat requests.</value>
   </data>
   <data name="VoyageApiKeyHelpText" xml:space="preserve">
     <value>Enter your Voyage AI API key. You can get it from https://dash.voyageai.com/</value>
-  </data>
-  <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
-    <value>Enter your View embeddings API key.</value>
-  </data>
-  <data name="EnterViewAccessKeyTooltip" xml:space="preserve">
-    <value>Enter your View access key for authentication.</value>
-  </data>
-  <data name="EnterViewTenantGUIDTooltip" xml:space="preserve">
-    <value>Enter your View tenant GUID for multi-tenant environments.</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI Embedding Model</value>
@@ -1192,5 +1192,8 @@ and processing chat requests.</value>
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>Specify the VoyageAI embedding model to use, e.g., text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Copy All Logs</value>
   </data>
 </root>

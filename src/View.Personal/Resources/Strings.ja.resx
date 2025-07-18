@@ -1136,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>使用するViewモデル（例: llama3.1:8b）を指定します。</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>使用するデフォルトモデル（例：gpt-4、gpt-3.5-turbo）を選択します。利用可能なモデルを確認するには、こちらをクリックしてください：https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>使用するデフォルトのモデル（例：claude-3-sonnet または claude-3-haiku）を選択します。利用可能なモデルを確認するには、こちらをクリックしてください: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>使用するOllamaモデルを選択してください（例：llama2-7B-q4、mistral-7B）。利用可能なモデルについては、こちらをクリックしてください：https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>ヘルプとドキュメントのリンクをクリックしてください</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>OpenAI APIエンドポイントを設定します。</value>
   </data>
@@ -1180,5 +1192,8 @@
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>使用する VoyageAI 埋め込みモデルを指定します (例: text-embedding-3-small)。</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>すべてのログをコピー</value>
   </data>
 </root>

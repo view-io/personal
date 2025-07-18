@@ -1136,6 +1136,18 @@ e processar solicitações de chat.</value>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>Especifique o modelo do View a ser usado, por exemplo, llama3.1:8b.</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo padrão a ser usado (por exemplo, gpt-4 ou gpt-3.5-turbo). Clique aqui para explorar os modelos disponíveis: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo padrão a ser usado (por exemplo, claude-3-sonnet ou claude-3-haiku). Clique aqui para explorar os modelos disponíveis: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Selecione o modelo Ollama a ser usado (por exemplo, llama2-7B-q4 ou mistral-7B). Clique aqui para explorar os modelos disponíveis: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Clique para obter links de ajuda e documentação</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>Defina o endpoint da API da OpenAI.</value>
   </data>
@@ -1180,5 +1192,8 @@ e processar solicitações de chat.</value>
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>Especifique o modelo de incorporação VoyageAI a ser usado, por exemplo, text-embedding-3-small.</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>Copiar todos os registros</value>
   </data>
 </root>

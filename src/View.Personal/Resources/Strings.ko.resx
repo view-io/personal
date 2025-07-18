@@ -1136,6 +1136,18 @@
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>사용할 View 모델을 지정하세요 (예: llama3.1:8b).</value>
   </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>사용할 기본 모델을 선택하세요(예: gpt-4 또는 gpt-3.5-turbo). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>사용할 기본 모델을 선택하세요(예: claude-3-sonnet 또는 claude-3-haiku). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>사용할 Ollama 모델을 선택하세요(예: llama2-7B-q4 또는 mistral-7B). 사용 가능한 모델을 살펴보려면 여기를 클릭하세요: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>도움말 및 문서 링크를 클릭하세요</value>
+  </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>OpenAI API 엔드포인트를 설정하세요.</value>
   </data>
@@ -1180,5 +1192,8 @@
   </data>
   <data name="SpecifyVoyageAIEmbeddingModelTooltip" xml:space="preserve">
     <value>사용할 VoyageAI 임베딩 모델을 지정합니다(예: text-embedding-3-small).</value>
+  </data>
+  <data name="CopyAllLogs" xml:space="preserve">
+    <value>모든 로그 복사</value>
   </data>
 </root>
