@@ -63,7 +63,6 @@ namespace View.Personal.UIHandlers
             {
                 app.Log(SeverityEnum.Info, "Attempting to show SpeechToTextDialog");
                 var transcribedText = await SpeechToTextDialog.ShowAsync(window);
-                app.Log(SeverityEnum.Info, $"SpeechToTextDialog completed with result: {transcribedText ?? "null"}");
                 
                 if (!string.IsNullOrWhiteSpace(transcribedText))
                 {

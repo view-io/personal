@@ -1,18 +1,18 @@
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Tmds.DBus.Protocol;
-using View.Personal.Enums;
-
 namespace View.Personal.Services
 {
+    using System;
+    using System.IO;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Service for managing Vosk speech recognition model downloads and status.
     /// </summary>
     public static class VoskModelService
     {
+        #region Private-Members
+
         private static readonly string _voskModelUrl = Constants.VoskModelUrl;
         private static readonly string _voskModelPath = Constants.VoskModelPath;
         private static readonly string _voskModelZipPath = Constants.VoskModelZipPath;
@@ -28,6 +28,10 @@ namespace View.Personal.Services
         private static bool _isModelLoading = false;
         private static readonly object _modelLock = new object();
 
+        #endregion
+
+        #region Publis-Members
+
         /// <summary>
         /// Gets a value indicating whether the Vosk model is currently downloading.
         /// </summary>
@@ -41,7 +45,7 @@ namespace View.Personal.Services
         /// <summary>
         /// Gets a value indicating whether the Vosk model is installed.
         /// </summary>
-        public static bool IsModelInstalled => Directory.Exists(_voskModelPath) && 
+        public static bool IsModelInstalled => Directory.Exists(_voskModelPath) &&
                                                Directory.GetFiles(_voskModelPath, "*", SearchOption.AllDirectories).Length > 0;
 
         /// <summary>
@@ -53,6 +57,10 @@ namespace View.Personal.Services
         /// Gets a value indicating whether the Vosk model is currently being loaded into memory.
         /// </summary>
         public static bool IsModelLoading => _isModelLoading;
+
+        #endregion
+
+        #region Public-Methods
 
         /// <summary>
         /// Gets the cached Vosk model instance, loading it asynchronously if not already loaded.
@@ -75,7 +83,6 @@ namespace View.Personal.Services
             {
                 if (_isModelLoading)
                 {
-                    // Another thread is already loading, wait for it
                     _app?.Log(Enums.SeverityEnum.Info, "Vosk model is already being loaded by another thread");
                 }
                 else
@@ -92,8 +99,7 @@ namespace View.Personal.Services
             try
             {
                 _app?.Log(Enums.SeverityEnum.Info, "Loading Vosk model into memory...");
-                
-                // Load model on background thread
+
                 var model = await Task.Run(() =>
                 {
                     try
@@ -191,7 +197,6 @@ namespace View.Personal.Services
         {
             try
             {
-                // Create the models directory if it doesn't exist
                 string modelDir = Path.GetDirectoryName(_voskModelPath) ?? string.Empty;
                 if (!string.IsNullOrEmpty(modelDir) && !Directory.Exists(modelDir))
                 {
@@ -213,7 +218,9 @@ namespace View.Personal.Services
                         {
                             _downloadProgress = progress;
                             _isDownloading = true;
-                            _app?.Log(Enums.SeverityEnum.Info, $"Vosk model download already in progress: {progress:F0}%");
+                            _app?.Log(Enums.SeverityEnum.Info, $"Vosk model download was in progress: {progress:F0}%. Resuming download.");
+
+                            await DownloadVoskModelAsync(true);
                             return;
                         }
                     }
@@ -234,15 +241,28 @@ namespace View.Personal.Services
         }
 
         /// <summary>
+        /// Cancels the current download if one is in progress
+        /// </summary>
+        public static void CancelDownload()
+        {
+            _downloadCts?.Cancel();
+        }
+
+        #endregion
+
+        #region Private-Methods
+
+        /// <summary>
         /// Downloads the Vosk model in the background.
         /// </summary>
+        /// <param name="isResuming">Indicates whether this is resuming a previous download.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private static async Task DownloadVoskModelAsync()
+        private static async Task DownloadVoskModelAsync(bool isResuming = false)
         {
-            if (_isDownloading) return;
+            if (_isDownloading && !isResuming) return;
 
             _isDownloading = true;
-            _downloadProgress = 0;
+            if (!isResuming) _downloadProgress = 0;
             _downloadCts = new CancellationTokenSource();
 
             try
@@ -251,14 +271,47 @@ namespace View.Personal.Services
 
                 using (var client = new HttpClient())
                 {
-                    var response = await client.GetAsync(_voskModelUrl, HttpCompletionOption.ResponseHeadersRead, _downloadCts.Token);
+                    long existingFileSize = 0;
+                    FileMode fileMode = FileMode.Create;
+
+                    if (isResuming && File.Exists(_voskModelZipPath))
+                    {
+                        var fileInfo = new FileInfo(_voskModelZipPath);
+                        existingFileSize = fileInfo.Length;
+                        fileMode = FileMode.Append;
+                        _app?.Log(Enums.SeverityEnum.Info, $"Resuming download from {existingFileSize} bytes");
+                    }
+
+                    var request = new HttpRequestMessage(HttpMethod.Get, _voskModelUrl);
+                    if (existingFileSize > 0)
+                    {
+                        request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(existingFileSize, null);
+                    }
+
+                    var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, _downloadCts.Token);
+
+                    if (existingFileSize > 0 && response.StatusCode != System.Net.HttpStatusCode.PartialContent)
+                    {
+                        _app?.Log(Enums.SeverityEnum.Warn, "Server doesn't support resume, starting download from beginning");
+                        existingFileSize = 0;
+                        fileMode = FileMode.Create;
+
+                        // Create a new request without range header
+                        request = new HttpRequestMessage(HttpMethod.Get, _voskModelUrl);
+                        response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, _downloadCts.Token);
+                    }
+
                     var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                    if (totalBytes > 0 && existingFileSize > 0)
+                    {
+                        totalBytes += existingFileSize;
+                    }
 
                     using (var stream = await response.Content.ReadAsStreamAsync(_downloadCts.Token))
-                    using (var fileStream = new FileStream(_voskModelZipPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    using (var fileStream = new FileStream(_voskModelZipPath, fileMode, FileAccess.Write, FileShare.None))
                     {
                         var buffer = new byte[8192];
-                        var totalBytesRead = 0L;
+                        var totalBytesRead = existingFileSize;
                         var bytesRead = 0;
 
                         while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, _downloadCts.Token)) > 0)
@@ -315,12 +368,6 @@ namespace View.Personal.Services
             }
         }
 
-        /// <summary>
-        /// Cancels the current download if one is in progress
-        /// </summary>
-        public static void CancelDownload()
-        {
-            _downloadCts?.Cancel();
-        }
+        #endregion
     }
 }

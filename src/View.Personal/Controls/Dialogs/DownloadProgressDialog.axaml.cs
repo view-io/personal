@@ -14,14 +14,24 @@ namespace View.Personal.Controls.Dialogs
     /// </summary>
     public partial class DownloadProgressDialog : UserControl
     {
+        #region Private-Members
+
         private Window? _dialogWindow;
         private System.Timers.Timer? _progressCheckTimer;
         private bool _downloadCompleted = false;
+
+        #endregion
+
+        #region Events
 
         /// <summary>
         /// Event that is raised when the download is completed.
         /// </summary>
         public event EventHandler? DownloadCompleted;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadProgressDialog"/> class.
@@ -37,10 +47,18 @@ namespace View.Personal.Controls.Dialogs
                 continueButton.Click += ContinueInBackgroundButton_Click;
         }
 
+        #endregion
+
+        #region Initialization
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+        #endregion
+
+        #region Public-Methods
 
         /// <summary>
         /// Shows the download progress dialog asynchronously.
@@ -84,6 +102,10 @@ namespace View.Personal.Controls.Dialogs
             return await tcs.Task;
         }
 
+        #endregion
+
+        #region Private-Methods
+
         private void StartProgressCheckTimer()
         {
             _progressCheckTimer?.Dispose();
@@ -121,6 +143,10 @@ namespace View.Personal.Controls.Dialogs
             });
         }
 
+        #endregion
+
+        #region Event-Handlers
+
         private void CloseButton_Click(object? sender, RoutedEventArgs e)
         {
             _progressCheckTimer?.Stop();
@@ -134,5 +160,7 @@ namespace View.Personal.Controls.Dialogs
             _progressCheckTimer?.Dispose();
             _dialogWindow?.Close();
         }
+
+        #endregion
     }
 }

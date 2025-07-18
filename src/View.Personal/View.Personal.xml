@@ -1447,6 +1447,89 @@
             </summary>
             <param name="loadXaml">Should the XAML be loaded into the component.</param>
         </member>
+        <member name="T:View.Personal.Controls.Dialogs.SpeechToTextDialog">
+            <summary>
+            Dialog for speech-to-text functionality using Vosk speech recognition.
+            </summary>
+        </member>
+        <member name="E:View.Personal.Controls.Dialogs.SpeechToTextDialog.TranscriptionCompleted">
+            <summary>
+            Event that is raised when the transcription is completed.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:View.Personal.Controls.Dialogs.SpeechToTextDialog"/> class.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.ShowAsync(Avalonia.Controls.Window)">
+            <summary>
+            Shows the speech-to-text dialog asynchronously.
+            </summary>
+            <param name="parent">The parent window for the dialog.</param>
+            <returns>A task that represents the asynchronous operation. The task result contains the transcribed text, or null if canceled.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.StartRecordingAsync">
+            <summary>
+            Starts the recording and transcription process.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.SimulateTranscriptionAsync">
+            <summary>
+            Handles the transcription process using Vosk speech recognition.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.ProcessTranscriptionResult(System.String,System.Boolean)">
+            <summary>
+            Processes the JSON result from the speech recognition engine.
+            </summary>
+            <param name="jsonResult">The JSON result from the speech recognition engine.</param>
+            <param name="isPartial">Indicates whether this is a partial result.</param>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.FallbackSimulationAsync">
+            <summary>
+            Provides a fallback simulation if the speech recognition engine fails.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.StartMicrophoneAnimation">
+            <summary>
+            Starts the microphone animation to indicate recording is in progress.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.StopMicrophoneAnimation">
+            <summary>
+            Stops the microphone animation when recording is stopped.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.StopRecording">
+            <summary>
+            Stops the recording process.
+            </summary>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.CloseButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event of the close button.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.StopButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event of the stop button.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.SendButton_Click(System.Object,Avalonia.Interactivity.RoutedEventArgs)">
+            <summary>
+            Handles the click event of the send button.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
         <member name="M:View.Personal.Controls.Dialogs.SpeechToTextDialog.InitializeComponent(System.Boolean)">
             <summary>
             Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -3245,16 +3328,17 @@
             </summary>
             <returns>A task representing the asynchronous operation.</returns>
         </member>
-        <member name="M:View.Personal.Services.VoskModelService.DownloadVoskModelAsync">
-            <summary>
-            Downloads the Vosk model in the background.
-            </summary>
-            <returns>A task representing the asynchronous operation.</returns>
-        </member>
         <member name="M:View.Personal.Services.VoskModelService.CancelDownload">
             <summary>
             Cancels the current download if one is in progress
             </summary>
+        </member>
+        <member name="M:View.Personal.Services.VoskModelService.DownloadVoskModelAsync(System.Boolean)">
+            <summary>
+            Downloads the Vosk model in the background.
+            </summary>
+            <param name="isResuming">Indicates whether this is resuming a previous download.</param>
+            <returns>A task representing the asynchronous operation.</returns>
         </member>
         <member name="T:View.Personal.UIHandlers.ChatUIHandlers">
             <summary>

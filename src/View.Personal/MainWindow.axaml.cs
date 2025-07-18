@@ -31,7 +31,6 @@ namespace View.Personal
     using System.Text.Json;
     using System.Threading.Tasks;
     using UIHandlers;
-    using View.Personal.Enums;
     using SeverityEnum = Enums.SeverityEnum;
 
     /// <summary>
@@ -914,13 +913,10 @@ namespace View.Personal
                 bool isDownloading = Services.VoskModelService.IsDownloading;
                 string modelPath = Services.VoskModelService.ModelPath;
                 
-                app.Log(SeverityEnum.Info, $"Vosk Model Status - Installed: {isModelInstalled}, Downloading: {isDownloading}, Path: {modelPath}");
-                
-                // If model is not installed and not downloading, try to initialize it
                 if (!isModelInstalled && !isDownloading)
                 {
                     app.Log(SeverityEnum.Info, "Vosk model not found, attempting to initialize download");
-                    _ = Task.Run(async () => {
+                    await Task.Run(async () => {
                         await Services.VoskModelService.InitializeVoskModelAsync();
                     });
                 }

@@ -1,28 +1,43 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
-using Material.Icons.Avalonia;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using View.Personal.Services;
-using View.Personal.Enums;
-
 namespace View.Personal.Controls.Dialogs
 {
+    using Avalonia.Controls;
+    using Avalonia.Interactivity;
+    using Avalonia.Markup.Xaml;
+    using Avalonia.Threading;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using View.Personal.Enums;
+    using View.Personal.Services;
+
+    /// <summary>
+    /// Dialog for speech-to-text functionality using Vosk speech recognition.
+    /// </summary>
     public partial class SpeechToTextDialog : UserControl
     {
+        #region Private-Members
+
         private Window? _dialogWindow;
         private CancellationTokenSource? _recordingCts;
         private string _transcribedText = string.Empty;
         private bool _isRecording = false;
 
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Event that is raised when the transcription is completed.
+        /// </summary>
         public event EventHandler<string>? TranscriptionCompleted;
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpeechToTextDialog"/> class.
+        /// </summary>
         public SpeechToTextDialog()
         {
             InitializeComponent();
@@ -30,7 +45,7 @@ namespace View.Personal.Controls.Dialogs
             var closeButton = this.FindControl<Button>("CloseButton");
             var stopButton = this.FindControl<Button>("StopButton");
             var sendButton = this.FindControl<Button>("SendButton");
-            
+
             if (closeButton != null)
                 closeButton.Click += CloseButton_Click;
             if (stopButton != null)
@@ -39,43 +54,56 @@ namespace View.Personal.Controls.Dialogs
                 sendButton.Click += SendButton_Click;
         }
 
+        #endregion
+
+        #region Initialization
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }
 
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Shows the speech-to-text dialog asynchronously.
+        /// </summary>
+        /// <param name="parent">The parent window for the dialog.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the transcribed text, or null if canceled.</returns>
         public static async Task<string?> ShowAsync(Window parent)
         {
-            var app = (App)App.Current;
-            
+            var app = (App)App.Current!;
+
             try
             {
                 app?.Log(SeverityEnum.Info, "SpeechToTextDialog.ShowAsync called");
-                
+
                 bool isModelInstalled = VoskModelService.IsModelInstalled;
                 bool isDownloading = VoskModelService.IsDownloading;
-                
+
                 app?.Log(SeverityEnum.Info, $"Model check - Installed: {isModelInstalled}, Downloading: {isDownloading}");
-                
+
                 if (!isModelInstalled || isDownloading)
                 {
                     app?.Log(SeverityEnum.Info, "Showing download progress dialog");
                     bool downloadCompleted = await DownloadProgressDialog.ShowAsync(parent);
-                    
+
                     app?.Log(SeverityEnum.Info, $"Download dialog completed: {downloadCompleted}");
-                    
+
                     if (!downloadCompleted)
                         return null;
-      
+
                     if (!VoskModelService.IsModelInstalled)
                     {
                         app?.Log(SeverityEnum.Warn, "Model still not installed after download dialog");
                         return null;
                     }
                 }
-                
+
                 app?.Log(SeverityEnum.Info, "Creating SpeechToTextDialog window");
-                
+
                 var dialog = new SpeechToTextDialog();
                 var window = new Window
                 {
@@ -92,25 +120,24 @@ namespace View.Personal.Controls.Dialogs
                 };
 
                 dialog._dialogWindow = window;
-                
+
                 var tcs = new TaskCompletionSource<string?>();
                 dialog.TranscriptionCompleted += (s, text) => tcs.TrySetResult(text);
                 window.Closed += (s, e) => tcs.TrySetResult(null);
 
                 app?.Log(SeverityEnum.Info, "Showing dialog window");
-                
+
                 if (parent != null)
                 {
-                    window.ShowDialog(parent);
+                    await window.ShowDialog(parent);
                 }
                 else
                 {
                     window.Show();
                 }
 
-                // Start recording asynchronously after showing the window
                 app?.Log(SeverityEnum.Info, "Starting recording async");
-                _ = dialog.StartRecordingAsync();
+                await dialog.StartRecordingAsync();
 
                 return await tcs.Task;
             }
@@ -122,6 +149,14 @@ namespace View.Personal.Controls.Dialogs
             }
         }
 
+        #endregion
+
+        #region Private-Methods
+
+        /// <summary>
+        /// Starts the recording and transcription process.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private async Task StartRecordingAsync()
         {
             var downloadProgress = this.FindControl<Border>("DownloadProgressContainer");
@@ -133,7 +168,7 @@ namespace View.Personal.Controls.Dialogs
             var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
             var stopButton = this.FindControl<Button>("StopButton");
             var sendButton = this.FindControl<Button>("SendButton");
-            
+
             if (microphoneContainer != null) microphoneContainer.IsVisible = true;
             if (statusText != null) statusText.IsVisible = true;
             if (transcriptionBox != null) transcriptionBox.IsVisible = true;
@@ -172,6 +207,10 @@ namespace View.Personal.Controls.Dialogs
             }, _recordingCts.Token);
         }
 
+        /// <summary>
+        /// Handles the transcription process using Vosk speech recognition.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private async Task SimulateTranscriptionAsync()
         {
             try
@@ -184,9 +223,8 @@ namespace View.Personal.Controls.Dialogs
                         statusText.Text = "Loading speech recognition model...";
                 });
 
-                // Get cached model (this will load it if not already loaded)
                 var model = await VoskModelService.GetModelAsync();
-                
+
                 if (model == null)
                 {
                     Console.WriteLine("Failed to load Vosk model, falling back to simulation");
@@ -194,15 +232,13 @@ namespace View.Personal.Controls.Dialogs
                     return;
                 }
 
-                // Update status to show ready for speech
                 Dispatcher.UIThread.Post(() =>
                 {
                     var statusText = this.FindControl<TextBlock>("StatusText");
                     if (statusText != null)
                         statusText.Text = "Listening...";
                 });
-                
-                // Initialize audio capture
+
                 var waveFormat = new NAudio.Wave.WaveFormat(16000, 1);
                 var waveIn = new NAudio.Wave.WaveInEvent
                 {
@@ -210,21 +246,21 @@ namespace View.Personal.Controls.Dialogs
                     WaveFormat = waveFormat,
                     BufferMilliseconds = 50
                 };
-                
+
                 var recognizer = new Vosk.VoskRecognizer(model, waveFormat.SampleRate);
                 recognizer.SetMaxAlternatives(0);
                 recognizer.SetWords(true);
-                
+
                 var tcs = new TaskCompletionSource<bool>();
                 waveIn.DataAvailable += (s, e) =>
                 {
-                    if (_recordingCts.Token.IsCancellationRequested)
+                    if (_recordingCts?.Token.IsCancellationRequested ?? false)
                     {
                         if (!tcs.Task.IsCompleted)
                             tcs.SetResult(true);
                         return;
                     }
-                    
+
                     if (recognizer.AcceptWaveform(e.Buffer, e.BytesRecorded))
                     {
                         var result = recognizer.Result();
@@ -236,10 +272,10 @@ namespace View.Personal.Controls.Dialogs
                         ProcessTranscriptionResult(partialResult, true);
                     }
                 };
-                
+
                 waveIn.StartRecording();
-                
-                _recordingCts.Token.Register(() =>
+
+                _recordingCts?.Token.Register(() =>
                 {
                     try
                     {
@@ -259,7 +295,7 @@ namespace View.Personal.Controls.Dialogs
                             tcs.SetResult(true);
                     }
                 });
-                
+
                 await tcs.Task;
             }
             catch (Exception ex)
@@ -268,14 +304,19 @@ namespace View.Personal.Controls.Dialogs
                 await FallbackSimulationAsync();
             }
         }
-        
+
+        /// <summary>
+        /// Processes the JSON result from the speech recognition engine.
+        /// </summary>
+        /// <param name="jsonResult">The JSON result from the speech recognition engine.</param>
+        /// <param name="isPartial">Indicates whether this is a partial result.</param>
         private void ProcessTranscriptionResult(string jsonResult, bool isPartial = false)
         {
             try
             {
                 var resultObj = System.Text.Json.JsonDocument.Parse(jsonResult);
                 string text = string.Empty;
-                
+
                 if (isPartial)
                 {
                     if (resultObj.RootElement.TryGetProperty("partial", out var partialElement))
@@ -290,11 +331,11 @@ namespace View.Personal.Controls.Dialogs
                         text = textElement.GetString() ?? string.Empty;
                     }
                 }
-                
+
                 if (!string.IsNullOrEmpty(text))
                 {
                     _transcribedText = text;
-                    
+
                     Dispatcher.UIThread.Post(() =>
                     {
                         var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
@@ -311,7 +352,11 @@ namespace View.Personal.Controls.Dialogs
                 Console.WriteLine($"Error processing transcription result: {ex.Message}");
             }
         }
-        
+
+        /// <summary>
+        /// Provides a fallback simulation if the speech recognition engine fails.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         private async Task FallbackSimulationAsync()
         {
             // Fallback simulation if Vosk fails
@@ -322,11 +367,11 @@ namespace View.Personal.Controls.Dialogs
 
             for (int i = 0; i < simulatedWords.Length; i++)
             {
-                if (_recordingCts.Token.IsCancellationRequested)
+                if (_recordingCts?.Token.IsCancellationRequested ?? false)
                     break;
 
                 _transcribedText += simulatedWords[i];
-                
+
                 Dispatcher.UIThread.Post(() =>
                 {
                     var transcriptionBox = this.FindControl<TextBox>("TranscriptionBox");
@@ -337,10 +382,13 @@ namespace View.Personal.Controls.Dialogs
                     }
                 });
 
-                await Task.Delay(200, _recordingCts.Token);
+                await Task.Delay(200, _recordingCts?.Token ?? CancellationToken.None);
             }
         }
 
+        /// <summary>
+        /// Starts the microphone animation to indicate recording is in progress.
+        /// </summary>
         private void StartMicrophoneAnimation()
         {
             Dispatcher.UIThread.Post(() =>
@@ -373,6 +421,9 @@ namespace View.Personal.Controls.Dialogs
             });
         }
 
+        /// <summary>
+        /// Stops the microphone animation when recording is stopped.
+        /// </summary>
         private void StopMicrophoneAnimation()
         {
             Dispatcher.UIThread.Post(() =>
@@ -397,6 +448,9 @@ namespace View.Personal.Controls.Dialogs
             });
         }
 
+        /// <summary>
+        /// Stops the recording process.
+        /// </summary>
         private void StopRecording()
         {
             if (_isRecording)
@@ -407,17 +461,36 @@ namespace View.Personal.Controls.Dialogs
             }
         }
 
+        #endregion
+
+        #region Event-Handlers
+
+        /// <summary>
+        /// Handles the click event of the close button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
         private void CloseButton_Click(object? sender, RoutedEventArgs e)
         {
             StopRecording();
             _dialogWindow?.Close();
         }
 
+        /// <summary>
+        /// Handles the click event of the stop button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
         private void StopButton_Click(object? sender, RoutedEventArgs e)
         {
             StopRecording();
         }
 
+        /// <summary>
+        /// Handles the click event of the send button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
         private void SendButton_Click(object? sender, RoutedEventArgs e)
         {
             StopRecording();
@@ -426,5 +499,7 @@ namespace View.Personal.Controls.Dialogs
             TranscriptionCompleted?.Invoke(this, transcriptionText);
             _dialogWindow?.Close();
         }
+
+        #endregion
     }
 }
