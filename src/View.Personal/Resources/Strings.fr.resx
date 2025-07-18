@@ -818,10 +818,10 @@ et traiter les demandes de chat.</value>
     <value>Paramètres RAG</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Saisissez votre clé d'API OpenAI.</value>
+    <value>Saisissez votre clé d'API OpenAI. Cliquez sur le bouton d'aide pour plus d'informations.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Saisissez votre clé d'API Anthropic.</value>
+    <value>Saisissez votre clé d'API Anthropic. Cliquez sur le bouton d'aide pour plus d'informations.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>Saisissez votre clé d'API d'embeddings View.</value>
@@ -833,7 +833,16 @@ et traiter les demandes de chat.</value>
     <value>Saisissez votre GUID de locataire View pour les environnements multi-locataires.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Saisissez votre clé d'API VoyageAI pour l'authentification.</value>
+    <value>Saisissez votre clé d'API VoyageAI pour l'authentification. Cliquez sur le bouton d'aide pour plus d'informations.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API OpenAI. Vous pouvez l'obtenir sur https://platform.openai.com/account/api-keys</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API Anthropic. Vous pouvez l'obtenir sur https://console.anthropic.com/</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Saisissez votre clé d'API Voyage AI. Vous pouvez l'obtenir sur https://dash.voyageai.com/</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>Modèle d'embedding OpenAI</value>

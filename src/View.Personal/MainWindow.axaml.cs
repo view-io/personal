@@ -972,6 +972,91 @@ namespace View.Personal
             ChatUIHandlers.DownloadChat_Click(sender, e, this, _ConversationHistory, _FileBrowserService);
         }
 
+        #region Help Button Click Handlers
+
+        private void OpenAIApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OpenAIApiKeyHelpText");
+            var linkUrl = "https://platform.openai.com/account/api-keys";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OpenAIApiKey"), 
+                helpText, 
+                ResourceManagerService.GetString("OpenAIApiKey"), 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void OpenAIModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OpenAIModelHelpText");
+            var linkUrl = "https://platform.openai.com/docs/models";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OpenAICompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void AnthropicApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("AnthropicApiKeyHelpText");
+            var linkUrl = "https://console.anthropic.com/";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("AnthropicApiKey"), 
+                helpText, 
+                ResourceManagerService.GetString("AnthropicApiKey"), 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void AnthropicModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("AnthropicModelHelpText");
+            var linkUrl = "https://docs.anthropic.com/claude/docs/models-overview";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("AnthropicCompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void OllamaModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpText = ResourceManagerService.GetString("OllamaModelHelpText");
+            var linkUrl = "https://ollama.com/library";
+            
+            ShowNotificationWithLink(
+                ResourceManagerService.GetString("OllamaCompletionModel"), 
+                helpText, 
+                "Click here to explore available models", 
+                linkUrl, 
+                NotificationType.Information);
+        }
+
+        private void ViewApiKeyHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ShowNotification(
+                ResourceManagerService.GetString("EmbeddingsApiKey"), 
+                ResourceManagerService.GetString("EnterViewEmbeddingsApiKeyTooltip"), 
+                NotificationType.Information);
+        }
+
+        private void ViewModelHelp_Click(object sender, RoutedEventArgs e)
+        {
+            ShowNotification(
+                ResourceManagerService.GetString("CompletionModel"), 
+                ResourceManagerService.GetString("SpecifyViewModelTooltip"), 
+                NotificationType.Information);
+        }
+
+        #endregion
+
         private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NavigationUIHandlers.NavList_SelectionChanged(sender, e, this, _LiteGraph, _TenantGuid, _ActiveGraphGuid);

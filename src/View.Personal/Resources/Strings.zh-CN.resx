@@ -818,10 +818,10 @@
     <value>RAG 设置</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 开放人工智能 应用程序编程接口 密钥。</value>
+    <value>输入您的 开放人工智能 应用程序编程接口 密钥。点击帮助按钮获取更多信息。</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 Anthropic API 密钥。</value>
+    <value>输入您的 Anthropic API 密钥。点击帮助按钮获取更多信息。</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>输入您的 View 嵌入 API 密钥。</value>
@@ -833,7 +833,16 @@
     <value>输入多租户环境的 View 租户 GUID。</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>输入您的 VoyageAI API 密钥进行身份验证。</value>
+    <value>输入您的 VoyageAI API 密钥进行身份验证。点击帮助按钮获取更多信息。</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>输入您的开放人工智能 API 密钥。您可以从 https://platform.openai.com/account/api-keys 获取</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>输入您的 Anthropic API 密钥。您可以从 https://console.anthropic.com/ 获取</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>输入您的 Voyage AI API 密钥。您可以从 https://dash.voyageai.com/ 获取</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>开放人工智能 嵌入模型</value>

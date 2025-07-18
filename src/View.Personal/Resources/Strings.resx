@@ -819,10 +819,10 @@ and processing chat requests.</value>
     <value>RAG Settings</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Enter your OpenAI API key.</value>
+    <value>Enter your OpenAI API key. Click the help button for more information.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Enter your Anthropic API key.</value>
+    <value>Enter your Anthropic API key. Click the help button for more information.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>Enter your View embeddings API key.</value>
@@ -834,7 +834,16 @@ and processing chat requests.</value>
     <value>Enter your View tenant GUID for multi-tenant environments.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Enter your VoyageAI API key for authentication.</value>
+    <value>Enter your VoyageAI API key for authentication. Click the help button for more information.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Enter your OpenAI API key. You can get it from https://platform.openai.com/account/api-keys</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Enter your Anthropic API key. You can get it from https://console.anthropic.com/</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Enter your Voyage AI API key. You can get it from https://dash.voyageai.com/</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI Embedding Model</value>
@@ -1116,16 +1125,28 @@ and processing chat requests.</value>
     <value>Watching</value>
   </data>
   <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4.</value>
+    <value>Specify the OpenAI model to use, e.g., gpt-3.5-turbo or gpt-4. Click the help button for more information.</value>
   </data>
   <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1.</value>
+    <value>Specify the Anthropic model to use, e.g., claude-2 or claude-instant-1. Click the help button for more information.</value>
   </data>
   <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B.</value>
+    <value>Specify the Ollama model to use, e.g., llama2-7B-q4 or mistral-7B. Click the help button for more information.</value>
   </data>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>Specify the View model to use, e.g., llama3.1:8b.</value>
+  </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Select the default model to use (e.g., gpt-4 or gpt-3.5-turbo). Click here to explore available models: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Select the default model to use (e.g., claude-3-sonnet or claude-3-haiku). Click here to explore available models: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Select the Ollama model to use (e.g., llama2-7B-q4 or mistral-7B). Click here to explore available models: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Click for help and documentation links</value>
   </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>Set the OpenAI API endpoint.</value>

@@ -811,10 +811,10 @@
     <value>RAG-Einstellungen</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Geben Sie Ihren OpenAI-API-Schlüssel ein.</value>
+    <value>Geben Sie Ihren OpenAI-API-Schlüssel ein. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Geben Sie Ihren Anthropic-API-Schlüssel ein.</value>
+    <value>Geben Sie Ihren Anthropic-API-Schlüssel ein. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>Geben Sie Ihren View-Embeddings-API-Schlüssel ein.</value>
@@ -826,7 +826,16 @@
     <value>Geben Sie Ihre View-Mandanten-GUID für mandantenfähige Umgebungen ein.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Geben Sie Ihren VoyageAI-API-Schlüssel zur Authentifizierung ein.</value>
+    <value>Geben Sie Ihren VoyageAI-API-Schlüssel zur Authentifizierung ein. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Geben Sie Ihren OpenAI-API-Schlüssel ein. Sie können ihn von https://platform.openai.com/account/api-keys erhalten</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Geben Sie Ihren Anthropic-API-Schlüssel ein. Sie können ihn von https://console.anthropic.com/ erhalten</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Geben Sie Ihren Voyage AI-API-Schlüssel ein. Sie können ihn von https://dash.voyageai.com/ erhalten</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI-Embedding-Modell</value>
@@ -1108,16 +1117,28 @@
     <value>Überwacht</value>
   </data>
   <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>Geben Sie das zu verwendende OpenAI-Modell an, z. B. gpt-3.5-turbo oder gpt-4.</value>
+    <value>Geben Sie das zu verwendende OpenAI-Modell an, z. B. gpt-3.5-turbo oder gpt-4. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
   </data>
   <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>Geben Sie das zu verwendende Anthropic-Modell an, z. B. claude-2 oder claude-instant-1.</value>
+    <value>Geben Sie das zu verwendende Anthropic-Modell an, z. B. claude-2 oder claude-instant-1. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
   </data>
   <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>Geben Sie das zu verwendende Ollama-Modell an, z. B. llama2-7B-q4 oder mistral-7B.</value>
+    <value>Geben Sie das zu verwendende Ollama-Modell an, z. B. llama2-7B-q4 oder mistral-7B. Klicken Sie auf die Hilfe-Schaltfläche für weitere Informationen.</value>
   </data>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>Geben Sie das zu verwendende View-Modell an, z. B. llama3.1:8b.</value>
+  </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Wählen Sie das zu verwendende Standardmodell aus (z. B. gpt-4 oder gpt-3.5-turbo). Klicken Sie hier, um verfügbare Modelle zu erkunden: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Wählen Sie das zu verwendende Standardmodell aus (z. B. claude-3-sonnet oder claude-3-haiku). Klicken Sie hier, um verfügbare Modelle zu erkunden: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Wählen Sie das zu verwendende Ollama-Modell aus (z. B. llama2-7B-q4 oder mistral-7B). Klicken Sie hier, um verfügbare Modelle zu erkunden: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Klicken Sie für Hilfe und Dokumentationslinks</value>
   </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>Legen Sie den OpenAI-API-Endpunkt fest.</value>

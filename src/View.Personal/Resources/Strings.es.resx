@@ -819,10 +819,10 @@ y procesar solicitudes de chat.</value>
     <value>Configuración de RAG</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>Ingrese su clave de API de OpenAI.</value>
+    <value>Ingrese su clave de API de OpenAI. Haga clic en el botón de ayuda para más información.</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Ingrese su clave de API de Anthropic.</value>
+    <value>Ingrese su clave de API de Anthropic. Haga clic en el botón de ayuda para más información.</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>Ingrese su clave de API de embeddings de View.</value>
@@ -834,7 +834,16 @@ y procesar solicitudes de chat.</value>
     <value>Ingrese su GUID de inquilino de View para entornos multi-inquilino.</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>Ingrese su clave de API de VoyageAI para la autenticación.</value>
+    <value>Ingrese su clave de API de VoyageAI para la autenticación. Haga clic en el botón de ayuda para más información.</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>Ingrese su clave de API de OpenAI. Puede obtenerla de https://platform.openai.com/account/api-keys</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Ingrese su clave de API de Anthropic. Puede obtenerla de https://console.anthropic.com/</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Ingrese su clave de API de Voyage AI. Puede obtenerla de https://dash.voyageai.com/</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>Modelo de Embedding de OpenAI</value>
@@ -1116,16 +1125,28 @@ y procesar solicitudes de chat.</value>
     <value>Vigilando</value>
   </data>
   <data name="SpecifyOpenAIModelTooltip" xml:space="preserve">
-    <value>Especifique el modelo de OpenAI a utilizar, p.ej., gpt-3.5-turbo o gpt-4.</value>
+    <value>Especifique el modelo de OpenAI a utilizar, p.ej., gpt-3.5-turbo o gpt-4. Haga clic en el botón de ayuda para más información.</value>
   </data>
   <data name="SpecifyAnthropicModelTooltip" xml:space="preserve">
-    <value>Especifique el modelo de Anthropic a utilizar, p.ej., claude-2 o claude-instant-1.</value>
+    <value>Especifique el modelo de Anthropic a utilizar, p.ej., claude-2 o claude-instant-1. Haga clic en el botón de ayuda para más información.</value>
   </data>
   <data name="SpecifyOllamaModelTooltip" xml:space="preserve">
-    <value>Especifique el modelo de Ollama a utilizar, p.ej., llama2-7B-q4 o mistral-7B.</value>
+    <value>Especifique el modelo de Ollama a utilizar, p.ej., llama2-7B-q4 o mistral-7B. Haga clic en el botón de ayuda para más información.</value>
   </data>
   <data name="SpecifyViewModelTooltip" xml:space="preserve">
     <value>Especifique el modelo de View a utilizar, p.ej., llama3.1:8b.</value>
+  </data>
+  <data name="OpenAIModelHelpText" xml:space="preserve">
+    <value>Seleccione el modelo predeterminado a utilizar (p.ej., gpt-4 o gpt-3.5-turbo). Haga clic aquí para explorar modelos disponibles: https://platform.openai.com/docs/models</value>
+  </data>
+  <data name="AnthropicModelHelpText" xml:space="preserve">
+    <value>Seleccione el modelo predeterminado a utilizar (p.ej., claude-3-sonnet o claude-3-haiku). Haga clic aquí para explorar modelos disponibles: https://docs.anthropic.com/claude/docs/models-overview</value>
+  </data>
+  <data name="OllamaModelHelpText" xml:space="preserve">
+    <value>Seleccione el modelo de Ollama a utilizar (p.ej., llama2-7B-q4 o mistral-7B). Haga clic aquí para explorar modelos disponibles: https://ollama.com/library</value>
+  </data>
+  <data name="HelpButtonTooltip" xml:space="preserve">
+    <value>Haga clic para obtener ayuda y enlaces de documentación</value>
   </data>
   <data name="SetOpenAIEndpointTooltip" xml:space="preserve">
     <value>Establezca el endpoint de la API de OpenAI.</value>

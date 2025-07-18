@@ -819,10 +819,10 @@
     <value>RAG सेटिंग्स</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें।</value>
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें।</value>
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>अपनी व्यू एम्बेडिंग्स एपीआई कुंजी दर्ज करें।</value>
@@ -834,7 +834,16 @@
     <value>मल्टी-टेनेंट वातावरण के लिए अपनी व्यू टेनेंट जीयूआईडी दर्ज करें।</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>प्रमाणीकरण के लिए अपनी वॉयजएआई एपीआई कुंजी दर्ज करें।</value>
+    <value>प्रमाणीकरण के लिए अपनी वॉयजएआई एपीआई कुंजी दर्ज करें। अधिक जानकारी के लिए सहायता बटन पर क्लिक करें।</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>अपनी ओपनएआई एपीआई कुंजी दर्ज करें। आप इसे https://platform.openai.com/account/api-keys से प्राप्त कर सकते हैं</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>अपनी एंथ्रोपिक एपीआई कुंजी दर्ज करें। आप इसे https://console.anthropic.com/ से प्राप्त कर सकते हैं</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>अपनी वॉयज एआई एपीआई कुंजी दर्ज करें। आप इसे https://dash.voyageai.com/ से प्राप्त कर सकते हैं</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>ओपनएआई एम्बेडिंग मॉडल</value>

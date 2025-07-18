@@ -819,10 +819,10 @@
     <value>RAG設定</value>
   </data>
   <data name="EnterOpenAIApiKeyTooltip" xml:space="preserve">
-    <value>OpenAI APIキーを入力してください。</value>
+    <value>OpenAI APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
   </data>
   <data name="EnterAnthropicApiKeyTooltip" xml:space="preserve">
-    <value>Anthropic APIキーを入力してください。</value>
+    <value>Anthropic APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
   </data>
   <data name="EnterViewEmbeddingsApiKeyTooltip" xml:space="preserve">
     <value>View埋め込みAPIキーを入力してください。</value>
@@ -834,7 +834,16 @@
     <value>マルチテナント環境用のViewテナントGUIDを入力してください。</value>
   </data>
   <data name="EnterVoyageAIApiKeyTooltip" xml:space="preserve">
-    <value>認証用のVoyageAI APIキーを入力してください。</value>
+    <value>認証用のVoyageAI APIキーを入力してください。詳細についてはヘルプボタンをクリックしてください。</value>
+  </data>
+  <data name="OpenAIApiKeyHelpText" xml:space="preserve">
+    <value>OpenAI APIキーを入力してください。https://platform.openai.com/account/api-keys から取得できます</value>
+  </data>
+  <data name="AnthropicApiKeyHelpText" xml:space="preserve">
+    <value>Anthropic APIキーを入力してください。https://console.anthropic.com/ から取得できます</value>
+  </data>
+  <data name="VoyageApiKeyHelpText" xml:space="preserve">
+    <value>Voyage AI APIキーを入力してください。https://dash.voyageai.com/ から取得できます</value>
   </data>
   <data name="OpenAIEmbeddingModelHeader" xml:space="preserve">
     <value>OpenAI 埋め込みモデル</value>
