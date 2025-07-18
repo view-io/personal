@@ -100,7 +100,15 @@ namespace View.Personal.Services
                 }
 
                 // Build context from search results
-                var context = BuildContext(searchResults, ragSettings.EnableCitations);
+                string context = null;
+                using (Timestamp tsContextBuilding = new Timestamp())
+                {
+                    tsContextBuilding.Start = DateTime.UtcNow;
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning context building");
+                    context = BuildContext(searchResults, ragSettings.EnableCitations);
+                    tsContextBuilding.End = DateTime.UtcNow;
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed building context in {tsContextBuilding?.TotalMs?.ToString("F2")}ms");
+                }
 
                 return (searchResults, context);
             }
@@ -251,7 +259,7 @@ namespace View.Personal.Services
         /// <returns>The sorted search results.</returns>
         private IEnumerable<VectorSearchResult> SortSearchResults(IEnumerable<VectorSearchResult> searchResults)
         {
-            return searchResults.OrderByDescending(r => r.Score).ToList();
+            return searchResults.OrderByDescending(r => r.Score);
         }
 
 
