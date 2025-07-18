@@ -49,8 +49,7 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app?.Log(SeverityEnum.Error, $"Error deleting knowledgebase '{graphItem.Name}': {ex.Message}");
-                app?.LogExceptionToFile(ex, $"Error deleting knowledgebase {graphItem.Name}");
+                app?.ConsoleLog(SeverityEnum.Error, $"error deleting knowledgebase {graphItem.Name}:" + Environment.NewLine + ex.ToString());
                 if (window is MainWindow mainWindow)
                     mainWindow.ShowNotification(ResourceManagerService.GetString("DeletionError"), 
                         string.Format(ResourceManagerService.GetString("SomethingWentWrong"), ex.Message),

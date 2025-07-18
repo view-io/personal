@@ -204,7 +204,7 @@ namespace View.Personal.Classes
             /// <summary>
             /// The system prompt to use for the model.
             /// </summary>
-            public string SystemPrompt { get; set; } = "You are a helpful AI assistant.  Please respond primarily out of the supplied context.  Be pleasant and kind.";
+            public string SystemPrompt { get; set; } = "You are a helpful AI assistant.  Please respond primarily out of the supplied context.  Be pleasant and kind";
 
             /// <summary>
             /// Settings for Retrieval Augmented Generation (RAG).

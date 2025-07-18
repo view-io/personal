@@ -45,7 +45,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log(SeverityEnum.Error, "Failed to get TopLevel.");
+                app.ConsoleLog(SeverityEnum.Error, "failed to retrieve toplevel");
                 return null;
             }
 
@@ -64,12 +64,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log(SeverityEnum.Info, $"Selected file path: {file.Path.LocalPath}");
+                app.ConsoleLog(SeverityEnum.Info, $"selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log(SeverityEnum.Info, "No file selected.");
+                app.ConsoleLog(SeverityEnum.Info, "no file selected");
                 return null;
             }
         }
@@ -89,7 +89,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log(SeverityEnum.Error, "Failed to get TopLevel.");
+                app.ConsoleLog(SeverityEnum.Error, "failed to get top-level");
                 return null;
             }
 
@@ -119,7 +119,7 @@ namespace View.Personal.Services
                 {
                     if (!string.IsNullOrEmpty(file.Path.LocalPath))
                     {
-                        app.Log(SeverityEnum.Info, $"Selected file path: {file.Path.LocalPath}");
+                        app.ConsoleLog(SeverityEnum.Info, $"selected file path: {file.Path.LocalPath}");
                         selectedFilePaths.Add(file.Path.LocalPath);
                     }
                 }
@@ -127,11 +127,11 @@ namespace View.Personal.Services
             
             if (selectedFilePaths.Count == 0)
             {
-                app.Log(SeverityEnum.Info, "No files selected.");
+                app.ConsoleLog(SeverityEnum.Info, "no files selected");
             }
             else
             {
-                app.Log(SeverityEnum.Info, $"Selected {selectedFilePaths.Count} file(s).");
+                app.ConsoleLog(SeverityEnum.Info, $"selected {selectedFilePaths.Count} file(s)");
             }
             
             return selectedFilePaths;
@@ -149,7 +149,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log(SeverityEnum.Error, "Failed to get TopLevel.");
+                app.ConsoleLog(SeverityEnum.Error, "failed to get TopLevel");
                 return null;
             }
 
@@ -167,12 +167,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log(SeverityEnum.Info, $"Selected file path: {file.Path.LocalPath}");
+                app.ConsoleLog(SeverityEnum.Info, $"selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log(SeverityEnum.Info, "No file selected.");
+                app.ConsoleLog(SeverityEnum.Info, "no file selected");
                 return null;
             }
         }
@@ -188,7 +188,7 @@ namespace View.Personal.Services
             var topLevel = TopLevel.GetTopLevel(window);
             if (topLevel == null)
             {
-                app.Log(SeverityEnum.Error, "Failed to get TopLevel.");
+                app.ConsoleLog(SeverityEnum.Error, "failed to get top-level");
                 return null;
             }
 
@@ -207,12 +207,12 @@ namespace View.Personal.Services
 
             if (file != null && !string.IsNullOrEmpty(file.Path.LocalPath))
             {
-                app.Log(SeverityEnum.Info, $"Selected file path: {file.Path.LocalPath}");
+                app.ConsoleLog(SeverityEnum.Info, $"selected file path: {file.Path.LocalPath}");
                 return file.Path.LocalPath;
             }
             else
             {
-                app.Log(SeverityEnum.Info, "No file selected.");
+                app.ConsoleLog(SeverityEnum.Info, "no file selected");
                 return null;
             }
         }

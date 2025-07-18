@@ -443,10 +443,10 @@
     <value>경로를 찾을 수 없음</value>
   </data>
   <data name="PathDoesNotExist" xml:space="preserve">
-    <value>경로 '{0}'이(가) 존재하지 않습니다.</value>
+    <value>경로 {0}이(가) 존재하지 않습니다.</value>
   </data>
   <data name="FailedToNavigatePath" xml:space="preserve">
-    <value>'{0}'(으)로 이동 실패: {1}</value>
+    <value>{0}(으)로 이동 실패: {1}</value>
   </data>
   <data name="ModelDownloaded" xml:space="preserve">
     <value>모델 다운로드됨</value>
@@ -695,19 +695,19 @@
     <value>삭제 확인</value>
   </data>
   <data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-    <value>지식 베이스 '{0}'을(를) 정말 삭제하시겠습니까?</value>
+    <value>지식 베이스 {0}을(를) 정말 삭제하시겠습니까?</value>
   </data>
   <data name="ConfirmWatch" xml:space="preserve">
     <value>감시 확인</value>
   </data>
   <data name="ConfirmWatchMessage" xml:space="preserve">
-    <value>'{0}'을(를) 감시하시겠습니까? 이 작업은 {1}개의 파일{2}을 처리합니다.</value>
+    <value>{0}을(를) 감시하시겠습니까? 이 작업은 {1}개의 파일{2}을 처리합니다.</value>
   </data>
   <data name="ConfirmUnwatchMessage" xml:space="preserve">
-    <value>'{0}' 감시를 중단하시겠습니까? 이 작업은 {1}개의 파일{2}에 영향을 줍니다.</value>
+    <value>{0} 감시를 중단하시겠습니까? 이 작업은 {1}개의 파일{2}에 영향을 줍니다.</value>
   </data>
   <data name="ConfirmRemoveFile" xml:space="preserve">
-    <value>'{0}'을(를) 정말 삭제하시겠습니까?</value>
+    <value>{0}을(를) 정말 삭제하시겠습니까?</value>
   </data>
   <data name="FromKnowledgebase" xml:space="preserve">
     <value>지식 베이스에서?</value>
@@ -719,7 +719,7 @@
     <value>모델 삭제</value>
   </data>
   <data name="ConfirmDeleteModel" xml:space="preserve">
-    <value>모델 '{0}'을(를) 정말 삭제하시겠습니까?</value>
+    <value>모델 {0}을(를) 정말 삭제하시겠습니까?</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
     <value>이 작업은 되돌릴 수 없습니다.</value>
@@ -1040,7 +1040,7 @@
     <value>재시도</value>
   </data>
   <data name="WatchFileQuestion" xml:space="preserve">
-    <value>'{0}'을(를) 감시하시겠습니까? 이 작업은 {1}개의 파일{2}을 처리합니다.</value>
+    <value>{0}을(를) 감시하시겠습니까? 이 작업은 {1}개의 파일{2}을 처리합니다.</value>
   </data>
   <data name="UnwatchOnly" xml:space="preserve">
     <value>감시만 중지</value>

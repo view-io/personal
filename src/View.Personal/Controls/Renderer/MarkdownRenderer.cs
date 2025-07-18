@@ -193,7 +193,7 @@ namespace View.Personal.Controls.Renderer
                                 inline = inline.NextSibling;
                             }
 
-                            var numberPrefix = list.IsOrdered ? $"{index++}." : "•";
+                            var numberPrefix = list.IsOrdered ? $"{index++}" : "•";
 
                             // Grid layout for proper indentation
                             var row = new Grid

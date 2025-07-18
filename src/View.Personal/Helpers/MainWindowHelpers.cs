@@ -52,7 +52,7 @@ namespace View.Personal.Helpers
             if (liteGraph == null)
             {
                 var app = (App)App.Current;
-                app.Log(Enums.SeverityEnum.Warn, "LiteGraphClient is null in GetDocumentNodes. Returning empty list.");
+                app.ConsoleLog(Enums.SeverityEnum.Warn, "client for LiteGraph is null, returning empty list");
                 return (uniqueFiles, pagination);
             }
 
@@ -195,7 +195,7 @@ namespace View.Personal.Helpers
                 atomIndex++;
             }
 
-            app.Log(Enums.SeverityEnum.Info, $"Returning {chunkNodes.Count} atoms ({emptyAtoms} empty were skipped)");
+            app.ConsoleLog(Enums.SeverityEnum.Info, $"returning {chunkNodes.Count} atoms ({emptyAtoms} empty were skipped)");
             return chunkNodes;
         }
 

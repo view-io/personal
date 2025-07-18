@@ -57,7 +57,7 @@ namespace View.Personal
         /// <summary>
         /// The logging service for writing to the UI console, standard console and log file.
         /// </summary>
-        public LoggingService LoggingService { get; set; }
+        public ConsoleLoggingService ConsoleLogging { get; set; }
 
         #endregion
 
@@ -72,7 +72,6 @@ namespace View.Personal
         internal Guid _UserGuid;
         internal Guid _CredentialGuid;
         internal LoggingModule _Logging;
-        internal LoggingModule _FileLogging;
         private static readonly string _SettingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "data");
         private static readonly string _SettingsFilePath = Path.Combine(_SettingsDirectory, "appsettings.json");
 
@@ -114,17 +113,14 @@ namespace View.Personal
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 try
                 {
-                    _Logging = new LoggingModule("127.0.0.1", 514, false);
-                    _Logging.Debug(_Header + "initializing View Personal at " +
-                                   DateTime.UtcNow.ToString(Constants.TimestampFormat));
-
                     var logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ViewPersonal", "logs");
-                    if (!Directory.Exists(logDirectory))
-                    {
-                        Directory.CreateDirectory(logDirectory);
-                    }
-                    _FileLogging = new LoggingModule(Path.Combine(logDirectory, "view-personal.log"));
-                    _FileLogging.Debug(_Header + "File logging initialized");
+                    if (!Directory.Exists(logDirectory)) Directory.CreateDirectory(logDirectory);
+
+                    _Logging = new LoggingModule("127.0.0.1", 514, false);
+                    _Logging.Settings.FileLogging = FileLoggingMode.FileWithDate;
+                    _Logging.Settings.LogFilename = Path.Combine(logDirectory, "view-personal.log");
+
+                    _Logging.Debug(_Header + "initializing View Personal at " + DateTime.UtcNow.ToString(Constants.TimestampFormat));
 
                     LoadSettings();
 
@@ -237,12 +233,10 @@ namespace View.Personal
                     base.OnFrameworkInitializationCompleted();
                     LiteGraphInitialized?.Invoke(this, EventArgs.Empty);
 
-                    _Logging.Debug(_Header + "Creating MainWindow");
-                    _FileLogging.Info(_Header + "Creating MainWindow");
+                    _Logging.Debug(_Header + "creating MainWindow");
                     desktop.MainWindow = new MainWindow();
 
-                    _Logging.Debug(_Header + "Showing MainWindow");
-                    _FileLogging.Info(_Header + "Showing MainWindow");
+                    _Logging.Debug(_Header + "showing MainWindow");
                     desktop.MainWindow.Show();
 
                     // Preload models in background after window is shown
@@ -252,22 +246,21 @@ namespace View.Personal
                         await localModelService.PreloadModelsAtStartupAsync();
                     });
 
-                    _Logging.Debug(_Header + "Storing application version in file");
-                    _FileLogging.Info(_Header + "Storing application version in file");
+                    _Logging.Debug(_Header + "storing application version in file");
                     StoreAppVersionInFile();
 
-                    _Logging.Debug(_Header + "Initializing Updater Launcher");
-                    _FileLogging.Info(_Header + "Initializing Updater Launcher");
+                    _Logging.Debug(_Header + "initializing updater launcher");
                     LaunchUpdater();
                 }
                 catch (Exception e)
                 {
-                    _Logging.Error(_Header + "Unable to start View Personal: " + e.Message);
-                    _FileLogging?.Exception(e, _Header + "Unable to start View Personal");
+                    _Logging.Error(_Header + "unable to start View Personal: " + Environment.NewLine + e.ToString());
+
                     CustomMessageBoxHelper.ShowErrorAsync(
                         Services.ResourceManagerService.GetString("UnableToStartViewPersonal"),
                         Services.ResourceManagerService.GetString("ViewPersonalStartupError") + Environment.NewLine +
                         Environment.NewLine + e.Message).Wait();
+
                     Environment.Exit(1);
                 }
         }
@@ -277,52 +270,36 @@ namespace View.Personal
         /// </summary>
         /// <param name="severity">The severity level of the message as an enum value.</param>
         /// <param name="message">The message content to be logged.</param>
-        public void Log(Enums.SeverityEnum severity, string message)
+        public void ConsoleLog(Enums.SeverityEnum severity, string message)
         {
-            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {message}");
-        }
+            if (String.IsNullOrEmpty(message)) return;
 
-        /// <summary>
-        /// Logs a message with a timestamp and severity level to both the application UI and system console.
-        /// </summary>
-        /// <param name="severity">The severity level of the message as an enum value.</param>
-        /// <param name="message">The message content to be logged.</param>
-        public void LogWithTimestamp(Enums.SeverityEnum severity, string message)
-        {
-            LoggingService?.Log($"[{severity.ToString().ToUpper()}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
-        }
+            ConsoleLogging?.Log($"[{severity.ToString().ToUpper()}] {FormatLastModifiedDateTime(DateTime.UtcNow)} {message}");
 
-        /// <summary>
-        /// Formats the last modified date time according to user's system time format preference (12-hour or 24-hour),
-        /// including seconds in the output.
-        /// </summary>
-        /// <param name="dateTime">The DateTime to format.</param>
-        /// <returns>Formatted date time string with seconds.</returns>
-        public string FormatLastModifiedDateTime(DateTime dateTime)
-        {
-            var uses24HourFormat =
-                !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
-
-            var timeFormat = uses24HourFormat ? "HH:mm:ss" : "hh:mm:ss tt";
-            var dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
-
-            return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
-        }
-
-        /// <summary>
-        /// Logs an informational message to the file.
-        /// </summary>
-        public void LogInfoToFile(string message)
-        {
-            LoggingService?.LogInfoToFile(message);
-        }
-
-        /// <summary>
-        /// Logs an exception to the file with a custom message.
-        /// </summary>
-        public void LogExceptionToFile(Exception ex, string context = "")
-        {
-            LoggingService?.LogExceptionToFile(ex, context);
+            switch (severity)
+            {
+                case Enums.SeverityEnum.Debug:
+                    _Logging.Debug("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Info:
+                    _Logging.Info("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Warn:
+                    _Logging.Warn("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Alert:
+                    _Logging.Alert("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Error:
+                    _Logging.Error("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Critical:
+                    _Logging.Critical("[Console] " + message);
+                    break;
+                case Enums.SeverityEnum.Emergency:
+                    _Logging.Emergency("[Console] " + message);
+                    break;
+            }
         }
 
         /// <summary>
@@ -356,8 +333,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                _Logging.Error(_Header + $"Failed to save settings: {ex.Message}");
-                _FileLogging?.Exception(ex, _Header + "Failed to save settings");
+                _Logging.Error(_Header + $"failed to save settings:" + Environment.NewLine + ex.ToString());
             }
         }
 
@@ -372,7 +348,7 @@ namespace View.Personal
         /// Supports OpenAI, Anthropic, Ollama, and View providers with their respective configuration parameters.
         /// Returns a default empty settings object for unrecognized provider types.
         /// </remarks>
-        public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType)
+        public CompletionProviderSettings GetProviderSettings(CompletionProviderTypeEnum providerType) 
         {
             return providerType switch
             {
@@ -426,13 +402,12 @@ namespace View.Personal
             try
             {
                 var graphs = _LiteGraph.Graph.ReadAllInTenant(_TenantGuid).ToList();
-                _Logging.Debug(_Header + $"Retrieved {graphs.Count} graphs for tenant {_TenantGuid}");
+                _Logging.Debug(_Header + $"retrieved {graphs.Count} graphs for tenant {_TenantGuid}");
                 return graphs;
             }
             catch (Exception ex)
             {
-                _Logging.Error(_Header + $"Failed to retrieve graphs: {ex.Message}");
-                _FileLogging?.Exception(ex, _Header + "Failed to retrieve graphs");
+                _Logging.Error(_Header + "failed to retrieve graphs:" + Environment.NewLine + ex.ToString());
                 return new List<Graph>();
             }
         }
@@ -441,9 +416,6 @@ namespace View.Personal
 
         #region Private-Methods
 
-        /// <summary>
-        /// Stores the current application version in a file for the updater to read.
-        /// </summary>
         private void StoreAppVersionInFile()
         {
             try
@@ -458,29 +430,22 @@ namespace View.Personal
                 var currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
 
                 File.WriteAllText(versionFilePath, currentVersion);
-                _Logging.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
-                _FileLogging?.Debug(_Header + $"Stored app version {currentVersion} to {versionFilePath}");
+                _Logging.Debug(_Header + $"stored app version {currentVersion} to {versionFilePath}");
             }
             catch (Exception ex)
             {
-                _Logging.Error(_Header + $"Failed to store app version: {ex.Message}");
-                _FileLogging?.Exception(ex, _Header + "Failed to store app version");
+                _Logging.Error(_Header + "failed to store app version:" + Environment.NewLine + ex.ToString());
             }
         }
 
-        /// <summary>
-        /// Launches the ViewPersonal Updater application in a separate process.
-        /// </summary>
         private void LaunchUpdater()
         {
             try
             {
-                _Logging.Debug(_Header + "Launching updater immediately - it will handle its own delay before checking for updates");
-                _FileLogging?.Debug(_Header + "Launching updater immediately - it will handle its own delay before checking for updates");
-
                 var appDir = Path.GetDirectoryName(typeof(App).Assembly.Location) ?? string.Empty;
+                _Logging.Debug(_Header + $"launching updater using application directory {appDir}");
+
                 string updaterPath;
-                _FileLogging?.Debug(_Header + $"App Directory: {appDir}");
 
                 string currentVersion = typeof(App).Assembly.GetName().Version?.ToString() ?? "unknown";
                 string appPathArg = typeof(App).Assembly.Location;
@@ -489,13 +454,12 @@ namespace View.Personal
 
                 if (OperatingSystem.IsWindows())
                 {
-                    _FileLogging?.Debug(_Header + "Windows");
+                    _Logging.Debug(_Header + "detected Windows operating system");
                     updaterPath = Path.Combine(appDir, "Updater", "ViewPersonal.Updater.exe");
 
                     if (!File.Exists(updaterPath))
                     {
-                        _FileLogging?.Debug(_Header + $"Updater not found at {updaterPath}");
-                        _Logging.Error(_Header + $"Updater not found at {updaterPath}");
+                        _Logging.Error(_Header + $"updater not found at {updaterPath}");
                         return;
                     }
 
@@ -508,12 +472,12 @@ namespace View.Personal
                 }
                 else if (OperatingSystem.IsMacOS())
                 {
+                    _Logging.Debug(_Header + "detected MacOS operating system");
                     updaterPath = Path.Combine(appDir, "Updater", "ViewPersonal.Updater.app", "Contents", "MacOS", "ViewPersonal.Updater");
 
                     if (!File.Exists(updaterPath))
                     {
-                        _FileLogging?.Debug(_Header + $"Updater executable not found at {updaterPath}");
-                        _Logging.Error(_Header + $"Updater executable not found at {updaterPath}");
+                        _Logging.Error(_Header + $"updater not found at {updaterPath}");
                         return;
                     }
 
@@ -528,30 +492,30 @@ namespace View.Personal
                 }
                 else
                 {
-                    _Logging.Error(_Header + "Unsupported OS for updater.");
-                    _FileLogging?.Debug(_Header + "Unsupported OS for updater.");
+                    _Logging.Error(_Header + "unsupported OS for launching the update application");
                     return;
                 }
 
-                _Logging.Debug(_Header + $"Launching updater with: {startInfo.FileName} {startInfo.Arguments}");
-                _FileLogging?.Debug(_Header + $"Launching updater with: {startInfo.FileName} {startInfo.Arguments}");
-
+                _Logging.Debug(_Header + $"launching updater with: {startInfo.FileName} {startInfo.Arguments}");
                 Process.Start(startInfo);
             }
             catch (Exception ex)
             {
-                _Logging.Error(_Header + $"Failed to launch updater: {ex.Message}");
-                _FileLogging?.Exception(ex, _Header + "Failed to launch updater");
+                _Logging.Error(_Header + "failed to launch update application:" + Environment.NewLine + ex.ToString());
             }
         }
 
+        private string FormatLastModifiedDateTime(DateTime dateTime)
+        {
+            var uses24HourFormat =
+                !System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("tt");
 
-        /// <summary>
-        /// Loads application settings from a configuration file or initializes default settings if the file does not exist.
-        /// </summary>
-        /// <remarks>
-        /// Attempts to deserialize settings from the specified JSON file. If the file exists, it populates the <see cref="ApplicationSettings"/> property and parses GUIDs for tenant, graph, user, and credential. If the file is missing or an error occurs, it initializes default settings with new GUIDs and saves them to the file. Logs the outcome of the operation, including any errors.
-        /// </remarks>
+            var timeFormat = uses24HourFormat ? "HH:mm:ss" : "hh:mm:ss tt";
+            var dateTimeFormat = $"yyyy-MM-dd {timeFormat}";
+
+            return dateTime.ToString(dateTimeFormat, System.Globalization.CultureInfo.CurrentCulture);
+        }
+
         private void LoadSettings()
         {
             try
@@ -589,7 +553,7 @@ namespace View.Personal
                 }
                 else
                 {
-                    _Logging.Debug(_Header + "No settings file found, using defaults");
+                    _Logging.Debug(_Header + "no settings file found, using defaults");
                     _TenantGuid = Guid.Empty;
                     _GraphGuid = Guid.NewGuid();
                     _UserGuid = Guid.NewGuid();
@@ -605,7 +569,7 @@ namespace View.Personal
                         Ollama = new AppSettings.OllamaSettings { Endpoint = "http://localhost:11434" },
                         View = new AppSettings.ViewSettings
                         {
-                            Endpoint = "http://192.168.197.128:8000/",
+                            Endpoint = "http://localhost:8000/",
                             TenantGuid = _TenantGuid.ToString(),
                             GraphGuid = _GraphGuid.ToString(),
                             UserGuid = _UserGuid.ToString(),
@@ -622,8 +586,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                _Logging.Error(_Header + $"Failed to load settings: {ex.Message}");
-                _FileLogging?.Exception(ex, _Header + "Failed to load settings");
+                _Logging.Error(_Header + "failed to load settings:" + Environment.NewLine + ex.ToString());
                 _TenantGuid = Guid.Empty;
                 _GraphGuid = Guid.NewGuid();
                 _UserGuid = Guid.NewGuid();

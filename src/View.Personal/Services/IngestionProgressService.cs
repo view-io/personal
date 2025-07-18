@@ -72,7 +72,7 @@ namespace View.Personal.Services
             }
             
             var app = Avalonia.Application.Current as App;
-            app?.Log(Enums.SeverityEnum.Info, $"Ingestion progress: {Path.GetFileName(filePath)} - {status} ({progressPercentage}%)");
+            app?.ConsoleLog(Enums.SeverityEnum.Info, $"ingestion progress: {Path.GetFileName(filePath)} {status} ({progressPercentage}%)");
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace View.Personal.Services
                 if (pendingFiles.Count > 0)
                 {
                     var app = Avalonia.Application.Current as App;
-                    app?.Log(Enums.SeverityEnum.Info, $"Pending files in queue: {pendingFiles.Count}");
+                    app?.ConsoleLog(Enums.SeverityEnum.Info, $"pending files in queue: {pendingFiles.Count}");
                 }
             }
         }
@@ -114,8 +114,8 @@ namespace View.Personal.Services
             }
             
             _isProcessing = true;
-            _activeIngestions[filePath] = ("Starting ingestion...", 0);
-            UpdateCurrentFileProgress(filePath, "Starting ingestion...", 0);
+            _activeIngestions[filePath] = ("Starting ingestion..", 0);
+            UpdateCurrentFileProgress(filePath, "Starting ingestion..", 0);
             UpdatePendingFiles();
         }
 
@@ -242,28 +242,28 @@ namespace View.Personal.Services
             }
             
             var app = Avalonia.Application.Current as App;
-            app?.Log(Enums.SeverityEnum.Info, $"Starting cancellation of file: {Path.GetFileName(filePath)}");
+            app?.ConsoleLog(Enums.SeverityEnum.Info, $"canceling file: {Path.GetFileName(filePath)}");
             
-            _activeIngestions[filePath] = ("Cancelling...", 0);
-            UpdateCurrentFileProgress(filePath, "Cancelling...", 0);
+            _activeIngestions[filePath] = ("Cancelling..", 0);
+            UpdateCurrentFileProgress(filePath, "Cancelling..", 0);
   
             bool cancellationRequested = FileIngester.CancelIngestion(filePath);
             
             if (cancellationRequested)
             {
-                app?.Log(Enums.SeverityEnum.Info, $"Cancellation request sent for: {Path.GetFileName(filePath)}");
+                app?.ConsoleLog(Enums.SeverityEnum.Info, $"cancellation request sent for: {Path.GetFileName(filePath)}");
                 
                 // Give a short delay to allow cancellation to take effect
                 await Task.Delay(500);
                 
-                _activeIngestions[filePath] = ("Deleting...", 0);
-                UpdateCurrentFileProgress(filePath, "Deleting...", 0);
+                _activeIngestions[filePath] = ("Deleting..", 0);
+                UpdateCurrentFileProgress(filePath, "Deleting..", 0);
             }
             
             if (FileIngester.IngestionList.Contains(filePath))
             {
                 FileIngester.IngestionList.Remove(filePath);
-                app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from ingestion list");
+                app?.ConsoleLog(Enums.SeverityEnum.Info, $"removed {Path.GetFileName(filePath)} from ingestion list");
             }
            
             if (filePath == _currentFile)
@@ -312,29 +312,29 @@ namespace View.Personal.Services
                                 };
                                 
                                 await FileDeleter.DeleteFile(fileViewModel, liteGraph, tenantGuid, graphGuid, mainWindow);
-                                app.Log(Enums.SeverityEnum.Info, $"Deleted document node for cancelled file: {Path.GetFileName(filePath)}");
+                                app.ConsoleLog(Enums.SeverityEnum.Info, $"deleted document node for cancelled file: {Path.GetFileName(filePath)}");
                             }
                         }
                         else
                         {
-                            app?.Log(Enums.SeverityEnum.Info, $"No document nodes found for cancelled file: {Path.GetFileName(filePath)}");
+                            app?.ConsoleLog(Enums.SeverityEnum.Info, $"no document nodes found for cancelled file: {Path.GetFileName(filePath)}");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                app?.Log(Enums.SeverityEnum.Error, $"Error removing cancelled file from database: {ex.Message}");
+                app?.ConsoleLog(Enums.SeverityEnum.Error, $"error removing cancelled file from database:" + Environment.NewLine + ex.ToString());
             }
             finally
             {
                 _activeIngestions.TryRemove(filePath, out _);
-                app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from active ingestions");
+                app?.ConsoleLog(Enums.SeverityEnum.Info, $"removed {Path.GetFileName(filePath)} from active ingestions");
             }
             
             IngestionCancelled?.Invoke(null, filePath);
             
-            app?.Log(Enums.SeverityEnum.Info, $"Cancelled ingestion of file: {Path.GetFileName(filePath)}");
+            app?.ConsoleLog(Enums.SeverityEnum.Info, $"cancelled ingestion of file: {Path.GetFileName(filePath)}");
         }
         
         /// <summary>
@@ -352,13 +352,13 @@ namespace View.Personal.Services
         public static async void CancelAllFileIngestions()
         {
             var app = Avalonia.Application.Current as App;
-            app?.Log(Enums.SeverityEnum.Info, "Starting cancellation of all file ingestions");
+            app?.ConsoleLog(Enums.SeverityEnum.Info, "starting cancellation of all file ingestions");
             
             var activeFiles = new List<string>(_activeIngestions.Keys);
             foreach (var filePath in activeFiles)
             {
-                _activeIngestions[filePath] = ("Cancelling...", 0);
-                UpdateCurrentFileProgress(filePath, "Cancelling...", 0);    
+                _activeIngestions[filePath] = ("Cancelling..", 0);
+                UpdateCurrentFileProgress(filePath, "Cancelling..", 0);    
                 FileIngester.CancelIngestion(filePath);
                 await Task.Delay(100);
             }
@@ -367,12 +367,12 @@ namespace View.Personal.Services
             foreach (var filePath in pendingFiles)
             {
                 FileIngester.IngestionList.Remove(filePath);
-                app?.Log(Enums.SeverityEnum.Info, $"Removed {Path.GetFileName(filePath)} from pending queue");
+                app?.ConsoleLog(Enums.SeverityEnum.Info, $"removed {Path.GetFileName(filePath)} from pending queue");
             }
             
             UpdatePendingFiles();
             
-            app?.Log(Enums.SeverityEnum.Info, $"Cancelled all file ingestions: {activeFiles.Count} active, {pendingFiles.Count} pending");
+            app?.ConsoleLog(Enums.SeverityEnum.Info, $"cancelled all file ingestions: {activeFiles.Count} active, {pendingFiles.Count} pending");
         }
     }
 }

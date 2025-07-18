@@ -56,13 +56,13 @@ namespace View.Personal.Services
         {
             if (queryEmbeddings == null || !queryEmbeddings.Any())
             {
-                _app.LogWithTimestamp(Enums.SeverityEnum.Error, "Query embeddings are null or empty");
+                _app.ConsoleLog(Enums.SeverityEnum.Error, "query embeddings are null or empty");
                 return (Enumerable.Empty<VectorSearchResult>(), string.Empty);
             }
 
             try
             {
-                _app.LogWithTimestamp(Enums.SeverityEnum.Debug, "Performing vector search with RAG settings");
+                _app.ConsoleLog(Enums.SeverityEnum.Debug, "performing vector search with RAG settings");
 
                 // Perform vector search
                 var searchResults = await PerformVectorSearch(
@@ -72,7 +72,7 @@ namespace View.Personal.Services
 
                 if (searchResults == null || !searchResults.Any())
                 {
-                    _app.LogWithTimestamp(Enums.SeverityEnum.Info, "No relevant documents found in the knowledge base");
+                    _app.ConsoleLog(Enums.SeverityEnum.Info, "no relevant documents found in the knowledge base");
                     return (Enumerable.Empty<VectorSearchResult>(), string.Empty);
                 }
 
@@ -89,8 +89,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app.LogWithTimestamp(Enums.SeverityEnum.Error, $"Error retrieving relevant documents: {ex.Message}");
-                _app.LogExceptionToFile(ex, "Error in RetrieveRelevantDocumentsAsync");
+                _app.ConsoleLog(Enums.SeverityEnum.Error, $"error retrieving relevant documents:" + Environment.NewLine + ex.ToString());
                 return (Enumerable.Empty<VectorSearchResult>(), string.Empty);
             }
         }
@@ -126,7 +125,7 @@ namespace View.Personal.Services
             }
             catch (Exception ex)
             {
-                _app.LogWithTimestamp(Enums.SeverityEnum.Error, $"Error optimizing query: {ex.Message}");
+                _app.ConsoleLog(Enums.SeverityEnum.Error, $"error optimizing query:" + Environment.NewLine + ex.ToString());
                 return userQuery;
             }
         }
@@ -158,7 +157,7 @@ namespace View.Personal.Services
                 var firstSystemMessage = systemMessages.First();
                 if (firstSystemMessage.Content.StartsWith("Please respond ONLY in "))
                 {
-                    int endIndex = firstSystemMessage.Content.IndexOf("Do not provide translations") + "Do not provide translations to other languages.".Length;
+                    int endIndex = firstSystemMessage.Content.IndexOf("Do not provide translations") + "Do not provide translations to other languages".Length;
                     if (endIndex > 0)
                     {
                         languageInstruction = firstSystemMessage.Content.Substring(0, endIndex) + " ";
@@ -166,7 +165,7 @@ namespace View.Personal.Services
                 }
                 else if (firstSystemMessage.Content.StartsWith("Please respond in "))
                 {
-                    int endIndex = firstSystemMessage.Content.IndexOf(".");
+                    int endIndex = firstSystemMessage.Content.IndexOf("");
                     if (endIndex > 0)
                     {
                         string originalInstruction = firstSystemMessage.Content.Substring(0, endIndex + 1);
@@ -224,7 +223,7 @@ namespace View.Personal.Services
                           .OrderByDescending(r => r.Score)
                           .Take(topK);
 
-            _app.LogWithTimestamp(Enums.SeverityEnum.Info, $"Vector search completed");
+            _app.ConsoleLog(Enums.SeverityEnum.Info, $"vector search completed");
             return Task.FromResult(filtered ?? Enumerable.Empty<VectorSearchResult>());
         }
 

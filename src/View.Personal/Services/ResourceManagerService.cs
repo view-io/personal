@@ -41,7 +41,7 @@ namespace View.Personal.Services
             catch (Exception ex)
             {
                 // If there's an error (like invalid culture name), fall back to English
-                Console.WriteLine($"Error initializing culture: {ex.Message}. Falling back to English.");
+                Console.WriteLine($"Error initializing culture: {ex.Message}. Falling back to English");
                 SetCulture(CultureInfo.GetCultureInfo("en"));
             }
         }

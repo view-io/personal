@@ -53,7 +53,7 @@ namespace ViewPersonal.Updater.Views
             {
                 if (_updateService is null)
                 {
-                    ShowError("Updater initialization failed. Please contact support.");
+                    ShowError("Updater initialization failed. Please contact support");
                     return;
                 }
 
@@ -94,7 +94,7 @@ namespace ViewPersonal.Updater.Views
 
                 if (_latestVersion == null)
                 {
-                    ShowError("Failed to retrieve version information from the server.");
+                    ShowError("Failed to retrieve version information from the server");
                     return;
                 }
                 _latestVersion.VersionNumber = _latestVersion.VersionNumber.Trim().TrimStart('v', 'V');
@@ -120,7 +120,7 @@ namespace ViewPersonal.Updater.Views
             }
             catch (Exception ex)
             {
-                ShowError($"Error checking for updates: {ex.Message}");
+                ShowError($"Error checking for updates:" + Environment.NewLine + ex.ToString());
             }
         }
 
@@ -128,14 +128,14 @@ namespace ViewPersonal.Updater.Views
         {
             if (_updateService is null || _latestVersion == null)
             {
-                ShowError("Updater initialization failed. Please contact support.");
+                ShowError("Updater initialization failed. Please contact support");
                 return;
             }
 
             string downloadUrl = _updateService.GetDownloadUrlForCurrentOs(_latestVersion);
             if (string.IsNullOrEmpty(downloadUrl))
             {
-                ShowError("No download URL available for your operating system.");
+                ShowError("No download URL available for your operating system");
                 return;
             }
 
@@ -145,7 +145,7 @@ namespace ViewPersonal.Updater.Views
 
             if (_downloadedInstallerPath == null)
             {
-                ShowError("Failed to download the update.");
+                ShowError("Failed to download the update");
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace ViewPersonal.Updater.Views
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
-                    ShowError("The installer is not available.");
+                    ShowError("The installer is not available");
                     return;
                 }
 
@@ -174,7 +174,7 @@ namespace ViewPersonal.Updater.Views
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
-                    ShowError("Updater initialization failed. Please contact support.");
+                    ShowError("Updater initialization failed. Please contact support");
                     return;
                 }
 
@@ -185,7 +185,7 @@ namespace ViewPersonal.Updater.Views
                         bool success = _updateService.InstallUpdate();
                         if (success)
                         {
-                            _app._FileLogging?.Info("Installer launched successfully. Application shutting down.");
+                            _app._FileLogging?.Info("Installer launched successfully. Application shutting down");
                             _updateService?.Dispose();
                             Environment.Exit(0);
                         }
@@ -196,19 +196,19 @@ namespace ViewPersonal.Updater.Views
                                 InstallNowButtonNormalState.IsVisible = true;
                                 InstallNowButtonLoadingState.IsVisible = false;
                                 InstallNowButton.IsEnabled = true;
-                                ShowError("Failed to start the installer.");
+                                ShowError("Failed to start the installer");
                             });
                         }
                     }
                     catch (Exception ex)
                     {
-                        _app.LogError($"Error launching installer: {ex.Message}");
+                        _app.LogError($"Error launching installer:" + Environment.NewLine + ex.ToString());
                         Dispatcher.UIThread.Post(() =>
                         {
                             InstallNowButtonNormalState.IsVisible = true;
                             InstallNowButtonLoadingState.IsVisible = false;
                             InstallNowButton.IsEnabled = true;
-                            ShowError($"Failed to start the installer: {ex.Message}");
+                            ShowError($"Failed to start the installer:" + Environment.NewLine + ex.ToString());
                         });
                     }
                 });
@@ -216,13 +216,13 @@ namespace ViewPersonal.Updater.Views
             }
             catch (Exception ex)
             {
-                _app.LogError($"Error in InstallNowButton_Click: {ex.Message}");
+                _app.LogError($"Error in InstallNowButton_Click:" + Environment.NewLine + ex.ToString());
                 Dispatcher.UIThread.Post(() =>
                 {
                     InstallNowButtonNormalState.IsVisible = true;
                     InstallNowButtonLoadingState.IsVisible = false;
                     InstallNowButton.IsEnabled = true;
-                    ShowError($"An error occurred: {ex.Message}");
+                    ShowError($"An error occurred:" + Environment.NewLine + ex.ToString());
                 });
             }
         }

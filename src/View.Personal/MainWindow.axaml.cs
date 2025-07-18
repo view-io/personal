@@ -13,6 +13,7 @@ namespace View.Personal
     using Helpers;
     using LiteGraph;
     using Material.Icons.Avalonia;
+    using NPOI.OpenXmlFormats.Dml.Chart;
     using RestWrapper;
     using Sdk;
     using Sdk.Embeddings;
@@ -132,13 +133,12 @@ namespace View.Personal
                     MainWindowUIHandlers.MainWindow_Opened(this);
                     _WindowInitialized = true;
                     _WindowNotificationManager = this.FindControl<WindowNotificationManager>("NotificationManager");
-                    app.Log(SeverityEnum.Info, "MainWindow opened.");
                     var navList = this.FindControl<ListBox>("NavList");
                     navList.SelectedIndex = -1;
                     LoadSettingsFromFile();
                     InitializeEmbeddingRadioButtons();
                     var consoleOutput = this.FindControl<SelectableTextBlock>("ConsoleOutputTextBox");
-                    app.LoggingService = new LoggingService(this, consoleOutput);
+                    app.ConsoleLogging = new ConsoleLoggingService(this, consoleOutput);
                     WatchedPaths = app.ApplicationSettings.WatchedPaths ?? new List<string>();
                     _ActiveGraphGuid = Guid.Parse(app.ApplicationSettings.ActiveGraphGuid); // Example, adjust as needed
                     if (!app.ApplicationSettings.WatchedPathsPerGraph.ContainsKey(_ActiveGraphGuid))
@@ -146,7 +146,6 @@ namespace View.Personal
                     _WatchedPathsPerGraph = app.ApplicationSettings.WatchedPathsPerGraph;
                     LoadGraphComboBox();
 
-                    DataMonitorUIHandlers.LogWatchedPaths(this);
                     DataMonitorUIHandlers.InitializeFileWatchers(this);
                     var graphComboBox = this.FindControl<ComboBox>("GraphComboBox");
                     graphComboBox.SelectionChanged += GraphComboBox_SelectionChanged;
@@ -165,7 +164,7 @@ namespace View.Personal
                     if (ingestionProgressPopup != null)
                     {
                         Services.IngestionProgressService.Initialize(ingestionProgressPopup);
-                        app.Log(SeverityEnum.Info, "Ingestion progress popup initialized.");
+                        app.ConsoleLog(SeverityEnum.Info, "ingestion progress popup initialized");
                     }
                 };
                 NavList.SelectionChanged += (s, e) =>
@@ -206,8 +205,7 @@ namespace View.Personal
             }
             catch (Exception e)
             {
-                app.Log(SeverityEnum.Error, $"MainWindow constructor exception: {e.Message}");
-                app?.LogExceptionToFile(e, "[ViewPersonal] " + "MainWindow constructor exception:");
+                app.ConsoleLog(SeverityEnum.Error, $"outer exception:" + Environment.NewLine + e.ToString());
             }
         }
 
@@ -529,7 +527,7 @@ namespace View.Personal
         private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
-            app.LoggingService?.Clear();
+            app.ConsoleLogging?.Clear();
         }
 
         /// <summary>
@@ -545,7 +543,7 @@ namespace View.Personal
             {
                 try
                 {
-                    bool success = await app.LoggingService.DownloadLogsAsync(filePath);
+                    bool success = await app.ConsoleLogging.DownloadLogsAsync(filePath);
                     if (success)
                     {
                         ShowNotification(ResourceManagerService.GetString("Success"), 
@@ -561,8 +559,7 @@ namespace View.Personal
                 }
                 catch (Exception ex)
                 {
-                    app.Log(SeverityEnum.Error, $"Error saving console logs: {ex.Message}");
-                    app.LogExceptionToFile(ex, "Error saving console logs");
+                    app.ConsoleLog(SeverityEnum.Error, $"error saving console logs:" + Environment.NewLine + ex.ToString());
                     ShowNotification(ResourceManagerService.GetString("Error"), 
                         ResourceManagerService.GetString("FailedToSaveConsoleLogs"), 
                         NotificationType.Error);
@@ -982,7 +979,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            foreach (var graph in graphs) app.Log(SeverityEnum.Info, $"Graph GUID: {graph.GUID}, Name: {graph.Name ?? "null"}");
+            foreach (var graph in graphs) app.ConsoleLog(SeverityEnum.Info, $"using graph {graph.GUID} name {graph.Name ?? "null"}");
             await MainWindowUIHandlers.ExportGexfButton_Click(sender, e, this, _FileBrowserService, _LiteGraph,
                 _TenantGuid, _ActiveGraphGuid);
         }
@@ -1018,7 +1015,7 @@ namespace View.Personal
             var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(preferredLanguage);
             var languageName = cultureInfo.DisplayName;
             
-            string languageInstruction = $"Please respond ONLY in {languageName}. Do not provide translations to other languages.";
+            string languageInstruction = $"Please respond ONLY in {languageName}. Do not provide translations to other languages";
             
             if (!string.IsNullOrWhiteSpace(customSystemPrompt))
             {
@@ -1027,7 +1024,7 @@ namespace View.Personal
                     Role = "system",
                     Content = $"{languageInstruction} {customSystemPrompt}"
                 });
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Added custom system prompt with language preference for {selectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"added custom system prompt with language preference for {selectedProvider}");
             }
             else
             {
@@ -1036,7 +1033,7 @@ namespace View.Personal
                     Role = "system",
                     Content = languageInstruction
                 });
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Added language preference system prompt for {selectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"added language preference system prompt for {selectedProvider}");
             }
 
             int maxContextCharacters = 24000;
@@ -1044,11 +1041,11 @@ namespace View.Personal
             var conversationText = string.Join(" ", _ConversationHistory.Select(m => $"{m.Role}: {m.Content}"));
             if (conversationText.Length > maxContextCharacters)
             {
-                app.LogWithTimestamp(SeverityEnum.Warn, $"Context window exceeded {maxContextCharacters} characters, summarizing older messages...");
+                app.ConsoleLog(SeverityEnum.Warn, $"context window exceeded {maxContextCharacters} characters, summarizing older messages..");
 
                 var summaryPrompt = $"""
                                         Please summarize the following conversation in a concise, context-preserving way. 
-                                        This will be used to continue the chat beyond the context window. 
+                                        This will be used to compress the request to remain within your context window. 
                                         Conversation:
                                         {conversationText}
                                       """;
@@ -1084,7 +1081,7 @@ namespace View.Personal
             try
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp(SeverityEnum.Debug, $"GetAIResponse started with provider: {app.ApplicationSettings.SelectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"AI response retrieval started with provider: {app.ApplicationSettings.SelectedProvider}");
                 var selectedProvider = app.ApplicationSettings.SelectedProvider; // Completion provider
                 var embeddingsProvider =
                     app.ApplicationSettings.Embeddings.SelectedEmbeddingModel; // Embeddings provider
@@ -1105,23 +1102,23 @@ namespace View.Personal
                 if (ragSettings.EnableRAG)
                 {
                     _RagService = new RagService(_LiteGraph, _TenantGuid, _ActiveGraphGuid);
-                    app.LogWithTimestamp(SeverityEnum.Debug, "RAG is enabled, processing with RAG service");
+                    app.ConsoleLog(SeverityEnum.Debug, "RAG is enabled, processing with RAG service");
 
                     string processedQuery = userInput;
                     if (ragSettings.QueryOptimization)
                     {
                         processedQuery = _RagService.OptimizeQuery(userInput, ragSettings);
-                        app.LogWithTimestamp(SeverityEnum.Debug, $"Query optimized: {processedQuery}");
+                        app.ConsoleLog(SeverityEnum.Debug, $"query optimized: {processedQuery}");
                     }
 
                     // Generate embeddings with the selected embeddings provider
-                    app.LogWithTimestamp(SeverityEnum.Debug, $"Generating embeddings with provider: {embeddingsProvider}");
+                    app.ConsoleLog(SeverityEnum.Debug, $"generating embeddings with provider: {embeddingsProvider}");
                     var (sdk, embeddingsRequest) =
                         GetEmbeddingsSdkAndRequest(embeddingsProvider, app.ApplicationSettings, processedQuery);
                     var promptEmbeddings = await GenerateEmbeddings(sdk, embeddingsRequest).ConfigureAwait(false);
                     if (promptEmbeddings == null)
-                        return "Error: Failed to generate embeddings for the prompt.";
-                    app.LogWithTimestamp(SeverityEnum.Debug, "Embeddings generated successfully");
+                        return "Error: Failed to generate embeddings for the prompt";
+                    app.ConsoleLog(SeverityEnum.Debug, "embeddings generated successfully");
 
                     var floatEmbeddings = promptEmbeddings.Select(d => (float)d).ToList();
 
@@ -1130,7 +1127,7 @@ namespace View.Personal
 
                     if (string.IsNullOrEmpty(context))
                     {
-                        return "I couldn't find any relevant documents in the knowledge base for your query.";
+                        return "I couldn't find any relevant documents in the knowledge base for your query";
                     }
 
                     // Build messages with RAG context
@@ -1138,21 +1135,21 @@ namespace View.Personal
                 }
                 else
                 {
-                    app.LogWithTimestamp(SeverityEnum.Debug, "RAG is disabled, using standard chat");
+                    app.ConsoleLog(SeverityEnum.Debug, "RAG is disabled, using standard chat");
 
                     finalMessages = new List<ChatMessage>(await BuildPromptMessages());
                     finalMessages.Add(new ChatMessage { Role = "user", Content = userInput });
                 }
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending API request to {selectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"sending API request to {selectedProvider}");
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
-                app.LogWithTimestamp(SeverityEnum.Debug, "API request completed");
+                app.ConsoleLog(SeverityEnum.Debug, "API request completed");
                 return result;
             }
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp(SeverityEnum.Error, $"GetAIResponse threw exception: {ex.Message}");
+                app.ConsoleLog(SeverityEnum.Error, $"exception retrieving AI response:" + Environment.NewLine + ex.ToString());
                 return $"Error: {ex.Message}";
             }
         }
@@ -1169,7 +1166,7 @@ namespace View.Personal
             try
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Chat summarization started with provider: {app.ApplicationSettings.SelectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"chat summarization started with provider: {app.ApplicationSettings.SelectedProvider}");
 
                 var selectedProvider = app.ApplicationSettings.SelectedProvider;
                 var settings = app.GetProviderSettings(Enum.Parse<CompletionProviderTypeEnum>(selectedProvider));
@@ -1184,17 +1181,17 @@ namespace View.Personal
                 };
                 
                 var requestBody = CreateRequestBody(selectedProvider, settings, finalMessages);
-                app.LogWithTimestamp(SeverityEnum.Debug, $"Sending summarization request to {selectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"sending summarization request to {selectedProvider}");
 
                 var result = await SendApiRequest(selectedProvider, settings, requestBody, onTokenReceived).ConfigureAwait(false);
-                app.LogWithTimestamp(SeverityEnum.Debug, "Summarization request completed");
+                app.ConsoleLog(SeverityEnum.Debug, "summarization request completed");
 
                 return result;
             }
             catch (Exception ex)
             {
                 var app = (App)Application.Current;
-                app.LogWithTimestamp(SeverityEnum.Error, $"SummarizeChat threw exception: {ex.Message}");
+                app.ConsoleLog(SeverityEnum.Error, $"chat summarization exception:" + Environment.NewLine + ex.ToString());
                 return $"Error: {ex.Message}";
             }
         }
@@ -1279,9 +1276,9 @@ namespace View.Personal
 
             if (!result.Success || result.ContentEmbeddings == null || result.ContentEmbeddings.Count == 0)
             {
-                app.LogWithTimestamp(SeverityEnum.Error, $"Prompt embeddings generation failed: {result.StatusCode}");
+                app.ConsoleLog(SeverityEnum.Error, $"prompt embeddings generation failed: {result.StatusCode}");
                 if (result.Error != null)
-                    app.LogWithTimestamp(SeverityEnum.Error, result.Error.Message);
+                    app.ConsoleLog(SeverityEnum.Error, "error:" + Environment.NewLine + _Serializer.SerializeJson(result.Error, true));
                 return new List<float>();
             }
 
@@ -1299,7 +1296,7 @@ namespace View.Personal
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.LogWithTimestamp(SeverityEnum.Info, $"Creating summarization request body for {provider}");
+            app.ConsoleLog(SeverityEnum.Info, $"creating summarization request body for {provider}");
             
             switch (provider)
             {
@@ -1369,7 +1366,7 @@ namespace View.Personal
             object requestBody, Action<string> onTokenReceived)
         {
             var app = (App)Application.Current;
-            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest started for provider: {provider}");
+            app.ConsoleLog(SeverityEnum.Debug, $"sending API request to provider: {provider}");
             var requestUri = provider switch
             {
                 "OpenAI" => settings.OpenAIEndpoint,
@@ -1399,16 +1396,14 @@ namespace View.Personal
                 catch (Exception ex) when (retryCount < maxRetries)
                 {
                     retryCount++;
-                    app.LogWithTimestamp(SeverityEnum.Warn, $"API request failed (attempt {retryCount}/{maxRetries}): {ex.Message}");
-                    app.LogExceptionToFile(ex, $"API request failed (attempt {retryCount}/{maxRetries})");
+                    app.ConsoleLog(SeverityEnum.Warn, $"API request failed (attempt {retryCount}/{maxRetries}):" + Environment.NewLine + ex.ToString());
                     // Add a small delay before retrying
                     await Task.Delay(1000 * retryCount); // Exponential backoff
                 }
                 catch (Exception ex)
                 {
                     // If we've exhausted all retries, log and throw
-                    app.LogWithTimestamp(SeverityEnum.Error, $"API request failed after {maxRetries} attempts: {ex.Message}");
-                    app.LogExceptionToFile(ex, $"API request failed after {maxRetries} attempts");
+                    app.ConsoleLog(SeverityEnum.Error, $"API request failed after {maxRetries} attempts:" + Environment.NewLine + ex.ToString());
                     throw;
                 }
             }
@@ -1419,7 +1414,7 @@ namespace View.Personal
             ValidateResponseStream(provider, resp);
 
             var response = await ProcessStreamingResponse(resp, onTokenReceived, provider);
-            app.LogWithTimestamp(SeverityEnum.Debug, $"SendApiRequest completed for provider: '{provider}' for Summarization");
+            app.ConsoleLog(SeverityEnum.Debug, $"API request completed for provider: {provider} for Summarization");
             return response;
         }
 
@@ -1471,7 +1466,7 @@ namespace View.Personal
         {
             var sb = new StringBuilder();
             var app = (App)Application.Current;
-            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse started for provider: {provider}");
+            app.ConsoleLog(SeverityEnum.Debug, $"processing streaming response for provider: {provider}");
 
             // Create a SynchronizationContext-aware token handler that safely updates the UI
             Action<string> safeTokenHandler = null;
@@ -1510,8 +1505,7 @@ namespace View.Personal
                         }
                         catch (JsonException je)
                         {
-                            Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in SSE chunk: {chunkJson}\n{je.Message}");
-                            app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in SSE chunk");
+                            app.ConsoleLog(SeverityEnum.Error, $"invalid JSON in SSE chunk: {chunkJson}" + Environment.NewLine + je.ToString());
                         }
                     }
                 }
@@ -1541,13 +1535,12 @@ namespace View.Personal
                     }
                     catch (JsonException je)
                     {
-                        Console.WriteLine($"{SeverityEnum.Error} Invalid JSON in response line: {line}\n{je.Message}");
-                        app?.LogExceptionToFile(je, "[ViewPersonal] " + "Invalid JSON in response line");
+                        app.ConsoleLog(SeverityEnum.Error, $"invalid JSON in response line: {line}" + Environment.NewLine + je.ToString());
                     }
                 }
             }
 
-            app.LogWithTimestamp(SeverityEnum.Debug, $"ProcessStreamingResponse completed for provider: {provider}");
+            app.ConsoleLog(SeverityEnum.Debug, $"streaming response completed for provider: {provider}");
             return sb.ToString();
         }
 
@@ -1644,7 +1637,7 @@ namespace View.Personal
 
                 app.ApplicationSettings.Embeddings.SelectedEmbeddingModel = selectedProvider;
 
-                app.Log(SeverityEnum.Info, $"Embedding provider selected: {selectedProvider}");
+                app.ConsoleLog(SeverityEnum.Debug, $"embedding provider selected: {selectedProvider}");
             }
         }
 
@@ -2023,7 +2016,7 @@ namespace View.Personal
         {
             var app = (App)Application.Current;
             var graphs = app.GetAllGraphs();
-            Console.WriteLine($"{SeverityEnum.Info} Fetched {graphs.Count} graphs.");
+            Console.WriteLine($"{SeverityEnum.Info} Fetched {graphs.Count} graphs");
             var graphItems = graphs.Select(g =>
             {
                 var statistics = GetGraphStatistics(g?.GUID ?? Guid.Empty);
@@ -2040,12 +2033,12 @@ namespace View.Personal
             var graphsDataGrid = this.FindControl<DataGrid>("GraphsDataGrid");
             if (graphsDataGrid != null)
             {
-                Console.WriteLine($"{SeverityEnum.Info} Setting ItemsSource for GraphsDataGrid.");
+                Console.WriteLine($"{SeverityEnum.Info} Setting ItemsSource for GraphsDataGrid");
                 graphsDataGrid.ItemsSource = graphItems;
             }
             else
             {
-                Console.WriteLine($"{SeverityEnum.Error} GraphsDataGrid not found.");
+                Console.WriteLine($"{SeverityEnum.Error} GraphsDataGrid not found");
             }
         }
 
@@ -2067,7 +2060,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{SeverityEnum.Error} Failed to get node count for graph {graphGuid}: {ex.Message}");
+                Console.WriteLine($"{SeverityEnum.Error} Failed to get node count for graph {graphGuid}:" + Environment.NewLine + ex.ToString());
                 return null;
             }
         }
@@ -2133,8 +2126,7 @@ namespace View.Personal
             }
             catch (Exception ex)
             {
-                app.Log(SeverityEnum.Error, $"Error processing dropped files: {ex.Message}");
-                app.LogExceptionToFile(ex, $"Error processing dropped files");
+                app.ConsoleLog(SeverityEnum.Error, $"error processing dropped files:" + Environment.NewLine + ex.ToString());
             }
         }
 

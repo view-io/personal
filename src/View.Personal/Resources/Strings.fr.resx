@@ -442,10 +442,10 @@ réimporter tous les documents.</value>
 	<value>Chemin non trouvé</value>
   </data>
 	<data name="PathDoesNotExist" xml:space="preserve">
-	<value>Le chemin '{0}' n'existe pas.</value>
+	<value>Le chemin {0} n'existe pas.</value>
   </data>
 	<data name="FailedToNavigatePath" xml:space="preserve">
-	<value>Échec de la navigation vers '{0}' : {1}</value>
+	<value>Échec de la navigation vers {0} : {1}</value>
   </data>
 	<data name="ModelDownloaded" xml:space="preserve">
 	<value>Modèle téléchargé</value>
@@ -694,19 +694,19 @@ réimporter tous les documents.</value>
 	<value>Confirmer la suppression</value>
   </data>
 	<data name="ConfirmDeleteKnowledgebase" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer la base de connaissances '{0}' ?</value>
+	<value>Êtes-vous sûr de vouloir supprimer la base de connaissances {0} ?</value>
   </data>
 	<data name="ConfirmWatch" xml:space="preserve">
 	<value>Confirmer la surveillance</value>
   </data>
 	<data name="ConfirmWatchMessage" xml:space="preserve">
-	<value>Surveiller '{0}' ? Cela ingérera {1} fichier{2}.</value>
+	<value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
   </data>
 	<data name="ConfirmUnwatchMessage" xml:space="preserve">
-	<value>Arrêter la surveillance de '{0}' ? Cela affectera {1} fichier{2}.</value>
+	<value>Arrêter la surveillance de {0} ? Cela affectera {1} fichier{2}.</value>
   </data>
 	<data name="ConfirmRemoveFile" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer '{0}'</value>
+	<value>Êtes-vous sûr de vouloir supprimer {0}</value>
   </data>
 	<data name="FromKnowledgebase" xml:space="preserve">
 	<value>de la base de connaissances ?</value>
@@ -718,7 +718,7 @@ réimporter tous les documents.</value>
 	<value>Supprimer le modèle</value>
   </data>
 	<data name="ConfirmDeleteModel" xml:space="preserve">
-	<value>Êtes-vous sûr de vouloir supprimer le modèle '{0}' ?</value>
+	<value>Êtes-vous sûr de vouloir supprimer le modèle {0} ?</value>
   </data>
 	<data name="ActionCannotBeUndone" xml:space="preserve">
 	<value>Cette action est irréversible.</value>
@@ -1039,7 +1039,7 @@ réimporter tous les documents.</value>
 	<value>Réessayer</value>
   </data>
 	<data name="WatchFileQuestion" xml:space="preserve">
-	<value>Surveiller '{0}' ? Cela ingérera {1} fichier{2}.</value>
+	<value>Surveiller {0} ? Cela ingérera {1} fichier{2}.</value>
   </data>
 	<data name="UnwatchOnly" xml:space="preserve">
 	<value>Arrêter la surveillance seulement</value>
