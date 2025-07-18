@@ -94,14 +94,14 @@
 					</ComboBox>
 					<StackPanel DockPanel.Dock="Top" Margin="24 0 12 0">
 						<ComboBox x:Name="ChatHistoryList" DockPanel.Dock="Top" Margin="0 5 12 0" Width="149"
-                              Theme="{StaticResource MaterialOutlineComboBox}"
-                              assists:ComboBoxAssist.Label="{l:Localize ChatHistory}"
-                              Padding="12,4"
-					          Background="#FFFFFF"
-					          BorderBrush="#DBDBDB"
-					          BorderThickness="0.97"
-                              Foreground="#1A1C1E"
-                              SelectionChanged="ChatHistoryList_SelectionChanged">
+                                  Theme="{StaticResource MaterialOutlineComboBox}"
+                                  assists:ComboBoxAssist.Label="{l:Localize ChatHistory}"
+                                  Padding="12,4"
+					              Background="#FFFFFF"
+					              BorderBrush="#DBDBDB"
+					              BorderThickness="0.97"
+                                  Foreground="#1A1C1E"
+                                  SelectionChanged="ChatHistoryList_SelectionChanged">
 
 							<!-- Tooltip for each item in the dropdown -->
 							<ComboBox.ItemTemplate>
@@ -749,9 +749,9 @@
 																<TextBlock Text="{l:Localize EmbeddingModelName}" FontSize="12"
 																		   Foreground="#1A1C1E" FontWeight="500" />
 																<TextBox x:Name="OllamaModel"
-												 Text="sentence-transformers/all-MiniLM-L6-v2"
-												 Classes="no-shadow"
-												 ToolTip.Tip="{l:Localize SpecifyOllamaEmbeddingModelTooltip}" />
+												                         Text="sentence-transformers/all-MiniLM-L6-v2"
+												                         Classes="no-shadow"
+												                         ToolTip.Tip="{l:Localize SpecifyOllamaEmbeddingModelTooltip}" />
 																<TextBlock Text="{l:Localize EmbeddingDimensionality}" FontSize="12"
 																		   Foreground="#1A1C1E" FontWeight="500" />
 																<TextBox x:Name="OllamaEmbeddingDimensions" Text="1536"
@@ -1987,9 +1987,9 @@
 										VerticalAlignment="Center"
 										MinHeight="28">
 								<TextBlock Text="{l:Localize ItemsPerPage}"
-						   FontSize="12"
-						   Foreground="#6A6B6F"
-						   VerticalAlignment="Center" />
+						                   FontSize="12"
+						                   Foreground="#6A6B6F"
+						                   VerticalAlignment="Center" />
 								<ComboBox x:Name="PageSizeComboBox"
                                           Width="60"
                                           Height="28"
