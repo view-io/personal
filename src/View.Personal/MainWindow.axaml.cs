@@ -1252,8 +1252,12 @@ namespace View.Personal
                     // Retrieve relevant documents using RAG service
                     var (searchResults, context) = await _RagService.RetrieveRelevantDocumentsAsync(floatEmbeddings, ragSettings);
 
+                    app.ConsoleLog(Enums.SeverityEnum.Debug, $"5");
+
                     if (string.IsNullOrEmpty(context))
                         return "I couldn't find any relevant documents in the knowledgebase for your query";
+
+                    app.ConsoleLog(Enums.SeverityEnum.Debug, $"6");
 
                     // Build messages with RAG context
                     using (Timestamp tsBuildPrompt = new Timestamp())
@@ -1275,6 +1279,8 @@ namespace View.Personal
 
                 string result = null;
 
+                app.ConsoleLog(Enums.SeverityEnum.Debug, $"7");
+
                 using (Timestamp tsApiRequest = new Timestamp())
                 {
                     tsApiRequest.Start = DateTime.UtcNow;
@@ -1284,6 +1290,9 @@ namespace View.Personal
                     tsApiRequest.End = DateTime.UtcNow;
                     app.ConsoleLog(SeverityEnum.Debug, $"API request completed in {tsApiRequest?.TotalMs?.ToString("F2")}ms");
                 }
+
+                app.ConsoleLog(Enums.SeverityEnum.Debug, $"8");
+
                 return result;
             }
             catch (Exception ex)

@@ -1,6 +1,5 @@
 namespace View.Personal.Services
 {
-    using SerializationHelper;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -590,31 +589,54 @@ namespace View.Personal.Services
         {
             try
             {
-                var requestPayload = new { model = modelName };
-                var content = JsonContent.Create(requestPayload);
-                var response = await client.PostAsync($"{endpoint}api/show", content);
+                // First, check the model info for explicit capabilities
+                var showPayload = new { model = modelName };
+                var showContent = JsonContent.Create(showPayload);
+                var showResponse = await client.PostAsync($"{endpoint}api/show", showContent);
 
-                if (!response.IsSuccessStatusCode)
+                if (showResponse.IsSuccessStatusCode)
                 {
-                    _app?.ConsoleLog(SeverityEnum.Warn, $"failed to get model info for {modelName} status: {response.StatusCode}");
-                    return false;
+                    var json = await showResponse.Content.ReadAsStringAsync();
+                    using var jsonDoc = JsonDocument.Parse(json);
+                    var root = jsonDoc.RootElement;
+
+                    // Check for explicit capabilities array
+                    if (root.TryGetProperty("capabilities", out var capabilities) &&
+                        capabilities.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var capability in capabilities.EnumerateArray())
+                        {
+                            if (capability.GetString() == "embedding")
+                            {
+                                _app?.ConsoleLog(SeverityEnum.Info, $"model {modelName} has explicit embedding capability");
+                                return true;
+                            }
+                        }
+                    }
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
+                // If no explicit capabilities, try the embedding endpoint directly
+                // This is the definitive test - if it works, it's an embedding model
+                var testPayload = new { model = modelName, prompt = "test" };
+                var testContent = JsonContent.Create(testPayload);
 
-                // _app?.ConsoleLog(SeverityEnum.Debug, $"model info for {modelName}:" + Environment.NewLine + json);
+                var embeddingResponse = await client.PostAsync($"{endpoint}api/embeddings", testContent);
 
-                bool isEmbedding = json.Contains("\"capabilities\":[\"embedding\"]", StringComparison.OrdinalIgnoreCase) ||
-                                  json.Contains("\"embedding\"", StringComparison.OrdinalIgnoreCase) ||
-                                  json.Contains("embed", StringComparison.OrdinalIgnoreCase);
-
-                _app?.ConsoleLog(SeverityEnum.Info, $"model {modelName} detected as embedding model: {isEmbedding}");
-
-                return isEmbedding;
+                if (embeddingResponse.IsSuccessStatusCode)
+                {
+                    _app?.ConsoleLog(SeverityEnum.Info, $"model {modelName} successfully responded to embedding request");
+                    return true;
+                }
+                else
+                {
+                    var errorBody = await embeddingResponse.Content.ReadAsStringAsync();
+                    _app?.ConsoleLog(SeverityEnum.Debug, $"model {modelName} embedding test failed: {embeddingResponse.StatusCode} - {errorBody}");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                _app?.ConsoleLog(SeverityEnum.Error, $"error checking if {modelName} is embedding model: {ex.Message}");
+                _app?.ConsoleLog(SeverityEnum.Error, $"error checking if {modelName} is embedding model:" + Environment.NewLine + ex.ToString());
                 return false;
             }
         }

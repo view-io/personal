@@ -7,6 +7,7 @@ namespace View.Personal.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Tesseract;
     using Timestamps;
 
     /// <summary>
@@ -52,8 +53,8 @@ namespace View.Personal.Services
         /// <param name="ragSettings">The RAG settings to use for retrieval.</param>
         /// <returns>A tuple containing the search results and a context string built from those results.</returns>
         public async Task<(IEnumerable<VectorSearchResult> Results, string Context)> RetrieveRelevantDocumentsAsync(
-            List<float> queryEmbeddings,
-            AppSettings.RAGSettings ragSettings)
+    List<float> queryEmbeddings,
+    AppSettings.RAGSettings ragSettings)
         {
             if (queryEmbeddings == null || !queryEmbeddings.Any())
             {
@@ -65,26 +66,35 @@ namespace View.Personal.Services
             {
                 _app.ConsoleLog(Enums.SeverityEnum.Debug, "performing vector search with RAG settings");
 
-                // Perform vector search
-                IEnumerable<VectorSearchResult> searchResults = null!;
+                // Store as List to avoid multiple enumerations
+                List<VectorSearchResult> searchResultsList = null;
 
                 using (Timestamp tsVectorSearch = new Timestamp())
                 {
                     tsVectorSearch.Start = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning vector search");
-                    searchResults = await PerformVectorSearch(
+
+                    searchResultsList = (await PerformVectorSearch(
                         queryEmbeddings,
                         ragSettings.NumberOfDocumentsToRetrieve,
-                        ragSettings.SimilarityThreshold);
+                        ragSettings.SimilarityThreshold)).ToList();
+
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, $"vector search returned {searchResultsList.Count} results");
+
                     tsVectorSearch.End = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed vector search in {tsVectorSearch?.TotalMs?.ToString("F2")}ms");
                 }
 
-                if (searchResults == null || !searchResults.Any())
+                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"1");
+
+                // Use Count property instead of Any() for better performance
+                if (searchResultsList.Count == 0)
                 {
                     _app.ConsoleLog(Enums.SeverityEnum.Info, "no relevant documents found in the knowledge base");
                     return (Enumerable.Empty<VectorSearchResult>(), string.Empty);
                 }
+
+                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"2");
 
                 // Apply context sorting if enabled
                 if (ragSettings.EnableContextSorting)
@@ -93,11 +103,13 @@ namespace View.Personal.Services
                     {
                         tsContextSorting.Start = DateTime.UtcNow;
                         _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning context sorting");
-                        searchResults = SortSearchResults(searchResults);
+                        searchResultsList = SortSearchResults(searchResultsList).ToList();
                         tsContextSorting.End = DateTime.UtcNow;
                         _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed context sorting in {tsContextSorting?.TotalMs?.ToString("F2")}ms");
                     }
                 }
+
+                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"3");
 
                 // Build context from search results
                 string context = null;
@@ -105,12 +117,14 @@ namespace View.Personal.Services
                 {
                     tsContextBuilding.Start = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning context building");
-                    context = BuildContext(searchResults, 4000, ragSettings.EnableCitations);
+                    context = BuildContext(searchResultsList, 4000, ragSettings.EnableCitations);
                     tsContextBuilding.End = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed building context in {tsContextBuilding?.TotalMs?.ToString("F2")}ms");
                 }
 
-                return (searchResults, context);
+                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"4");
+
+                return (searchResultsList, context);
             }
             catch (Exception ex)
             {
@@ -228,10 +242,10 @@ namespace View.Personal.Services
         /// <param name="topK">The number of top results to return.</param>
         /// <param name="minThreshold">The minimum similarity threshold.</param>
         /// <returns>The search results.</returns>
-        private Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(
-            List<float> embeddings,
-            int topK,
-            double minThreshold)
+        private async Task<IEnumerable<VectorSearchResult>> PerformVectorSearch(
+     List<float> embeddings,
+     int topK,
+     double minThreshold)
         {
             var searchRequest = new VectorSearchRequest
             {
@@ -242,14 +256,18 @@ namespace View.Personal.Services
                 Embeddings = embeddings
             };
 
-            var searchResults = _liteGraph.Vector.Search(searchRequest);
+            var searchResults = await Task.Run(() =>
+        _liteGraph.Vector.Search(searchRequest).ToList()
+    );
+
             var filtered = searchResults
                           .Where(r => r.Score >= minThreshold)
                           .OrderByDescending(r => r.Score)
-                          .Take(topK);
+                          .Take(topK)
+                          .ToList();
 
-            _app.ConsoleLog(Enums.SeverityEnum.Info, $"vector search completed");
-            return Task.FromResult(filtered ?? Enumerable.Empty<VectorSearchResult>());
+            _app.ConsoleLog(Enums.SeverityEnum.Info, $"vector search completed - found {filtered.Count} results");
+            return filtered;
         }
 
         /// <summary>
