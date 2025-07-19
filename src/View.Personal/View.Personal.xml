@@ -3029,11 +3029,12 @@
             <param name="searchResults">The search results to sort.</param>
             <returns>The sorted search results.</returns>
         </member>
-        <member name="M:View.Personal.Services.RagService.BuildContext(System.Collections.Generic.IEnumerable{LiteGraph.VectorSearchResult},System.Boolean)">
+        <member name="M:View.Personal.Services.RagService.BuildContext(System.Collections.Generic.IEnumerable{LiteGraph.VectorSearchResult},System.Int32,System.Boolean)">
             <summary>
             Builds a context string from search results.
             </summary>
             <param name="searchResults">The search results to build context from.</param>
+            <param name="maximumContextLength">Maximum context length.</param>
             <param name="includeCitations">Whether to include citations in the context.</param>
             <returns>The built context string.</returns>
         </member>

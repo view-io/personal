@@ -199,14 +199,15 @@ namespace View.Personal.Services
                 _app?.ConsoleLog(SeverityEnum.Warn, "cannot preload model, model name is empty");
                 return false;
             }
+
             bool isOllamaAvailable = await IsOllamaAvailableAsync();
             if (!isOllamaAvailable) return false;
+
             bool modelExists = await IsModelPulledAsync(modelName);
-            if (modelExists)
-               return await LoadModelAsync(modelName);
+            if (modelExists) return await LoadModelAsync(modelName);
             else
             {
-                _app?.ConsoleLog(SeverityEnum.Warn, $"elected model {modelName} is not pulled, skipping preload");
+                _app?.ConsoleLog(SeverityEnum.Warn, $"selected model {modelName} is not pulled, skipping preload");
                 return false;
             }
         }
@@ -225,20 +226,17 @@ namespace View.Personal.Services
                 _app?.ConsoleLog(SeverityEnum.Error, "cannot preload model, model name is empty");
                 return false;
             }
-
             string endpoint = "";
             string apiPath = "";
             HttpResponseMessage resp = null;
+            string responseBody = "";
 
             try
             {
-                // Removed duplicate log message here as it's already logged by the caller
                 endpoint = GetOllamaEndpoint();
                 using var httpClient = CreateHttpClient();
 
-                // Determine if it's an embedding model
                 bool isEmbeddingModel = await IsEmbeddingModelAsync(httpClient, endpoint, modelName);
-
                 apiPath = isEmbeddingModel ? "api/embeddings" : "api/generate";
                 HttpContent content;
 
@@ -259,22 +257,24 @@ namespace View.Personal.Services
                         stream = false
                     });
                 }
-
                 resp = await httpClient.PostAsync($"{endpoint}{apiPath}", content);
-                resp.EnsureSuccessStatusCode();
 
+                // Read the response body before checking status
+                responseBody = await resp.Content.ReadAsStringAsync();
+
+                resp.EnsureSuccessStatusCode();
                 _app?.ConsoleLog(SeverityEnum.Info, $"successfully preloaded Ollama model: {modelName}");
                 return true;
             }
             catch (Exception ex)
             {
-                _app?.ConsoleLog(SeverityEnum.Error, 
-                    $"error preloading model" + Environment.NewLine + 
+                _app?.ConsoleLog(SeverityEnum.Error,
+                    $"error preloading model" + Environment.NewLine +
                     $"| model        : {modelName} " + Environment.NewLine +
                     $"| endpoint     : {endpoint} " + Environment.NewLine +
-                    $"| path         : {apiPath} " + Environment.NewLine + 
-                    $"| status       : {resp.StatusCode} " + Environment.NewLine +
-                    $"| body         : {resp.Content} " + Environment.NewLine +
+                    $"| path         : {apiPath} " + Environment.NewLine +
+                    $"| status       : {resp?.StatusCode} " + Environment.NewLine +
+                    $"| body         : {responseBody} " + Environment.NewLine +
                     $"| exception    : " + Environment.NewLine + ex.ToString());
                 return false;
             }
@@ -593,13 +593,28 @@ namespace View.Personal.Services
                 var requestPayload = new { model = modelName };
                 var content = JsonContent.Create(requestPayload);
                 var response = await client.PostAsync($"{endpoint}api/show", content);
-                if (!response.IsSuccessStatusCode) return false;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _app?.ConsoleLog(SeverityEnum.Warn, $"failed to get model info for {modelName} status: {response.StatusCode}");
+                    return false;
+                }
 
                 var json = await response.Content.ReadAsStringAsync();
-                return json.Contains("\"capabilities\":[\"embedding\"]", StringComparison.OrdinalIgnoreCase) || json.Contains("\"embedding\"", StringComparison.OrdinalIgnoreCase);
+
+                // _app?.ConsoleLog(SeverityEnum.Debug, $"model info for {modelName}:" + Environment.NewLine + json);
+
+                bool isEmbedding = json.Contains("\"capabilities\":[\"embedding\"]", StringComparison.OrdinalIgnoreCase) ||
+                                  json.Contains("\"embedding\"", StringComparison.OrdinalIgnoreCase) ||
+                                  json.Contains("embed", StringComparison.OrdinalIgnoreCase);
+
+                _app?.ConsoleLog(SeverityEnum.Info, $"model {modelName} detected as embedding model: {isEmbedding}");
+
+                return isEmbedding;
             }
-            catch
+            catch (Exception ex)
             {
+                _app?.ConsoleLog(SeverityEnum.Error, $"error checking if {modelName} is embedding model: {ex.Message}");
                 return false;
             }
         }

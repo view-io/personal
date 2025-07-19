@@ -105,7 +105,7 @@ namespace View.Personal.Services
                 {
                     tsContextBuilding.Start = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, "beginning context building");
-                    context = BuildContext(searchResults, ragSettings.EnableCitations);
+                    context = BuildContext(searchResults, 4000, ragSettings.EnableCitations);
                     tsContextBuilding.End = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed building context in {tsContextBuilding?.TotalMs?.ToString("F2")}ms");
                 }
@@ -176,9 +176,9 @@ namespace View.Personal.Services
 
             var systemMessages = conversationHistory.Where(m => m.Role == "system").ToList();
             string languageInstruction = string.Empty;
-            
+
             if (systemMessages.Any())
-            {   
+            {
                 var firstSystemMessage = systemMessages.First();
                 if (firstSystemMessage.Content.StartsWith("Please respond ONLY in "))
                 {
@@ -199,7 +199,7 @@ namespace View.Personal.Services
                     }
                 }
             }
-            
+
             var contextMessage = new ChatMessage
             {
                 Role = "system",
@@ -268,37 +268,52 @@ namespace View.Personal.Services
         /// Builds a context string from search results.
         /// </summary>
         /// <param name="searchResults">The search results to build context from.</param>
+        /// <param name="maximumContextLength">Maximum context length.</param>
         /// <param name="includeCitations">Whether to include citations in the context.</param>
         /// <returns>The built context string.</returns>
-        private string BuildContext(IEnumerable<VectorSearchResult> searchResults, bool includeCitations)
+        private string BuildContext(
+            IEnumerable<VectorSearchResult> searchResults,
+            int maximumContextLength,
+            bool includeCitations)
         {
+            if (maximumContextLength < 1) throw new ArgumentOutOfRangeException(nameof(maximumContextLength));
             var contextParts = new List<string>();
             int index = 1;
 
-            foreach (var result in searchResults)
+            foreach (VectorSearchResult result in searchResults)
             {
-                string content = GetNodeContent(result.Node);
-                if (string.IsNullOrWhiteSpace(content)) continue;
-
-                // Add citation if enabled
-                if (includeCitations)
+                using (Timestamp ts = new Timestamp())
                 {
-                    string source = "Unknown";
-                    if (result.Node.Tags["FileName"] != null)
-                    {
-                        source = result.Node.Tags["FileName"] ?? string.Empty;
-                        content = $"[{index}] {content} (Source: {source})";
-                        index++;
-                    }
-                }
+                    ts.Start = DateTime.UtcNow;
 
-                contextParts.Add(content);
+                    _app.ConsoleLog(Enums.SeverityEnum.Info, $"beginning building context for {result.Node.Name}");
+
+                    string content = GetNodeContent(result.Node);
+                    if (string.IsNullOrWhiteSpace(content)) continue;
+
+                    // Add citation if enabled
+                    if (includeCitations)
+                    {
+                        string source = "Unknown";
+                        if (result.Node.Tags["FileName"] != null)
+                        {
+                            source = result.Node.Tags["FileName"] ?? string.Empty;
+                            content = $"[{index}] {content} (Source: {source})";
+                            index++;
+                        }
+                    }
+
+                    contextParts.Add(content);
+
+                    ts.End = DateTime.UtcNow;
+                    _app.ConsoleLog(Enums.SeverityEnum.Info, $"finished building context for {result.Node.Name} in {ts.TotalMs?.ToString("F2")}ms");
+                }
             }
 
             var context = string.Join("\n\n", contextParts);
 
             // Truncate if too long
-            return context.Length > 4000 ? context.Substring(0, 4000) + "... [truncated]" : context;
+            return context.Length > maximumContextLength ? context.Substring(0, maximumContextLength) + "... [truncated]" : context;
         }
 
         /// <summary>
@@ -316,6 +331,7 @@ namespace View.Personal.Services
 
             return node.Tags["Content"] is string content && !string.IsNullOrWhiteSpace(content) ? content : "[No Content]";
         }
+
         #endregion
     }
 }

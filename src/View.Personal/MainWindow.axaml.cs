@@ -1259,6 +1259,7 @@ namespace View.Personal
                     using (Timestamp tsBuildPrompt = new Timestamp())
                     {
                         tsBuildPrompt.Start = DateTime.UtcNow;
+                        app.ConsoleLog(SeverityEnum.Debug, $"building prompt messages");
                         finalMessages = _RagService.BuildRagEnhancedMessages(userInput, context, await BuildPromptMessages());
                         tsBuildPrompt.End = DateTime.UtcNow;
                         app.ConsoleLog(SeverityEnum.Debug, $"built prompt in {tsBuildPrompt?.TotalMs?.ToString("F2")}ms");
