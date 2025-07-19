@@ -67,7 +67,7 @@ namespace View.Personal.Services
                 _app.ConsoleLog(Enums.SeverityEnum.Debug, "performing vector search with RAG settings");
 
                 // Store as List to avoid multiple enumerations
-                List<VectorSearchResult> searchResultsList = null;
+                List<VectorSearchResult> searchResultsList = null!;
 
                 using (Timestamp tsVectorSearch = new Timestamp())
                 {
@@ -85,16 +85,12 @@ namespace View.Personal.Services
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed vector search in {tsVectorSearch?.TotalMs?.ToString("F2")}ms");
                 }
 
-                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"1");
-
                 // Use Count property instead of Any() for better performance
                 if (searchResultsList.Count == 0)
                 {
                     _app.ConsoleLog(Enums.SeverityEnum.Info, "no relevant documents found in the knowledge base");
                     return (Enumerable.Empty<VectorSearchResult>(), string.Empty);
                 }
-
-                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"2");
 
                 // Apply context sorting if enabled
                 if (ragSettings.EnableContextSorting)
@@ -109,10 +105,8 @@ namespace View.Personal.Services
                     }
                 }
 
-                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"3");
-
                 // Build context from search results
-                string context = null;
+                string context = null!;
                 using (Timestamp tsContextBuilding = new Timestamp())
                 {
                     tsContextBuilding.Start = DateTime.UtcNow;
@@ -121,8 +115,6 @@ namespace View.Personal.Services
                     tsContextBuilding.End = DateTime.UtcNow;
                     _app.ConsoleLog(Enums.SeverityEnum.Debug, $"completed building context in {tsContextBuilding?.TotalMs?.ToString("F2")}ms");
                 }
-
-                _app.ConsoleLog(Enums.SeverityEnum.Debug, $"4");
 
                 return (searchResultsList, context);
             }
@@ -257,8 +249,8 @@ namespace View.Personal.Services
             };
 
             var searchResults = await Task.Run(() =>
-        _liteGraph.Vector.Search(searchRequest).ToList()
-    );
+                _liteGraph.Vector.Search(searchRequest).ToList()
+            );
 
             var filtered = searchResults
                           .Where(r => r.Score >= minThreshold)
@@ -266,7 +258,7 @@ namespace View.Personal.Services
                           .Take(topK)
                           .ToList();
 
-            _app.ConsoleLog(Enums.SeverityEnum.Info, $"vector search completed - found {filtered.Count} results");
+            _app.ConsoleLog(Enums.SeverityEnum.Debug, $"vector search completed with {filtered.Count} results");
             return filtered;
         }
 
@@ -304,7 +296,7 @@ namespace View.Personal.Services
                 {
                     ts.Start = DateTime.UtcNow;
 
-                    _app.ConsoleLog(Enums.SeverityEnum.Info, $"beginning building context for {result.Node.Name}");
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, $"beginning building context for {result.Node.Name}");
 
                     string content = GetNodeContent(result.Node);
                     if (string.IsNullOrWhiteSpace(content)) continue;
@@ -324,7 +316,7 @@ namespace View.Personal.Services
                     contextParts.Add(content);
 
                     ts.End = DateTime.UtcNow;
-                    _app.ConsoleLog(Enums.SeverityEnum.Info, $"finished building context for {result.Node.Name} in {ts.TotalMs?.ToString("F2")}ms");
+                    _app.ConsoleLog(Enums.SeverityEnum.Debug, $"finished building context for {result.Node.Name} in {ts.TotalMs?.ToString("F2")}ms");
                 }
             }
 

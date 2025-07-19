@@ -227,7 +227,7 @@ namespace View.Personal.Services
             }
             string endpoint = "";
             string apiPath = "";
-            HttpResponseMessage resp = null;
+            HttpResponseMessage resp = null!;
             string responseBody = "";
 
             try
@@ -262,7 +262,7 @@ namespace View.Personal.Services
                 responseBody = await resp.Content.ReadAsStringAsync();
 
                 resp.EnsureSuccessStatusCode();
-                _app?.ConsoleLog(SeverityEnum.Info, $"successfully preloaded Ollama model: {modelName}");
+                _app?.ConsoleLog(SeverityEnum.Debug, $"successfully preloaded Ollama model: {modelName}");
                 return true;
             }
             catch (Exception ex)
@@ -624,13 +624,13 @@ namespace View.Personal.Services
 
                 if (embeddingResponse.IsSuccessStatusCode)
                 {
-                    _app?.ConsoleLog(SeverityEnum.Info, $"model {modelName} successfully responded to embedding request");
+                    _app?.ConsoleLog(SeverityEnum.Debug, $"model {modelName} successfully responded to embedding request");
                     return true;
                 }
                 else
                 {
                     var errorBody = await embeddingResponse.Content.ReadAsStringAsync();
-                    _app?.ConsoleLog(SeverityEnum.Debug, $"model {modelName} embedding test failed: {embeddingResponse.StatusCode} - {errorBody}");
+                    _app?.ConsoleLog(SeverityEnum.Debug, $"model {modelName} embedding test failed: {errorBody}");
                     return false;
                 }
             }

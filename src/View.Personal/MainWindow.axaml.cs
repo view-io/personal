@@ -1252,12 +1252,8 @@ namespace View.Personal
                     // Retrieve relevant documents using RAG service
                     var (searchResults, context) = await _RagService.RetrieveRelevantDocumentsAsync(floatEmbeddings, ragSettings);
 
-                    app.ConsoleLog(Enums.SeverityEnum.Debug, $"5");
-
                     if (string.IsNullOrEmpty(context))
                         return "I couldn't find any relevant documents in the knowledgebase for your query";
-
-                    app.ConsoleLog(Enums.SeverityEnum.Debug, $"6");
 
                     // Build messages with RAG context
                     using (Timestamp tsBuildPrompt = new Timestamp())
@@ -1279,8 +1275,6 @@ namespace View.Personal
 
                 string result = null;
 
-                app.ConsoleLog(Enums.SeverityEnum.Debug, $"7");
-
                 using (Timestamp tsApiRequest = new Timestamp())
                 {
                     tsApiRequest.Start = DateTime.UtcNow;
@@ -1290,8 +1284,6 @@ namespace View.Personal
                     tsApiRequest.End = DateTime.UtcNow;
                     app.ConsoleLog(SeverityEnum.Debug, $"API request completed in {tsApiRequest?.TotalMs?.ToString("F2")}ms");
                 }
-
-                app.ConsoleLog(Enums.SeverityEnum.Debug, $"8");
 
                 return result;
             }
@@ -1352,8 +1344,10 @@ namespace View.Personal
         /// <param name="appSettings">The application settings containing provider-specific configurations.</param>
         /// <param name="userInput">The user input text to be embedded.</param>
         /// <returns>A tuple containing the SDK instance (<see cref="object"/>) and the <see cref="GenerateEmbeddingsRequest"/> configured for the specified provider.</returns>
-        private (object sdk, GenerateEmbeddingsRequest request) GetEmbeddingsSdkAndRequest(string embeddingsProvider,
-            AppSettings appSettings, string userInput)
+        private (object sdk, GenerateEmbeddingsRequest request) GetEmbeddingsSdkAndRequest(
+            string embeddingsProvider,
+            AppSettings appSettings, 
+            string userInput)
         {
             switch (embeddingsProvider)
             {
@@ -1441,11 +1435,13 @@ namespace View.Personal
         /// <param name="settings">The settings object containing provider-specific configuration details.</param>
         /// <param name="finalMessages">The list of ChatMessage objects to include in the request body.</param>
         /// <returns>An object representing the formatted request body for the specified provider.</returns>
-        private object CreateRequestBody(string provider, CompletionProviderSettings settings,
+        private object CreateRequestBody(
+            string provider, 
+            CompletionProviderSettings settings,
             List<ChatMessage> finalMessages)
         {
             var app = (App)Application.Current;
-            app.ConsoleLog(SeverityEnum.Info, $"creating summarization request body for {provider}");
+            app.ConsoleLog(SeverityEnum.Debug, $"creating summarization request body for {provider}");
 
             switch (provider)
             {
@@ -1511,8 +1507,11 @@ namespace View.Personal
         /// <param name="requestBody">The object representing the request payload to be sent.</param>
         /// <param name="onTokenReceived">An action to handle tokens as they are received from the streaming response.</param>
         /// <returns>A task that resolves to the final response string from the API.</returns>
-        private async Task<string> SendApiRequest(string provider, CompletionProviderSettings settings,
-            object requestBody, Action<string> onTokenReceived)
+        private async Task<string> SendApiRequest(
+            string provider, 
+            CompletionProviderSettings settings,
+            object requestBody, 
+            Action<string> onTokenReceived)
         {
             var app = (App)Application.Current;
             app.ConsoleLog(SeverityEnum.Debug, $"sending API request to provider: {provider}");
@@ -1573,7 +1572,9 @@ namespace View.Personal
         /// <param name="restRequest">The RestRequest object to configure headers for.</param>
         /// <param name="provider">The name of the completion provider to set headers for.</param>
         /// <param name="settings">The settings object containing provider-specific API keys and details.</param>
-        private void ConfigureRequestHeaders(RestRequest restRequest, string provider,
+        private void ConfigureRequestHeaders(
+            RestRequest restRequest, 
+            string provider,
             CompletionProviderSettings settings)
         {
             restRequest.ContentType = "application/json";
